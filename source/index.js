@@ -1,5 +1,5 @@
 import { PerspectiveCamera, WebGLRenderer } from 'three';
-import Scene1 from './scenes/Scene1';
+import Scene1 from './scenes/scene1';
 
 class ThreeShooter {
 	constructor(props) {
