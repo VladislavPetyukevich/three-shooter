@@ -3,19 +3,17 @@ import Scene1 from './scenes/scene1';
 
 class ThreeShooter {
 	constructor(props) {
-		this.scene = new Scene1();
-		this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
-		this.camera.position.z = 5;
-		this.renderer  = new WebGLRenderer();
-		this.renderer .setSize(props.renderWidth, props.renderHeight);
-		props.renderContainer.appendChild(this.renderer .domElement);
+		this.currScene = new Scene1(props);
+		this.renderer = new WebGLRenderer();
+		this.renderer.setSize(props.renderWidth, props.renderHeight);
+		props.renderContainer.appendChild(this.renderer.domElement);
 		this.update();
 	}
 
 	update() {
 		requestAnimationFrame(this.update.bind(this));
-		this.scene.update();
-		this.renderer.render(this.scene.scene, this.camera);
+		this.currScene.update();
+		this.renderer.render(this.currScene.scene, this.currScene.camera);
 	}
 }
 
