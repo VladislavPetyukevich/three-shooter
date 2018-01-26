@@ -1,11 +1,5 @@
-class Player {
-	constructor(props) {
-		this.height = props.height;
-	}
-}
-
-var player = new Player({
+var player = {
 	height: 1.8
-});
+};
 
 export default player;
