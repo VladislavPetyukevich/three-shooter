@@ -11,14 +11,16 @@ class Scene1 {
 		this.camera.position.y = player.height;
 		this.camera.lookAt(new Vector3(0, player.height, 0));
 
-		var geometry = new BoxGeometry(1, 1, 1);
-		var material = new MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-		this.cube = new Mesh(geometry, material);
+		this.cube = new Mesh(
+			new BoxGeometry(1, 1, 1),
+			new MeshBasicMaterial({ color: 'blue' })
+		);
+		this.cube.position.y = 1.8;
 		this.scene.add(this.cube);
 
 		this.floor = new Mesh(
 			new PlaneGeometry(50, 50),
-			new MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+			new MeshBasicMaterial({ color: 'white' })
 		);
 		this.floor.rotation.x -= Math.PI / 2;
 		this.scene.add(this.floor);
