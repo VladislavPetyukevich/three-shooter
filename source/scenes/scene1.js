@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, BoxGeometry, MeshBasicMaterial, Mesh, Vector3 } from 'three';
+import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshBasicMaterial, Mesh, Vector3 } from 'three';
 import controls from '../Controls';
 import player from '../Player';
 
@@ -14,6 +14,12 @@ class Scene1 {
 		var material = new MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 		this.cube = new Mesh(geometry, material);
 		this.scene.add(this.cube);
+		this.floor = new Mesh(
+			new PlaneGeometry(50, 50),
+			new MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+		);
+		this.floor.rotation.x -= Math.PI / 2;
+		this.scene.add(this.floor);
 	}
 
 	update() {
