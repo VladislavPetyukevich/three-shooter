@@ -1,4 +1,5 @@
 import { Scene, PerspectiveCamera, BoxGeometry, MeshBasicMaterial, Mesh } from 'three';
+import controls from '../Controls';
 
 class Scene1 {
 	constructor(props) {
@@ -14,6 +15,14 @@ class Scene1 {
 	update() {
 		this.cube.rotation.x += 0.01;
 		this.cube.rotation.y += 0.02;
+
+		if(controls.keyboard[37]) {
+			this.camera.rotation.y += Math.PI * 0.01;
+		}
+
+		if(controls.keyboard[39]) {
+			this.camera.rotation.y -= Math.PI * 0.01;
+		}
 	}
 }
 

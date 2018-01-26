@@ -1,6 +1,7 @@
 body {
 	margin: 0;
 	background-color: black;
+	color: white;
 }
 
 canvas {
@@ -9,7 +10,7 @@ canvas {
 	border: 1px solid white;
 }
 
-#render-container {
+#container {
 	display: flex;
 	justify-content: center;
 }
