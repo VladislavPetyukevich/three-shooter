@@ -1,4 +1,4 @@
-import { PerspectiveCamera, WebGLRenderer } from 'three';
+import { PerspectiveCamera, WebGLRenderer, BasicShadowMap } from 'three';
 import Scene1 from './scenes/scene1';
 
 class ThreeShooter {
@@ -6,6 +6,8 @@ class ThreeShooter {
 		this.currScene = new Scene1(props);
 		this.renderer = new WebGLRenderer();
 		this.renderer.setSize(props.renderWidth, props.renderHeight);
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = BasicShadowMap;
 		props.renderContainer.appendChild(this.renderer.domElement);
 		this.update();
 	}
