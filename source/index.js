@@ -6,6 +6,7 @@ class ThreeShooter {
 		this.currScene = new Scene1(props);
 		this.renderer = new WebGLRenderer();
 		this.renderer.setSize(props.renderWidth, props.renderHeight);
+		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = BasicShadowMap;
 		props.renderContainer.appendChild(this.renderer.domElement);
