@@ -4,7 +4,7 @@ import controls from './Controls';
 var PI_2 = Math.PI / 2;
 var PI_180 = Math.PI / 180;
 
-class Player {
+class PlayerControls {
 	constructor(props) {
 		this.playerHeight = 1.8;
 		this.turnSpeed = 5;
@@ -85,4 +85,4 @@ class Player {
 	}
 }
 
-export default Player;
+export default PlayerControls;

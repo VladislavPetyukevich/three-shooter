@@ -1,6 +1,6 @@
 import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, Vector3, AmbientLight } from 'three';
 import controls from '../Controls';
-import Player from '../Player';
+import PlayerControls from '../PlayerControls';
 
 class Scene1 {
 	constructor(props) {
@@ -15,7 +15,7 @@ class Scene1 {
 		this.scene.add(this.pointLight);
 
 		this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
-		this.controls = new Player({ camera: this.camera });
+		this.controls = new PlayerControls({ camera: this.camera });
 
 		this.cube = new Mesh(
 			new BoxGeometry(1, 1, 1),
