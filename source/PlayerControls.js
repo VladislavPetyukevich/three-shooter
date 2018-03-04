@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import controls from './Controls';
+import keyboardControls from './KeyboardControls';
 
 var PI_2 = Math.PI / 2;
 var PI_180 = Math.PI / 180;
@@ -40,22 +40,22 @@ class PlayerControls {
 		if (this.enabled) {
 			//movement
 			//W key
-			if (controls.keyboard[87]) {
+			if (keyboardControls.key[87]) {
 				this.velocity.z -= 4.0 * delta;
 			}
 
 			//S key
-			if (controls.keyboard[83]) {
+			if (keyboardControls.key[83]) {
 				this.velocity.z += 4.0 * delta;
 			}
 
 			//A key
-			if (controls.keyboard[65]) {
+			if (keyboardControls.key[65]) {
 				this.velocity.x -= 4.0 * delta;
 			}
 
 			//D key
-			if (controls.keyboard[68]) {
+			if (keyboardControls.key[68]) {
 				this.velocity.x += 4.0 * delta;
 			}
 		}

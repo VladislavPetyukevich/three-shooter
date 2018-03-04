@@ -1,5 +1,4 @@
 import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, Vector3, AmbientLight } from 'three';
-import controls from '../Controls';
 import PlayerControls from '../PlayerControls';
 
 class Scene1 {
