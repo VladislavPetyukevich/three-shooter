@@ -15,16 +15,13 @@ class Scene1 {
 		this.scene.add(this.pointLight);
 
 		this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
-		this.player = new Player({ camera: this.camera });
-		this.camera.position.z = 5;
-		this.camera.position.y = this.player.height;
-		this.camera.lookAt(new Vector3(0, this.player.height, 0));
+		this.controls = new Player({ camera: this.camera });
 
 		this.cube = new Mesh(
 			new BoxGeometry(1, 1, 1),
 			new MeshPhongMaterial({ color: 'blue' })
 		);
-		this.cube.position.y = 1.8;
+		this.cube.position.set(5, 1.8, 0);
 		this.cube.receiveShadow = true;
 		this.cube.castShadow = true;
 		this.scene.add(this.cube);
@@ -41,7 +38,7 @@ class Scene1 {
 	update() {
 		this.cube.rotation.x += 0.01;
 		this.cube.rotation.y += 0.02;
-		this.player.update();
+		this.controls.update();
 	}
 }
 
