@@ -11,16 +11,36 @@
 </head>
 
 <body>
-	<div id="container">
-		<div id="render-container" />
-		<div>Use left/right arrow keys to rotate camera.<br>WASD - movement.</div>
+	<div id="blocker">
+		<div id="instructions">
+			<span style="font-size:40px">Click to play</span>
+			<br /> (W, A, S, D = Move, MOUSE = Look around, Esc - Show cursor)
+		</div>
 	</div>
+	<div id="render-container" />
 
 	<script type="text/javascript">
+		var blocker = document.getElementById('blocker');
+		var instructions = document.getElementById('instructions');
+		var renderContainer = document.getElementById('render-container');
+
 		var threeShooter = new ThreeShooter({
-			renderContainer: document.getElementById('render-container'),
+			renderContainer: renderContainer,
 			renderWidth: 800,
 			renderHeight: 600
+		});
+
+		instructions.addEventListener('click', function (event) {
+			instructions.style.display = 'none';
+			blocker.style.display = 'none';
+			renderContainer.requestPointerLock();
+		});
+
+		document.addEventListener('pointerlockchange', function (event) {
+			if (document.pointerLockElement != renderContainer) {
+				blocker.style.display = 'block';
+				instructions.style.display = '';
+			}
 		});
 	</script>
 </body>
