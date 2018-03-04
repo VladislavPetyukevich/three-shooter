@@ -3,12 +3,10 @@ class KeyboardControls {
 		this.key = [];
 
 		window.addEventListener('keydown', (event) => {
-			event.preventDefault();
 			this.key[event.keyCode] = true;
 		});
 
 		window.addEventListener('keyup', (event) => {
-			event.preventDefault();
 			this.key[event.keyCode] = false;
 		});
 	}
