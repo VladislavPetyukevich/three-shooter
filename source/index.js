@@ -16,7 +16,13 @@ class ThreeShooter {
 		document.addEventListener('pointerlockchange', (event) => {
 			this.currScene.controls.enabled = document.pointerLockElement == props.renderContainer;
 		});
+		window.addEventListener('resize', (event) => {
+			this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
+			this.currScene.camera.updateProjectionMatrix();
+			this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
+		});
 	}
+
 
 	update() {
 		requestAnimationFrame(this.update.bind(this));

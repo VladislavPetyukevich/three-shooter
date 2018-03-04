@@ -26,8 +26,8 @@
 
 		var threeShooter = new ThreeShooter({
 			renderContainer: renderContainer,
-			renderWidth: 800,
-			renderHeight: 600
+			renderWidth: renderContainer.offsetWidth,
+			renderHeight: renderContainer.offsetHeight
 		});
 
 		instructions.addEventListener('click', function (event) {
