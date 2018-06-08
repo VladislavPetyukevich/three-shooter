@@ -3,12 +3,15 @@ import Scene1 from './scenes/scene1';
 
 class ThreeShooter {
 	constructor(props) {
-		this.currScene = new Scene1(props);
+    this.currScene = new Scene1(props);
+    this.prevTime = performance.now();
+
 		this.renderer = new WebGLRenderer();
 		this.renderer.setSize(props.renderWidth, props.renderHeight);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.shadowMap.enabled = true;
-		this.renderer.shadowMap.type = BasicShadowMap;
+    this.renderer.shadowMap.type = BasicShadowMap;
+
 		props.renderContainer.appendChild(this.renderer.domElement);
 		this.currScene.controls.enabled = true;
 		this.update();
@@ -26,8 +29,11 @@ class ThreeShooter {
 
 	update() {
 		requestAnimationFrame(this.update.bind(this));
-		this.currScene.update();
-		this.renderer.render(this.currScene.scene, this.currScene.camera);
+    var time = performance.now();
+		var delta = (time - this.prevTime) / 1000;
+		this.currScene.update(delta);
+    this.renderer.render(this.currScene.scene, this.currScene.camera);
+    this.prevTime = time;
 	}
 }
 

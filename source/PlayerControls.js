@@ -13,7 +13,6 @@ class PlayerControls {
 		this.camera.rotation.set(0, 0, 0);
 		this.velocity = new Vector3();
 		this.mouseMovementX = this.mouseMovementY = this.lon = this.lat = 0;
-		this.prevTime = performance.now();
 		this.enabled = false;
 
 		document.addEventListener('mousemove', this.onMouseMove.bind(this));
@@ -29,10 +28,8 @@ class PlayerControls {
 		this.mouseMovementY += movementY * this.turnSpeed;
 	}
 
-	update() {
+	update(delta) {
 		var camera = this.camera;
-		var time = performance.now();
-		var delta = (time - this.prevTime) / 1000;
 
 		this.velocity.x -= this.velocity.x * 10.0 * delta;
 		this.velocity.z -= this.velocity.z * 10.0 * delta;
@@ -76,7 +73,6 @@ class PlayerControls {
 			this.mouseMovementY = 0;
 		}
 
-		this.prevTime = time;
 	}
 }
 

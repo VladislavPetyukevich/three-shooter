@@ -34,10 +34,10 @@ class Scene1 {
 		this.scene.add(this.floor);
 	}
 
-	update() {
+	update(delta) {
 		this.cube.rotation.x += 0.01;
 		this.cube.rotation.y += 0.02;
-		this.controls.update();
+		this.controls.update(delta);
 	}
 }
 
