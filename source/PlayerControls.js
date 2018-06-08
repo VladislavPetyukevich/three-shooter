@@ -7,7 +7,7 @@ var PI_180 = Math.PI / 180;
 class PlayerControls {
 	constructor(props) {
 		this.playerHeight = 1.8;
-		this.turnSpeed = 5;
+		this.turnSpeed = 3.5;
 		this.movementSpeed = 0.25;
 		this.camera = props.camera;
 		this.camera.rotation.set(0, 0, 0);
@@ -66,19 +66,14 @@ class PlayerControls {
 
 		if (this.enabled) {
 			// Mouse look
-			this.lon += this.mouseMovementX * delta;
-			this.lat -= this.mouseMovementY * delta;
-			var phi = (90 - this.lat) * PI_180;
-			var theta = this.lon * PI_180;
+      if (this.mouseMovementX > 0) {
+        camera.rotation.y -= PI_180 * this.mouseMovementX * this.turnSpeed * delta;
+      } else {
+        camera.rotation.y += PI_180 * -this.mouseMovementX * this.turnSpeed * delta;
+      }
 
 			this.mouseMovementX = 0;
 			this.mouseMovementY = 0;
-
-			var target = new Vector3();
-			target.x = this.camera.position.x + 100 * Math.sin(phi) * Math.cos(theta);
-			target.y = this.camera.position.y + 100 * Math.cos(phi);
-			target.z = this.camera.position.z + 100 * Math.sin(phi) * Math.sin(theta);
-			this.camera.lookAt(target);
 		}
 
 		this.prevTime = time;
