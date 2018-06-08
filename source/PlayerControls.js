@@ -11,7 +11,7 @@ class PlayerControls {
 		this.movementSpeed = 0.25;
 		this.camera = props.camera;
 		this.velocity = new Vector3();
-		this.mouseMovementX = this.mouseMovementY = this.lon = this.lat = 0;
+		this.mouseMovementX = 0;
 		this.enabled = false;
 
 		document.addEventListener('mousemove', this.onMouseMove.bind(this));
@@ -19,12 +19,8 @@ class PlayerControls {
 
 	onMouseMove() {
 		if (!this.enabled) return;
-
 		var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-		var movementY = event.movementY || event.mozmovementY || event.webkitmovementY || 0;
-
 		this.mouseMovementX += movementX * this.turnSpeed;
-		this.mouseMovementY += movementY * this.turnSpeed;
 	}
 
 	update(delta) {
@@ -69,9 +65,7 @@ class PlayerControls {
       }
 
 			this.mouseMovementX = 0;
-			this.mouseMovementY = 0;
 		}
-
 	}
 }
 
