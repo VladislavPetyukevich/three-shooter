@@ -10,7 +10,6 @@ class PlayerControls {
 		this.turnSpeed = 3.5;
 		this.movementSpeed = 0.25;
 		this.camera = props.camera;
-		this.camera.rotation.set(0, 0, 0);
 		this.velocity = new Vector3();
 		this.mouseMovementX = this.mouseMovementY = this.lon = this.lat = 0;
 		this.enabled = false;
