@@ -29,14 +29,14 @@ class Scene1 {
     this.scene.add(this.cube);
 
     this.testWall = new Mesh(
-      new BoxGeometry(5, 10, 5),
+      new BoxGeometry(5, 5, 5),
       new MeshPhongMaterial({
         map: new TextureLoader().load(rustytiles01Texture),
         normalMap: new TextureLoader().load(rustytiles01NormalMap),
         bumpMap: new TextureLoader().load(rustytiles01BumpMap)
       })
     );
-    this.testWall.position.set(5, 0, -5);
+    this.testWall.position.set(5, 2.5, -5);
     this.testWall.receiveShadow = true;
     this.testWall.castShadow = true;
     this.scene.add(this.testWall);
