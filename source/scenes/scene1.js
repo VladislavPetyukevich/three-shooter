@@ -10,7 +10,6 @@ class Scene1 {
     this.scene.add(new AmbientLight(0x404040, 0.2));
 
     this.pointLight = new PointLight(0xffffff, 0.8, 50);
-    this.pointLight.position.set(-3, 6, -3);
     this.pointLight.castShadow = true;
     this.pointLight.shadow.camera.near = 0.1;
     this.pointLight.shadow.camera.far = 25;
@@ -55,6 +54,11 @@ class Scene1 {
     this.cube.rotation.x += 0.01;
     this.cube.rotation.y += 0.02;
     this.controls.update(delta);
+    this.pointLight.position.set(
+      this.camera.position.x,
+      this.camera.position.y,
+      this.camera.position.z
+    );
   }
 }
 
