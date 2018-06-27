@@ -1,5 +1,8 @@
-import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, Vector3, AmbientLight } from 'three';
+import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, Vector3, AmbientLight, TextureLoader } from 'three';
 import PlayerControls from '../PlayerControls';
+import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
+import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
+import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 
 class Scene1 {
   constructor(props) {
@@ -25,6 +28,19 @@ class Scene1 {
     this.cube.receiveShadow = true;
     this.cube.castShadow = true;
     this.scene.add(this.cube);
+
+    this.testWall = new Mesh(
+      new BoxGeometry(5, 10, 5),
+      new MeshPhongMaterial({
+        map: new TextureLoader().load(rustytiles01Texture),
+        normalMap: new TextureLoader().load(rustytiles01NormalMap),
+        bumpMap: new TextureLoader().load(rustytiles01BumpMap)
+      })
+    );
+    this.testWall.position.set(5, 0, -5);
+    this.testWall.receiveShadow = true;
+    this.testWall.castShadow = true;
+    this.scene.add(this.testWall);
 
     this.floor = new Mesh(
       new PlaneGeometry(50, 50),
