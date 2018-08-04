@@ -1,8 +1,11 @@
-import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, AmbientLight, TextureLoader } from 'three';
+import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, AmbientLight, TextureLoader, SpriteMaterial, Sprite } from 'three';
 import PlayerControls from '../PlayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
 import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
+import enemyTexture from '../assets/enemy.png';
+
+const textureLoader = new TextureLoader();
 
 class Scene1 {
   constructor(props) {
@@ -48,6 +51,13 @@ class Scene1 {
     this.floor.receiveShadow = true;
     this.floor.rotation.x -= Math.PI / 2;
     this.scene.add(this.floor);
+
+    let enemySpriteMap = textureLoader.load(enemyTexture);
+    let enemySpriteMaterial = new SpriteMaterial({ map: enemySpriteMap });
+    let enemySprite = new Sprite(enemySpriteMaterial);
+    enemySprite.position.set(-5,2.5,-15);
+    enemySprite.scale.set(2,5,1);
+    this.scene.add(enemySprite);
   }
 
   update(delta) {
