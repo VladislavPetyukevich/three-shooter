@@ -25,26 +25,26 @@ class Scene1 {
       new BoxGeometry(1, 1, 1),
       new MeshPhongMaterial({ color: 'blue' })
     );
-    this.cube.position.set(0, 1.8, -5);
+    this.cube.position.set(-20, 1.8, -5);
     this.cube.receiveShadow = true;
     this.cube.castShadow = true;
     this.scene.add(this.cube);
 
     this.testWall = new Mesh(
-      new BoxGeometry(5, 5, 5),
+      new BoxGeometry(20, 20, 20),
       new MeshPhongMaterial({
         map: new TextureLoader().load(rustytiles01Texture),
         normalMap: new TextureLoader().load(rustytiles01NormalMap),
         bumpMap: new TextureLoader().load(rustytiles01BumpMap)
       })
     );
-    this.testWall.position.set(5, 2.5, -5);
+    this.testWall.position.set(20, 10, -20);
     this.testWall.receiveShadow = true;
     this.testWall.castShadow = true;
     this.scene.add(this.testWall);
 
     this.floor = new Mesh(
-      new PlaneGeometry(50, 50),
+      new PlaneGeometry(100, 100),
       new MeshPhongMaterial({ color: 'white' })
     );
     this.floor.receiveShadow = true;
