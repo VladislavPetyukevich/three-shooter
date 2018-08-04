@@ -1,4 +1,4 @@
-class KeyboardControls {
+class Keyboard {
 	constructor() {
 		this.key = [];
 
@@ -12,6 +12,6 @@ class KeyboardControls {
 	}
 }
 
-var keyboardControls = new KeyboardControls();
+var keyboard = new Keyboard();
 
-export default keyboardControls;
+export default keyboard;

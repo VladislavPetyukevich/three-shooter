@@ -12,10 +12,9 @@ class ThreeShooter {
 		this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = BasicShadowMap;
 
-		props.renderContainer.appendChild(this.renderer.domElement);
-		this.currScene.controls.enabled = true;
+    props.renderContainer.appendChild(this.renderer.domElement);
+    this.currScene.controls.enabled = false;
 		this.update();
-		this.currScene.controls.enabled = false;
 		document.addEventListener('pointerlockchange', (event) => {
 			this.currScene.controls.enabled = document.pointerLockElement == props.renderContainer;
 		});

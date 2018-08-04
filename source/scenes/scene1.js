@@ -1,5 +1,5 @@
 import { Scene, PerspectiveCamera, BoxGeometry, PlaneGeometry, MeshPhongMaterial, PointLight, Mesh, AmbientLight, TextureLoader } from 'three';
-import PlayerControls from '../PlayerControls';
+import PlayerControls from '../PayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
 import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
@@ -17,7 +17,9 @@ class Scene1 {
 
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
     this.camera.position.set(0, 0, 0);
-    this.controls = new PlayerControls({ camera: this.camera });
+    this.controls = new PlayerControls(this.camera);
+    this.controls.enabled = true;
+    this.scene.add(this.controls.getObject());
 
     this.cube = new Mesh(
       new BoxGeometry(1, 1, 1),
@@ -51,13 +53,14 @@ class Scene1 {
   }
 
   update(delta) {
+    let camera = this.controls.getObject();
     this.cube.rotation.x += 0.01;
     this.cube.rotation.y += 0.02;
     this.controls.update(delta);
     this.pointLight.position.set(
-      this.camera.position.x,
-      this.camera.position.y,
-      this.camera.position.z
+      camera.position.x,
+      camera.position.y,
+      camera.position.z
     );
   }
 }
