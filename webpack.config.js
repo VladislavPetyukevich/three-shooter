@@ -62,7 +62,18 @@ const common = {
             },
           },
         ],
-      }
+      },
+      {
+				test: /\.(json|dae)$/,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: 8192
+						}
+					}
+				]
+			}
     ]
   }
 };

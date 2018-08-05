@@ -1,10 +1,11 @@
 import { Scene, PerspectiveCamera, BoxGeometry, CylinderGeometry, PlaneGeometry, MeshPhongMaterial, SpotLight, Mesh, AmbientLight, TextureLoader, SpriteMaterial, Sprite } from 'three';
+import loadModel from '../loadModel';
 import PlayerControls from '../PayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
 import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import enemyTexture from '../assets/enemy.png';
-
+import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 const textureLoader = new TextureLoader();
 
 class Scene1 {
@@ -71,6 +72,12 @@ class Scene1 {
     testEnemy.position.set(10, 8, -35);
     testEnemy.scale.set(5, 16, 1);
     this.scene.add(testEnemy);
+
+    loadModel(testKitchen).then(model => {
+      model.scale.set(6,6,6);
+      model.position.set(-10, 0, -15);
+      this.scene.add(model);
+    })
   }
 
   update(delta) {
