@@ -1,12 +1,11 @@
-import { Scene, PerspectiveCamera, BoxGeometry, CylinderGeometry, PlaneGeometry, MeshPhongMaterial, SpotLight, Mesh, AmbientLight, TextureLoader, SpriteMaterial, Sprite } from 'three';
+import { Scene, PerspectiveCamera, BoxGeometry, CylinderGeometry, PlaneGeometry, MeshPhongMaterial, SpotLight, Mesh, AmbientLight, TextureLoader } from 'three';
 import loadModel from '../loadModel';
 import PlayerControls from '../PayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
 import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
-import enemyTexture from '../assets/enemy.png';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
-const textureLoader = new TextureLoader();
+import Enemy from '../Enemy';
 
 class Scene1 {
   constructor(props) {
@@ -66,12 +65,12 @@ class Scene1 {
     this.floor.rotation.x -= Math.PI / 2;
     this.scene.add(this.floor);
 
-    let enemySpriteMap = textureLoader.load(enemyTexture);
-    let enemySpriteMaterial = new SpriteMaterial({ map: enemySpriteMap });
-    let testEnemy = new Sprite(enemySpriteMaterial);
-    testEnemy.position.set(10, 8, -35);
-    testEnemy.scale.set(5, 16, 1);
-    this.scene.add(testEnemy);
+    this.enemy = new Enemy({
+      scene: this.scene,
+      playerCamera: this.controls.getObject()
+    });
+    this.enemy.getObject().scale.set(0.2,0.35, 1);
+    this.enemy.getObject().position.set(5, 8, -35);
 
     loadModel(testKitchen).then(model => {
       model.scale.set(6,6,6);
@@ -84,6 +83,7 @@ class Scene1 {
     this.cube.rotation.x += 0.01;
     this.cube.rotation.y += 0.02;
     this.controls.update(delta);
+    this.enemy.update();
     this.flashLight.position.copy(this.camera.position);
     this.flashLight.position.x += 2;
     this.flashLight.position.y -= 3;
