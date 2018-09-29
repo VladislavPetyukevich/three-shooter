@@ -18,7 +18,7 @@ class Scene1 {
     this.scene.add(this.controls.getObject());
 
     // lights
-    this.scene.add(new AmbientLight(0x404040, 0.2));
+    this.scene.add(new AmbientLight(0x404040, 0.03));
 
     this.flashLight = new Mesh(new CylinderGeometry(1, 1, 7, 20), new MeshPhongMaterial({ color: 0x000000 }));
     this.flashLight.rotateX(Math.PI / 2);
