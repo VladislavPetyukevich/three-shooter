@@ -1,4 +1,13 @@
-import { Scene, PerspectiveCamera, BoxGeometry, CylinderGeometry, PlaneGeometry, MeshPhongMaterial, SpotLight, Mesh, AmbientLight, TextureLoader } from 'three';
+import { 
+  Scene,
+  PerspectiveCamera,
+  BoxGeometry,
+  PlaneGeometry,
+  MeshPhongMaterial,
+  Mesh,
+  AmbientLight,
+  TextureLoader
+} from 'three';
 import loadModel from '../loadModel';
 import PlayerControls from '../PayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
@@ -6,6 +15,7 @@ import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import Enemy from '../Enemy';
+import Flashlight from '../Flashlight';
 
 class Scene1 {
   constructor(props) {
@@ -20,20 +30,7 @@ class Scene1 {
     // lights
     this.scene.add(new AmbientLight(0x404040, 0.03));
 
-    this.flashLight = new Mesh(new CylinderGeometry(1, 1, 7, 20), new MeshPhongMaterial({ color: 0x000000 }));
-    this.flashLight.rotateX(Math.PI / 2);
-    this.camera.add(this.flashLight);
-
-    this.spotLight = new SpotLight(0xffffff, 0.5, 150);
-    this.spotLight.power = 6000;
-    this.spotLight.angle = 0.5;
-    this.spotLight.decay = 2;
-    this.spotLight.penumbra = 0.1;
-    this.spotLight.distance = 200;
-    this.spotLight.castShadow = true;
-    this.spotLight.rotateX(Math.PI / 2);
-    this.flashLight.add(this.spotLight);
-    this.flashLight.add(this.spotLight.target);
+    this.flashLight = new Flashlight({ camera: this.camera });
 
     this.cube = new Mesh(
       new BoxGeometry(1, 1, 1),
@@ -84,10 +81,7 @@ class Scene1 {
     this.cube.rotation.y += 0.02;
     this.controls.update(delta);
     this.enemy.update();
-    this.flashLight.position.copy(this.camera.position);
-    this.flashLight.position.x += 2;
-    this.flashLight.position.y -= 3;
-    this.flashLight.position.z -= 1;
+    this.flashLight.update();
   }
 }
 
