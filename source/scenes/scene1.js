@@ -32,15 +32,6 @@ class Scene1 {
 
     this.flashLight = new Flashlight({ camera: this.camera });
 
-    this.cube = new Mesh(
-      new BoxGeometry(1, 1, 1),
-      new MeshPhongMaterial({ color: 'blue' })
-    );
-    this.cube.position.set(-20, 1.8, -5);
-    this.cube.receiveShadow = true;
-    this.cube.castShadow = true;
-    this.scene.add(this.cube);
-
     this.testWall = new Mesh(
       new BoxGeometry(20, 20, 20),
       new MeshPhongMaterial({
@@ -77,8 +68,6 @@ class Scene1 {
   }
 
   update(delta) {
-    this.cube.rotation.x += 0.01;
-    this.cube.rotation.y += 0.02;
     this.controls.update(delta);
     this.enemy.update();
     this.flashLight.update();
