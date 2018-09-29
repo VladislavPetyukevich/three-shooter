@@ -5,6 +5,8 @@ import {
   SpotLight
 } from 'three';
 
+const POWER = 3000;
+
 export default class Flashlight {
   constructor(props) {
     this.camera = props.camera;
@@ -13,7 +15,7 @@ export default class Flashlight {
     this.camera.add(this.flashLight);
 
     this.spotLight = new SpotLight(0xffffff, 0.5, 150);
-    this.spotLight.power = 6000;
+    this.swithLight();
     this.spotLight.angle = 0.5;
     this.spotLight.decay = 2;
     this.spotLight.penumbra = 0.1;
@@ -22,7 +24,17 @@ export default class Flashlight {
     this.spotLight.rotateX(Math.PI / 2);
     this.flashLight.add(this.spotLight);
     this.flashLight.add(this.spotLight.target);
+
+    window.addEventListener('mousedown', () => {
+      if (event.which === 3) {
+        this.swithLight();
+      }
+    });
   }
+
+  swithLight = () => {
+    this.spotLight.power = (this.spotLight.power === POWER) ? 0 : POWER;
+  };
 
   update() {
     this.flashLight.position.copy(this.camera.position);
