@@ -14,8 +14,13 @@ import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
 import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
+import testScreen from '../assets/test1.png';
 import Enemy from '../Enemy';
 import Flashlight from '../Flashlight';
+import imageDisplayer from '../ImageDisplayer';
+
+const textureLoader = new TextureLoader();
+const testScreenTexture = textureLoader.load(testScreen);
 
 class Scene1 {
   constructor(props) {
@@ -60,6 +65,8 @@ class Scene1 {
     this.enemy.getObject().scale.set(0.2,0.35, 1);
     this.enemy.getObject().position.set(5, 8, -35);
 
+    this.testImageId = undefined;
+
     loadModel(testKitchen).then(model => {
       model.scale.set(6,6,6);
       model.position.set(-10, 0, -15);
@@ -67,7 +74,15 @@ class Scene1 {
     })
   }
 
+  showTestImage = () => this.testImageId = imageDisplayer.add(testScreenTexture);
+
+  hideTestImage = () => imageDisplayer.remove(this.testImageId)
+
   update(delta) {
+    if(this.controls.getObject().position.z < -10 && !this.testImageId) {
+      this.showTestImage();
+      setTimeout(this.hideTestImage, 40);
+    }
     this.controls.update(delta);
     this.enemy.update();
     this.flashLight.update();

@@ -1,14 +1,17 @@
 import { PerspectiveCamera, ReinhardToneMapping, WebGLRenderer, BasicShadowMap } from 'three';
 import Scene1 from './scenes/scene1';
+import imageDisplayer from './ImageDisplayer';
 
 class ThreeShooter {
   constructor(props) {
     this.currScene = new Scene1(props);
+    this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
 
     this.renderer = new WebGLRenderer();
     this.renderer.setSize(props.renderWidth, props.renderHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.autoClear = false;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = BasicShadowMap;
     this.renderer.physicallyCorrectLights = true;
@@ -35,8 +38,11 @@ class ThreeShooter {
     requestAnimationFrame(this.update.bind(this));
     var time = performance.now();
     var delta = (time - this.prevTime) / 1000;
+    this.renderer.clear();
     this.currScene.update(delta);
     this.renderer.render(this.currScene.scene, this.currScene.camera);
+    this.renderer.clearDepth();
+    this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
     this.prevTime = time;
   }
 }
