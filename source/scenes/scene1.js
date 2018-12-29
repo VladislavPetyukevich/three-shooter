@@ -33,7 +33,7 @@ class Scene1 {
     this.scene.add(this.controls.getObject());
 
     // lights
-    this.scene.add(new AmbientLight(0x404040, 0.03));
+    this.scene.add(new AmbientLight(0x404040, 0.13));
 
     this.flashLight = new Flashlight({ camera: this.camera });
 
