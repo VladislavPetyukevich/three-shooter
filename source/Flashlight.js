@@ -16,7 +16,7 @@ export default class Flashlight {
 
     this.spotLight = new SpotLight(0xffffff, 0.5, 150);
     this.swithLight();
-    this.spotLight.angle = 0.5;
+    this.spotLight.angle = 0.7;
     this.spotLight.decay = 2;
     this.spotLight.penumbra = 0.1;
     this.spotLight.distance = 200;
