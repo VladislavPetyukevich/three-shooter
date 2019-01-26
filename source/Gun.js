@@ -1,6 +1,8 @@
+import { Mesh, SphereGeometry, MeshBasicMaterial } from 'three';
+
 export default class Gun {
   constructor(props) {
-    this.playerCamera = props.camera;
+    this.playerControls = props.controls;
     this.playerscene = props.scene;
 
     window.addEventListener('mousedown', () => {
@@ -11,6 +13,11 @@ export default class Gun {
   }
 
   shoot = () => {
-    console.log('shoot');
+    const bullet = new Mesh(
+      new SphereGeometry(0.2, 8, 8),
+      new MeshBasicMaterial({ color: 'red' })
+    );
+    bullet.position.copy(this.playerControls.getObject().position);
+    this.playerscene.add(bullet);
   }
 }

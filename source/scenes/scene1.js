@@ -38,7 +38,7 @@ class Scene1 {
 
     this.flashLight = new Flashlight({ camera: this.camera });
 
-    this.gun = new Gun({ camera: this.camera, scene: this.scene});
+    this.gun = new Gun({ controls: this.controls, scene: this.scene});
 
     this.testWall = new Mesh(
       new BoxGeometry(20, 20, 20),
