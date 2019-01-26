@@ -17,6 +17,7 @@ import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
 import Enemy from '../Enemy';
 import Flashlight from '../Flashlight';
+import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
 
 const textureLoader = new TextureLoader();
@@ -36,6 +37,8 @@ class Scene1 {
     this.scene.add(new AmbientLight(0x404040, 0.13));
 
     this.flashLight = new Flashlight({ camera: this.camera });
+
+    this.gun = new Gun({ camera: this.camera, scene: this.scene});
 
     this.testWall = new Mesh(
       new BoxGeometry(20, 20, 20),
