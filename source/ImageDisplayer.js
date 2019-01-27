@@ -21,10 +21,7 @@ class ImageDisplayer {
 
   remove(imageId) {
     var image = this.scene.getObjectByName(imageId);
-    console.log('image: ', image);
-    console.log('this.scene: ', this.scene);
     this.scene.remove(image);
-    console.log('this.scene: ', this.scene);
   }
 }
 
