@@ -90,15 +90,7 @@ class Scene1 {
     this.controls.update(delta);
     this.enemy.update();
     this.flashLight.update();
-    this.scene.children.forEach(child => {
-      if (child instanceof Bullet) {
-        if (child.lifeTimeRemaining <= 0) {
-          this.scene.remove(child);
-        } else {
-          child.update(delta);
-        }
-      }
-    });
+    this.gun.update(delta);
   }
 }
 
