@@ -92,7 +92,11 @@ class Scene1 {
     this.flashLight.update();
     this.scene.children.forEach(child => {
       if (child instanceof Bullet) {
-        child.update(delta);
+        if (child.lifeTimeRemaining <= 0) {
+          this.scene.remove(child);
+        } else {
+          child.update(delta);
+        }
       }
     });
   }
