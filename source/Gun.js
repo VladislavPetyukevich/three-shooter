@@ -1,4 +1,4 @@
-import { Mesh, SphereGeometry, MeshBasicMaterial } from 'three';
+import Bullet from './Bullet';
 
 export default class Gun {
   constructor(props) {
@@ -13,10 +13,7 @@ export default class Gun {
   }
 
   shoot = () => {
-    const bullet = new Mesh(
-      new SphereGeometry(0.2, 8, 8),
-      new MeshBasicMaterial({ color: 'red' })
-    );
+    const bullet = new Bullet();
     bullet.position.copy(this.playerControls.getObject().position);
     this.playerscene.add(bullet);
   }
