@@ -19,6 +19,7 @@ import Enemy from '../Enemy';
 import Flashlight from '../Flashlight';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
+import Bullet from '../Bullet';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -89,6 +90,11 @@ class Scene1 {
     this.controls.update(delta);
     this.enemy.update();
     this.flashLight.update();
+    this.scene.children.forEach(child => {
+      if (child instanceof Bullet) {
+        child.update(delta);
+      }
+    });
   }
 }
 
