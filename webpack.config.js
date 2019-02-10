@@ -8,6 +8,7 @@ const PATHS = {
 };
 
 const developmentConfig = {
+  devtool: 'eval',
   devServer: {
     contentBase: PATHS.build,
     port: 8080,
