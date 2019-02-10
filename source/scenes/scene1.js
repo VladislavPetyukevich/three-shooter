@@ -1,4 +1,4 @@
-import { 
+import {
   Scene,
   PerspectiveCamera,
   BoxGeometry,
@@ -8,6 +8,14 @@ import {
   AmbientLight,
   TextureLoader
 } from 'three';
+import {
+  World,
+  GSSolver,
+  SplitSolver,
+  NaiveBroadphase,
+  Material,
+  ContactMaterial
+} from 'cannon';
 import loadModel from '../loadModel';
 import PlayerControls from '../PayerControls';
 import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
@@ -26,6 +34,30 @@ const testScreenTexture = textureLoader.load(testScreen);
 
 class Scene1 {
   constructor(props) {
+    this.world = new World();
+    this.world.quatNormalizeSkip = 0;
+    this.world.quatNormalizeFast = false;
+    this.solver = new GSSolver();
+
+    this.world.defaultContactMaterial.contactEquationStiffness = 1e9;
+    this.world.defaultContactMaterial.contactEquationRelaxation = 4;
+
+    this.solver.iterations = 7;
+    this.solver.tolerance = 0.1;
+    this.world.solver = new SplitSolver(this.solver);
+    this.world.gravity.set(0, -20, 0);
+    this.world.broadphase = new NaiveBroadphase();
+
+    // Create a slippery material (friction coefficient = 0.0)
+    var physicsMaterial = new Material("slipperyMaterial");
+    var physicsContactMaterial = new ContactMaterial(physicsMaterial,
+      physicsMaterial,
+      0.0, // friction coefficient
+      0.3  // restitution
+    );
+    // We must add the contact materials to the world
+    this.world.addContactMaterial(physicsContactMaterial);
+
     this.scene = new Scene();
 
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
@@ -39,7 +71,7 @@ class Scene1 {
 
     this.flashLight = new Flashlight({ camera: this.camera });
 
-    this.gun = new Gun({ controls: this.controls, scene: this.scene});
+    this.gun = new Gun({ controls: this.controls, scene: this.scene });
 
     this.testWall = new Mesh(
       new BoxGeometry(20, 20, 20),
@@ -66,13 +98,13 @@ class Scene1 {
       scene: this.scene,
       playerCamera: this.controls.getObject()
     });
-    this.enemy.getObject().scale.set(0.2,0.35, 1);
+    this.enemy.getObject().scale.set(0.2, 0.35, 1);
     this.enemy.getObject().position.set(5, 8, -35);
 
     this.testImageId = undefined;
 
     loadModel(testKitchen).then(model => {
-      model.scale.set(6,6,6);
+      model.scale.set(6, 6, 6);
       model.position.set(-10, 0, -15);
       this.scene.add(model);
     })
@@ -83,7 +115,7 @@ class Scene1 {
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
   update(delta) {
-    if(this.controls.getObject().position.z < -10 && !this.testImageId) {
+    if (this.controls.getObject().position.z < -10 && !this.testImageId) {
       this.showTestImage();
       setTimeout(this.hideTestImage, 40);
     }
@@ -91,6 +123,7 @@ class Scene1 {
     this.enemy.update();
     this.flashLight.update();
     this.gun.update(delta);
+    this.world.step(delta);
   }
 }
 
