@@ -33,6 +33,7 @@ import testScreen from '../assets/test1.png';
 import Enemy from '../Enemy';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
+import PhysicsBox from '../Physics/PhysicsBox';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -117,6 +118,18 @@ class Scene1 {
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
 
+    this.box = new PhysicsBox(
+      new BoxGeometry(2, 2, 2),
+      new MeshPhongMaterial({
+        map: new TextureLoader().load(rustytiles01Texture),
+        normalMap: new TextureLoader().load(rustytiles01NormalMap),
+        bumpMap: new TextureLoader().load(rustytiles01BumpMap)
+      }),
+      new Vec3(2, -3, -5)
+    );
+    this.world.addBody(this.box.body);
+    this.scene.add(this.box.mesh);
+
     this.enemy = new Enemy({
       scene: this.scene,
       playerCamera: this.controls.getObject()
@@ -147,6 +160,7 @@ class Scene1 {
     this.pointLight.position.copy(this.controls.getObject().position);
     this.gun.update(delta);
     this.world.step(delta);
+    this.box.update();
   }
 }
 
