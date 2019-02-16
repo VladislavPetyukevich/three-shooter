@@ -97,19 +97,6 @@ class Scene1 {
 
     this.gun = new Gun({ controls: this.controls, scene: this.scene });
 
-    this.testWall = new Mesh(
-      new BoxGeometry(20, 20, 20),
-      new MeshPhongMaterial({
-        map: new TextureLoader().load(rustytiles01Texture),
-        normalMap: new TextureLoader().load(rustytiles01NormalMap),
-        bumpMap: new TextureLoader().load(rustytiles01BumpMap)
-      })
-    );
-    this.testWall.position.set(20, 10, -20);
-    this.testWall.receiveShadow = true;
-    this.testWall.castShadow = true;
-    this.scene.add(this.testWall);
-
     const floorGeometry = new PlaneGeometry(300, 300, 50, 50);
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
     const floormaterial = new MeshLambertMaterial({ color: 0xdddddd });
