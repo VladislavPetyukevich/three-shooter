@@ -1,21 +1,16 @@
 import PointerLockControls from './PointerLockControls';
-import MovementControls from './MovementControls';
 
 class PayerControls {
-  constructor(camera) {
-    this.pointerLockControls = new PointerLockControls(camera);
-    this.movementControls = new MovementControls(this.pointerLockControls.getObject());
+  constructor(camera, cannonBody) {
+    this.pointerLockControls = new PointerLockControls(camera, cannonBody);
   }
 
-  // work with pointerLockControls
   getObject = () => this.pointerLockControls.getObject();
-  getDirection = () => this.pointerLockControls.getDirection();
 
   getCamera = () => this.pointerLockControls.getObject().children[0].children[0];
 
   set enabled(newvalue) {
     this.pointerLockControls.enabled = newvalue;
-    this.movementControls.enabled = newvalue;
   }
 
   get enabled() {
@@ -23,7 +18,7 @@ class PayerControls {
   }
 
   update (delta) {
-    this.movementControls.update(delta);
+    this.pointerLockControls.update(delta);
   }
 }
 

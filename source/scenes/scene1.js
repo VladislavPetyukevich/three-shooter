@@ -1,12 +1,15 @@
 import {
   Scene,
   PerspectiveCamera,
-  BoxGeometry,
   PlaneGeometry,
-  MeshPhongMaterial,
   Mesh,
   AmbientLight,
-  TextureLoader
+  TextureLoader,
+  PointLight,
+  Matrix4,
+  MeshLambertMaterial,
+  BoxGeometry,
+  MeshPhongMaterial
 } from 'three';
 import {
   World,
@@ -14,7 +17,11 @@ import {
   SplitSolver,
   NaiveBroadphase,
   Material,
-  ContactMaterial
+  ContactMaterial,
+  Sphere,
+  Body,
+  Plane,
+  Vec3
 } from 'cannon';
 import loadModel from '../loadModel';
 import PlayerControls from '../PayerControls';
@@ -24,10 +31,8 @@ import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
 import Enemy from '../Enemy';
-import Flashlight from '../Flashlight';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
-import Bullet from '../Bullet';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -58,18 +63,36 @@ class Scene1 {
     // We must add the contact materials to the world
     this.world.addContactMaterial(physicsContactMaterial);
 
-    this.scene = new Scene();
+    // Create a player body sphere
+    const mass = 10;
+    const radius = 1.3;
+    const sphereShape = new Sphere(radius);
+    const sphereBody = new Body({ mass: mass });
+    sphereBody.addShape(sphereShape);
+    sphereBody.position.set(0, 10, 0);
+    sphereBody.linearDamping = 0.9;
+    this.world.add(sphereBody);
 
+    var groundShape = new Plane();
+    var groundBody = new Body({ mass: 0 });
+    groundBody.addShape(groundShape);
+    groundBody.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), -Math.PI / 2);
+    this.world.add(groundBody);
+
+    this.scene = new Scene();
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
     this.camera.position.set(0, 0, 0);
-    this.controls = new PlayerControls(this.camera);
+    this.controls = new PlayerControls(this.camera, sphereBody);
     this.controls.enabled = true;
     this.scene.add(this.controls.getObject());
 
     // lights
-    this.scene.add(new AmbientLight(0x404040, 0.13));
-
-    this.flashLight = new Flashlight({ camera: this.camera });
+    this.scene.add(new AmbientLight(0x404040, 0.2));
+    this.pointLight = new PointLight(0xffffff, 50, 50);
+    this.pointLight.castShadow = true;
+    this.pointLight.shadow.camera.near = 0.1;
+    this.pointLight.shadow.camera.far = 25;
+    this.scene.add(this.pointLight);
 
     this.gun = new Gun({ controls: this.controls, scene: this.scene });
 
@@ -86,13 +109,13 @@ class Scene1 {
     this.testWall.castShadow = true;
     this.scene.add(this.testWall);
 
-    this.floor = new Mesh(
-      new PlaneGeometry(100, 100),
-      new MeshPhongMaterial({ color: 'white' })
-    );
-    this.floor.receiveShadow = true;
-    this.floor.rotation.x -= Math.PI / 2;
-    this.scene.add(this.floor);
+    const floorGeometry = new PlaneGeometry(300, 300, 50, 50);
+    floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
+    const floormaterial = new MeshLambertMaterial({ color: 0xdddddd });
+    const floormesh = new Mesh(floorGeometry, floormaterial);
+    floormesh.castShadow = true;
+    floormesh.receiveShadow = true;
+    this.scene.add(floormesh);
 
     this.enemy = new Enemy({
       scene: this.scene,
@@ -121,7 +144,7 @@ class Scene1 {
     }
     this.controls.update(delta);
     this.enemy.update();
-    this.flashLight.update();
+    this.pointLight.position.copy(this.controls.getObject().position);
     this.gun.update(delta);
     this.world.step(delta);
   }
