@@ -9,7 +9,8 @@ import {
   Matrix4,
   MeshLambertMaterial,
   BoxGeometry,
-  MeshPhongMaterial
+  MeshPhongMaterial,
+  SphereGeometry
 } from 'three';
 import {
   World,
@@ -34,6 +35,7 @@ import Enemy from '../Enemy';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
+import PhysicsBall from '../Physics/PhysicsBall';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -117,6 +119,14 @@ class Scene1 {
     this.world.addBody(this.box.body);
     this.scene.add(this.box.mesh);
 
+    this.ball = new PhysicsBall(
+      new SphereGeometry(1, 32, 32),
+      new MeshPhongMaterial({ color: 'red' }),
+      new Vec3(2, -5, -5)
+    );
+    this.world.addBody(this.ball.body);
+    this.scene.add(this.ball.mesh);
+
     this.enemy = new Enemy({
       scene: this.scene,
       playerCamera: this.controls.getObject()
@@ -148,6 +158,7 @@ class Scene1 {
     this.gun.update(delta);
     this.world.step(delta);
     this.box.update();
+    this.ball.update();
   }
 }
 
