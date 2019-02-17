@@ -7,6 +7,8 @@ class PayerControls {
 
   getObject = () => this.pointerLockControls.getObject();
 
+  getCannonBody = () => this.pointerLockControls.getCannonBody();
+
   getCamera = () => this.pointerLockControls.getObject().children[0].children[0];
 
   set enabled(newvalue) {

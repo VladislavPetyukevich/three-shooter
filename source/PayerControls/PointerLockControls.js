@@ -62,6 +62,10 @@ export default class PointerLockControls {
     return this.yawObject;
   };
 
+  getCannonBody() {
+    return this.cannonBody;
+  }
+
   update(delta) {
     this.inputVelocity.set(0, 0, 0);
 
