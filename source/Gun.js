@@ -15,6 +15,7 @@ export default class Gun {
   constructor(props) {
     this.playerControls = props.controls;
     this.playerscene = props.scene;
+    this.playerWorld = props.world;
     this.bullets = [];
 
     window.addEventListener('mousedown', () => {
@@ -26,9 +27,27 @@ export default class Gun {
 
   shoot = () => {
     const shootDirection = getShootDir(this.playerControls.getCamera());
-    const bullet = new Bullet(shootDirection);
-    bullet.position.copy(this.playerControls.getObject().position);
-    this.playerscene.add(bullet);
+    const bulletShapeRadius = 0.3;
+    var shootVelocity = 70;
+    const playerSphere = this.playerControls.getCannonBody();
+    const bulletPositionOffset = playerSphere.shapes[0].radius * 1.02 + bulletShapeRadius;
+    const bulletPosition = new Vector3(
+      playerSphere.position.x + shootDirection.x * bulletPositionOffset,
+      playerSphere.position.y + shootDirection.y * bulletPositionOffset,
+      playerSphere.position.z + shootDirection.z * bulletPositionOffset
+    );
+    const bullet = new Bullet(
+      bulletShapeRadius,
+      bulletPosition,
+      1
+    );
+    bullet.body.velocity.set(
+      shootDirection.x * shootVelocity,
+      shootDirection.y * shootVelocity,
+      shootDirection.z * shootVelocity
+    );
+    this.playerscene.add(bullet.mesh);
+    this.playerWorld.addBody(bullet.body)
     this.bullets.push(bullet);
   }
 
@@ -36,7 +55,7 @@ export default class Gun {
     const bullets = this.bullets;
     for (var i = bullets.length; i--;) {
       const bullet = bullets[i];
-      if (bullet.uuid === uuid) {
+      if (bullet.mesh.uuid === uuid) {
         this.bullets.splice(i, 1);
         return;
       }
@@ -47,8 +66,9 @@ export default class Gun {
     this.bullets.forEach(bullet => bullet.update(delta));
     const bulletToDelete = this.bullets.filter(bullet => bullet.lifeTimeRemaining <= 0);
     bulletToDelete.forEach(bullet => {
-      this.playerscene.remove(bullet);
-      this.deleteBulletByUuid(bullet.uuid);
+      this.playerscene.remove(bullet.mesh);
+      this.playerWorld.remove(bullet.body);
+      this.deleteBulletByUuid(bullet.mesh.uuid);
     });
   }
 }

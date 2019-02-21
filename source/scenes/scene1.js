@@ -97,7 +97,7 @@ class Scene1 {
     this.pointLight.shadow.camera.far = 25;
     this.scene.add(this.pointLight);
 
-    this.gun = new Gun({ controls: this.controls, scene: this.scene });
+    this.gun = new Gun({ controls: this.controls, scene: this.scene, world: this.world });
 
     const floorGeometry = new PlaneGeometry(300, 300, 50, 50);
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
