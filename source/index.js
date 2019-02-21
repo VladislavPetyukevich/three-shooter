@@ -1,10 +1,12 @@
-import { PerspectiveCamera, ReinhardToneMapping, WebGLRenderer, BasicShadowMap } from 'three';
+import { ReinhardToneMapping, WebGLRenderer, BasicShadowMap } from 'three';
 import Scene1 from './scenes/scene1';
 import imageDisplayer from './ImageDisplayer';
+import HUD from './HUD';
 
 class ThreeShooter {
   constructor(props) {
     this.currScene = new Scene1(props);
+    this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
 
@@ -30,6 +32,7 @@ class ThreeShooter {
       this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
       this.currScene.camera.updateProjectionMatrix();
       this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
+      this.hud = new HUD();
     });
   }
 
@@ -42,6 +45,7 @@ class ThreeShooter {
     this.currScene.update(delta);
     this.renderer.render(this.currScene.scene, this.currScene.camera);
     this.renderer.clearDepth();
+    this.renderer.render(this.hud.scene, this.hud.camera);
     this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
     this.prevTime = time;
   }
