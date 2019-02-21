@@ -10,10 +10,10 @@ class ImageDisplayer {
     this.camera = new OrthographicCamera(-this.width, this.width, this.height, -this.height, - 500, 1000);
   }
 
-  add(texture) {
+  add(texture, width = 2, height = 2) {
     const material = new SpriteMaterial({ map: texture });
     let sprite = new Sprite(material);
-    sprite.scale.set(this.width * 2, this.height * 2);
+    sprite.scale.set(this.width * width, this.height * height);
     sprite.name = ++currentId;
     this.scene.add(sprite);
     return currentId;
