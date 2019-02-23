@@ -90,8 +90,8 @@ class Scene1 {
     this.scene.add(this.controls.getObject());
 
     // lights
-    this.scene.add(new AmbientLight(0x404040, 0.2));
-    this.pointLight = new PointLight(0xffffff, 50, 50);
+    this.scene.add(new AmbientLight(0x404040, 5));
+    this.pointLight = new PointLight(0xffffff, 50, 100);
     this.pointLight.castShadow = true;
     this.pointLight.shadow.camera.near = 0.1;
     this.pointLight.shadow.camera.far = 25;
@@ -101,7 +101,7 @@ class Scene1 {
 
     const floorGeometry = new PlaneGeometry(300, 300, 50, 50);
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
-    const floormaterial = new MeshLambertMaterial({ color: 0xdddddd });
+    const floormaterial = new MeshPhongMaterial({ color: 'white' });
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.castShadow = true;
     floormesh.receiveShadow = true;
