@@ -131,8 +131,8 @@ class Scene1 {
       scene: this.scene,
       playerCamera: this.controls.getObject()
     });
-    this.enemy.getObject().scale.set(0.2, 0.35, 1);
-    this.enemy.getObject().position.set(5, 8, -35);
+    this.enemy.getObject().scale.set(3, 3, 3);
+    this.enemy.getObject().position.set(0, 1.5, -15);
 
     this.testImageId = undefined;
 

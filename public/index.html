@@ -2,51 +2,58 @@
 <html>
 
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Three Shooter</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" media="screen" href="styles.css" />
-	<script src="bundle.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Three Shooter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="styles.css" />
+  <script src="bundle.js"></script>
 </head>
 
 <body>
-	<div id="blocker">
-		<div id="instructions">
+  <div id="blocker">
+    <div id="instructions">
       <span style="font-size:40px; color: red;">WARNING</span>
-      <br/>
+      <br />
       <span>This video game contains fast flashing images</span>
-      <br/><br/>
+      <br /><br />
       <span style="font-size:25px">Click to play</span>
-			<br /> (W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)
-		</div>
-	</div>
-	<div id="render-container" />
+      <br /> (W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)
+      <br />
+      <span>
+        Golem art by graphic artist Stephen "Redshrike" Challener, contributed by William.Thompsonj
+        <a href="https://opengameart.org/content/lpc-golem">
+          link
+        </a>
+      </span>
+    </div>
+  </div>
+  <div id="render-container" />
 
-	<script type="text/javascript">
-		var blocker = document.getElementById('blocker');
-		var instructions = document.getElementById('instructions');
-		var renderContainer = document.getElementById('render-container');
+  <script type="text/javascript">
+    var blocker = document.getElementById('blocker');
+    var instructions = document.getElementById('instructions');
+    var renderContainer = document.getElementById('render-container');
 
-		var threeShooter = new ThreeShooter({
-			renderContainer: renderContainer,
-			renderWidth: renderContainer.offsetWidth,
-			renderHeight: renderContainer.offsetHeight
-		});
+    var threeShooter = new ThreeShooter({
+      renderContainer: renderContainer,
+      renderWidth: renderContainer.offsetWidth,
+      renderHeight: renderContainer.offsetHeight
+    });
 
-		instructions.addEventListener('click', function (event) {
-			instructions.style.display = 'none';
-			blocker.style.display = 'none';
-			renderContainer.requestPointerLock();
-		});
+    instructions.addEventListener('click', function (event) {
+      instructions.style.display = 'none';
+      blocker.style.display = 'none';
+      renderContainer.requestPointerLock();
+    });
 
-		document.addEventListener('pointerlockchange', function (event) {
-			if (document.pointerLockElement != renderContainer) {
-				blocker.style.display = 'block';
-				instructions.style.display = '';
-			}
-		});
-	</script>
+    document.addEventListener('pointerlockchange', function (event) {
+      if (document.pointerLockElement != renderContainer) {
+        blocker.style.display = 'block';
+        instructions.style.display = '';
+      }
+    });
+  </script>
 </body>
 
 </html>

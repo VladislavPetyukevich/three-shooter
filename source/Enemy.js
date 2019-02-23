@@ -1,5 +1,5 @@
 import { TextureLoader, PlaneGeometry, MeshLambertMaterial, Mesh } from 'three';
-import enemyTexture from './assets/enemy.png';
+import enemyTexture from './assets/golem.png';
 
 const textureLoader = new TextureLoader();
 
@@ -8,7 +8,7 @@ export default class Enemy {
     this.playerCamera = props.playerCamera;
 
     const spriteMap = textureLoader.load(enemyTexture);
-    const geometry = new PlaneGeometry(50, 50, 10, 10);
+    const geometry = new PlaneGeometry(1, 1, 1, 1);
 
     const material = new MeshLambertMaterial({
         map: spriteMap,
@@ -17,7 +17,6 @@ export default class Enemy {
     this.enemy = new Mesh(geometry, material);
     this.enemy.receiveShadow = true;
     this.enemy.castShadow = true;
-    this.enemy.scale.set(0.2,0.35, 1);
     props.scene.add(this.enemy);
   }
 
