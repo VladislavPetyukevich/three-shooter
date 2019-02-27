@@ -129,10 +129,11 @@ class Scene1 {
 
     this.enemy = new Enemy({
       scene: this.scene,
-      playerCamera: this.controls.getObject()
+      playerCamera: this.controls.getObject(),
+      position: new Vec3(0, 1.5, -15)
     });
-    this.enemy.getObject().scale.set(3, 3, 3);
-    this.enemy.getObject().position.set(0, 1.5, -15);
+    this.scene.add(this.enemy.getObject().mesh);
+    this.world.addBody(this.enemy.getObject().body);
 
     this.testImageId = undefined;
 
