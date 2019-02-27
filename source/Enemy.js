@@ -9,7 +9,7 @@ export default class Enemy {
     this.playerCamera = props.playerCamera;
 
     const spriteMap = textureLoader.load(enemyTexture);
-    const geometry = new BoxGeometry(1, 1, 1);
+    const geometry = new BoxGeometry(3, 3, 0.1);
 
     const material = new MeshLambertMaterial({
       map: spriteMap
