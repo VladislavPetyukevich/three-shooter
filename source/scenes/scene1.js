@@ -129,8 +129,8 @@ class Scene1 {
 
     this.enemy = new Enemy({
       scene: this.scene,
-      playerCamera: this.controls.getObject(),
-      position: new Vec3(0, 1.5, -15)
+      playerBody: this.controls.getCannonBody(),
+      position: new Vec3(0, 1.5, -50)
     });
     this.scene.add(this.enemy.getObject().mesh);
     this.world.addBody(this.enemy.getObject().body);

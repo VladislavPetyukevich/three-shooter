@@ -1,4 +1,5 @@
 import { TextureLoader, MeshLambertMaterial, BoxGeometry, Vector3 } from 'three';
+import { Vec3 } from 'cannon';
 import PhysicsBox from './Physics/PhysicsBox';
 import enemyTexture from './assets/golem.png';
 
@@ -6,7 +7,8 @@ const textureLoader = new TextureLoader();
 
 export default class Enemy {
   constructor(props) {
-    this.playerCamera = props.playerCamera;
+    this.playerBody = props.playerBody;
+    this.walkSpeed = 10;
 
     const spriteMap = textureLoader.load(enemyTexture);
     const geometry = new BoxGeometry(3, 3, 0.1);
@@ -26,10 +28,13 @@ export default class Enemy {
   getObject = () => this.enemy;
 
   update() {
+    const direction = new Vec3();
+    this.playerBody.position.vsub(this.enemy.body.position, direction);
+    direction.y = 0;
+    direction.normalize();
+    const forward = new Vec3(0, 0, 1);
+    this.enemy.body.quaternion.setFromVectors(forward, direction);
+    direction.mult(this.walkSpeed, this.enemy.body.velocity);
     this.enemy.update();
-    this.enemy.body.quaternion.setFromAxisAngle(
-      new Vector3(0, 1, 0),
-      this.playerCamera.rotation.y
-    )
   }
 }
