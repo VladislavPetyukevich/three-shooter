@@ -12,6 +12,11 @@ export default class Bullet extends PhysicsBall {
       mass
     );
     this.body.isBullet = true;
+    this.body.addEventListener('collide', event => {
+      if (event.body.isEnemy) {
+        this.lifeTimeRemaining = 0;
+      }
+    });
     this.lifeTimeRemaining = MAX_LIFE_TIME;
   }
 
