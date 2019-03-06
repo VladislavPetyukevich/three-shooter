@@ -11,6 +11,7 @@ export default class Bullet extends PhysicsBall {
       position,
       mass
     );
+    this.body.isBullet = true;
     this.lifeTimeRemaining = MAX_LIFE_TIME;
   }
 
