@@ -31,7 +31,8 @@ import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
-import Enemy from '../Enemy';
+import Enemy from '../Enemies/Enemy';
+import EnemyContainer from '../Enemies/EnemiesContainer';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
@@ -89,6 +90,8 @@ class Scene1 {
     this.controls.enabled = true;
     this.scene.add(this.controls.getObject());
 
+    this.enemyContainer = new EnemyContainer(this.scene, this.world);
+
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
     this.pointLight = new PointLight(0xffffff, 50, 100);
@@ -127,13 +130,13 @@ class Scene1 {
     this.world.addBody(this.ball.body);
     this.scene.add(this.ball.mesh);
 
-    this.enemy = new Enemy({
+    this.enemyContainer.add(new Enemy({
       scene: this.scene,
       playerBody: this.controls.getCannonBody(),
+      playerScene: this.scene,
+      playerWorld: this.world,
       position: new Vec3(0, 1.5, -50)
-    });
-    this.scene.add(this.enemy.getObject().mesh);
-    this.world.addBody(this.enemy.getObject().body);
+    }));
 
     this.testImageId = undefined;
 
@@ -154,12 +157,12 @@ class Scene1 {
       setTimeout(this.hideTestImage, 40);
     }
     this.controls.update(delta);
-    this.enemy.update();
     this.pointLight.position.copy(this.controls.getObject().position);
     this.gun.update(delta);
     this.world.step(delta);
     this.box.update();
     this.ball.update();
+    this.enemyContainer.update();
   }
 }
 

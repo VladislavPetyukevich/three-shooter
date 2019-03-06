@@ -1,7 +1,7 @@
-import { TextureLoader, MeshLambertMaterial, BoxGeometry, Vector3 } from 'three';
+import { TextureLoader, MeshLambertMaterial, Quaternion, BoxGeometry, Vector3, Euler } from 'three';
 import { Vec3 } from 'cannon';
-import PhysicsBox from './Physics/PhysicsBox';
-import enemyTexture from './assets/golem.png';
+import PhysicsBox from '../Physics/PhysicsBox';
+import enemyTexture from '../assets/golem.png';
 
 const textureLoader = new TextureLoader();
 
@@ -11,7 +11,7 @@ export default class Enemy {
     this.walkSpeed = 10;
 
     const spriteMap = textureLoader.load(enemyTexture);
-    const geometry = new BoxGeometry(3, 3, 0.1);
+    const geometry = new BoxGeometry(3, 3, 1);
 
     const material = new MeshLambertMaterial({
       map: spriteMap
@@ -22,7 +22,12 @@ export default class Enemy {
       [null, null, null, null, material],
       props.position
     );
+    this.enemy.body.collisionResponse = true;
+    this.enemy.body._hp = 1;
     this.enemy.mesh.receiveShadow = true;
+    this.inputVelocity = new Vector3();
+    this.euler = new Euler();
+    this.quat = new Quaternion();
   }
 
   getObject = () => this.enemy;
