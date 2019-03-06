@@ -24,6 +24,7 @@ export default class Enemy {
     );
     this.enemy.body.collisionResponse = true;
     this.enemy.body._hp = 1;
+    this.enemy.body.isEnemy = true;
     this.enemy.mesh.receiveShadow = true;
     this.inputVelocity = new Vector3();
     this.euler = new Euler();
