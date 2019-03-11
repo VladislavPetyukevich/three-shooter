@@ -18,7 +18,7 @@ export default class Gun {
     this.playerWorld = props.world;
     this.bullets = [];
     this.isShoots = false;
-    this.shootInterval = 0.3;
+    this.shootInterval = props.shootInterval;
     this.lastShotInterval = 0;
 
     window.addEventListener('mousedown', () => {
