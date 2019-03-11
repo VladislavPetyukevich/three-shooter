@@ -17,10 +17,21 @@ export default class Gun {
     this.playerscene = props.scene;
     this.playerWorld = props.world;
     this.bullets = [];
+    this.isShoots = false;
+    this.shootInterval = 0.3;
+    this.lastShotInterval = 0;
 
     window.addEventListener('mousedown', () => {
       if (event.which === 1) {
+        this.isShoots = true;
         this.shoot();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (event.which === 1) {
+        this.isShoots = false;
+        this.lastShotInterval = 0;
       }
     });
   }
@@ -63,6 +74,13 @@ export default class Gun {
   }
 
   update(delta) {
+    if (this.isShoots) {
+      this.lastShotInterval += delta;
+      if (this.lastShotInterval >= this.shootInterval) {
+        this.lastShotInterval -= this.shootInterval;
+        this.shoot();
+      }
+    }
     this.bullets.forEach(bullet => bullet.update(delta));
     const bulletToDelete = this.bullets.filter(bullet => bullet.lifeTimeRemaining <= 0);
     bulletToDelete.forEach(bullet => {
