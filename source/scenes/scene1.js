@@ -32,7 +32,7 @@ import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
 import Enemy from '../Enemies/Enemy';
-import EnemyContainer, { EVENT_TYPES } from '../Enemies/EnemiesContainer';
+import EnemiesContainer, { EVENT_TYPES } from '../Enemies/EnemiesContainer';
 import EventChannel from '../EventChannel';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
@@ -91,7 +91,7 @@ class Scene1 {
     this.controls.enabled = true;
     this.scene.add(this.controls.getObject());
 
-    this.enemyContainer = new EnemyContainer(this.scene, this.world);
+    this.enemiesContainer = new EnemiesContainer(this.scene, this.world);
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     // lights
@@ -155,7 +155,7 @@ class Scene1 {
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
   spawnEnemy() {
-    this.enemyContainer.add(new Enemy({
+    this.enemiesContainer.add(new Enemy({
       scene: this.scene,
       playerBody: this.controls.getCannonBody(),
       playerScene: this.scene,
@@ -183,7 +183,7 @@ class Scene1 {
     this.world.step(delta);
     this.box.update();
     this.ball.update();
-    this.enemyContainer.update();
+    this.enemiesContainer.update();
   }
 }
 

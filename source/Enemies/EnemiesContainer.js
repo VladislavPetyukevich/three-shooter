@@ -4,7 +4,7 @@ export const EVENT_TYPES = {
   DELETE_ENEMY: 'ENEMY_CONTAINER_DELETE_ENEMY'
 };
 
-export default class EnemyContainer {
+export default class EnemiesContainer {
   constructor(scene, world) {
     this.scene = scene;
     this.world = world;
