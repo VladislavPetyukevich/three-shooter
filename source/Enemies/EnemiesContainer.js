@@ -1,3 +1,9 @@
+import EventChannel from '../EventChannel';
+
+export const EVENT_TYPES = {
+  DELETE_ENEMY: 'ENEMY_CONTAINER_DELETE_ENEMY'
+};
+
 export default class EnemyContainer {
   constructor(scene, world) {
     this.scene = scene;
@@ -22,6 +28,7 @@ export default class EnemyContainer {
       const enemy = enemies[i];
       if (enemy.mesh.uuid === uuid) {
         this.enemies.splice(i, 1);
+        EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, enemy);
         return;
       }
     }

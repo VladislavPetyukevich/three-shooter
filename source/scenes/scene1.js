@@ -32,7 +32,8 @@ import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
 import Enemy from '../Enemies/Enemy';
-import EnemyContainer from '../Enemies/EnemiesContainer';
+import EnemyContainer, { EVENT_TYPES } from '../Enemies/EnemiesContainer';
+import EventChannel from '../EventChannel';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
@@ -91,6 +92,7 @@ class Scene1 {
     this.scene.add(this.controls.getObject());
 
     this.enemyContainer = new EnemyContainer(this.scene, this.world);
+    EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
@@ -137,13 +139,7 @@ class Scene1 {
     this.world.addBody(this.ball.body);
     this.scene.add(this.ball.mesh);
 
-    this.enemyContainer.add(new Enemy({
-      scene: this.scene,
-      playerBody: this.controls.getCannonBody(),
-      playerScene: this.scene,
-      playerWorld: this.world,
-      position: new Vec3(0, 1.5, -50)
-    }));
+    this.spawnEnemy();
 
     this.testImageId = undefined;
 
@@ -157,6 +153,24 @@ class Scene1 {
   showTestImage = () => this.testImageId = imageDisplayer.add(testScreenTexture);
 
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
+
+  spawnEnemy() {
+    this.enemyContainer.add(new Enemy({
+      scene: this.scene,
+      playerBody: this.controls.getCannonBody(),
+      playerScene: this.scene,
+      playerWorld: this.world,
+      position: new Vec3(0, 1.5, -50)
+    }));
+  }
+
+  enemiesEventsSubscriber = (eventType, targetEnemy) => {
+    switch (eventType) {
+      case EVENT_TYPES.DELETE_ENEMY:
+        this.spawnEnemy();
+        break;
+    }
+  }
 
   update(delta) {
     if (this.controls.getObject().position.z < -10 && !this.testImageId) {
