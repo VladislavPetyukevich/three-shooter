@@ -139,7 +139,7 @@ class Scene1 {
     this.world.addBody(this.ball.body);
     this.scene.add(this.ball.mesh);
 
-    this.spawnEnemy();
+    this.spawnEnemies();
 
     this.testImageId = undefined;
 
@@ -154,20 +154,31 @@ class Scene1 {
 
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
-  spawnEnemy() {
-    this.enemiesContainer.add(new Enemy({
-      scene: this.scene,
-      playerBody: this.controls.getCannonBody(),
-      playerScene: this.scene,
-      playerWorld: this.world,
-      position: new Vec3(0, 1.5, -50)
-    }));
+  spawnEnemies() {
+    const angleStep = 45;
+    const maxAngle = 360;
+    const radius = 50;
+    for (let angle = 0; angle < maxAngle; angle += angleStep) {
+      const angleRadians = angle * Math.PI / 180;
+      const x = Math.cos(angleRadians) * radius;
+      const y = Math.sin(angleRadians) * radius;
+
+      this.enemiesContainer.add(new Enemy({
+        scene: this.scene,
+        playerBody: this.controls.getCannonBody(),
+        playerScene: this.scene,
+        playerWorld: this.world,
+        position: new Vec3(x, 1.5, y)
+      }));
+    }
   }
 
   enemiesEventsSubscriber = (eventType, targetEnemy) => {
     switch (eventType) {
       case EVENT_TYPES.DELETE_ENEMY:
-        this.spawnEnemy();
+        if (this.enemiesContainer.enemies.length == 0) {
+          this.spawnEnemies();
+        }
         break;
     }
   }
