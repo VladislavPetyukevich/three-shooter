@@ -1,9 +1,13 @@
 import { TextureLoader, MeshLambertMaterial, Quaternion, BoxGeometry, Vector3, Euler } from 'three';
 import { Vec3 } from 'cannon';
 import PhysicsBox from '../Physics/PhysicsBox';
-import enemyTexture from '../assets/golem.png';
+import TextureAnimator from '../TextureAnimator';
+import enemyTexture from '../assets/golem-walk.png';
 
 const textureLoader = new TextureLoader();
+
+const WALK_TEXTURE_TILES_HORIZONTAL = 2;
+const WALK_TEXTURE_TILES_VERTICAL = 1;
 
 export default class Enemy extends PhysicsBox {
   constructor(props) {
@@ -18,7 +22,14 @@ export default class Enemy extends PhysicsBox {
       [null, null, null, null, material],
       props.position
     );
-  
+
+    this.spriteMapAnimator = new TextureAnimator(
+      spriteMap,
+      WALK_TEXTURE_TILES_HORIZONTAL,
+      WALK_TEXTURE_TILES_VERTICAL,
+      WALK_TEXTURE_TILES_HORIZONTAL + WALK_TEXTURE_TILES_VERTICAL,
+      0.3
+    );
     this.playerBody = props.playerBody;
     this.walkSpeed = 10;
     this.body.collisionResponse = true;
@@ -30,8 +41,9 @@ export default class Enemy extends PhysicsBox {
     this.quat = new Quaternion();
   }
 
-  update() {
+  update(delta) {
     super.update();
+    this.spriteMapAnimator.update(delta);
     const direction = new Vec3();
     this.playerBody.position.vsub(this.body.position, direction);
     direction.y = 0;

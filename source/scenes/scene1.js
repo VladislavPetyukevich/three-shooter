@@ -194,7 +194,7 @@ class Scene1 {
     this.world.step(delta);
     this.box.update();
     this.ball.update();
-    this.enemiesContainer.update();
+    this.enemiesContainer.update(delta);
   }
 }
 

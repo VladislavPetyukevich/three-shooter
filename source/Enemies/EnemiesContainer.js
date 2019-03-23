@@ -34,8 +34,8 @@ export default class EnemiesContainer {
     }
   }
 
-  update() {
-    this.enemies.forEach(enemy => enemy.update());
+  update(delta) {
+    this.enemies.forEach(enemy => enemy.update(delta));
     const enemiesToDelete = this.enemies.filter(enemy => enemy.body._hp <= 0);
     enemiesToDelete.forEach(enemy => {
       this.scene.remove(enemy.mesh);
