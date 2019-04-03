@@ -23,10 +23,10 @@ class ThreeShooter {
     this.renderer.toneMappingExposure = Math.pow(0.68, 5.0);
 
     props.renderContainer.appendChild(this.renderer.domElement);
-    this.currScene.controls.enabled = false;
+    // this.currScene.controls.enabled = false;
     this.update();
     document.addEventListener('pointerlockchange', (event) => {
-      this.currScene.controls.enabled = document.pointerLockElement == props.renderContainer;
+      // this.currScene.controls.enabled = document.pointerLockElement == props.renderContainer;
     });
     window.addEventListener('resize', (event) => {
       this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
