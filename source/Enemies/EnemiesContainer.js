@@ -1,3 +1,4 @@
+import { Vec3 } from 'cannon';
 import EventChannel from '../EventChannel';
 
 export const EVENT_TYPES = {
@@ -12,21 +13,21 @@ export default class EnemiesContainer {
   }
 
   add(enemy) {
-    enemy.body.addEventListener("collide", event => {
+    enemy.solidBody.body.addEventListener("collide", event => {
       if (event.body.isBullet) {
         event.target._hp--;
       }
     });
     this.enemies.push(enemy);
-    this.world.addBody(enemy.body);
-    this.scene.add(enemy.mesh);
+    this.world.addBody(enemy.solidBody.body);
+    this.scene.add(enemy.solidBody.mesh);
   }
 
   deleteEnemyByUuid(uuid) {
     const enemies = this.enemies;
     for (var i = enemies.length; i--;) {
       const enemy = enemies[i];
-      if (enemy.mesh.uuid === uuid) {
+      if (enemy.solidBody.mesh.uuid === uuid) {
         this.enemies.splice(i, 1);
         EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, enemy);
         return;
@@ -36,11 +37,11 @@ export default class EnemiesContainer {
 
   update(delta) {
     this.enemies.forEach(enemy => enemy.update(delta));
-    const enemiesToDelete = this.enemies.filter(enemy => enemy.body._hp <= 0);
+    const enemiesToDelete = this.enemies.filter(enemy => enemy.solidBody.body._hp <= 0);
     enemiesToDelete.forEach(enemy => {
-      this.scene.remove(enemy.mesh);
-      this.world.remove(enemy.body);
-      this.deleteEnemyByUuid(enemy.mesh.uuid);
+      this.scene.remove(enemy.solidBody.mesh);
+      this.world.remove(enemy.solidBody.body);
+      this.deleteEnemyByUuid(enemy.solidBody.mesh.uuid);
     });
   }
 }

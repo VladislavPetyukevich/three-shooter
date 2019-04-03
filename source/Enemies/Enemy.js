@@ -1,5 +1,6 @@
 import { TextureLoader, MeshLambertMaterial, Quaternion, BoxGeometry, Vector3, Euler } from 'three';
 import { Vec3 } from 'cannon';
+import Actor from '../Actor';
 import PhysicsBox from '../Physics/PhysicsBox';
 import TextureAnimator from '../TextureAnimator';
 import enemyTexture from '../assets/golem-walk.png';
@@ -8,8 +9,9 @@ const textureLoader = new TextureLoader();
 
 const WALK_TEXTURE_TILES_HORIZONTAL = 2;
 const WALK_TEXTURE_TILES_VERTICAL = 1;
+const WALK_SPEED = 10;
 
-export default class Enemy extends PhysicsBox {
+export default class Enemy extends Actor {
   constructor(props) {
     const spriteMap = textureLoader.load(enemyTexture);
     const geometry = new BoxGeometry(3, 3, 1);
@@ -17,12 +19,17 @@ export default class Enemy extends PhysicsBox {
       map: spriteMap
     });
     material.transparent = true;
-    super(
-      geometry,
-      [null, null, null, null, material],
-      props.position
-    );
+    super({
+      hp: 1,
+      solidBody: new PhysicsBox(
+        geometry,
+        [null, null, null, null, material],
+        props.position
+      ),
+      walkSpeed: WALK_SPEED
+    });
 
+    this.playerBody = props.playerBody;
     this.spriteMapAnimator = new TextureAnimator(
       spriteMap,
       WALK_TEXTURE_TILES_HORIZONTAL,
@@ -30,26 +37,20 @@ export default class Enemy extends PhysicsBox {
       WALK_TEXTURE_TILES_HORIZONTAL + WALK_TEXTURE_TILES_VERTICAL,
       0.3
     );
-    this.playerBody = props.playerBody;
-    this.walkSpeed = 10;
-    this.body.collisionResponse = true;
-    this.body._hp = 1;
-    this.body.isEnemy = true;
-    this.mesh.receiveShadow = true;
-    this.inputVelocity = new Vector3();
-    this.euler = new Euler();
-    this.quat = new Quaternion();
+    this.solidBody.body.collisionResponse = true;
+    this.solidBody.body.isEnemy = true;
+    this.solidBody.mesh.receiveShadow = true;
   }
 
   update(delta) {
-    super.update();
+    super.update(delta);
     this.spriteMapAnimator.update(delta);
     const direction = new Vec3();
-    this.playerBody.position.vsub(this.body.position, direction);
+    this.playerBody.position.vsub(this.solidBody.body.position, direction);
     direction.y = 0;
     direction.normalize();
     const forward = new Vec3(0, 0, 1);
-    this.body.quaternion.setFromVectors(forward, direction);
-    direction.mult(this.walkSpeed, this.body.velocity);
+    this.solidBody.body.quaternion.setFromVectors(forward, direction);
+    direction.mult(WALK_SPEED, this.solidBody.body.velocity);
   }
 }
