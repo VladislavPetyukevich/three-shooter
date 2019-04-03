@@ -1,0 +1,95 @@
+import { Vector3, Object3D, Quaternion, Euler } from 'three';
+import { Vec3 } from 'cannon';
+import keyboard from './PayerControls/Keyboard';
+
+const PI_2 = Math.PI / 2;
+const EYE_Y_POS = 2; // eyes are 2 meters above the ground
+const JUMP_VELOCITY = 20;
+
+export default class ActorСontrolledBehavior {
+  constructor(actor, camera) {
+    this.actor = actor;
+    this.canJump = true;
+    this.pitchObject = new Object3D();
+    this.pitchObject.add(camera);
+    this.yawObject = new Object3D();
+    this.yawObject.position.y = EYE_Y_POS;
+    this.yawObject.add(this.pitchObject);
+    this.quat = new Quaternion();
+
+    // Moves the camera to the Cannon.js object position and adds velocity to the object if the run key is down
+    this.inputVelocity = new Vector3();
+    this.euler = new Euler();
+
+    this.contactNormal = new Vec3(); // Normal in the contact, pointing *out* of whatever the player touched
+    this.upAxis = new Vec3(0, 1, 0);
+    this.actor.solidBody.body.addEventListener("collide", this.handleCollide);
+
+    document.addEventListener('mousemove', this.handleMouseMove, false);
+  }
+
+  handleMouseMove = event => {
+    // if (this.enabled === false) return;
+
+    var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+    var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+    this.yawObject.rotation.y -= movementX * 0.002;
+    this.pitchObject.rotation.x -= movementY * 0.002;
+
+    this.pitchObject.rotation.x = Math.max(- PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
+  }
+
+  handleCollide = event => {
+    const contact = event.contact;
+
+    // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
+    // We do not yet know which one is which! Let's check.
+    if (contact.bi.id == this.actor.solidBody.body.id)  // bi is the player body, flip the contact normal
+      contact.ni.negate(this.contactNormal);
+    else
+      this.contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is
+
+    // If contactNormal.dot(upAxis) is between 0 and 1, we know that the contact normal is somewhat in the up direction.
+    if (this.contactNormal.dot(this.upAxis) > 0.5) // Use a "good" threshold value between 0 and 1 here!
+      this.canJump = true;
+  }
+
+  getObject() {
+    return this.yawObject;
+  };
+
+  update(delta) {
+    this.inputVelocity.set(0, 0, 0);
+  
+    if (keyboard.key[87]) {
+      this.inputVelocity.z = -this.actor.walkSpeed * delta;
+    }
+    if (keyboard.key[83]) {
+      this.inputVelocity.z = this.actor.walkSpeed * delta;
+    }
+    if (keyboard.key[65]) {
+      this.inputVelocity.x = -this.actor.walkSpeed * delta;
+    }
+    if (keyboard.key[68]) {
+      this.inputVelocity.x = this.actor.walkSpeed * delta;
+    }
+    if (this.canJump && keyboard.key[32]) {
+      this.actor.solidBody.body.velocity.y = JUMP_VELOCITY;
+      this.canJump = false;
+    }
+
+    // Convert velocity to world coordinates
+    this.euler.x = this.pitchObject.rotation.x;
+    this.euler.y = this.yawObject.rotation.y;
+    this.euler.order = "XYZ";
+    this.quat.setFromEuler(this.euler);
+    this.inputVelocity.applyQuaternion(this.quat);
+
+    // Add to the object
+    this.actor.solidBody.body.velocity.x += this.inputVelocity.x;
+    this.actor.solidBody.body.velocity.z += this.inputVelocity.z;
+
+    this.yawObject.position.copy(this.actor.solidBody.body.position);
+  }
+}
