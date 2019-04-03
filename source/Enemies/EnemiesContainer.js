@@ -20,7 +20,9 @@ export default class EnemiesContainer {
     });
     this.enemies.push(enemy);
     this.world.addBody(enemy.solidBody.body);
-    this.scene.add(enemy.solidBody.mesh);
+    if (enemy.solidBody.mesh) {
+      this.scene.add(enemy.solidBody.mesh);
+    }
   }
 
   deleteEnemyByUuid(uuid) {
