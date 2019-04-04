@@ -11,8 +11,8 @@ class EventChannel {
     this.subscribers = this.subscribers.filter(ownsubscriber => ownsubscriber !== subscriber);
   }
 
-  onPublish(eventType, target) {
-    this.subscribers.forEach(subscriber => subscriber(eventType, target));
+  onPublish(eventType, payload) {
+    this.subscribers.forEach(subscriber => subscriber(eventType, payload));
   }
 }
 
