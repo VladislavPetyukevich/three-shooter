@@ -9,6 +9,7 @@ class ThreeShooter {
     this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
+    this.enabled = true;
 
     this.renderer = new WebGLRenderer();
     this.renderer.setSize(props.renderWidth, props.renderHeight);
@@ -23,10 +24,10 @@ class ThreeShooter {
     this.renderer.toneMappingExposure = Math.pow(0.68, 5.0);
 
     props.renderContainer.appendChild(this.renderer.domElement);
-    // this.currScene.controls.enabled = false;
     this.update();
     document.addEventListener('pointerlockchange', (event) => {
-      // this.currScene.controls.enabled = document.pointerLockElement == props.renderContainer;
+      this.enabled = document.pointerLockElement === props.renderContainer;
+      this.prevTime = performance.now();
     });
     window.addEventListener('resize', (event) => {
       this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
@@ -36,18 +37,19 @@ class ThreeShooter {
     });
   }
 
-
-  update() {
-    requestAnimationFrame(this.update.bind(this));
-    var time = performance.now();
-    var delta = (time - this.prevTime) / 1000;
-    this.renderer.clear();
-    this.currScene.update(delta);
-    this.renderer.render(this.currScene.scene, this.currScene.camera);
-    this.renderer.clearDepth();
-    this.renderer.render(this.hud.scene, this.hud.camera);
-    this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
-    this.prevTime = time;
+  update = () => {
+    if (this.enabled) {
+      const time = performance.now();
+      const delta = (time - this.prevTime) / 1000;
+      this.renderer.clear();
+      this.currScene.update(delta);
+      this.renderer.render(this.currScene.scene, this.currScene.camera);
+      this.renderer.clearDepth();
+      this.renderer.render(this.hud.scene, this.hud.camera);
+      this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
+      this.prevTime = time;
+    }
+    requestAnimationFrame(this.update);
   }
 }
 
