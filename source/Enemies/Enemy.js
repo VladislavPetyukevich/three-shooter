@@ -1,6 +1,6 @@
 import { TextureLoader, MeshLambertMaterial, Quaternion, BoxGeometry, Vector3, Euler } from 'three';
 import { Vec3 } from 'cannon';
-import Actor from '../Actor';
+import Actor from '../Entities/Actors/Actor';
 import PhysicsBox from '../Physics/PhysicsBox';
 import TextureAnimator from '../TextureAnimator';
 import enemyTexture from '../assets/golem-walk.png';

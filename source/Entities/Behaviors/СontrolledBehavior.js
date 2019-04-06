@@ -1,12 +1,12 @@
 import { Vector3, Object3D, Quaternion, Euler } from 'three';
 import { Vec3 } from 'cannon';
-import keyboard from './PayerControls/Keyboard';
+import keyboard from '../../PayerControls/Keyboard';
 
 const PI_2 = Math.PI / 2;
 const EYE_Y_POS = 2; // eyes are 2 meters above the ground
 const JUMP_VELOCITY = 20;
 
-export default class ActorСontrolledBehavior {
+export default class СontrolledBehavior {
   constructor(actor, camera) {
     this.actor = actor;
     this.canJump = true;
