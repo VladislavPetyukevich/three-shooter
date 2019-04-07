@@ -1,9 +1,8 @@
-import { TextureLoader, MeshLambertMaterial, Quaternion, BoxGeometry, Vector3, Euler } from 'three';
-import { Vec3 } from 'cannon';
-import Actor from '../Entities/Actors/Actor';
-import PhysicsBox from '../Physics/PhysicsBox';
-import TextureAnimator from '../TextureAnimator';
-import enemyTexture from '../assets/golem-walk.png';
+import { TextureLoader, MeshLambertMaterial, BoxGeometry } from 'three';
+import Actor from './Actor';
+import PhysicsBox from '../../Physics/PhysicsBox';
+import TextureAnimator from '../../TextureAnimator';
+import enemyTexture from '../../assets/golem-walk.png';
 
 const textureLoader = new TextureLoader();
 
@@ -12,7 +11,7 @@ const WALK_TEXTURE_TILES_VERTICAL = 1;
 const WALK_SPEED = 10;
 
 export default class Enemy extends Actor {
-  constructor(props) {
+  constructor(playerBody, position = { x: 0, y: 0, z: 0 }) {
     const spriteMap = textureLoader.load(enemyTexture);
     const geometry = new BoxGeometry(3, 3, 1);
     const material = new MeshLambertMaterial({
@@ -24,12 +23,12 @@ export default class Enemy extends Actor {
       solidBody: new PhysicsBox(
         geometry,
         [null, null, null, null, material],
-        props.position
+        position
       ),
       walkSpeed: WALK_SPEED
     });
 
-    this.playerBody = props.playerBody;
+    this.playerBody = playerBody;
     this.spriteMapAnimator = new TextureAnimator(
       spriteMap,
       WALK_TEXTURE_TILES_HORIZONTAL,
@@ -45,12 +44,5 @@ export default class Enemy extends Actor {
   update(delta) {
     super.update(delta);
     this.spriteMapAnimator.update(delta);
-    const direction = new Vec3();
-    this.playerBody.position.vsub(this.solidBody.body.position, direction);
-    direction.y = 0;
-    direction.normalize();
-    const forward = new Vec3(0, 0, 1);
-    this.solidBody.body.quaternion.setFromVectors(forward, direction);
-    direction.mult(WALK_SPEED, this.solidBody.body.velocity);
   }
 }

@@ -7,7 +7,6 @@ import {
   TextureLoader,
   PointLight,
   Matrix4,
-  MeshLambertMaterial,
   BoxGeometry,
   MeshPhongMaterial,
   SphereGeometry
@@ -19,7 +18,6 @@ import {
   NaiveBroadphase,
   Material,
   ContactMaterial,
-  Sphere,
   Body,
   Plane,
   Vec3
@@ -30,7 +28,6 @@ import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
 import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
-import Enemy from '../Enemies/Enemy';
 import EventChannel from '../EventChannel';
 import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
@@ -38,6 +35,7 @@ import PhysicsBox from '../Physics/PhysicsBox';
 import PhysicsBall from '../Physics/PhysicsBall';
 import EntitiesContainer, { EVENT_TYPES } from '../Entities/EntitiesContainer';
 import Player from '../Entities/Player';
+import Enemy from '../Entities/Enemy';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -139,22 +137,19 @@ class Scene1 {
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
   spawnEnemies() {
-    // const angleStep = 45;
-    // const maxAngle = 360;
-    // const radius = 50;
-    // for (let angle = 0; angle < maxAngle; angle += angleStep) {
-    //   const angleRadians = angle * Math.PI / 180;
-    //   const x = Math.cos(angleRadians) * radius;
-    //   const y = Math.sin(angleRadians) * radius;
+    const angleStep = 45;
+    const maxAngle = 360;
+    const radius = 50;
+    for (let angle = 0; angle < maxAngle; angle += angleStep) {
+      const angleRadians = angle * Math.PI / 180;
+      const x = Math.cos(angleRadians) * radius;
+      const y = Math.sin(angleRadians) * radius;
 
-    //   this.entitiesContainer.add(new Enemy({
-    //     scene: this.scene,
-    //     playerBody: this.player.solidBody.body,
-    //     playerScene: this.scene,
-    //     playerWorld: this.world,
-    //     position: new Vec3(x, 1.5, y)
-    //   }));
-    // }
+      this.entitiesContainer.add(new Enemy(
+        this.player.actor.solidBody.body,
+        new Vec3(x, 1.5, y)
+      ));
+    }
   }
 
   enemiesEventsSubscriber = (eventType, targetEnemy) => {
