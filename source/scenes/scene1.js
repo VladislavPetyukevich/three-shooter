@@ -29,7 +29,6 @@ import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
 import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
 import testScreen from '../assets/test1.png';
 import EventChannel from '../EventChannel';
-import Gun from '../Gun';
 import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
 import PhysicsBall from '../Physics/PhysicsBall';
@@ -78,11 +77,10 @@ class Scene1 {
     this.entitiesContainer = new EntitiesContainer(this.scene, this.world);
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
-    this.player = new Player(
-      this.camera,
-      new Vec3(2, -3, -10)
+    this.player = this.entitiesContainer.createEntity(
+      'Player',
+      { camera: this.camera, position: new Vec3(2, -3, -10) }
     );
-    this.entitiesContainer.add(this.player);
     this.scene.add(this.player.behavior.getObject());
 
     // lights
