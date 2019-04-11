@@ -1,5 +1,6 @@
 import EventChannel from '../EventChannel';
 import Player from './Player';
+import Enemy from './Enemy';
 
 export const EVENT_TYPES = {
   DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY'
@@ -16,7 +17,10 @@ export default class EntitiesContainer {
     let newEntity;
     switch (type) {
       case 'Player':
-        newEntity = new Player(params)
+        newEntity = new Player(params);
+        break;
+      case 'Enemy':
+        newEntity = new Enemy(params);
         break;
     }
     this.add(newEntity);

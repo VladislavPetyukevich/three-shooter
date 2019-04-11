@@ -143,10 +143,10 @@ class Scene1 {
       const x = Math.cos(angleRadians) * radius;
       const y = Math.sin(angleRadians) * radius;
 
-      this.entitiesContainer.add(new Enemy(
-        this.player.actor.solidBody.body,
-        new Vec3(x, 1.5, y)
-      ));
+      this.entitiesContainer.createEntity(
+        'Enemy',
+        { playerBody: this.player.actor.solidBody.body, position: new Vec3(x, 1.5, y) }
+      );
     }
   }
 
