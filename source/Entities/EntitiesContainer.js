@@ -1,6 +1,7 @@
 import EventChannel from '../EventChannel';
 import Player from './Player';
 import Enemy from './Enemy';
+import Gun from './Gun';
 
 export const EVENT_TYPES = {
   DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY'
@@ -22,6 +23,9 @@ export default class EntitiesContainer {
       case 'Enemy':
         newEntity = new Enemy(params);
         break;
+      case 'Gun':
+        newEntity = new Gun({ ...params, container: this });
+        break;
     }
     this.add(newEntity);
     return newEntity;
@@ -32,14 +36,22 @@ export default class EntitiesContainer {
     if (solidBody.body) this.world.addBody(solidBody.body);
   }
 
+  addCollideHandler(entitiy) {
+    if (entitiy.actor.solidBody && entitiy.actor.solidBody.body) {
+      entitiy.actor.solidBody.body.addEventListener("collide", event => {
+        if (event.body.isBullet) {
+          event.target._hp--;
+        }
+      });
+    }
+  }
+
   add(entitiy) {
-    entitiy.actor.solidBody.body.addEventListener("collide", event => {
-      if (event.body.isBullet) {
-        event.target._hp--;
-      }
-    });
+    if (entitiy.type === 'creature') {
+      this.addCollideHandler(entitiy);
+      this.addSolidBody(entitiy.actor.solidBody);
+    }
     this.entities.push(entitiy);
-    this.addSolidBody(entitiy.actor.solidBody);
   }
 
   deleteEntitiyByUuid(uuid) {
@@ -56,7 +68,13 @@ export default class EntitiesContainer {
 
   update(delta) {
     this.entities.forEach(entitiy => entitiy.update(delta));
-    const entitiesToDelete = this.entities.filter(entitiy => entitiy.actor.solidBody.body._hp <= 0);
+    const entitiesToDelete = this.entities.filter(entitiy => {
+      if (entitiy.type === 'creature') {
+        entitiy.actor.solidBody.body._hp <= 0
+      }
+    }
+    );
+
     entitiesToDelete.forEach(entitiy => {
       this.scene.remove(entitiy.actor.solidBody.mesh);
       this.world.remove(entitiy.actor.solidBody.body);

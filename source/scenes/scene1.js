@@ -82,7 +82,10 @@ class Scene1 {
       { camera: this.camera, position: new Vec3(2, -3, -10) }
     );
     this.scene.add(this.player.behavior.getObject());
-
+    this.playerGun = this.entitiesContainer.createEntity(
+      'Gun',
+      { holderBody: this.player.actor.solidBody.body }
+    );
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
     this.pointLight = new PointLight(0xffffff, 50, 100);
