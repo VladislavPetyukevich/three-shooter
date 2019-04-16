@@ -2,6 +2,7 @@ import EventChannel from '../EventChannel';
 import Player from './Player';
 import Enemy from './Enemy';
 import Gun from './Gun';
+import Bullet from './Bullet';
 
 export const EVENT_TYPES = {
   DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY'
@@ -26,6 +27,9 @@ export default class EntitiesContainer {
       case 'Gun':
         newEntity = new Gun({ ...params, container: this });
         break;
+      case 'Bullet':
+        newEntity = new Bullet(params);
+        break;
     }
     this.add(newEntity);
     return newEntity;
@@ -49,6 +53,8 @@ export default class EntitiesContainer {
   add(entitiy) {
     if (entitiy.type === 'creature') {
       this.addCollideHandler(entitiy);
+    }
+    if (entitiy.actor) {
       this.addSolidBody(entitiy.actor.solidBody);
     }
     this.entities.push(entitiy);
