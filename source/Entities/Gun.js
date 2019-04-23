@@ -6,6 +6,10 @@ export default class Gun {
     this.behavior = new GunBehavior(props.holderBody, props.container);
   }
 
+  shoot(direction) {
+    this.behavior.shoot(direction);
+  }
+
   update(delta) {
     this.behavior.update(delta);
   }
