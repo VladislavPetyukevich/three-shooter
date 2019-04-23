@@ -8,7 +8,7 @@ const textureLoader = new TextureLoader();
 
 const WALK_TEXTURE_TILES_HORIZONTAL = 2;
 const WALK_TEXTURE_TILES_VERTICAL = 1;
-const WALK_SPEED = 10;
+const WALK_SPEED = 5;
 
 export default class EnemyActor extends Actor {
   constructor(playerBody, position = { x: 0, y: 0, z: 0 }) {
