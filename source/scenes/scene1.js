@@ -140,7 +140,7 @@ class Scene1 {
   spawnEnemies() {
     const angleStep = 45;
     const maxAngle = 360;
-    const radius = 50;
+    const radius = 100;
     for (let angle = 0; angle < maxAngle; angle += angleStep) {
       const angleRadians = angle * Math.PI / 180;
       const x = Math.cos(angleRadians) * radius;
