@@ -22,7 +22,7 @@ export default class EntitiesContainer {
         newEntity = new Player(params);
         break;
       case 'Enemy':
-        newEntity = new Enemy(params);
+        newEntity = new Enemy({ ...params, container: this });
         break;
       case 'Gun':
         newEntity = new Gun({ ...params, container: this });
