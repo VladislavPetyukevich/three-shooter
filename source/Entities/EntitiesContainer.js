@@ -65,12 +65,12 @@ export default class EntitiesContainer {
     this.entities.push(entitiy);
   }
 
-  deleteEntitiyByUuid(uuid) {
+  deleteEntitiyByBodyId(id) {
     const entities = this.entities;
     for (var i = entities.length; i--;) {
       const entitiy = entities[i];
       if (entitiy.type === 'creature') {
-        if (entitiy.actor.solidBody.body.id === uuid) {
+        if (entitiy.actor.solidBody.body.id === id) {
           this.entities.splice(i, 1);
           EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
           return;
@@ -92,7 +92,7 @@ export default class EntitiesContainer {
 
     entitiesToDelete.forEach(entitiy => {
       this.deleteSolidBody(entitiy.actor.solidBody)
-      this.deleteEntitiyByUuid(entitiy.actor.solidBody.body.id);
+      this.deleteEntitiyByBodyId(entitiy.actor.solidBody.body.id);
     });
   }
 }
