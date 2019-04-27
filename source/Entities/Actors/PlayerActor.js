@@ -9,7 +9,7 @@ export default class PlayerActor extends Actor {
     const sphereRadius = 1.3;
     const sphereMass = 10;
     super({
-      hp: 1,
+      hp: 100,
       solidBody: new InvisPhysicsSphere(
         sphereRadius, position, sphereMass, new Vector3(0, 10, 0)
       ),
