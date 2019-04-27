@@ -1,4 +1,4 @@
-import { Vector3, Object3D, Quaternion, Euler } from 'three';
+import { Vector3, Object3D, Quaternion, Euler, Ray } from 'three';
 import { Vec3 } from 'cannon';
 import keyboard from '../../PayerControls/Keyboard';
 
@@ -6,8 +6,18 @@ const PI_2 = Math.PI / 2;
 const EYE_Y_POS = 2; // eyes are 2 meters above the ground
 const JUMP_VELOCITY = 20;
 
+function getShootDir(camera) {
+  const shootDirection = new Vector3();
+  const vector = shootDirection;
+  shootDirection.set(0, 0, 1);
+  vector.unproject(camera);
+  const ray = new Ray(camera.position, vector.sub(camera.position).normalize());
+  shootDirection.copy(ray.direction);
+  return shootDirection;
+}
+
 export default class СontrolledBehavior {
-  constructor(actor, camera) {
+  constructor(actor, camera, container) {
     this.actor = actor;
     this.canJump = true;
     this.pitchObject = new Object3D();
@@ -25,7 +35,13 @@ export default class СontrolledBehavior {
     this.upAxis = new Vec3(0, 1, 0);
     this.actor.solidBody.body.addEventListener("collide", this.handleCollide);
 
+    this.gun = container.createEntity(
+      'Gun',
+      { holderBody: this.actor.solidBody.body }
+    );
+
     document.addEventListener('mousemove', this.handleMouseMove, false);
+    document.addEventListener('click', this.handleShoot, false);
   }
 
   handleMouseMove = event => {
@@ -39,6 +55,11 @@ export default class СontrolledBehavior {
 
     this.pitchObject.rotation.x = Math.max(- PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
   }
+
+  handleShoot = event => {
+    const shootDirection = getShootDir(this.getCamera());
+    this.gun.shoot(shootDirection);
+  };
 
   handleCollide = event => {
     const contact = event.contact;
@@ -59,9 +80,11 @@ export default class СontrolledBehavior {
     return this.yawObject;
   };
 
+  getCamera = () => this.getObject().children[0].children[0];
+
   update(delta) {
     this.inputVelocity.set(0, 0, 0);
-  
+
     if (keyboard.key[87]) {
       this.inputVelocity.z = -this.actor.walkSpeed * delta;
     }

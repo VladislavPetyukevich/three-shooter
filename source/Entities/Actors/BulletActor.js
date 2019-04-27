@@ -19,5 +19,7 @@ export default class BulletActor extends Actor {
       hp: 1,
       solidBody
     });
+
+    this.solidBody.body.isBullet = true;
   }
 }

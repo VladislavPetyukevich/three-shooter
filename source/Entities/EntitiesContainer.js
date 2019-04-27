@@ -19,7 +19,7 @@ export default class EntitiesContainer {
     let newEntity;
     switch (type) {
       case 'Player':
-        newEntity = new Player(params);
+        newEntity = new Player({ ...params, container: this });
         break;
       case 'Enemy':
         newEntity = new Enemy({ ...params, container: this });
@@ -38,6 +38,11 @@ export default class EntitiesContainer {
   addSolidBody(solidBody) {
     if (solidBody.mesh) this.scene.add(solidBody.mesh);
     if (solidBody.body) this.world.addBody(solidBody.body);
+  }
+
+  deleteSolidBody(solidBody) {
+    if (solidBody.mesh) this.scene.remove(solidBody.mesh);
+    if (solidBody.body) this.world.remove(solidBody.body);
   }
 
   addCollideHandler(entitiy) {
@@ -64,10 +69,12 @@ export default class EntitiesContainer {
     const entities = this.entities;
     for (var i = entities.length; i--;) {
       const entitiy = entities[i];
-      if (entitiy.actor.solidBody.mesh.uuid === uuid) {
-        this.entities.splice(i, 1);
-        EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
-        return;
+      if (entitiy.type === 'creature') {
+        if (entitiy.actor.solidBody.body.id === uuid) {
+          this.entities.splice(i, 1);
+          EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
+          return;
+        }
       }
     }
   }
@@ -76,15 +83,16 @@ export default class EntitiesContainer {
     this.entities.forEach(entitiy => entitiy.update(delta));
     const entitiesToDelete = this.entities.filter(entitiy => {
       if (entitiy.type === 'creature') {
-        entitiy.actor.solidBody.body._hp <= 0
+        if (entitiy.actor.solidBody.body._hp <= 0) {
+          return true;
+        }
       }
     }
     );
 
     entitiesToDelete.forEach(entitiy => {
-      this.scene.remove(entitiy.actor.solidBody.mesh);
-      this.world.remove(entitiy.actor.solidBody.body);
-      this.deleteEntitiyByUuid(entitiy.actor.solidBody.mesh.uuid);
+      this.deleteSolidBody(entitiy.actor.solidBody)
+      this.deleteEntitiyByUuid(entitiy.actor.solidBody.body.id);
     });
   }
 }

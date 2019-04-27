@@ -5,7 +5,7 @@ export default class Player {
   constructor(props) {
     this.type = 'creature';
     this.actor = new PlayerActor(props.position);
-    this.behavior = new СontrolledBehavior(this.actor, props.camera);
+    this.behavior = new СontrolledBehavior(this.actor, props.camera, props.container);
   }
 
   update(delta) {
