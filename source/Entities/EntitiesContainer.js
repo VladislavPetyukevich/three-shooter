@@ -15,26 +15,6 @@ export default class EntitiesContainer {
     this.entities = [];
   }
 
-  createEntity(type, params) {
-    let newEntity;
-    switch (type) {
-      case 'Player':
-        newEntity = new Player({ ...params, container: this });
-        break;
-      case 'Enemy':
-        newEntity = new Enemy({ ...params, container: this });
-        break;
-      case 'Gun':
-        newEntity = new Gun({ ...params, container: this });
-        break;
-      case 'Bullet':
-        newEntity = new Bullet(params);
-        break;
-    }
-    this.add(newEntity);
-    return newEntity;
-  }
-
   addSolidBody(solidBody) {
     if (solidBody.mesh) this.scene.add(solidBody.mesh);
     if (solidBody.body) this.world.addBody(solidBody.body);
@@ -79,6 +59,31 @@ export default class EntitiesContainer {
     }
   }
 
+  createEntity(type, params) {
+    let newEntity;
+    switch (type) {
+      case 'Player':
+        newEntity = new Player({ ...params, container: this });
+        break;
+      case 'Enemy':
+        newEntity = new Enemy({ ...params, container: this });
+        break;
+      case 'Gun':
+        newEntity = new Gun({ ...params, container: this });
+        break;
+      case 'Bullet':
+        newEntity = new Bullet({ ...params, container: this });
+        break;
+    }
+    this.add(newEntity);
+    return newEntity;
+  }
+
+  deleteEntity(entity) {
+    this.deleteSolidBody(entity.actor.solidBody);
+    this.deleteEntitiyByBodyId(entity.actor.solidBody.body.id);
+  }
+
   update(delta) {
     this.entities.forEach(entitiy => entitiy.update(delta));
     const entitiesToDelete = this.entities.filter(entitiy => {
@@ -90,9 +95,6 @@ export default class EntitiesContainer {
     }
     );
 
-    entitiesToDelete.forEach(entitiy => {
-      this.deleteSolidBody(entitiy.actor.solidBody)
-      this.deleteEntitiyByBodyId(entitiy.actor.solidBody.body.id);
-    });
+    entitiesToDelete.forEach(entitiy => this.deleteEntity(entitiy));
   }
 }
