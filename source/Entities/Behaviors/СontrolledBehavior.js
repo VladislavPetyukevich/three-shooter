@@ -1,10 +1,9 @@
 import { Vector3, Object3D, Quaternion, Euler, Ray } from 'three';
 import { Vec3 } from 'cannon';
 import keyboard from '../../PayerControls/Keyboard';
+import { PLAYER  } from '../../constants';
 
 const PI_2 = Math.PI / 2;
-const EYE_Y_POS = 2; // eyes are 2 meters above the ground
-const JUMP_VELOCITY = 20;
 
 function getShootDir(camera) {
   const shootDirection = new Vector3();
@@ -23,7 +22,7 @@ export default class СontrolledBehavior {
     this.pitchObject = new Object3D();
     this.pitchObject.add(camera);
     this.yawObject = new Object3D();
-    this.yawObject.position.y = EYE_Y_POS;
+    this.yawObject.position.y = PLAYER.EYE_Y_POS;
     this.yawObject.add(this.pitchObject);
     this.quat = new Quaternion();
 
@@ -98,7 +97,7 @@ export default class СontrolledBehavior {
       this.inputVelocity.x = this.actor.walkSpeed * delta;
     }
     if (this.canJump && keyboard.key[32]) {
-      this.actor.solidBody.body.velocity.y = JUMP_VELOCITY;
+      this.actor.solidBody.body.velocity.y = PLAYER.JUMP_VELOCITY;
       this.canJump = false;
     }
 

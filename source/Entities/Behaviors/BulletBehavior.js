@@ -1,9 +1,9 @@
-const BULLET_LIFE_TIME = 5;
+import { BULLET } from '../../constants';
 
 export default class BulletBehavior {
   constructor(container, lifeTimeExpiredCallback) {
     this.container = container;
-    this.lifeTimeRemaining = BULLET_LIFE_TIME ;
+    this.lifeTimeRemaining = BULLET.LIFE_TIME;
     this.lifeTimeExpiredCallback = lifeTimeExpiredCallback;
   }
 

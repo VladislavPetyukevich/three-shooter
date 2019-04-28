@@ -3,12 +3,12 @@ import Actor from './Actor';
 import PhysicsBox from '../../Physics/PhysicsBox';
 import TextureAnimator from '../../TextureAnimator';
 import enemyTexture from '../../assets/golem-walk.png';
+import { ENEMY } from '../../constants';
 
 const textureLoader = new TextureLoader();
 
 const WALK_TEXTURE_TILES_HORIZONTAL = 2;
 const WALK_TEXTURE_TILES_VERTICAL = 1;
-const WALK_SPEED = 5;
 
 export default class EnemyActor extends Actor {
   constructor(playerBody, position = { x: 0, y: 0, z: 0 }) {
@@ -25,7 +25,7 @@ export default class EnemyActor extends Actor {
         [null, null, null, null, material],
         position
       ),
-      walkSpeed: WALK_SPEED
+      walkSpeed: ENEMY.WALK_SPEED
     });
 
     this.playerBody = playerBody;

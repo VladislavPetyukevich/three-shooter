@@ -3,6 +3,7 @@ import Player from './Player';
 import Enemy from './Enemy';
 import Gun from './Gun';
 import Bullet from './Bullet';
+import { ENTITY } from '../constants';
 
 export const EVENT_TYPES = {
   DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY'
@@ -36,7 +37,7 @@ export default class EntitiesContainer {
   }
 
   add(entitiy) {
-    if (entitiy.type === 'creature') {
+    if (entitiy.type === ENTITY.TYPE.CREATURE) {
       this.addCollideHandler(entitiy);
     }
     if (entitiy.actor) {
@@ -49,7 +50,7 @@ export default class EntitiesContainer {
     const entities = this.entities;
     for (var i = entities.length; i--;) {
       const entitiy = entities[i];
-      if (entitiy.type === 'creature') {
+      if (entitiy.type === ENTITY.TYPE.CREATURE) {
         if (entitiy.actor.solidBody.body.id === id) {
           this.entities.splice(i, 1);
           EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
@@ -87,7 +88,7 @@ export default class EntitiesContainer {
   update(delta) {
     this.entities.forEach(entitiy => entitiy.update(delta));
     const entitiesToDelete = this.entities.filter(entitiy => {
-      if (entitiy.type === 'creature') {
+      if (entitiy.type === ENTITY.TYPE.CREATURE) {
         if (entitiy.actor.solidBody.body._hp <= 0) {
           return true;
         }
