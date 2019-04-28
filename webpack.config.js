@@ -43,7 +43,7 @@ const common = {
     rules: [
       {
         test: /\.js$/,
-        exclude: ['node_modules', 'bower_components'],
+        exclude: /node_modules/, 
         use: {
           loader: 'babel-loader',
           options: {
@@ -80,6 +80,7 @@ const common = {
 };
 
 module.exports = function (env) {
+  console.log('env: ', env);
   if (env === 'development') {
     return Object.assign(
       {},

@@ -13,9 +13,10 @@
   "license": "ISC",
   "devDependencies": {
     "file-loader": "^1.1.11",
-    "url-loader": "^1.0.1",
     "image-webpack-loader": "^4.3.1",
-    "webpack-dev-server": "^2.9.7"
+    "url-loader": "^1.0.1",
+    "webpack-cli": "^3.3.1",
+    "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
     "babel-core": "^6.26.0",
@@ -27,6 +28,6 @@
     "three": "^0.89.0",
     "three-collada-loader": "0.0.1",
     "uglifyjs-webpack-plugin": "^1.1.5",
-    "webpack": "^3.10.0"
+    "webpack": "^4.30.0"
   }
 }
