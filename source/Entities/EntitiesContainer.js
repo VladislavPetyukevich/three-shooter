@@ -51,16 +51,14 @@ export default class EntitiesContainer {
     const entities = this.entities;
     for (var i = entities.length; i--;) {
       const entitiy = entities[i];
-      if (entitiy.type === ENTITY.TYPE.CREATURE) {
-        if (entitiy.actor.solidBody.body.id === id) {
-          this.entities.splice(i, 1);
-          EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
-          if (entitiy instanceof Enemy) {
-            EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
-          }
-          return;
-        }
+      if (entitiy.type !== ENTITY.TYPE.CREATURE) continue;
+      if (entitiy.actor.solidBody.body.id !== id) continue;
+      this.entities.splice(i, 1);
+      EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
+      if (entitiy instanceof Enemy) {
+        EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
       }
+      return;
     }
   }
 
