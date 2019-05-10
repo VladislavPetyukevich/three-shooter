@@ -6,7 +6,8 @@ import Bullet from './Bullet';
 import { ENTITY } from '../constants';
 
 export const EVENT_TYPES = {
-  DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY'
+  DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY',
+  DELETE_ENEMY: 'ENTITIES_CONTAINER_DELETE_ENEMY'
 };
 
 export default class EntitiesContainer {
@@ -54,6 +55,9 @@ export default class EntitiesContainer {
         if (entitiy.actor.solidBody.body.id === id) {
           this.entities.splice(i, 1);
           EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
+          if (entitiy instanceof Enemy) {
+            EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
+          }
           return;
         }
       }
