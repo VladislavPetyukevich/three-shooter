@@ -3,12 +3,7 @@ import Player from './Player';
 import Enemy from './Enemy';
 import Gun from './Gun';
 import Bullet from './Bullet';
-import { ENTITY } from '../constants';
-
-export const EVENT_TYPES = {
-  DELETE_ENTITIY: 'ENTITIES_CONTAINER_DELETE_ENTITIY',
-  DELETE_ENEMY: 'ENTITIES_CONTAINER_DELETE_ENEMY'
-};
+import { ENTITY, EVENT_TYPES } from '../constants';
 
 export default class EntitiesContainer {
   constructor(scene, world) {

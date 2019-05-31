@@ -21,7 +21,7 @@ import EventChannel from '../EventChannel';
 import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
 import PhysicsBall from '../Physics/PhysicsBall';
-import { EVENT_TYPES } from '../Entities/EntitiesContainer';
+import { EVENT_TYPES } from '../constants';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
