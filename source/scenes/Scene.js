@@ -51,7 +51,6 @@ export default class BasicScene {
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
 
     this.entitiesContainer = new EntitiesContainer(this.scene, this.world);
-    // EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     this.player = this.entitiesContainer.createEntity(
       'Player',
