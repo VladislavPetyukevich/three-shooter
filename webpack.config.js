@@ -57,7 +57,7 @@ const common = {
         }
       },
       {
-        test: /\.(gif|png|jpe?g|svg)$/i,
+        test: /\.(gif|png|jpe?g|svg|mp3)$/i,
         use: [
           'file-loader',
           {
