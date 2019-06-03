@@ -34,7 +34,12 @@ const productionConfig = {
 }
 
 const common = {
-  entry: PATHS.source + '/index.js',
+  entry: {
+    main: [
+      '@babel/polyfill',
+      PATHS.source + '/index.js'
+    ]
+  },
   output: {
     path: PATHS.build,
     filename: 'bundle.js'
@@ -43,11 +48,11 @@ const common = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/, 
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env', 'stage-0']
+            presets: ['@babel/polyfill', 'env', 'stage-0']
           }
         }
       },
@@ -65,16 +70,16 @@ const common = {
         ],
       },
       {
-				test: /\.(json|dae)$/,
-				use: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 8192
-						}
-					}
-				]
-			}
+        test: /\.(json|dae)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192
+            }
+          }
+        ]
+      }
     ]
   }
 };
