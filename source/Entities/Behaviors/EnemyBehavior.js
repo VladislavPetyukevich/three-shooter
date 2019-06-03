@@ -1,7 +1,7 @@
 import { Vec3 } from 'cannon';
 
 export default class EnemyBehavior {
-  constructor(actor, playerBody, container) {
+  constructor(actor, playerBody, container, onShoot) {
     this.actor = actor;
     this.playerBody = playerBody;
     this.gun = container.createEntity(
@@ -10,6 +10,7 @@ export default class EnemyBehavior {
     );
     this.nextShootInterval = 3;
     this.lastShootSince = 0;
+    this.onShoot = onShoot;
   }
 
   update(delta) {
@@ -25,6 +26,7 @@ export default class EnemyBehavior {
     if (this.lastShootSince >= this.nextShootInterval) {
       this.lastShootSince = 0;
       this.gun.shoot(direction);
+      this.onShoot();
     }
   }
 }
