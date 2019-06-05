@@ -22,6 +22,8 @@ import imageDisplayer from '../ImageDisplayer';
 import PhysicsBox from '../Physics/PhysicsBox';
 import PhysicsBall from '../Physics/PhysicsBall';
 import { EVENT_TYPES } from '../constants';
+import shootSoundMp3 from '../assets/shoot.mp3';
+import SoundsBuffer  from '../SoundsBuffer';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -30,6 +32,11 @@ class Scene1 extends BasicScene {
   constructor(props) {
     super(props);
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
+
+    // Audio
+    this.soundsBuffer = new SoundsBuffer(this.audioListener);
+    this.soundsBuffer.loadSound(shootSoundMp3);
+    EventChannel.addSubscriber(this.soundSystemEventSubscriber);
 
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
@@ -81,6 +88,16 @@ class Scene1 extends BasicScene {
   showTestImage = () => this.testImageId = imageDisplayer.add(testScreenTexture);
 
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
+
+  soundSystemEventSubscriber = (eventType, payload) => {
+    switch (eventType) {
+      case EVENT_TYPES.ENEMY_SHOOT:
+        this.soundsBuffer.playSound(0);
+        break;
+      default:
+        break;
+    }
+  }
 
   spawnEnemies() {
     const angleStep = 45;

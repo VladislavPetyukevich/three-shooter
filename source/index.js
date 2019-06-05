@@ -5,15 +5,9 @@ import HUD from './HUD';
 import { EVENT_TYPES } from './constants';
 import EventChannel from './EventChannel';
 import ShootSound from './assets/shoot.mp3';
-import { SoundSystem, SoundsBuffer } from './Sound';
 
 class ThreeShooter {
   constructor(props) {
-    const soundContext = new (window.AudioContext || window.webkitAudioContext)();
-    const soundsBuffer = new SoundsBuffer(soundContext);
-    soundsBuffer.loadSound(ShootSound);
-    this.soundSystem = new SoundSystem(soundContext, soundsBuffer);
-    EventChannel.addSubscriber(this.soundSystemEventSubscriber);
     this.currScene = new Scene1(props);
     this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
@@ -44,16 +38,6 @@ class ThreeShooter {
       this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
       this.hud = new HUD();
     });
-  }
-
-  soundSystemEventSubscriber = (eventType, payload) => {
-    switch (eventType) {
-      case EVENT_TYPES.ENEMY_SHOOT:
-        this.soundSystem.play(0);
-        break;
-      default:
-        break;
-    }
   }
 
   update = () => {

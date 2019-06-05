@@ -1,6 +1,7 @@
 import {
   Scene,
-  PerspectiveCamera
+  PerspectiveCamera,
+  AudioListener
 } from 'three';
 import {
   World,
@@ -49,6 +50,9 @@ export default class BasicScene {
 
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
+
+    this.audioListener = new AudioListener();
+    this.camera.add(this.audioListener);
 
     this.entitiesContainer = new EntitiesContainer(this.scene, this.world);
 
