@@ -7,7 +7,8 @@ import {
   Matrix4,
   BoxGeometry,
   MeshPhongMaterial,
-  SphereGeometry
+  SphereGeometry,
+  PositionalAudio
 } from 'three';
 import { Vec3 } from 'cannon';
 import BasicScene from './Scene';
@@ -35,7 +36,7 @@ class Scene1 extends BasicScene {
 
     // Audio
     this.soundsBuffer = new SoundsBuffer(this.audioListener);
-    this.soundsBuffer.loadSound({ type: 'PositionalAudio', refDistance: 20, url: shootSoundMp3 });
+    this.soundsBuffer.loadSound(shootSoundMp3);
     EventChannel.addSubscriber(this.soundSystemEventSubscriber);
 
     // lights
@@ -92,8 +93,10 @@ class Scene1 extends BasicScene {
   soundSystemEventSubscriber = (eventType, payload) => {
     switch (eventType) {
       case EVENT_TYPES.ENEMY_SHOOT:
-        payload.EnemyEntity.actor.solidBody.mesh.add(this.soundsBuffer.buffer[0]);
-        this.soundsBuffer.playSound(0);
+        const audio = new PositionalAudio(this.audioListener);
+        audio.setBuffer(this.soundsBuffer.buffers[0]);
+        payload.EnemyEntity.actor.solidBody.mesh.add(audio);
+        audio.play();
         break;
       default:
         break;
