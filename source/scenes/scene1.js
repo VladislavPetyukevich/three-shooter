@@ -35,9 +35,8 @@ class Scene1 extends BasicScene {
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     // Audio
-    this.soundsBuffer = new SoundsBuffer(this.audioListener);
+    this.soundsBuffer = new SoundsBuffer();
     this.soundsBuffer.loadSound(shootSoundMp3);
-    EventChannel.addSubscriber(this.soundSystemEventSubscriber);
 
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
@@ -90,19 +89,6 @@ class Scene1 extends BasicScene {
 
   hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
-  soundSystemEventSubscriber = (eventType, payload) => {
-    switch (eventType) {
-      case EVENT_TYPES.ENEMY_SHOOT:
-        const audio = new PositionalAudio(this.audioListener);
-        audio.setBuffer(this.soundsBuffer.buffers[0]);
-        payload.EnemyEntity.actor.solidBody.mesh.add(audio);
-        audio.play();
-        break;
-      default:
-        break;
-    }
-  }
-
   spawnEnemies() {
     const angleStep = 45;
     const maxAngle = 360;
@@ -114,7 +100,12 @@ class Scene1 extends BasicScene {
 
       this.entitiesContainer.createEntity(
         'Enemy',
-        { playerBody: this.player.actor.solidBody.body, position: new Vec3(x, 1.5, y) }
+        {
+          playerBody: this.player.actor.solidBody.body,
+          position: new Vec3(x, 1.5, y),
+          audioListener: this.audioListener,
+          soundsBuffer: this.soundsBuffer
+        }
       );
     }
   }

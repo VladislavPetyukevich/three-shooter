@@ -1,7 +1,7 @@
+import { PositionalAudio } from 'three';
 import EnemyActor from './Actors/EnemyActor';
 import EnemyBehavior from './Behaviors/EnemyBehavior';
-import { ENTITY, EVENT_TYPES } from '../constants';
-import EventChannel from '../EventChannel';
+import { ENTITY, SCENE_1 } from '../constants';
 
 export default class Enemy {
   constructor(props) {
@@ -9,10 +9,15 @@ export default class Enemy {
     this.playerBody = props.playerBody;
     this.actor = new EnemyActor(props.playerBody, props.position);
     this.behavior = new EnemyBehavior(this.actor, props.playerBody, props.container, this.handleShoot);
+    this.audioListener = props.audioListener;
+    this.soundsBuffer = props.soundsBuffer;
   }
 
   handleShoot = () => {
-    EventChannel.onPublish(EVENT_TYPES.ENEMY_SHOOT, { EnemyEntity: this, playerBody: this.playerBody });
+    const audio = new PositionalAudio(this.audioListener);
+    audio.setBuffer(this.soundsBuffer.buffers[SCENE_1.SHOOT_SOUND_INDEX]);
+    this.actor.solidBody.mesh.add(audio);
+    audio.play();
   }
 
   update(delta) {
