@@ -23,7 +23,7 @@ import PhysicsBox from '../Physics/PhysicsBox';
 import PhysicsBall from '../Physics/PhysicsBall';
 import { EVENT_TYPES } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
-import SoundsBuffer  from '../SoundsBuffer';
+import SoundsBuffer from '../SoundsBuffer';
 
 const textureLoader = new TextureLoader();
 const testScreenTexture = textureLoader.load(testScreen);
@@ -35,7 +35,7 @@ class Scene1 extends BasicScene {
 
     // Audio
     this.soundsBuffer = new SoundsBuffer(this.audioListener);
-    this.soundsBuffer.loadSound(shootSoundMp3);
+    this.soundsBuffer.loadSound({ type: 'PositionalAudio', refDistance: 20, url: shootSoundMp3 });
     EventChannel.addSubscriber(this.soundSystemEventSubscriber);
 
     // lights
@@ -92,6 +92,7 @@ class Scene1 extends BasicScene {
   soundSystemEventSubscriber = (eventType, payload) => {
     switch (eventType) {
       case EVENT_TYPES.ENEMY_SHOOT:
+        payload.EnemyEntity.actor.solidBody.mesh.add(this.soundsBuffer.buffer[0]);
         this.soundsBuffer.playSound(0);
         break;
       default:
