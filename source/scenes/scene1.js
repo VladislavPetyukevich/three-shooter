@@ -2,31 +2,16 @@ import {
   PlaneGeometry,
   Mesh,
   AmbientLight,
-  TextureLoader,
   PointLight,
   Matrix4,
-  BoxGeometry,
   MeshPhongMaterial,
-  SphereGeometry,
 } from 'three';
 import { Vec3 } from 'cannon';
 import BasicScene from './Scene';
-import loadModel from '../loadModel';
-import rustytiles01Texture from '../assets/rustytiles01_diff.jpg';
-import rustytiles01NormalMap from '../assets/rustytiles01_norm.jpg';
-import rustytiles01BumpMap from '../assets/rustytiles01_spec.jpg';
-import testKitchen from '../assets/Kitchen_Cabinet_Base_Full.dae';
-import testScreen from '../assets/test1.png';
 import EventChannel from '../EventChannel';
-import imageDisplayer from '../ImageDisplayer';
-import PhysicsBox from '../Physics/PhysicsBox';
-import PhysicsBall from '../Physics/PhysicsBall';
 import { EVENT_TYPES } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
 import SoundsBuffer from '../SoundsBuffer';
-
-const textureLoader = new TextureLoader();
-const testScreenTexture = textureLoader.load(testScreen);
 
 class Scene1 extends BasicScene {
   constructor(props) {
@@ -53,40 +38,8 @@ class Scene1 extends BasicScene {
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
 
-    this.box = new PhysicsBox(
-      new BoxGeometry(2, 2, 2),
-      new MeshPhongMaterial({
-        map: new TextureLoader().load(rustytiles01Texture),
-        normalMap: new TextureLoader().load(rustytiles01NormalMap),
-        bumpMap: new TextureLoader().load(rustytiles01BumpMap)
-      }),
-      new Vec3(2, -3, -5)
-    );
-    this.world.addBody(this.box.body);
-    this.scene.add(this.box.mesh);
-
-    this.ball = new PhysicsBall(
-      new SphereGeometry(1, 32, 32),
-      new MeshPhongMaterial({ color: 'red' }),
-      new Vec3(2, -5, -5)
-    );
-    this.world.addBody(this.ball.body);
-    this.scene.add(this.ball.mesh);
-
     this.spawnEnemies();
-
-    this.testImageId = undefined;
-
-    loadModel(testKitchen).then(model => {
-      model.scale.set(6, 6, 6);
-      model.position.set(-10, 0, -15);
-      this.scene.add(model);
-    })
   }
-
-  showTestImage = () => this.testImageId = imageDisplayer.add(testScreenTexture);
-
-  hideTestImage = () => imageDisplayer.remove(this.testImageId)
 
   spawnEnemies() {
     const angleStep = 45;
@@ -119,13 +72,7 @@ class Scene1 extends BasicScene {
 
   update(delta) {
     super.update(delta);
-    if (this.player.behavior.getObject().position.z < -10 && !this.testImageId) {
-      this.showTestImage();
-      setTimeout(this.hideTestImage, 40);
-    }
     this.pointLight.position.copy(this.player.actor.solidBody.body.position);
-    this.box.update();
-    this.ball.update();
   }
 }
 
