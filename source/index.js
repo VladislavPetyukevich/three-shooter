@@ -12,7 +12,7 @@ class ThreeShooter {
     this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
-    this.enabled = true;
+    this.enabled = false;
 
     this.renderer = new WebGLRenderer();
     this.renderer.setSize(props.renderWidth, props.renderHeight);
