@@ -16,6 +16,7 @@ import SoundsBuffer from '../SoundsBuffer';
 class Scene1 extends BasicScene {
   constructor(props) {
     super(props);
+    this.enemiesCount = 0;
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     // Audio
@@ -59,13 +60,17 @@ class Scene1 extends BasicScene {
           soundsBuffer: this.enemySoundsBuffer
         }
       );
+      this.enemiesCount++;
     }
   }
 
   enemiesEventsSubscriber = (eventType, targetEnemy) => {
     switch (eventType) {
       case EVENT_TYPES.DELETE_ENEMY:
-        console.log('EVENT_TYPES.DELETE_ENEMY');
+        this.enemiesCount--;
+        if (this.enemiesCount <= 0) {
+          this.spawnEnemies();
+        }
         break;
     }
   }
