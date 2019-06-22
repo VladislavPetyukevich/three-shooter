@@ -58,7 +58,7 @@ export default class BasicScene {
 
     this.player = this.entitiesContainer.createEntity(
       'Player',
-      { camera: this.camera, position: new Vec3(2, -3, -10) }
+      { camera: this.camera, position: new Vec3(2, 2, -10) }
     );
     this.scene.add(this.player.behavior.getObject());
   }
