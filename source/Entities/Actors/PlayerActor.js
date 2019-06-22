@@ -1,7 +1,6 @@
 import { Vector3 } from 'three';
 import InvisPhysicsSphere from '../../Physics/InvisPhysicsSphere';
 import Actor from './Actor';
-import { PLAYER } from '../../constants';
 
 export default class PlayerActor extends Actor {
   constructor(position) {
@@ -11,8 +10,7 @@ export default class PlayerActor extends Actor {
       hp: 100,
       solidBody: new InvisPhysicsSphere(
         sphereRadius, position, sphereMass, new Vector3(0, 10, 0)
-      ),
-      walkSpeed: PLAYER.WALK_SPEED
+      )
     });
 
     this.solidBody.body.linearDamping = 0.9;

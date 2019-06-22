@@ -1,8 +1,9 @@
 import { Vec3 } from 'cannon';
 
 export default class EnemyBehavior {
-  constructor(actor, playerBody, container, onShoot) {
+  constructor(actor, walkSpeed, playerBody, container, onShoot) {
     this.actor = actor;
+    this.walkSpeed = walkSpeed;
     this.playerBody = playerBody;
     this.gun = container.createEntity(
       'Gun',
@@ -20,7 +21,7 @@ export default class EnemyBehavior {
     direction.normalize();
     const forward = new Vec3(0, 0, 1);
     this.actor.solidBody.body.quaternion.setFromVectors(forward, direction);
-    direction.mult(this.actor.walkSpeed, this.actor.solidBody.body.velocity);
+    direction.mult(this.walkSpeed, this.actor.solidBody.body.velocity);
 
     this.lastShootSince += delta;
     if (this.lastShootSince >= this.nextShootInterval) {

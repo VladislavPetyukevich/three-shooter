@@ -1,12 +1,12 @@
 import PlayerActor from './Actors/PlayerActor';
 import СontrolledBehavior from './Behaviors/СontrolledBehavior';
-import { ENTITY } from '../constants';
+import { ENTITY, PLAYER } from '../constants';
 
 export default class Player {
   constructor(props) {
     this.type = ENTITY.TYPE.CREATURE;
     this.actor = new PlayerActor(props.position);
-    this.behavior = new СontrolledBehavior(this.actor, props.camera, props.container);
+    this.behavior = new СontrolledBehavior(this.actor, PLAYER.WALK_SPEED, props.camera, props.container);
   }
 
   update(delta) {

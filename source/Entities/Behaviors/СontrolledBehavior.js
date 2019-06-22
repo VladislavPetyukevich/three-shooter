@@ -16,8 +16,9 @@ function getShootDir(camera) {
 }
 
 export default class СontrolledBehavior {
-  constructor(actor, camera, container) {
+  constructor(actor, walkSpeed, camera, container) {
     this.actor = actor;
+    this.walkSpeed = walkSpeed;
     this.canJump = true;
     this.pitchObject = new Object3D();
     this.pitchObject.add(camera);
@@ -85,16 +86,16 @@ export default class СontrolledBehavior {
     this.inputVelocity.set(0, 0, 0);
 
     if (keyboard.key[87]) {
-      this.inputVelocity.z = -this.actor.walkSpeed * delta;
+      this.inputVelocity.z = -this.walkSpeed * delta;
     }
     if (keyboard.key[83]) {
-      this.inputVelocity.z = this.actor.walkSpeed * delta;
+      this.inputVelocity.z = this.walkSpeed * delta;
     }
     if (keyboard.key[65]) {
-      this.inputVelocity.x = -this.actor.walkSpeed * delta;
+      this.inputVelocity.x = -this.walkSpeed * delta;
     }
     if (keyboard.key[68]) {
-      this.inputVelocity.x = this.actor.walkSpeed * delta;
+      this.inputVelocity.x = this.walkSpeed * delta;
     }
     if (this.canJump && keyboard.key[32]) {
       this.actor.solidBody.body.velocity.y = PLAYER.JUMP_VELOCITY;
