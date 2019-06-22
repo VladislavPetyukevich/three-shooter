@@ -7,7 +7,7 @@ export const BULLET = {
 
 export const ENEMY = {
   HP: 1,
-  WALK_SPEED: 15,
+  WALK_SPEED: 18,
   SHOOT_SOUND_INDEX: 0
 };
 
