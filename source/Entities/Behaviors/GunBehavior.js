@@ -1,9 +1,11 @@
 import { Vector3 } from 'three';
 
 export default class GunBehavior {
-  constructor(holderBody, container) {
+  constructor(holderBody, container, actor = undefined, camera = undefined) {
     this.holderBody = holderBody;
     this.container = container;
+    this.actor = actor;
+    this.camera = camera;
   }
 
   shoot = (direction) => {
@@ -14,7 +16,8 @@ export default class GunBehavior {
       this.holderBody.position.x + direction.x * bulletPositionOffset,
       this.holderBody.position.y + direction.y * bulletPositionOffset,
       this.holderBody.position.z + direction.z * bulletPositionOffset
-    )
+    );
+    bulletPosition.y -= 0.3 * 1.02;
     const bullet = this.container.createEntity(
       'Bullet',
       { position: bulletPosition }
@@ -26,5 +29,15 @@ export default class GunBehavior {
     );
   }
 
-  update() { }
+  updateActorPosition() {
+    this.actor.solidBody.mesh.position.copy(this.camera.position);
+    this.actor.solidBody.mesh.position.y -= 0.3;
+    this.actor.solidBody.mesh.position.z -= 0.3;
+  }
+
+  update() {
+    if (this.camera && this.actor) {
+      this.updateActorPosition();
+    }
+  }
 }

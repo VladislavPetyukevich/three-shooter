@@ -19,7 +19,15 @@ export default class СontrolledBehavior {
   constructor(actor, walkSpeed, camera, container) {
     this.actor = actor;
     this.walkSpeed = walkSpeed;
+    this.camera = camera;
     this.canJump = true;
+
+    this.gun = container.createEntity(
+      'Gun',
+      { holderBody: this.actor.solidBody.body, camera: camera }
+    );
+    camera.add(this.gun.actor.solidBody.mesh);
+
     this.pitchObject = new Object3D();
     this.pitchObject.add(camera);
     this.yawObject = new Object3D();
@@ -34,11 +42,6 @@ export default class СontrolledBehavior {
     this.contactNormal = new Vec3(); // Normal in the contact, pointing *out* of whatever the player touched
     this.upAxis = new Vec3(0, 1, 0);
     this.actor.solidBody.body.addEventListener("collide", this.handleCollide);
-
-    this.gun = container.createEntity(
-      'Gun',
-      { holderBody: this.actor.solidBody.body }
-    );
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);

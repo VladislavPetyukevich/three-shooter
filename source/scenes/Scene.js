@@ -61,10 +61,6 @@ export default class BasicScene {
       { camera: this.camera, position: new Vec3(2, -3, -10) }
     );
     this.scene.add(this.player.behavior.getObject());
-    this.playerGun = this.entitiesContainer.createEntity(
-      'Gun',
-      { holderBody: this.player.actor.solidBody.body }
-    );
   }
 
   update(delta) {
