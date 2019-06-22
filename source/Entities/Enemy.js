@@ -8,6 +8,7 @@ export default class Enemy {
     this.type = ENTITY.TYPE.CREATURE;
     this.playerBody = props.playerBody;
     this.actor = new EnemyActor(props.playerBody, props.position);
+    this.actor.solidBody.body._hp = ENEMY.HP;
     this.behavior = new EnemyBehavior(this.actor, ENEMY.WALK_SPEED, props.playerBody, props.container, this.handleShoot);
     this.audioListener = props.audioListener;
     this.sounds = new EnemySounds(this.audioListener, this.actor, props.soundsBuffer);

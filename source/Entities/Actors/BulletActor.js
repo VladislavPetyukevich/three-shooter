@@ -13,7 +13,6 @@ export default class BulletActor extends Actor {
     );
 
     super({
-      hp: 1,
       solidBody
     });
 

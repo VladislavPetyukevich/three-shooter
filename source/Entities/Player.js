@@ -6,6 +6,7 @@ export default class Player {
   constructor(props) {
     this.type = ENTITY.TYPE.CREATURE;
     this.actor = new PlayerActor(props.position);
+    this.actor.solidBody.body._hp = 100;
     this.behavior = new СontrolledBehavior(this.actor, PLAYER.WALK_SPEED, props.camera, props.container);
   }
 

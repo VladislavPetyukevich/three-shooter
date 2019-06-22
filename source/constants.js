@@ -6,11 +6,13 @@ export const BULLET = {
 };
 
 export const ENEMY = {
+  HP: 1,
   WALK_SPEED: 5,
   SHOOT_SOUND_INDEX: 0
 };
 
 export const PLAYER = {
+  HP: 100,
   WALK_SPEED: 25,
   EYE_Y_POS: 2, // eyes are 2 meters above the ground
   JUMP_VELOCITY: 20

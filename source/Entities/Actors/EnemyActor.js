@@ -18,7 +18,6 @@ export default class EnemyActor extends Actor {
     });
     material.transparent = true;
     super({
-      hp: 1,
       solidBody: new PhysicsBox(
         geometry,
         [null, null, null, null, material],
