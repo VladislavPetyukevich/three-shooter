@@ -8,7 +8,6 @@ import {
   BoxGeometry,
   MeshPhongMaterial,
   SphereGeometry,
-  PositionalAudio
 } from 'three';
 import { Vec3 } from 'cannon';
 import BasicScene from './Scene';
@@ -35,8 +34,8 @@ class Scene1 extends BasicScene {
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
 
     // Audio
-    this.soundsBuffer = new SoundsBuffer();
-    this.soundsBuffer.loadSound(shootSoundMp3);
+    this.enemySoundsBuffer = new SoundsBuffer();
+    this.enemySoundsBuffer.loadSound(shootSoundMp3);
 
     // lights
     this.scene.add(new AmbientLight(0x404040, 5));
@@ -104,7 +103,7 @@ class Scene1 extends BasicScene {
           playerBody: this.player.actor.solidBody.body,
           position: new Vec3(x, 1.5, y),
           audioListener: this.audioListener,
-          soundsBuffer: this.soundsBuffer
+          soundsBuffer: this.enemySoundsBuffer
         }
       );
     }
