@@ -21,6 +21,7 @@ export default class СontrolledBehavior {
     this.walkSpeed = walkSpeed;
     this.camera = camera;
     this.canJump = true;
+    this.isRunning = false;
 
     this.gun = container.createEntity(
       'Gun',
@@ -86,24 +87,30 @@ export default class СontrolledBehavior {
   getCamera = () => this.getObject().children[0].children[0];
 
   update(delta) {
+    let isRunning = false;
     this.inputVelocity.set(0, 0, 0);
 
     if (keyboard.key[87]) {
+      isRunning = true;
       this.inputVelocity.z = -this.walkSpeed * delta;
     }
     if (keyboard.key[83]) {
+      isRunning = true;
       this.inputVelocity.z = this.walkSpeed * delta;
     }
     if (keyboard.key[65]) {
+      isRunning = true;
       this.inputVelocity.x = -this.walkSpeed * delta;
     }
     if (keyboard.key[68]) {
+      isRunning = true;
       this.inputVelocity.x = this.walkSpeed * delta;
     }
     if (this.canJump && keyboard.key[32]) {
       this.actor.solidBody.body.velocity.y = PLAYER.JUMP_VELOCITY;
       this.canJump = false;
     }
+    this.isRunning = isRunning;
 
     // Convert velocity to world coordinates
     this.euler.x = this.pitchObject.rotation.x;
