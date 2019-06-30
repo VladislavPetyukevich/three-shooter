@@ -1,3 +1,8 @@
+export const GUN = {
+  BOB_SPEED: 5,
+  BOB_DISTANCE: 0.05
+};
+
 export const BULLET = {
   LIFE_TIME: 5,
   MASS: 5,
