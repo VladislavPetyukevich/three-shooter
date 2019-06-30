@@ -25,7 +25,7 @@ export default class СontrolledBehavior {
 
     this.gun = container.createEntity(
       'Gun',
-      { holderBody: this.actor.solidBody.body, camera: camera }
+      { holderBody: this.actor.solidBody.body, holderBehavior: this, camera: camera }
     );
     camera.add(this.gun.actor.solidBody.mesh);
 

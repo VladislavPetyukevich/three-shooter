@@ -1,8 +1,9 @@
 import { Vector3 } from 'three';
 
 export default class GunBehavior {
-  constructor(holderBody, container, actor = undefined, camera = undefined) {
+  constructor(holderBody, holderBehavior, container, actor = undefined, camera = undefined) {
     this.holderBody = holderBody;
+    this.holderBehavior = holderBehavior;
     this.container = container;
     this.actor = actor;
     this.camera = camera;
