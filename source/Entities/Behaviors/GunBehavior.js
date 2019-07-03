@@ -1,10 +1,8 @@
 import { Vector3 } from 'three';
 import { GUN } from '../../constants';
+import { toRadians } from '../../utils';
 
-const PI_180 = Math.PI / 180;
 const BOB_DISTANCE_Y = GUN.BOB_DISTANCE / 2;
-
-const toRadians = degrees => degrees * PI_180;
 
 const getGunXShift = angle => Math.cos(toRadians(angle)) * GUN.BOB_DISTANCE;
 const getGunYShift = angle => Math.abs(Math.sin(toRadians(angle)) * BOB_DISTANCE_Y);
