@@ -12,6 +12,20 @@ import EventChannel from '../EventChannel';
 import { EVENT_TYPES } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
 import SoundsBuffer from '../SoundsBuffer';
+import { PI_180 } from '../utils';
+
+const calculateCirclePoints = (angleStep, radius) => {
+  const points = [];
+  const maxAngle = 360;
+  for (let angle = 0; angle < maxAngle; angle += angleStep) {
+    const angleRadians = angle * PI_180;
+    points.push({
+      x: Math.cos(angleRadians) * radius,
+      y: Math.sin(angleRadians) * radius
+    });
+  }
+  return points;
+};
 
 class Scene1 extends BasicScene {
   constructor(props) {
@@ -42,26 +56,39 @@ class Scene1 extends BasicScene {
     this.spawnEnemies();
   }
 
+  spawnEnemy(coordinates) {
+    this.entitiesContainer.createEntity(
+      'Enemy',
+      {
+        playerBody: this.player.actor.solidBody.body,
+        position: new Vec3(coordinates.x, 1.5, coordinates.y),
+        audioListener: this.audioListener,
+        soundsBuffer: this.enemySoundsBuffer
+      }
+    );
+    this.enemiesCount++;
+  }
+
+  spawnFlyingEnemy(coordinates) {
+    this.entitiesContainer.createEntity(
+      'FlyingEnemy',
+      {
+        playerBody: this.player.actor.solidBody.body,
+        position: new Vec3(coordinates.x, 5, coordinates.y)
+      }
+    );
+    this.enemiesCount++;
+  }
+
   spawnEnemies() {
     const angleStep = 45;
-    const maxAngle = 360;
-    const radius = 100;
-    for (let angle = 0; angle < maxAngle; angle += angleStep) {
-      const angleRadians = angle * Math.PI / 180;
-      const x = Math.cos(angleRadians) * radius;
-      const y = Math.sin(angleRadians) * radius;
+    const enemySpawnRadius = 100;
+    const flyingEnemySpawnRadius = 150;
+    const enemySpawnCoordinates = calculateCirclePoints(angleStep, enemySpawnRadius);
+    const flyingEnemySpawnCoordinates = calculateCirclePoints(angleStep, flyingEnemySpawnRadius);
 
-      this.entitiesContainer.createEntity(
-        'Enemy',
-        {
-          playerBody: this.player.actor.solidBody.body,
-          position: new Vec3(x, 1.5, y),
-          audioListener: this.audioListener,
-          soundsBuffer: this.enemySoundsBuffer
-        }
-      );
-      this.enemiesCount++;
-    }
+    enemySpawnCoordinates.forEach(coordinates => this.spawnEnemy(coordinates));
+    flyingEnemySpawnCoordinates.forEach(coordinates => this.spawnFlyingEnemy(coordinates));
   }
 
   enemiesEventsSubscriber = (eventType, targetEnemy) => {

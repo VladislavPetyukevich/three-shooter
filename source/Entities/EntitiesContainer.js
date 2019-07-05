@@ -1,9 +1,13 @@
 import EventChannel from '../EventChannel';
 import Player from './Player';
 import Enemy from './Enemy';
+import FlyingEnemy from './FlyingEnemy';
 import Gun from './Gun';
 import Bullet from './Bullet';
 import { ENTITY, EVENT_TYPES } from '../constants';
+
+const isEnemy = entity =>
+  entity instanceof Enemy || entity instanceof FlyingEnemy;
 
 export default class EntitiesContainer {
   constructor(scene, world) {
@@ -50,7 +54,7 @@ export default class EntitiesContainer {
       if (entitiy.actor.solidBody.body.id !== id) continue;
       this.entities.splice(i, 1);
       EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
-      if (entitiy instanceof Enemy) {
+      if (isEnemy(entitiy)) {
         EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
       }
       return;
@@ -65,6 +69,9 @@ export default class EntitiesContainer {
         break;
       case 'Enemy':
         newEntity = new Enemy({ ...params, container: this });
+        break;
+      case 'FlyingEnemy':
+        newEntity = new FlyingEnemy({ ...params, container: this });
         break;
       case 'Gun':
         newEntity = new Gun({ ...params, container: this });
