@@ -27,7 +27,7 @@ export const ENEMY = {
 export const PLAYER = {
   HP: 100,
   WALK_SPEED: 30,
-  EYE_Y_POS: 2, // eyes are 2 meters above the ground
+  SPHERE_RADIUS: 1.3,
   JUMP_VELOCITY: 15
 };
 

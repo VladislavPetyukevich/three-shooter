@@ -1,7 +1,7 @@
 import { Vector3, Object3D, Quaternion, Euler, Ray } from 'three';
 import { Vec3 } from 'cannon';
 import keyboard from '../../PayerControls/Keyboard';
-import { PLAYER  } from '../../constants';
+import { PLAYER } from '../../constants';
 
 const PI_2 = Math.PI / 2;
 
@@ -32,7 +32,6 @@ export default class СontrolledBehavior {
     this.pitchObject = new Object3D();
     this.pitchObject.add(camera);
     this.yawObject = new Object3D();
-    this.yawObject.position.y = PLAYER.EYE_Y_POS;
     this.yawObject.add(this.pitchObject);
     this.quat = new Quaternion();
 
