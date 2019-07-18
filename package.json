@@ -26,7 +26,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "cannon": "^0.6.2",
     "express": "^4.16.2",
-    "three": "^0.89.0",
+    "three": "^0.106.2",
     "three-collada-loader": "0.0.1",
     "uglifyjs-webpack-plugin": "^1.1.5",
     "webpack": "^4.30.0"
