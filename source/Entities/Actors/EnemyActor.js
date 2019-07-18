@@ -2,7 +2,7 @@ import { TextureLoader, MeshLambertMaterial, BoxGeometry } from 'three';
 import Actor from './Actor';
 import PhysicsBox from '../../Physics/PhysicsBox';
 import TextureAnimator from '../../TextureAnimator';
-import enemyTexture from '../../assets/golem-walk.png';
+import enemyTexture from '../../assets/enemy.png';
 
 const textureLoader = new TextureLoader();
 
@@ -12,7 +12,7 @@ const WALK_TEXTURE_TILES_VERTICAL = 1;
 export default class EnemyActor extends Actor {
   constructor(playerBody, position = { x: 0, y: 0, z: 0 }) {
     const spriteMap = textureLoader.load(enemyTexture);
-    const geometry = new BoxGeometry(3, 3, 1);
+    const geometry = new BoxGeometry(2, 4, 1);
     const material = new MeshLambertMaterial({
       map: spriteMap
     });
