@@ -35,26 +35,23 @@ const productionConfig = {
 
 const common = {
   entry: {
-    main: [
-      '@babel/polyfill',
-      PATHS.source + '/index.js'
-    ]
+    main: PATHS.source + '/index.ts'
   },
   output: {
     path: PATHS.build,
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    libraryTarget: 'umd',
+    library: 'ThreeShooter'
   },
   module: {
     rules: [
+      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
       {
-        test: /\.js$/,
+        test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/polyfill', 'env', 'stage-0']
-          }
-        }
+          loader: 'awesome-typescript-loader'
+        },
       },
       {
         test: /\.(gif|png|jpe?g|svg|mp3)$/i,

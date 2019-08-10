@@ -1,6 +1,6 @@
 import {
   Uniform
-} from '../../../src/Three';
+} from 'three';
 
 export const FilmShader: {
   uniforms: {

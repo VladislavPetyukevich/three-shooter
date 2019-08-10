@@ -2,7 +2,7 @@ import {
   Material,
   WebGLRenderer,
   WebGLRenderTarget
-} from '../../../src/Three';
+} from 'three';
 
 export class Pass {
   constructor();

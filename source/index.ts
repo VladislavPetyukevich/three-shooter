@@ -12,8 +12,16 @@ import { EffectComposer } from './Postprocessing/EffectComposer';
 import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 
-class ThreeShooter {
-  constructor(props) {
+export default class ThreeShooter {
+  currScene: any;
+  hud: any;
+  imageDisplayer: any;
+  prevTime: number;
+  enabled: boolean;
+  renderer: any;
+  composer: any;
+
+  constructor(props: any) {
     this.currScene = new Scene1(props);
     this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
@@ -38,7 +46,7 @@ class ThreeShooter {
     const effectColorCorrection = new ShaderPass(ColorCorrectionShader);
     this.composer.addPass(effectColorCorrection);
 
-    const effectFilm = new FilmPass(0.35, 0.025, 648, false);
+    const effectFilm = new FilmPass(0.35, 0.025, 648, 0);
     this.composer.addPass(effectFilm);
 
     props.renderContainer.appendChild(this.renderer.domElement);
@@ -72,4 +80,6 @@ class ThreeShooter {
   }
 }
 
-window.ThreeShooter = ThreeShooter;
+// window.ThreeShooter = ThreeShooter;
+// exports.ThreeShooter = ThreeShooter;
+// exports ThreeShooter;

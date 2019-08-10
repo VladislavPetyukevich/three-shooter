@@ -1,7 +1,7 @@
 import {
   Scene,
   Camera,
-} from '../../../src/Three';
+} from 'three';
 
 import { Pass } from './Pass';
 

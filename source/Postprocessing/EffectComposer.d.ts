@@ -2,7 +2,7 @@ import {
 	Clock,
   WebGLRenderer,
   WebGLRenderTarget,
-} from '../../../src/Three';
+} from 'three';
 
 import { Pass } from './Pass';
 import { ShaderPass } from './ShaderPass';

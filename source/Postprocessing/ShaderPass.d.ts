@@ -1,6 +1,6 @@
 import {
   Material
-} from '../../../src/Three';
+} from 'three';
 
 import { Pass } from './Pass';
 
