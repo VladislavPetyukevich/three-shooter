@@ -8,7 +8,7 @@ const PATHS = {
 };
 
 const developmentConfig = {
-  devtool: 'eval',
+  mode: 'development',
   devServer: {
     contentBase: PATHS.build,
     port: 8080,
@@ -22,7 +22,7 @@ const developmentConfig = {
 };
 
 const productionConfig = {
-  devtool: "cheap-module-source-map",
+  mode: 'production',
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
