@@ -1,6 +1,6 @@
 import { SphereGeometry, MeshBasicMaterial } from 'three';
 import Actor from './Actor';
-import PhysicsBall from '../../Physics/PhysicsBall';
+import PhysicsBall from '../../SolidBody/PhysicsBall';
 import { BULLET } from '../../constants';
 
 export default class BulletActor extends Actor {

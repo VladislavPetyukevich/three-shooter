@@ -1,5 +1,5 @@
 import { Vector3, SphereGeometry, MeshBasicMaterial } from 'three';
-import PhysicsBall from './Physics/PhysicsBall';
+import PhysicsBall from './SolidBody/PhysicsBall';
 
 const MAX_LIFE_TIME = 5;
 

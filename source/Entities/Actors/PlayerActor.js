@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import InvisPhysicsSphere from '../../Physics/InvisPhysicsSphere';
+import InvisPhysicsSphere from '../../SolidBody/InvisPhysicsSphere';
 import Actor from './Actor';
 import { PLAYER } from '../../constants';
 
