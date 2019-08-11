@@ -3,6 +3,7 @@ import {
   WebGLRenderer,
   BasicShadowMap
 } from 'three';
+import BasicScene from './scenes/Scene';
 import Scene1 from './scenes/scene1';
 import imageDisplayer from './ImageDisplayer';
 import HUD from './HUD';
@@ -13,7 +14,7 @@ import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 
 export default class ThreeShooter {
-  currScene: any;
+  currScene: BasicScene;
   hud: any;
   imageDisplayer: any;
   prevTime: number;

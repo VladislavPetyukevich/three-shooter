@@ -16,8 +16,21 @@ import {
 } from 'cannon';
 import EntitiesContainer from '../Entities/EntitiesContainer';
 
+export interface BasicSceneProps {
+  renderWidth: number;
+  renderHeight: number;
+};
+
 export default class BasicScene {
-  constructor(props) {
+  world: World;
+  solver: GSSolver;
+  scene: Scene;
+  camera: PerspectiveCamera;
+  audioListener: AudioListener;
+  entitiesContainer: EntitiesContainer;
+  player: any;
+
+  constructor(props: BasicSceneProps) {
     this.world = new World();
     this.world.quatNormalizeSkip = 0;
     this.world.quatNormalizeFast = false;
@@ -34,11 +47,7 @@ export default class BasicScene {
 
     // Create a slippery material (friction coefficient = 0.0)
     var physicsMaterial = new Material("slipperyMaterial");
-    var physicsContactMaterial = new ContactMaterial(physicsMaterial,
-      physicsMaterial,
-      0.0, // friction coefficient
-      0.3  // restitution
-    );
+    var physicsContactMaterial = new ContactMaterial(physicsMaterial, physicsMaterial);
     // We must add the contact materials to the world
     this.world.addContactMaterial(physicsContactMaterial);
 
@@ -46,7 +55,7 @@ export default class BasicScene {
     var groundBody = new Body({ mass: 0 });
     groundBody.addShape(groundShape);
     groundBody.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), -Math.PI / 2);
-    this.world.add(groundBody);
+    this.world.addBody(groundBody);
 
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(75, props.renderWidth / props.renderHeight, 0.1, 1000);
@@ -63,7 +72,7 @@ export default class BasicScene {
     this.scene.add(this.player.behavior.getObject());
   }
 
-  update(delta) {
+  update(delta: number) {
     this.world.step(delta);
     this.entitiesContainer.update(delta);
   }
