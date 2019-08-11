@@ -43,6 +43,9 @@ const common = {
     libraryTarget: 'umd',
     library: 'ThreeShooter'
   },
+  resolve: {
+    extensions: ['.js', '.ts']
+  },
   module: {
     rules: [
       { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
