@@ -80,7 +80,3 @@ export default class ThreeShooter {
     requestAnimationFrame(this.update);
   }
 }
-
-// window.ThreeShooter = ThreeShooter;
-// exports.ThreeShooter = ThreeShooter;
-// exports ThreeShooter;
