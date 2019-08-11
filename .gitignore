@@ -6,3 +6,9 @@ package-lock.json
 # Code Editor Settings
 .idea
 .vs
+
+# Build
+/public
+!/public/favicon.ico
+!/public/index.html
+!/public/styles.css
