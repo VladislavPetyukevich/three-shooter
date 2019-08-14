@@ -19,8 +19,8 @@ export default class ThreeShooter {
   imageDisplayer: any;
   prevTime: number;
   enabled: boolean;
-  renderer: any;
-  composer: any;
+  renderer: WebGLRenderer;
+  composer: EffectComposer;
 
   constructor(props: any) {
     this.currScene = new Scene1(props);
@@ -71,7 +71,7 @@ export default class ThreeShooter {
       const delta = (time - this.prevTime) / 1000;
       this.renderer.clear();
       this.currScene.update(delta);
-      this.composer.render(this.currScene.scene, this.currScene.camera);
+      this.composer.render(delta);
       this.renderer.clearDepth();
       this.renderer.render(this.hud.scene, this.hud.camera);
       this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
