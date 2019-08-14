@@ -1,4 +1,6 @@
 class Keyboard {
+	key: boolean[];
+
 	constructor() {
 		this.key = [];
 
