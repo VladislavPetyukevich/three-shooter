@@ -15,7 +15,7 @@ import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionS
 
 export default class ThreeShooter {
   currScene: BasicScene;
-  hud: any;
+  hud: HUD;
   imageDisplayer: any;
   prevTime: number;
   enabled: boolean;

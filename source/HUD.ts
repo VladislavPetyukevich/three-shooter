@@ -3,6 +3,9 @@ import { TextureLoader, Scene, OrthographicCamera, SpriteMaterial, Sprite } from
 const textureLoader = new TextureLoader();
 
 class HUD {
+  scene: Scene;
+  camera: OrthographicCamera;
+
   constructor() {
     this.scene = new Scene();
     const width = window.innerWidth;
