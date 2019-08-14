@@ -14,6 +14,7 @@ import {
   Plane,
   Vec3
 } from 'cannon';
+import { ENTITY_NAME } from '../constants';
 import EntitiesContainer from '../Entities/EntitiesContainer';
 
 export interface BasicSceneProps {
@@ -66,7 +67,7 @@ export default class BasicScene {
     this.entitiesContainer = new EntitiesContainer(this.scene, this.world);
 
     this.player = this.entitiesContainer.createEntity(
-      'Player',
+      ENTITY_NAME.PLAYER,
       { camera: this.camera, position: new Vec3(2, 2, -10) }
     );
     this.scene.add(this.player.behavior.getObject());

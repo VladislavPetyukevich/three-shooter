@@ -1,11 +1,15 @@
-import { Vector3, Object3D, Quaternion, Euler, Ray } from 'three';
-import { Vec3 } from 'cannon';
+import { Vector3, Object3D, Quaternion, Euler, Ray, Camera } from 'three';
+import { Vec3, ICollisionEvent } from 'cannon';
 import keyboard from '../../PayerControls/Keyboard';
-import { PLAYER } from '../../constants';
+import { PLAYER, ENTITY_NAME } from '../../constants';
+import Actor from '../Actors/Actor';
+import Behavior from './Behavior';
+import EntitiesContainer from '../EntitiesContainer';
+import Gun from '../Gun';
 
 const PI_2 = Math.PI / 2;
 
-function getShootDir(camera) {
+function getShootDir(camera: Camera) {
   const shootDirection = new Vector3();
   const vector = shootDirection;
   shootDirection.set(0, 0, 1);
@@ -15,16 +19,30 @@ function getShootDir(camera) {
   return shootDirection;
 }
 
-export default class СontrolledBehavior {
-  constructor(actor, walkSpeed, camera, container) {
+export default class СontrolledBehavior implements Behavior {
+  actor: Actor;
+  walkSpeed: number;
+  camera: Camera;
+  canJump: boolean;
+  isRunning: boolean;
+  gun: Gun;
+  pitchObject: Object3D;
+  yawObject: Object3D;
+  quat: Quaternion;
+  inputVelocity: Vector3;
+  euler: Euler;
+  contactNormal: Vec3;
+  upAxis: Vec3;
+
+  constructor(actor: Actor, walkSpeed: number, camera: Camera, container: EntitiesContainer) {
     this.actor = actor;
     this.walkSpeed = walkSpeed;
     this.camera = camera;
     this.canJump = true;
     this.isRunning = false;
 
-    this.gun = container.createEntity(
-      'Gun',
+    this.gun = <Gun>container.createEntity(
+      ENTITY_NAME.GUN,
       { holderBody: this.actor.solidBody.body, holderBehavior: this, camera: camera }
     );
     camera.add(this.gun.actor.solidBody.mesh);
@@ -41,17 +59,17 @@ export default class СontrolledBehavior {
 
     this.contactNormal = new Vec3(); // Normal in the contact, pointing *out* of whatever the player touched
     this.upAxis = new Vec3(0, 1, 0);
-    this.actor.solidBody.body.addEventListener("collide", this.handleCollide);
+    this.actor.solidBody.body!.addEventListener("collide", this.handleCollide);
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);
   }
 
-  handleMouseMove = event => {
+  handleMouseMove = (event: MouseEvent) => {
     // if (this.enabled === false) return;
 
-    var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-    var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+    var movementX = event.movementX;
+    var movementY = event.movementY;
 
     this.yawObject.rotation.y -= movementX * 0.002;
     this.pitchObject.rotation.x -= movementY * 0.002;
@@ -59,17 +77,17 @@ export default class СontrolledBehavior {
     this.pitchObject.rotation.x = Math.max(- PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
   }
 
-  handleShoot = event => {
+  handleShoot = () => {
     const shootDirection = getShootDir(this.getCamera());
     this.gun.shoot(shootDirection);
   };
 
-  handleCollide = event => {
+  handleCollide = (event: ICollisionEvent) => {
     const contact = event.contact;
 
     // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
     // We do not yet know which one is which! Let's check.
-    if (contact.bi.id == this.actor.solidBody.body.id)  // bi is the player body, flip the contact normal
+    if (contact.bi.id == this.actor.solidBody.body!.id)  // bi is the player body, flip the contact normal
       contact.ni.negate(this.contactNormal);
     else
       this.contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is
@@ -83,9 +101,9 @@ export default class СontrolledBehavior {
     return this.yawObject;
   };
 
-  getCamera = () => this.getObject().children[0].children[0];
+  getCamera = (): Camera => <Camera>this.getObject().children[0].children[0];
 
-  update(delta) {
+  update(delta: number) {
     let isRunning = false;
     this.inputVelocity.set(0, 0, 0);
 
@@ -106,7 +124,7 @@ export default class СontrolledBehavior {
       this.inputVelocity.x = this.walkSpeed * delta;
     }
     if (this.canJump && keyboard.key[32]) {
-      this.actor.solidBody.body.velocity.y = PLAYER.JUMP_VELOCITY;
+      this.actor.solidBody.body!.velocity.y = PLAYER.JUMP_VELOCITY;
       this.canJump = false;
     }
     this.isRunning = isRunning;
@@ -119,9 +137,15 @@ export default class СontrolledBehavior {
     this.inputVelocity.applyQuaternion(this.quat);
 
     // Add to the object
-    this.actor.solidBody.body.velocity.x += this.inputVelocity.x;
-    this.actor.solidBody.body.velocity.z += this.inputVelocity.z;
+    this.actor.solidBody.body!.velocity.x += this.inputVelocity.x;
+    this.actor.solidBody.body!.velocity.z += this.inputVelocity.z;
 
-    this.yawObject.position.copy(this.actor.solidBody.body.position);
+    this.yawObject.position.copy(
+      new Vector3(
+        this.actor.solidBody.body!.position.x,
+        this.actor.solidBody.body!.position.y,
+        this.actor.solidBody.body!.position.z
+      )
+    );
   }
 }

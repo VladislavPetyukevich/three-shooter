@@ -7,14 +7,14 @@ import {
   MeshPhongMaterial,
 } from 'three';
 import { Vec3 } from 'cannon';
-import BasicScene from './Scene';
+import BasicScene, { BasicSceneProps } from './Scene';
 import EventChannel from '../EventChannel';
-import { EVENT_TYPES } from '../constants';
+import { EVENT_TYPES, ENTITY_NAME } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
 import SoundsBuffer from '../SoundsBuffer';
 import { PI_180 } from '../utils';
 
-const calculateCirclePoints = (angleStep, radius) => {
+const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
   const maxAngle = 360;
   for (let angle = 0; angle < maxAngle; angle += angleStep) {
@@ -28,7 +28,11 @@ const calculateCirclePoints = (angleStep, radius) => {
 };
 
 class Scene1 extends BasicScene {
-  constructor(props) {
+  enemiesCount: number;
+  enemySoundsBuffer: SoundsBuffer;
+  pointLight: PointLight;
+
+  constructor(props: BasicSceneProps) {
     super(props);
     this.enemiesCount = 0;
     EventChannel.addSubscriber(this.enemiesEventsSubscriber);
@@ -56,9 +60,9 @@ class Scene1 extends BasicScene {
     this.spawnEnemies();
   }
 
-  spawnEnemy(coordinates) {
+  spawnEnemy(coordinates: { x: number, y: number }) {
     this.entitiesContainer.createEntity(
-      'Enemy',
+      ENTITY_NAME.ENEMY,
       {
         playerBody: this.player.actor.solidBody.body,
         position: new Vec3(coordinates.x, 1.5, coordinates.y),
@@ -69,9 +73,9 @@ class Scene1 extends BasicScene {
     this.enemiesCount++;
   }
 
-  spawnFlyingEnemy(coordinates) {
+  spawnFlyingEnemy(coordinates: { x: number, y: number }) {
     this.entitiesContainer.createEntity(
-      'FlyingEnemy',
+      ENTITY_NAME.FLYING_ENEMY,
       {
         playerBody: this.player.actor.solidBody.body,
         position: new Vec3(coordinates.x, 5, coordinates.y)
@@ -91,7 +95,7 @@ class Scene1 extends BasicScene {
     flyingEnemySpawnCoordinates.forEach(coordinates => this.spawnFlyingEnemy(coordinates));
   }
 
-  enemiesEventsSubscriber = (eventType, targetEnemy) => {
+  enemiesEventsSubscriber = (eventType: string) => {
     switch (eventType) {
       case EVENT_TYPES.DELETE_ENEMY:
         this.enemiesCount--;
@@ -102,7 +106,7 @@ class Scene1 extends BasicScene {
     }
   }
 
-  update(delta) {
+  update(delta: number) {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.solidBody.body.position);
   }

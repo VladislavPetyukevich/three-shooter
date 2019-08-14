@@ -31,6 +31,19 @@ export const PLAYER = {
   JUMP_VELOCITY: 15
 };
 
+export enum ENTITY_NAME {
+  'PLAYER',
+  'ENEMY',
+  'FLYING_ENEMY',
+  'GUN',
+  'BULLET'
+};
+
+export enum ENTITY_TYPE {
+  INANIMATE,
+  CREATURE
+};
+
 export const ENTITY = {
   TYPE: {
     INANIMATE: 'INANIMATE',
