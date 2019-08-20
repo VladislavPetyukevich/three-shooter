@@ -1,7 +1,15 @@
-import { RepeatWrapping } from 'three';
+import { RepeatWrapping, Texture } from 'three';
 
 export default class TextureAnimator {
-  constructor(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
+  texture: Texture;
+  tilesHorizontal: number;
+  tilesVertical: number;
+  numberOfTiles: number;
+  tileDisplayDuration: number;
+  currentDisplayTime: number;
+  currentTile: number;
+
+  constructor(texture: Texture, tilesHoriz: number, tilesVert: number, numTiles: number, tileDispDuration: number) {
     this.texture = texture;
     this.tilesHorizontal = tilesHoriz;
     this.tilesVertical = tilesVert;
@@ -13,7 +21,7 @@ export default class TextureAnimator {
     this.currentTile = 0;
   }
 
-  update(delta) {
+  update(delta: number) {
     this.currentDisplayTime += delta;
     if (this.currentDisplayTime >= this.tileDisplayDuration) {
       this.currentDisplayTime -= this.tileDisplayDuration;
