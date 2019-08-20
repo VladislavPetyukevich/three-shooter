@@ -1,17 +1,21 @@
+import { EVENT_TYPES } from './constants';
+
 class EventChannel {
+  subscribers: Function[];
+
   constructor() {
     this.subscribers = [];
   }
 
-  addSubscriber(subscriber) {
+  addSubscriber(subscriber: Function) {
     this.subscribers.push(subscriber);
   }
 
-  removeSubscriber(subscriber) {
+  removeSubscriber(subscriber: Function) {
     this.subscribers = this.subscribers.filter(ownsubscriber => ownsubscriber !== subscriber);
   }
 
-  onPublish(eventType, payload) {
+  onPublish(eventType: EVENT_TYPES, payload: any) {
     this.subscribers.forEach(subscriber => subscriber(eventType, payload));
   }
 }

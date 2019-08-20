@@ -95,7 +95,7 @@ class Scene1 extends BasicScene {
     flyingEnemySpawnCoordinates.forEach(coordinates => this.spawnFlyingEnemy(coordinates));
   }
 
-  enemiesEventsSubscriber = (eventType: string) => {
+  enemiesEventsSubscriber = (eventType: EVENT_TYPES) => {
     switch (eventType) {
       case EVENT_TYPES.DELETE_ENEMY:
         this.enemiesCount--;
