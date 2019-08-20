@@ -11,7 +11,7 @@ export default class Actor {
     this.solidBody = props.solidBody;
   }
 
-  update() {
+  update(delta?: number) {
     this.solidBody.update();
   }
 }
