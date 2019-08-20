@@ -45,7 +45,7 @@ export default class СontrolledBehavior implements Behavior {
       ENTITY_NAME.GUN,
       { holderBody: this.actor.solidBody.body, holderBehavior: this, camera: camera }
     );
-    camera.add(this.gun.actor.solidBody.mesh);
+    camera.add(this.gun.actor.solidBody.mesh!);
 
     this.pitchObject = new Object3D();
     this.pitchObject.add(camera);
