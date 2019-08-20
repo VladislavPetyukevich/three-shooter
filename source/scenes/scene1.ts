@@ -11,7 +11,7 @@ import BasicScene, { BasicSceneProps } from './Scene';
 import EventChannel from '../EventChannel';
 import { EVENT_TYPES, ENTITY_NAME } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
-import SoundsBuffer from '../SoundsBuffer';
+import SoundsBuffer from '../Entities/Sounds/SoundsBuffer';
 import { PI_180 } from '../utils';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
