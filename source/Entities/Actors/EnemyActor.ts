@@ -1,4 +1,5 @@
-import { TextureLoader, MeshPhongMaterial, BoxGeometry } from 'three';
+import { TextureLoader, Material, MeshPhongMaterial, BoxGeometry } from 'three';
+import { Body } from 'cannon';
 import Actor from './Actor';
 import PhysicsBox from '../../SolidBody/PhysicsBox';
 import TextureAnimator from '../../TextureAnimator';
@@ -10,9 +11,13 @@ const WALK_TEXTURE_TILES_HORIZONTAL = 2;
 const WALK_TEXTURE_TILES_VERTICAL = 1;
 
 export default class EnemyActor extends Actor {
-  constructor(playerBody, position = { x: 0, y: 0, z: 0 }) {
+  playerBody: Body;
+  spriteMapAnimator: TextureAnimator;
+
+  constructor(playerBody: Body, position = { x: 0, y: 0, z: 0 }) {
     const spriteMap = textureLoader.load(enemyTexture);
     const geometry = new BoxGeometry(2, 4, 1);
+    const emptyMaterial = new Material();
     const material = new MeshPhongMaterial({
       map: spriteMap
     });
@@ -20,7 +25,7 @@ export default class EnemyActor extends Actor {
     super({
       solidBody: new PhysicsBox(
         geometry,
-        [null, null, null, null, material],
+        [emptyMaterial, emptyMaterial, emptyMaterial, emptyMaterial, material],
         position
       )
     });
@@ -33,13 +38,13 @@ export default class EnemyActor extends Actor {
       WALK_TEXTURE_TILES_HORIZONTAL + WALK_TEXTURE_TILES_VERTICAL,
       0.3
     );
-    this.solidBody.body.collisionResponse = true;
-    this.solidBody.body.isEnemy = true;
-    this.solidBody.mesh.receiveShadow = true;
+    this.solidBody!.body!.collisionResponse = true;
+    // this.solidBody!.body!.isEnemy = true;
+    this.solidBody!.mesh!.receiveShadow = true;
   }
 
-  update(delta) {
-    super.update(delta);
+  update(delta: number) {
+    super.update();
     this.spriteMapAnimator.update(delta);
   }
 }

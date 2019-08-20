@@ -5,28 +5,49 @@ import Gun from '../Gun';
 import EntitiesContainer from '../EntitiesContainer';
 
 export default class EnemyBehavior {
-  actor: Actor;
-  walkSpeed: number;
-  playerBody: Body;
-  gun: Gun;
+  actor?: Actor;
+  walkSpeed?: number;
+  playerBody?: Body;
+  gun?: Gun;
   nextShootInterval: number;
   lastShootSince: number;
-  onShoot: Function;
+  onShoot?: Function;
+  container?: EntitiesContainer;
 
-  constructor(actor: Actor, walkSpeed: number, playerBody:Body, container:EntitiesContainer, onShoot: Function) {
-    this.actor = actor;
+  constructor() {
+    this.nextShootInterval = 3;
+    this.lastShootSince = 0;
+  }
+
+  setWalkSpeed = (walkSpeed: number) => {
     this.walkSpeed = walkSpeed;
+    return this;
+  }
+
+  setPlayerBody = (playerBody: Body) => {
     this.playerBody = playerBody;
-    this.gun = <Gun>container.createEntity(
+    return this;
+  }
+
+  createGun = (actor: Actor, container: EntitiesContainer) => {
+    this.actor = actor;
+    this.container = container;
+    this.gun = <Gun>this.container.createEntity(
       ENTITY_NAME.GUN,
       { holderBody: this.actor.solidBody.body }
     );
-    this.nextShootInterval = 3;
-    this.lastShootSince = 0;
-    this.onShoot = onShoot;
+    return this;
+  }
+
+  setOnShootCallback = (callback: Function) => {
+    this.onShoot = callback;
+    return this;
   }
 
   update(delta: number) {
+    if (!this.actor || !this.playerBody || !this.walkSpeed) {
+      return;
+    }
     const direction = new Vec3();
     this.playerBody.position.vsub(this.actor.solidBody.body!.position, direction);
     direction.y = 0;
@@ -35,11 +56,14 @@ export default class EnemyBehavior {
     this.actor.solidBody.body!.quaternion.setFromVectors(forward, direction);
     direction.mult(this.walkSpeed, this.actor.solidBody.body!.velocity);
 
+    if (!this.gun) {
+      return;
+    }
     this.lastShootSince += delta;
     if (this.lastShootSince >= this.nextShootInterval) {
       this.lastShootSince = 0;
       this.gun.shoot(direction);
-      this.onShoot();
+      this.onShoot && this.onShoot();
     }
   }
 }
