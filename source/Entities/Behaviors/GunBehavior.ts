@@ -15,23 +15,47 @@ const getGunYShift = (angle: number) => Math.abs(Math.sin(toRadians(angle)) * BO
 const isMiddleBobPosition = (angle: number) => angle === 270 || angle === 90;
 
 export default class GunBehavior {
-  holderBody: Body;
-  holderBehavior: Behavior;
-  container: EntitiesContainer;
-  actor: Actor | undefined;
-  camera: Camera | undefined;
+  actor?: Actor;
+  holderBody?: Body;
+  holderBehavior?: Behavior;
+  container?: EntitiesContainer;
+  camera?: Camera;
   bobAngle: number;
 
-  constructor(holderBody: Body, holderBehavior: Behavior, container: EntitiesContainer, actor?: Actor, camera?: Camera) {
-    this.holderBody = holderBody;
-    this.holderBehavior = holderBehavior;
-    this.container = container;
-    this.actor = actor;
-    this.camera = camera;
+  constructor() {
     this.bobAngle = 0;
   }
 
+  setActor(actor: Actor) {
+    this.actor = actor;
+    return this;
+  }
+
+  setHolderBody(holderBody: Body) {
+    this.holderBody = holderBody;
+    return this;
+  }
+
+  setHolderBehavior(holderBehavior: Behavior) {
+    this.holderBehavior = holderBehavior;
+    return this;
+  }
+
+  setContainer(container: EntitiesContainer) {
+    this.container = container;
+    return this;
+  }
+
+  setCamera(camera: Camera) {
+    this.camera = camera;
+    return this;
+  }
+
   shoot = (direction: { x: number, y: number, z: number }) => {
+    if (!this.holderBody || !this.container) {
+      return;
+    }
+
     const shootVelocity = 70;
     const bulletShapeRadius = 0.3;
     const bulletPositionOffset = this.holderBody.shapes[0].boundingSphereRadius * 1.02 + bulletShapeRadius;
