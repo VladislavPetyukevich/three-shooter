@@ -5,7 +5,7 @@ import {
 } from 'three';
 import BasicScene from './scenes/Scene';
 import Scene1 from './scenes/scene1';
-import imageDisplayer from './ImageDisplayer';
+import imageDisplayer, { ImageDisplayer } from './ImageDisplayer';
 import HUD from './HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
 import { RenderPass } from './Postprocessing/RenderPass';
@@ -16,7 +16,7 @@ import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionS
 export default class ThreeShooter {
   currScene: BasicScene;
   hud: HUD;
-  imageDisplayer: any;
+  imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
   renderer: WebGLRenderer;
