@@ -9,7 +9,7 @@ import {
 } from 'cannon';
 import SolidBody from './SolidBody';
 
-type BoxMaterial = Material | Material[];
+type BoxMaterial = Material | Array<Material | null>;
 
 export default class PhysicsBox extends SolidBody {
   constructor(geometry: any, material: BoxMaterial, position = { x: 0, y: 0, z: 0 }, mass = 5) {
@@ -18,7 +18,7 @@ export default class PhysicsBox extends SolidBody {
     const body = new Body({ mass });
     body.addShape(boxShape);
     body.position.set(position.x, position.y, position.z);
-    const mesh = new Mesh(geometry, material);
+    const mesh = new Mesh(geometry, <Material | Material[]>material);
     mesh.position.set(position.x, position.y, position.z);
     mesh.castShadow = true;
     mesh.receiveShadow = true;

@@ -17,7 +17,6 @@ export default class EnemyActor extends Actor {
     const spriteMap = textureLoader.load(enemyTexture);
     const geometry = new BoxGeometry(3, 3, 1);
     const mass = 0.1;
-    const emptyMaterial = new Material();
     const material = new MeshPhongMaterial({
       map: spriteMap
     });
@@ -25,7 +24,7 @@ export default class EnemyActor extends Actor {
     super({
       solidBody: new PhysicsBox(
         geometry,
-        [emptyMaterial, emptyMaterial, emptyMaterial, emptyMaterial, material],
+        [null, null, null, null, material],
         position,
         mass
       )
