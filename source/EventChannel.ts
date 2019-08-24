@@ -1,4 +1,5 @@
 import { EVENT_TYPES } from './constants';
+import Entity from './Entities/Entity';
 
 class EventChannel {
   subscribers: Function[];
@@ -15,8 +16,8 @@ class EventChannel {
     this.subscribers = this.subscribers.filter(ownsubscriber => ownsubscriber !== subscriber);
   }
 
-  onPublish(eventType: EVENT_TYPES, payload: any) {
-    this.subscribers.forEach(subscriber => subscriber(eventType, payload));
+  onPublish(eventType: EVENT_TYPES, entity: Entity) {
+    this.subscribers.forEach(subscriber => subscriber(eventType, entity));
   }
 }
 

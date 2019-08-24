@@ -4,12 +4,7 @@ import Entity from './Entity';
 import SolidBody from '../SolidBody/SolidBody';
 import EventChannel from '../EventChannel';
 import { PlayerProps } from './Player';
-import Enemy from './Enemy';
-import FlyingEnemy from './FlyingEnemy';
 import { EVENT_TYPES } from '../constants';
-
-const isEnemy = (entity: Entity) =>
-  entity instanceof Enemy || entity instanceof FlyingEnemy;
 
 type PropsTypes = PlayerProps | any;
 
@@ -60,9 +55,6 @@ export default class EntitiesContainer {
     const entitiyIndex = this.entities.indexOf(entitiy);
     this.entities.splice(entitiyIndex, 1);
     EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
-    if (isEnemy(entitiy)) {
-      EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
-    }
   }
 
   createEntity(constructor: new (params: any) => Entity, params: PropsTypes): Entity {

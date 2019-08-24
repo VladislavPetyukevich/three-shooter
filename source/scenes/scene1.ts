@@ -15,6 +15,7 @@ import SoundsBuffer from '../Entities/Sounds/SoundsBuffer';
 import { PI_180 } from '../utils';
 import Enemy from '../Entities/Enemy';
 import FlyingEnemy from '../Entities/FlyingEnemy';
+import Entity from '../Entities/Entity';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -97,9 +98,14 @@ class Scene1 extends BasicScene {
     flyingEnemySpawnCoordinates.forEach(coordinates => this.spawnFlyingEnemy(coordinates));
   }
 
-  enemiesEventsSubscriber = (eventType: EVENT_TYPES) => {
+  enemiesEventsSubscriber = (eventType: EVENT_TYPES, entity: Entity) => {
     switch (eventType) {
-      case EVENT_TYPES.DELETE_ENEMY:
+      case EVENT_TYPES.DELETE_ENTITIY:
+        const isEnemy = entity instanceof Enemy;
+        const isFlyingEnemy = entity instanceof FlyingEnemy;
+        if (!isEnemy && !isFlyingEnemy) {
+          break;
+        }
         this.enemiesCount--;
         if (this.enemiesCount <= 0) {
           this.spawnEnemies();

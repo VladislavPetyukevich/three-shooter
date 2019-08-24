@@ -38,6 +38,5 @@ export enum ENTITY_TYPE {
 
 export const enum EVENT_TYPES {
   DELETE_ENTITIY,
-  DELETE_ENEMY,
   ENEMY_SHOOT
 };
