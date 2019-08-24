@@ -1,5 +1,5 @@
 import { AudioListener } from 'three';
-import { Body } from 'cannon';
+import { Body, IBodyEvent } from 'cannon';
 import Entity from './Entity';
 import EntitiesContainer from './EntitiesContainer';
 import SoundsBuffer from './Sounds/SoundsBuffer';
@@ -7,6 +7,7 @@ import EnemyActor from './Actors/EnemyActor';
 import EnemyBehavior from './Behaviors/EnemyBehavior';
 import EnemySounds from './Sounds/EnemySounds';
 import { ENTITY_TYPE, ENEMY } from '../constants';
+import { BulletBody } from '../SolidBody/PhysicsBullet';
 
 export interface EnemyProps {
   audioListener: AudioListener;
@@ -24,7 +25,8 @@ export default class Enemy extends Entity {
     super(
       ENTITY_TYPE.CREATURE,
       new EnemyActor(props.playerBody, props.position),
-      new EnemyBehavior()
+      new EnemyBehavior(),
+      ENEMY.HP
     );
 
     (<EnemyBehavior>this.behavior)
@@ -35,10 +37,17 @@ export default class Enemy extends Entity {
 
     this.audioListener = props.audioListener;
     this.sounds = new EnemySounds(this.audioListener, this.actor, props.soundsBuffer);
+    this.actor.solidBody.body!.addEventListener('collide', this.collideHandler);
   }
 
   handleShoot = () => {
     this.sounds.shoot();
+  }
+
+  collideHandler = (event: IBodyEvent) => {
+    if ((<BulletBody>event.body).isBullet) {
+      this.hp!--;
+    }
   }
 
   update(delta: number) {

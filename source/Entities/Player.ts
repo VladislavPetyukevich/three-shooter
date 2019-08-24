@@ -18,8 +18,8 @@ export default class Player extends Entity {
     super(
       ENTITY_TYPE.CREATURE,
       actor,
-      new СontrolledBehavior(actor, PLAYER.WALK_SPEED, props.camera, props.container)
+      new СontrolledBehavior(actor, PLAYER.WALK_SPEED, props.camera, props.container),
+      PLAYER.HP
     );
-    // this.actor.solidBody.body._hp = 100;
   }
 }
