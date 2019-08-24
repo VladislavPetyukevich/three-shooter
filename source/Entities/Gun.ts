@@ -10,7 +10,7 @@ import { ENTITY_TYPE } from '../constants';
 export interface GunProps {
   camera: Camera;
   holderBody: Body;
-  holderBehavior: Behavior;
+  holderBehavior?: Behavior;
   container: EntitiesContainer;
 }
 
@@ -26,6 +26,11 @@ export default class Gun extends Entity {
       .setHolderBody(props.holderBody)
       .setContainer(props.container)
       .setCamera(props.camera);
+
+    if (props.holderBehavior) {
+      (<GunBehavior>this.behavior)
+        .setHolderBehavior(props.holderBehavior);
+    }
   }
 
   shoot(direction: { x: number, y: number, z: number }) {

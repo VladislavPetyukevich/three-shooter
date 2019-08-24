@@ -6,6 +6,7 @@ import Behavior from './Behavior';
 import EntitiesContainer from '../EntitiesContainer';
 import Actor from '../Actors/Actor';
 import Bullet from '../Bullet';
+import СontrolledBehavior from './СontrolledBehavior';
 
 const BOB_DISTANCE_Y = GUN.BOB_DISTANCE / 2;
 
@@ -80,14 +81,17 @@ export default class GunBehavior implements Behavior {
     this.actor!.solidBody.mesh!.position.copy(this.camera!.position);
     this.actor!.solidBody.mesh!.position.y -= 0.3;
     this.actor!.solidBody.mesh!.position.z -= 0.3;
-    // if (this.holderBehavior.isRunning || !isMiddleBobPosition(this.bobAngle)) {
-    //   this.actor.solidBody.mesh.position.x += getGunXShift(this.bobAngle);
-    //   this.actor.solidBody.mesh.position.y += getGunYShift(this.bobAngle);
-    //   this.bobAngle += GUN.BOB_SPEED;
-    //   if (this.bobAngle >= 360) {
-    //     this.bobAngle = 0;
-    //   }
-    // }
+    if (!this.holderBehavior) {
+      return;
+    }
+    if ((<СontrolledBehavior>this.holderBehavior).isRunning || !isMiddleBobPosition(this.bobAngle)) {
+      this.actor!.solidBody.mesh!.position.x += getGunXShift(this.bobAngle);
+      this.actor!.solidBody.mesh!.position.y += getGunYShift(this.bobAngle);
+      this.bobAngle += GUN.BOB_SPEED;
+      if (this.bobAngle >= 360) {
+        this.bobAngle = 0;
+      }
+    }
   }
 
   update() {
