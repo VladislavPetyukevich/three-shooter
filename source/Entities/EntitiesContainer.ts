@@ -8,7 +8,7 @@ import Enemy from './Enemy';
 import FlyingEnemy from './FlyingEnemy';
 import Gun from './Gun';
 import Bullet from './Bullet';
-import { ENTITY_TYPE, ENTITY_NAME, EVENT_TYPES } from '../constants';
+import { ENTITY_NAME, EVENT_TYPES } from '../constants';
 
 const isEnemy = (entity: Entity) =>
   entity instanceof Enemy || entity instanceof FlyingEnemy;
@@ -36,39 +36,34 @@ export default class EntitiesContainer {
     if (solidBody.body) this.world.remove(solidBody.body);
   }
 
-  addCollideHandler(entitiy: Entity) {
-    if (entitiy.actor.solidBody && entitiy.actor.solidBody.body) {
-      entitiy.actor.solidBody.body.addEventListener("collide", (event: IBodyEvent) => {
-        console.log('TO DESTROY: ', event.body);
-        // if (event.body.isBullet) {
-        //   event.target._hp--;
-        // }
-      });
-    }
-  }
-
   add(entitiy: Entity) {
-    if (entitiy.type === ENTITY_TYPE.CREATURE) {
-      this.addCollideHandler(entitiy);
-    }
     if (entitiy.actor) {
       this.addSolidBody(entitiy.actor.solidBody);
     }
     this.entities.push(entitiy);
   }
 
-  deleteEntitiyByBodyId(id: number) {
+  getEntitiyByBodyId(id: number) {
     const entities = this.entities;
     for (var i = entities.length; i--;) {
       const entitiy = entities[i];
-      if (entitiy.type !== ENTITY_TYPE.CREATURE) continue;
-      if (entitiy.actor.solidBody.body!.id !== id) continue;
-      this.entities.splice(i, 1);
-      EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
-      if (isEnemy(entitiy)) {
-        EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
-      }
+      if (!entitiy.actor.solidBody.body) { continue; }
+      if (entitiy.actor.solidBody.body.id !== id) { continue; }
+      return entitiy;
+    }
+    return;
+  }
+
+  deleteEntitiyByBodyId(id: number) {
+    const entitiy = this.getEntitiyByBodyId(id);
+    if (!entitiy) {
       return;
+    }
+    const entitiyIndex = this.entities.indexOf(entitiy);
+    this.entities.splice(entitiyIndex, 1);
+    EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
+    if (isEnemy(entitiy)) {
+      EventChannel.onPublish(EVENT_TYPES.DELETE_ENEMY, entitiy);
     }
   }
 
@@ -102,14 +97,9 @@ export default class EntitiesContainer {
 
   update(delta: number) {
     this.entities.forEach(entitiy => entitiy.update(delta));
-    const entitiesToDelete = this.entities.filter(entitiy => {
-      if (entitiy.type === ENTITY_TYPE.CREATURE) {
-        console.log('0 HP IS NOT HANDLED');
-        // if (entitiy.actor.solidBody.body._hp <= 0) {
-        //   return true;
-        // }
-      }
-    }
+    const entitiesToDelete = this.entities.filter(entitiy => (
+      (entitiy.hasOwnProperty('hp')) && (entitiy.hp! <= 0)
+    )
     );
 
     entitiesToDelete.forEach(entitiy => this.deleteEntity(entitiy));
