@@ -14,7 +14,7 @@ const getGunYShift = (angle: number) => Math.abs(Math.sin(toRadians(angle)) * BO
 
 const isMiddleBobPosition = (angle: number) => angle === 270 || angle === 90;
 
-export default class GunBehavior {
+export default class GunBehavior implements Behavior {
   actor?: Actor;
   holderBody?: Body;
   holderBehavior?: Behavior;
