@@ -1,5 +1,4 @@
 import { Vec3, Body } from 'cannon';
-import { ENTITY_NAME } from '../../constants';
 import Actor from '../Actors/Actor';
 import Behavior from './Behavior';
 import Gun from '../Gun';
@@ -34,7 +33,7 @@ export default class EnemyBehavior implements Behavior {
     this.actor = actor;
     this.container = container;
     this.gun = <Gun>this.container.createEntity(
-      ENTITY_NAME.GUN,
+      Gun,
       { holderBody: this.actor.solidBody.body }
     );
     return this;

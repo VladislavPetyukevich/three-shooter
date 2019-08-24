@@ -1,7 +1,7 @@
 import { Vector3, Object3D, Quaternion, Euler, Ray, Camera } from 'three';
 import { Vec3, ICollisionEvent } from 'cannon';
 import keyboard from '../../PayerControls/Keyboard';
-import { PLAYER, ENTITY_NAME } from '../../constants';
+import { PLAYER } from '../../constants';
 import Actor from '../Actors/Actor';
 import Behavior from './Behavior';
 import EntitiesContainer from '../EntitiesContainer';
@@ -42,7 +42,7 @@ export default class СontrolledBehavior implements Behavior {
     this.isRunning = false;
 
     this.gun = <Gun>container.createEntity(
-      ENTITY_NAME.GUN,
+      Gun,
       { holderBody: this.actor.solidBody.body, holderBehavior: this, camera: camera }
     );
     camera.add(this.gun.actor.solidBody.mesh!);

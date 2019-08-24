@@ -1,14 +1,12 @@
 import { Scene } from 'three';
-import { World, IBodyEvent } from 'cannon';
+import { World } from 'cannon';
 import Entity from './Entity';
 import SolidBody from '../SolidBody/SolidBody';
 import EventChannel from '../EventChannel';
-import Player, { PlayerProps } from './Player';
+import { PlayerProps } from './Player';
 import Enemy from './Enemy';
 import FlyingEnemy from './FlyingEnemy';
-import Gun from './Gun';
-import Bullet from './Bullet';
-import { ENTITY_NAME, EVENT_TYPES } from '../constants';
+import { EVENT_TYPES } from '../constants';
 
 const isEnemy = (entity: Entity) =>
   entity instanceof Enemy || entity instanceof FlyingEnemy;
@@ -67,26 +65,9 @@ export default class EntitiesContainer {
     }
   }
 
-  createEntity(name: ENTITY_NAME, params: PropsTypes) {
-    let newEntity;
-    switch (name) {
-      case ENTITY_NAME.PLAYER:
-        newEntity = new Player({ ...params, container: this });
-        break;
-      case ENTITY_NAME.ENEMY:
-        newEntity = new Enemy({ ...params, container: this });
-        break;
-      case ENTITY_NAME.FLYING_ENEMY:
-        newEntity = new FlyingEnemy({ ...params, container: this });
-        break;
-      case ENTITY_NAME.GUN:
-        newEntity = new Gun({ ...params, container: this });
-        break;
-      case ENTITY_NAME.BULLET:
-        newEntity = new Bullet({ ...params, container: this });
-        break;
-    }
-    this.add(newEntity as Entity);
+  createEntity(constructor: new (params: any) => Entity, params: PropsTypes): Entity {
+    const newEntity = new constructor({ ...params, container: this })
+    this.add(newEntity);
     return newEntity;
   }
 

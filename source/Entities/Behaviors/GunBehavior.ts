@@ -1,6 +1,6 @@
 import { Vector3, Camera } from 'three';
 import { Body } from 'cannon';
-import { GUN, ENTITY_NAME } from '../../constants';
+import { GUN } from '../../constants';
 import { toRadians } from '../../utils';
 import Behavior from './Behavior';
 import EntitiesContainer from '../EntitiesContainer';
@@ -67,7 +67,7 @@ export default class GunBehavior implements Behavior {
     );
     bulletPosition.y -= 0.3 * 1.02;
     const bullet = <Bullet>this.container.createEntity(
-      ENTITY_NAME.BULLET,
+      Bullet,
       { position: bulletPosition }
     );
     bullet.actor.solidBody.body!.velocity.set(

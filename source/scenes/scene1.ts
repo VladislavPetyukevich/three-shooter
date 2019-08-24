@@ -9,10 +9,12 @@ import {
 import { Vec3 } from 'cannon';
 import BasicScene, { BasicSceneProps } from './Scene';
 import EventChannel from '../EventChannel';
-import { EVENT_TYPES, ENTITY_NAME } from '../constants';
+import { EVENT_TYPES } from '../constants';
 import shootSoundMp3 from '../assets/shoot.mp3';
 import SoundsBuffer from '../Entities/Sounds/SoundsBuffer';
 import { PI_180 } from '../utils';
+import Enemy from '../Entities/Enemy';
+import FlyingEnemy from '../Entities/FlyingEnemy';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -62,7 +64,7 @@ class Scene1 extends BasicScene {
 
   spawnEnemy(coordinates: { x: number, y: number }) {
     this.entitiesContainer.createEntity(
-      ENTITY_NAME.ENEMY,
+      Enemy,
       {
         playerBody: this.player.actor.solidBody.body,
         position: new Vec3(coordinates.x, 1.5, coordinates.y),
@@ -75,7 +77,7 @@ class Scene1 extends BasicScene {
 
   spawnFlyingEnemy(coordinates: { x: number, y: number }) {
     this.entitiesContainer.createEntity(
-      ENTITY_NAME.FLYING_ENEMY,
+      FlyingEnemy,
       {
         playerBody: this.player.actor.solidBody.body,
         position: new Vec3(coordinates.x, 5, coordinates.y)
