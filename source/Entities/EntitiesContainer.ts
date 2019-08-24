@@ -3,10 +3,7 @@ import { World } from 'cannon';
 import Entity from './Entity';
 import SolidBody from '../SolidBody/SolidBody';
 import EventChannel from '../EventChannel';
-import { PlayerProps } from './Player';
 import { EVENT_TYPES } from '../constants';
-
-type PropsTypes = PlayerProps | any;
 
 export default class EntitiesContainer {
   scene: Scene;
@@ -57,7 +54,7 @@ export default class EntitiesContainer {
     EventChannel.onPublish(EVENT_TYPES.DELETE_ENTITIY, entitiy);
   }
 
-  createEntity(constructor: new (params: any) => Entity, params: PropsTypes): Entity {
+  createEntity(constructor: new (params: any) => Entity, params: any): Entity {
     const newEntity = new constructor({ ...params, container: this })
     this.add(newEntity);
     return newEntity;
