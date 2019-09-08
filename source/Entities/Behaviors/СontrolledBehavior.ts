@@ -1,10 +1,10 @@
 import { Vector3, Object3D, Quaternion, Euler, Ray, Camera } from 'three';
 import { Vec3, ICollisionEvent } from 'cannon';
+import Actor from '@/core/Entities/Actor';
+import Behavior from '@/core/Entities/Behavior';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import keyboard from '@/PayerControls/Keyboard';
 import { PLAYER } from '@/constants';
-import Actor from '@/Entities/Actors/Actor';
-import Behavior from './Behavior';
-import EntitiesContainer from '@/Entities/EntitiesContainer';
 import Gun from '@/Entities/Gun';
 
 const PI_2 = Math.PI / 2;

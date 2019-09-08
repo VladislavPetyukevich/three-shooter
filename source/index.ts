@@ -3,7 +3,7 @@ import {
   WebGLRenderer,
   BasicShadowMap
 } from 'three';
-import BasicScene from './scenes/Scene';
+import BasicScene from './core/Scene';
 import Scene1 from './scenes/scene1';
 import imageDisplayer, { ImageDisplayer } from './ImageDisplayer';
 import HUD from './HUD';

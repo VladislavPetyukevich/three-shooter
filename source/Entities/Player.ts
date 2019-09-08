@@ -1,9 +1,9 @@
 import { Vector3, Camera } from 'three';
+import Entity from '@/core/Entities/Entity';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import PlayerActor from './Actors/PlayerActor';
 import СontrolledBehavior from './Behaviors/СontrolledBehavior';
-import EntitiesContainer from './EntitiesContainer';
 import { ENTITY_TYPE, PLAYER } from '@/constants';
-import Entity from './Entity';
 
 export interface PlayerProps {
   type: ENTITY_TYPE,

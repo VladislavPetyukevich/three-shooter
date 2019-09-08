@@ -7,15 +7,15 @@ import {
   MeshPhongMaterial,
 } from 'three';
 import { Vec3 } from 'cannon';
-import BasicScene, { BasicSceneProps } from './Scene';
-import EventChannel from '@/EventChannel';
+import BasicScene, { BasicSceneProps } from '../core/Scene';
+import EventChannel from '@/core/EventChannel';
 import { EVENT_TYPES } from '@/constants';
 import shootSoundMp3 from '@/assets/shoot.mp3';
-import SoundsBuffer from '@/Entities/Sounds/SoundsBuffer';
+import SoundsBuffer from '@/core/Entities/SoundsBuffer';
 import { PI_180 } from '@/utils';
 import Enemy from '@/Entities/Enemy';
 import FlyingEnemy from '@/Entities/FlyingEnemy';
-import Entity from '@/Entities/Entity';
+import Entity from '@/core/Entities/Entity';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];

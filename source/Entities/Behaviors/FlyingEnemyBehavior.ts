@@ -1,6 +1,6 @@
-import Actor from '@/Entities/Actors/Actor';
-import Behavior from './Behavior';
 import { Vec3, Body } from 'cannon';
+import Actor from '@/core/Entities/Actor';
+import Behavior from '@/core/Entities/Behavior';
 import { toRadians } from '@/utils';
 import { FLYING_ENEMY } from '@/constants';
 

@@ -1,5 +1,5 @@
 import InvisPhysicsSphere from '@/SolidBody/InvisPhysicsSphere';
-import Actor from './Actor';
+import Actor from '@/core/Entities/Actor';
 import { PLAYER } from '@/constants';
 
 export default class PlayerActor extends Actor {

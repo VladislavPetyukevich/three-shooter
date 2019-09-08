@@ -1,7 +1,7 @@
-import Entity from './Entity';
+import Entity from '@/core/Entities/Entity';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import BulletActor from './Actors/BulletActor';
 import BulletBehavior from './Behaviors/BulletBehavior';
-import EntitiesContainer from './EntitiesContainer';
 import { ENTITY_TYPE } from '@/constants';
 
 export interface BulletProps {

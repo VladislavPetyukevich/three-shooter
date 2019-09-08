@@ -1,8 +1,8 @@
 import { Vec3, Body } from 'cannon';
-import Actor from '@/Entities/Actors/Actor';
-import Behavior from './Behavior';
+import Actor from '@/core/Entities/Actor';
+import Behavior from '@/core/Entities/Behavior';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import Gun from '@/Entities/Gun';
-import EntitiesContainer from '@/Entities/EntitiesContainer';
 
 export default class EnemyBehavior implements Behavior {
   actor?: Actor;

@@ -1,10 +1,10 @@
 import { Vector3, Camera } from 'three';
 import { Body } from 'cannon';
+import Actor from '@/core/Entities/Actor';
+import Behavior from '@/core/Entities/Behavior';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import { GUN } from '@/constants';
 import { toRadians } from '@/utils';
-import Behavior from './Behavior';
-import EntitiesContainer from '@/Entities/EntitiesContainer';
-import Actor from '@/Entities/Actors/Actor';
 import Bullet from '@/Entities/Bullet';
 import СontrolledBehavior from './СontrolledBehavior';
 

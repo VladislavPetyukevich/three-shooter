@@ -3,7 +3,7 @@ import {
   CylinderGeometry,
   MeshPhongMaterial
 } from 'three';
-import Actor from './Actor';
+import Actor from '@/core/Entities/Actor';
 
 export default class GunActor extends Actor {
   constructor() {

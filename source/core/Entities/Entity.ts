@@ -1,6 +1,6 @@
 import { ENTITY_TYPE } from '@/constants';
-import Actor from './Actors/Actor';
-import Behavior from './Behaviors/Behavior';
+import Actor from './Actor';
+import Behavior from './Behavior';
 
 export default class Entity {
   type: ENTITY_TYPE;

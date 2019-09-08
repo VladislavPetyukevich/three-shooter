@@ -1,4 +1,4 @@
-import Actor from './Actor';
+import Actor from '@/core/Entities/Actor';
 import PhysicsBullet from '@/SolidBody/PhysicsBullet';
 
 export default class BulletActor extends Actor {

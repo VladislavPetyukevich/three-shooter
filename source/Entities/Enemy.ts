@@ -1,8 +1,8 @@
 import { AudioListener } from 'three';
 import { Body, IBodyEvent } from 'cannon';
-import Entity from './Entity';
-import EntitiesContainer from './EntitiesContainer';
-import SoundsBuffer from './Sounds/SoundsBuffer';
+import Entity from '@/core/Entities/Entity';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
+import SoundsBuffer from '@/core/Entities/SoundsBuffer';
 import EnemyActor from './Actors/EnemyActor';
 import EnemyBehavior from './Behaviors/EnemyBehavior';
 import EnemySounds from './Sounds/EnemySounds';

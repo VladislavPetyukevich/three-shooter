@@ -2,7 +2,7 @@ import { Scene } from 'three';
 import { World } from 'cannon';
 import Entity from './Entity';
 import SolidBody from '@/SolidBody/SolidBody';
-import EventChannel from '@/EventChannel';
+import EventChannel from '@/core/EventChannel';
 import { EVENT_TYPES } from '@/constants';
 
 export default class EntitiesContainer {

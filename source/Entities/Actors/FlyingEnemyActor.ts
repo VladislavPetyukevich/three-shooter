@@ -1,6 +1,6 @@
-import { TextureLoader, Material, MeshPhongMaterial, BoxGeometry } from 'three';
+import { TextureLoader, MeshPhongMaterial, BoxGeometry } from 'three';
 import { Body } from 'cannon';
-import Actor from './Actor';
+import Actor from '@/core/Entities/Actor';
 import PhysicsBox from '@/SolidBody/PhysicsBox';
 import TextureAnimator from '@/TextureAnimator';
 import enemyTexture from '@/assets/eye.png';

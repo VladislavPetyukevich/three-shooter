@@ -1,4 +1,4 @@
-import { EVENT_TYPES } from './constants';
+import { EVENT_TYPES } from '@/constants';
 import Entity from './Entities/Entity';
 
 class EventChannel {

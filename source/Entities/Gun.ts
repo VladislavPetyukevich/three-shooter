@@ -1,8 +1,8 @@
 import { Camera } from 'three';
 import { Body } from 'cannon';
-import Entity from './Entity';
-import Behavior from './Behaviors/Behavior';
-import EntitiesContainer from './EntitiesContainer';
+import Entity from '@/core/Entities/Entity';
+import Behavior from '@/core/Entities/Behavior';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import GunActor from './Actors/GunActor';
 import GunBehavior from './Behaviors/GunBehavior';
 import { ENTITY_TYPE } from '@/constants';

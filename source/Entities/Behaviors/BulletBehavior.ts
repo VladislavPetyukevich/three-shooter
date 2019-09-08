@@ -1,6 +1,6 @@
+import Behavior from '@/core/Entities/Behavior';
+import EntitiesContainer from '@/core/Entities/EntitiesContainer';
 import { BULLET } from '@/constants';
-import Behavior from './Behavior';
-import EntitiesContainer from '@/Entities/EntitiesContainer';
 
 export default class BulletBehavior implements Behavior {
   container: EntitiesContainer;
