@@ -1,4 +1,4 @@
-import SolidBody from '../../SolidBody/SolidBody';
+import SolidBody from '@/SolidBody/SolidBody';
 
 export interface ActorProps {
   solidBody: SolidBody;

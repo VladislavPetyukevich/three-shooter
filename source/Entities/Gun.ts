@@ -5,7 +5,7 @@ import Behavior from './Behaviors/Behavior';
 import EntitiesContainer from './EntitiesContainer';
 import GunActor from './Actors/GunActor';
 import GunBehavior from './Behaviors/GunBehavior';
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE } from '@/constants';
 
 export interface GunProps {
   camera: Camera;

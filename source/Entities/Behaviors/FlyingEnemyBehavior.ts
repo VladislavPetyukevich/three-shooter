@@ -1,8 +1,8 @@
-import Actor from '../Actors/Actor';
+import Actor from '@/Entities/Actors/Actor';
 import Behavior from './Behavior';
 import { Vec3, Body } from 'cannon';
-import { toRadians } from '../../utils';
-import { FLYING_ENEMY } from '../../constants';
+import { toRadians } from '@/utils';
+import { FLYING_ENEMY } from '@/constants';
 
 const getXShift = (angle: number) => Math.cos(toRadians(angle)) * FLYING_ENEMY.SHAKE_DISTANCE;
 

@@ -1,7 +1,7 @@
 import { SphereGeometry, MeshBasicMaterial } from 'three';
 import { Body } from 'cannon';
 import PhysicsBall from './PhysicsBall';
-import { BULLET } from '../constants';
+import { BULLET } from '@/constants';
 
 export interface BulletBody extends Body {
   isBullet?: true;

@@ -14,8 +14,8 @@ import {
   Plane,
   Vec3
 } from 'cannon';
-import Player from '../Entities/Player';
-import EntitiesContainer from '../Entities/EntitiesContainer';
+import Player from '@/Entities/Player';
+import EntitiesContainer from '@/Entities/EntitiesContainer';
 
 export interface BasicSceneProps {
   renderWidth: number;

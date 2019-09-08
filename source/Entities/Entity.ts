@@ -1,4 +1,4 @@
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE } from '@/constants';
 import Actor from './Actors/Actor';
 import Behavior from './Behaviors/Behavior';
 

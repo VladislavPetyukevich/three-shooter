@@ -8,14 +8,14 @@ import {
 } from 'three';
 import { Vec3 } from 'cannon';
 import BasicScene, { BasicSceneProps } from './Scene';
-import EventChannel from '../EventChannel';
-import { EVENT_TYPES } from '../constants';
-import shootSoundMp3 from '../assets/shoot.mp3';
-import SoundsBuffer from '../Entities/Sounds/SoundsBuffer';
-import { PI_180 } from '../utils';
-import Enemy from '../Entities/Enemy';
-import FlyingEnemy from '../Entities/FlyingEnemy';
-import Entity from '../Entities/Entity';
+import EventChannel from '@/EventChannel';
+import { EVENT_TYPES } from '@/constants';
+import shootSoundMp3 from '@/assets/shoot.mp3';
+import SoundsBuffer from '@/Entities/Sounds/SoundsBuffer';
+import { PI_180 } from '@/utils';
+import Enemy from '@/Entities/Enemy';
+import FlyingEnemy from '@/Entities/FlyingEnemy';
+import Entity from '@/Entities/Entity';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];

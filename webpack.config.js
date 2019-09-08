@@ -44,7 +44,10 @@ const common = {
     library: 'ThreeShooter'
   },
   resolve: {
-    extensions: ['.js', '.ts']
+    alias: {
+      '@': path.resolve(__dirname, 'source'),
+    },
+    extensions: ['.js', '.ts'],
   },
   module: {
     rules: [

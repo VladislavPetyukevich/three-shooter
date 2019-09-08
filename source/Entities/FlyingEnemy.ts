@@ -2,8 +2,8 @@ import { Body, IBodyEvent } from 'cannon';
 import Entity from './Entity';
 import FlyingEnemyActor from './Actors/FlyingEnemyActor';
 import FlyingEnemyBehavior from './Behaviors/FlyingEnemyBehavior';
-import { ENTITY_TYPE, FLYING_ENEMY } from '../constants';
-import { BulletBody } from '../SolidBody/PhysicsBullet';
+import { ENTITY_TYPE, FLYING_ENEMY } from '@/constants';
+import { BulletBody } from '@/SolidBody/PhysicsBullet';
 
 export interface FlyingEnemyProps {
   playerBody: Body;

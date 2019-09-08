@@ -1,9 +1,9 @@
 import { Scene } from 'three';
 import { World } from 'cannon';
 import Entity from './Entity';
-import SolidBody from '../SolidBody/SolidBody';
-import EventChannel from '../EventChannel';
-import { EVENT_TYPES } from '../constants';
+import SolidBody from '@/SolidBody/SolidBody';
+import EventChannel from '@/EventChannel';
+import { EVENT_TYPES } from '@/constants';
 
 export default class EntitiesContainer {
   scene: Scene;

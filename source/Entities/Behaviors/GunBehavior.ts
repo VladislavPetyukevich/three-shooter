@@ -1,11 +1,11 @@
 import { Vector3, Camera } from 'three';
 import { Body } from 'cannon';
-import { GUN } from '../../constants';
-import { toRadians } from '../../utils';
+import { GUN } from '@/constants';
+import { toRadians } from '@/utils';
 import Behavior from './Behavior';
-import EntitiesContainer from '../EntitiesContainer';
-import Actor from '../Actors/Actor';
-import Bullet from '../Bullet';
+import EntitiesContainer from '@/Entities/EntitiesContainer';
+import Actor from '@/Entities/Actors/Actor';
+import Bullet from '@/Entities/Bullet';
 import СontrolledBehavior from './СontrolledBehavior';
 
 const BOB_DISTANCE_Y = GUN.BOB_DISTANCE / 2;

@@ -1,6 +1,6 @@
 import { PositionalAudio } from 'three';
 import Sounds from './Sounds';
-import { ENEMY } from '../../constants';
+import { ENEMY } from '@/constants';
 
 export default class EnemySounds extends Sounds {
   shoot() {

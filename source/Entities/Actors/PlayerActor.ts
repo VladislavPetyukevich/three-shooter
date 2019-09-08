@@ -1,6 +1,6 @@
-import InvisPhysicsSphere from '../../SolidBody/InvisPhysicsSphere';
+import InvisPhysicsSphere from '@/SolidBody/InvisPhysicsSphere';
 import Actor from './Actor';
-import { PLAYER } from '../../constants';
+import { PLAYER } from '@/constants';
 
 export default class PlayerActor extends Actor {
   constructor(position = { x: 0, y: 0, z: 0 }) {
