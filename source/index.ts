@@ -5,6 +5,7 @@ import {
 } from 'three';
 import BasicScene from './core/Scene';
 import Scene1 from './scenes/scene1';
+import TestScene from './scenes/testScene';
 import imageDisplayer, { ImageDisplayer } from './ImageDisplayer';
 import HUD from './HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
@@ -24,6 +25,7 @@ export default class ThreeShooter {
 
   constructor(props: any) {
     this.currScene = new Scene1(props);
+    // this.currScene = new TestScene(props);
     this.hud = new HUD();
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
