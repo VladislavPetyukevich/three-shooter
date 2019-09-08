@@ -1,6 +1,7 @@
 import {
   Material,
-  Mesh
+  Mesh,
+  BoxGeometry
 } from 'three';
 import {
   Body,
@@ -12,7 +13,7 @@ import SolidBody from './SolidBody';
 type BoxMaterial = Material | Array<Material | null>;
 
 export default class PhysicsBox extends SolidBody {
-  constructor(geometry: any, material: BoxMaterial, position = { x: 0, y: 0, z: 0 }, mass = 5) {
+  constructor(geometry: BoxGeometry, material: BoxMaterial, position = { x: 0, y: 0, z: 0 }, mass = 5) {
     const halfExtents = new Vec3(geometry.parameters.width / 2, geometry.parameters.height / 2, geometry.parameters.depth / 2);
     const boxShape = new Box(halfExtents);
     const body = new Body({ mass });
