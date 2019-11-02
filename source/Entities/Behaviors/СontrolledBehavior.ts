@@ -78,5 +78,6 @@ export default class СontrolledBehavior implements Behavior {
     }
 
     this.isRunning = isRunning;
+    this.actor.mesh.position.copy(this.camera.position);
   }
 }
