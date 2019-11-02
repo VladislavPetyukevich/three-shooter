@@ -12,6 +12,7 @@ export class EntitiesContainer {
 
   add(entitiy: Entity) {
     this.entities.push(entitiy);
+    this.scene.add(entitiy.actor.mesh);
   }
 
   createEntity(constructor: new (params: any) => Entity, params: any): Entity {

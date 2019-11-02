@@ -57,7 +57,6 @@ export class TestScene extends BasicScene {
       Player,
       { camera: this.camera, position: new Vector3(0, PLAYER.BODY_HEIGHT, 0) }
     );
-    this.scene.add(this.player.actor.mesh);
   }
 
   spawnCube(coordinates: { x: number, y: number }) {
