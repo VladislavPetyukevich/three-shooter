@@ -47,7 +47,7 @@ export default class ThreeShooter {
     const effectColorCorrection = new ShaderPass(ColorCorrectionShader);
     this.composer.addPass(effectColorCorrection);
 
-    const effectFilm = new FilmPass(0.35, 0.025, 648, 0);
+    const effectFilm = new FilmPass(0.15, 0.015, 648, 0);
     this.composer.addPass(effectFilm);
 
     props.renderContainer.appendChild(this.renderer.domElement);
