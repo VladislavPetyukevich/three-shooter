@@ -2,8 +2,7 @@ import { Camera, Vector2 } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import keyboard from '@/PayerControls/Keyboard';
-
-const PI_2 = Math.PI / 2;
+import { PI_2 } from '@/constants';
 
 interface СontrolledBehaviorProps {
   actor: Actor;

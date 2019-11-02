@@ -10,7 +10,7 @@ import {
   Vector3,
 } from 'three';
 import BasicScene, { BasicSceneProps } from '@/core/Scene';
-import { PI_180 } from '@/utils';
+import { PI_180 } from '@/constants';
 import Player from '@/Entities/Player';
 import { PLAYER } from '@/constants';
 

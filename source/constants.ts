@@ -1,3 +1,7 @@
+export const PI_180 = Math.PI / 180;
+
+export const PI_2 = Math.PI / 2;
+
 export const GUN = {
   BOB_SPEED: 5,
   BOB_DISTANCE: 0.05

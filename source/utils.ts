@@ -1,3 +1,3 @@
-export const PI_180 = Math.PI / 180;
+import { PI_180 } from '@/constants';
 
 export const toRadians = (degrees: number) => degrees * PI_180;
