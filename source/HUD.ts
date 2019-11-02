@@ -2,7 +2,7 @@ import { TextureLoader, Scene, OrthographicCamera, SpriteMaterial, Sprite } from
 
 const textureLoader = new TextureLoader();
 
-class HUD {
+export class HUD {
   scene: Scene;
   camera: OrthographicCamera;
 
@@ -13,5 +13,3 @@ class HUD {
     this.camera = new OrthographicCamera(-width, width, height, -height, - 500, 1000);
   }
 }
-
-export default HUD;

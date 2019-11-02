@@ -31,4 +31,4 @@ export class ImageDisplayer {
 
 const imageDisplayer = new ImageDisplayer();
 
-export default imageDisplayer;
+export {imageDisplayer};

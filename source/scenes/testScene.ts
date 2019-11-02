@@ -9,9 +9,9 @@ import {
   MeshBasicMaterial,
   Vector3,
 } from 'three';
-import BasicScene, { BasicSceneProps } from '@/core/Scene';
+import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { PI_180 } from '@/constants';
-import Player from '@/Entities/Player';
+import { Player } from '@/Entities/Player';
 import { PLAYER } from '@/constants';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
@@ -27,7 +27,7 @@ const calculateCirclePoints = (angleStep: number, radius: number) => {
   return points;
 };
 
-class TestScene extends BasicScene {
+export class TestScene extends BasicScene {
   pointLight: PointLight;
   cubes: Mesh[];
   player: Player;
@@ -87,5 +87,3 @@ class TestScene extends BasicScene {
     this.pointLight.position.copy(this.player.actor.mesh.position);
   }
 }
-
-export default TestScene;

@@ -2,7 +2,7 @@ import { AudioLoader, AudioBuffer } from 'three';
 
 const audioLoader = new AudioLoader();
 
-export default class SoundsBuffer {
+export class SoundsBuffer {
   buffers: AudioBuffer[];
 
   constructor() {

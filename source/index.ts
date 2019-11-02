@@ -3,10 +3,10 @@ import {
   WebGLRenderer,
   BasicShadowMap
 } from 'three';
-import BasicScene from './core/Scene';
-import TestScene from './scenes/testScene';
-import imageDisplayer, { ImageDisplayer } from './ImageDisplayer';
-import HUD from './HUD';
+import { BasicScene } from './core/Scene';
+import { TestScene } from './scenes/testScene';
+import { ImageDisplayer, imageDisplayer } from './ImageDisplayer';
+import { HUD } from './HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
 import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';

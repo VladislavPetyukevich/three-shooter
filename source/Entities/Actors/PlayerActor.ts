@@ -6,7 +6,7 @@ interface ActorProps {
   position: Vector3;
 }
 
-export default class PlayerActor implements Actor {
+export class PlayerActor implements Actor {
   mesh: Mesh;
 
   constructor(props: ActorProps) {

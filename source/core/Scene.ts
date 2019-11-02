@@ -3,14 +3,14 @@ import {
   PerspectiveCamera,
   AudioListener
 } from 'three';
-import EntitiesContainer from '@/core/Entities/EntitiesContainer';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 export interface BasicSceneProps {
   renderWidth: number;
   renderHeight: number;
 };
 
-export default class BasicScene {
+export class BasicScene {
   scene: Scene;
   camera: PerspectiveCamera;
   audioListener: AudioListener;

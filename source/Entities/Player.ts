@@ -1,8 +1,8 @@
 import { Vector3, Camera } from 'three';
-import Entity from '@/core/Entities/Entity';
-import EntitiesContainer from '@/core/Entities/EntitiesContainer';
-import PlayerActor from './Actors/PlayerActor';
-import СontrolledBehavior from './Behaviors/СontrolledBehavior';
+import { Entity } from '@/core/Entities/Entity';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { PlayerActor } from './Actors/PlayerActor';
+import { СontrolledBehavior } from './Behaviors/СontrolledBehavior';
 import { ENTITY_TYPE, PLAYER } from '@/constants';
 
 export interface PlayerProps {
@@ -12,7 +12,7 @@ export interface PlayerProps {
   camera: Camera;
 }
 
-export default class Player extends Entity {
+export class Player extends Entity {
   constructor(props: PlayerProps) {
     const actor = new PlayerActor({
       position: new Vector3(props.position.x, props.position.y / 2, props.position.z),

@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '@/constants';
-import Entity from './Entities/Entity';
+import { Entity } from './Entities/Entity';
 
 class EventChannel {
   subscribers: Function[];
@@ -21,4 +21,5 @@ class EventChannel {
   }
 }
 
-export default new EventChannel();
+const eventChannel = new EventChannel();
+export { eventChannel };

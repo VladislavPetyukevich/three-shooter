@@ -1,6 +1,6 @@
 import { RepeatWrapping, Texture } from 'three';
 
-export default class TextureAnimator {
+export class TextureAnimator {
   texture: Texture;
   tilesHorizontal: number;
   tilesVertical: number;

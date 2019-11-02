@@ -1,7 +1,7 @@
 import { Actor } from './Actor';
 import { Behavior } from './Behavior';
 
-export default class Entity {
+export class Entity {
   actor: Actor;
   behavior: Behavior;
 

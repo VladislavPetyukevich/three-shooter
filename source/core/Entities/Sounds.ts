@@ -1,8 +1,8 @@
 import { AudioListener } from 'three';
 import { Actor } from '@/core/Entities/Actor';
-import SoundsBuffer from './SoundsBuffer';
+import { SoundsBuffer } from './SoundsBuffer';
 
-export default class Sounds {
+export class Sounds {
   audioListener: AudioListener;
   actor: Actor;
   soundsBuffer: SoundsBuffer;

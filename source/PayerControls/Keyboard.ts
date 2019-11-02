@@ -16,4 +16,4 @@ class Keyboard {
 
 var keyboard = new Keyboard();
 
-export default keyboard;
+export { keyboard };
