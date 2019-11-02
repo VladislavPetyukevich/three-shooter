@@ -1,3 +1,3 @@
-export default interface Behavior {
+export interface Behavior {
   update: (delta: number) => void;
 };

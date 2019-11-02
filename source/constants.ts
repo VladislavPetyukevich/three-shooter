@@ -27,8 +27,10 @@ export const ENEMY = {
 export const PLAYER = {
   HP: 100,
   WALK_SPEED: 30,
-  SPHERE_RADIUS: 1.3,
-  JUMP_VELOCITY: 15
+  BODY_WIDTH: 1.5,
+  BODY_HEIGHT: 3,
+  BODY_DEPTH: 1.5,
+  CAMERA_ROTATION_SPEED: Math.PI * 0.5
 };
 
 export enum ENTITY_TYPE {

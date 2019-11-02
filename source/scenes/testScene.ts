@@ -7,10 +7,12 @@ import {
   MeshPhongMaterial,
   BoxGeometry,
   MeshBasicMaterial,
+  Vector3,
 } from 'three';
 import BasicScene, { BasicSceneProps } from '@/core/Scene';
 import { PI_180 } from '@/utils';
-import PhysicsBox from '@/SolidBody/PhysicsBox';
+import Player from '@/Entities/Player';
+import { PLAYER } from '@/constants';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -27,7 +29,8 @@ const calculateCirclePoints = (angleStep: number, radius: number) => {
 
 class TestScene extends BasicScene {
   pointLight: PointLight;
-  cubes: PhysicsBox[];
+  cubes: Mesh[];
+  player: Player;
 
   constructor(props: BasicSceneProps) {
     super(props);
@@ -44,24 +47,31 @@ class TestScene extends BasicScene {
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
     const floormaterial = new MeshPhongMaterial({ color: 'white' });
     const floormesh = new Mesh(floorGeometry, floormaterial);
-    floormesh.castShadow = true;
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
 
     this.cubes = [];
     this.spawnObjects();
+
+    this.player = this.entitiesContainer.createEntity(
+      Player,
+      { camera: this.camera, position: new Vector3(0, PLAYER.BODY_HEIGHT, 0) }
+    );
+    this.scene.add(this.player.actor.mesh);
   }
 
   spawnCube(coordinates: { x: number, y: number }) {
-    const cube = new PhysicsBox(
+    const cube = new Mesh(
       new BoxGeometry(3, 3, 3),
-      new MeshBasicMaterial({ color: 'blue' }),
-      { x: coordinates.x, y: 3, z: coordinates.y }
+      new MeshBasicMaterial({ color: 'blue' })
+    );
+    cube.position.set(
+      coordinates.x,
+      1.5,
+      coordinates.y
     );
 
-    this.cubes.push(cube);
-    this.scene.add(cube.mesh!);
-    this.world.addBody(cube.body!);
+    this.scene.add(cube);
   }
 
   spawnObjects() {
@@ -74,8 +84,7 @@ class TestScene extends BasicScene {
 
   update(delta: number) {
     super.update(delta);
-    this.pointLight.position.copy(this.player.actor.solidBody.body.position);
-    this.cubes.forEach(cube => cube.update());
+    this.pointLight.position.copy(this.player.actor.mesh.position);
   }
 }
 

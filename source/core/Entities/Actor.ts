@@ -1,17 +1,6 @@
-import SolidBody from '@/SolidBody/SolidBody';
+import { Mesh } from 'three';
 
-export interface ActorProps {
-  solidBody: SolidBody;
-}
-
-export default class Actor {
-  solidBody: SolidBody;
-
-  constructor(props: ActorProps) {
-    this.solidBody = props.solidBody;
-  }
-
-  update(delta?: number) {
-    this.solidBody.update();
-  }
+export interface Actor {
+  mesh: Mesh;
+  update: (delta: number) => void;
 }
