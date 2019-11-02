@@ -22,8 +22,6 @@
     "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
-    "@types/cannon": "^0.1.4",
-    "cannon": "^0.6.2",
     "express": "^4.16.2",
     "three": "^0.106.2",
     "three-collada-loader": "0.0.1",
