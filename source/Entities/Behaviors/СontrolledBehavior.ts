@@ -2,7 +2,7 @@ import { Camera, Vector2 } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import keyboard from '@/PayerControls/Keyboard';
-import { PI_2 } from '@/constants';
+import { PI_2, KEYBOARD_KEY } from '@/constants';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -56,22 +56,22 @@ export default class СontrolledBehavior implements Behavior {
     this.camera.rotation.y -= this.cameraRotationInput.x;
     this.cameraRotationInput.set(0, 0);
 
-    if (keyboard.key[87]) {
+    if (keyboard.key[KEYBOARD_KEY.W]) {
       isRunning = true;
       this.camera.position.x -= Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
       this.camera.position.z -= Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
     }
-    if (keyboard.key[83]) {
+    if (keyboard.key[KEYBOARD_KEY.S]) {
       isRunning = true;
       this.camera.position.x += Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
       this.camera.position.z += Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
     }
-    if (keyboard.key[65]) {
+    if (keyboard.key[KEYBOARD_KEY.A]) {
       isRunning = true;
       this.camera.position.x += Math.sin(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
       this.camera.position.z += Math.cos(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
     }
-    if (keyboard.key[68]) {
+    if (keyboard.key[KEYBOARD_KEY.D]) {
       isRunning = true;
       this.camera.position.x += Math.sin(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
       this.camera.position.z += Math.cos(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
