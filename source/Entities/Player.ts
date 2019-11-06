@@ -1,14 +1,11 @@
 import { Vector3, Camera } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './Actors/PlayerActor';
 import { СontrolledBehavior } from './Behaviors/СontrolledBehavior';
-import { ENTITY_TYPE, PLAYER } from '@/constants';
+import { PLAYER } from '@/constants';
 
 export interface PlayerProps {
-  type: ENTITY_TYPE,
   position: Vector3;
-  container: EntitiesContainer;
   camera: Camera;
 }
 
