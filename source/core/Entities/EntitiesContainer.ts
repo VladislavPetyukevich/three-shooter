@@ -13,13 +13,9 @@ export class EntitiesContainer {
   add(entitiy: Entity) {
     this.entities.push(entitiy);
     this.scene.add(entitiy.actor.mesh);
+    return entitiy;
   }
 
-  createEntity(constructor: new (params: any) => Entity, params: any): Entity {
-    const newEntity = new constructor({ ...params, container: this })
-    this.add(newEntity);
-    return newEntity;
-  }
   update(delta: number) {
     this.entities.forEach(entitiy => entitiy.update(delta));
   }

@@ -53,9 +53,10 @@ export class TestScene extends BasicScene {
     this.cubes = [];
     this.spawnObjects();
 
-    this.player = this.entitiesContainer.createEntity(
-      Player,
-      { camera: this.camera, position: new Vector3(0, PLAYER.BODY_HEIGHT, 0) }
+    this.player = this.entitiesContainer.add(
+      new Player({
+        camera: this.camera, position: new Vector3(0, PLAYER.BODY_HEIGHT, 0)
+      })
     );
   }
 
