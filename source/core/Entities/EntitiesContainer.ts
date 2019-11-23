@@ -17,6 +17,15 @@ export class EntitiesContainer {
   }
 
   update(delta: number) {
-    this.entities.forEach(entitiy => entitiy.update(delta));
+    this.entities.forEach(entitiy => {
+      entitiy.update(delta);
+      if (entitiy.velocity) {
+        entitiy.actor.mesh.position.set(
+          entitiy.actor.mesh.position.x + entitiy.velocity.x * delta,
+          entitiy.actor.mesh.position.y + entitiy.velocity.y * delta,
+          entitiy.actor.mesh.position.z + entitiy.velocity.z * delta
+        );
+      }
+    });
   }
 }
