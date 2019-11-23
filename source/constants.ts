@@ -39,7 +39,7 @@ export const PLAYER = {
   HP: 100,
   WALK_SPEED: 30,
   BODY_WIDTH: 1.5,
-  BODY_HEIGHT: 3,
+  BODY_HEIGHT: 1.5,
   BODY_DEPTH: 1.5,
   CAMERA_ROTATION_SPEED: Math.PI * 0.5
 };

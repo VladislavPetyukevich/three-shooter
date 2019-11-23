@@ -12,7 +12,7 @@ export interface PlayerProps {
 export class Player extends Entity {
   constructor(props: PlayerProps) {
     const actor = new PlayerActor({
-      position: new Vector3(props.position.x, props.position.y / 2, props.position.z),
+      position: new Vector3(props.position.x, props.position.y, props.position.z),
       size: { width: PLAYER.BODY_WIDTH, height: PLAYER.BODY_HEIGHT, depth: PLAYER.BODY_DEPTH }
     });
     props.camera.position.set(props.position.x, props.position.y, props.position.z);
