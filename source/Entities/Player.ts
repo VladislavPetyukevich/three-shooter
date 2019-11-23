@@ -1,5 +1,6 @@
 import { Vector3, Camera } from 'three';
 import { Entity } from '@/core/Entities/Entity';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './Actors/PlayerActor';
 import { СontrolledBehavior } from './Behaviors/СontrolledBehavior';
 import { PLAYER } from '@/constants';
@@ -7,6 +8,7 @@ import { PLAYER } from '@/constants';
 export interface PlayerProps {
   position: Vector3;
   camera: Camera;
+  container: EntitiesContainer;
 }
 
 export class Player extends Entity {
@@ -23,7 +25,8 @@ export class Player extends Entity {
         camera: props.camera,
         eyeY: PLAYER.BODY_HEIGHT,
         walkSpeed: PLAYER.WALK_SPEED,
-        cameraSpeed: PLAYER.CAMERA_ROTATION_SPEED
+        cameraSpeed: PLAYER.CAMERA_ROTATION_SPEED,
+        container: props.container
       }),
     );
   }

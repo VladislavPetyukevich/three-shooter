@@ -1,8 +1,10 @@
 import { Camera, Vector2 } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/PayerControls/Keyboard';
 import { PI_2, KEYBOARD_KEY } from '@/constants';
+import { Bullet } from '../Bullet';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -10,6 +12,7 @@ interface СontrolledBehaviorProps {
   eyeY: number;
   walkSpeed: number;
   cameraSpeed: number;
+  container: EntitiesContainer;
 }
 
 export class СontrolledBehavior implements Behavior {
@@ -20,6 +23,7 @@ export class СontrolledBehavior implements Behavior {
   eyeY: number;
   walkSpeed: number;
   cameraSpeed: number;
+  container: EntitiesContainer;
 
   constructor(props: СontrolledBehaviorProps) {
     this.actor = props.actor;
@@ -30,6 +34,7 @@ export class СontrolledBehavior implements Behavior {
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
     this.cameraRotationInput = new Vector2();
+    this.container = props.container;
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);
@@ -49,6 +54,8 @@ export class СontrolledBehavior implements Behavior {
 
   handleShoot = () => {
     console.log('handleShoot');
+    const bullet = new Bullet({ position: this.actor.mesh.position });
+    this.container.add(bullet);
   };
 
   update(delta: number) {
