@@ -5,6 +5,7 @@ import { Vector3 } from 'three';
 
 interface BulletProps {
   position: Vector3;
+  velocity: Vector3;
 }
 
 export class Bullet extends Entity {
@@ -14,6 +15,7 @@ export class Bullet extends Entity {
       position: props.position
     });
     const behavior = new BulletBehavior({});
-    super(actor, behavior);
+    const velocity = props.velocity;
+    super(actor, behavior, velocity);
   }
 }

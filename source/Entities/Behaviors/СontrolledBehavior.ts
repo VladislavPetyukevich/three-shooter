@@ -1,4 +1,4 @@
-import { Camera, Vector2 } from 'three';
+import { Camera, Vector2, Vector3 } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -53,8 +53,15 @@ export class СontrolledBehavior implements Behavior {
   }
 
   handleShoot = () => {
-    console.log('handleShoot');
-    const bullet = new Bullet({ position: this.actor.mesh.position });
+    const bulletVelocity = new Vector3(
+      -Math.sin(this.camera.rotation.y) * 4,
+      0,
+      -Math.cos(this.camera.rotation.y) * 4
+    );
+    const bullet = new Bullet({
+      position: this.actor.mesh.position,
+      velocity: bulletVelocity
+    });
     this.container.add(bullet);
   };
 
