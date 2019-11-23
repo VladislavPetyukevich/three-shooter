@@ -13,6 +13,7 @@ import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player';
 import { PLAYER } from '@/constants';
+import { Wall } from '@/Entities/Wall';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -63,17 +64,10 @@ export class TestScene extends BasicScene {
   }
 
   spawnCube(coordinates: { x: number, y: number }) {
-    const cube = new Mesh(
-      new BoxGeometry(3, 3, 3),
-      new MeshBasicMaterial({ color: 'blue' })
-    );
-    cube.position.set(
-      coordinates.x,
-      1.5,
-      coordinates.y
-    );
-
-    this.scene.add(cube);
+    const wall = new Wall({
+      position: new Vector3(coordinates.x, 1.5, coordinates.y)
+    });
+    this.entitiesContainer.add(wall);
   }
 
   spawnObjects() {
