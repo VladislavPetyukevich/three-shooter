@@ -18,4 +18,8 @@ export class Bullet extends Entity {
     const velocity = props.velocity;
     super(actor, behavior, velocity);
   }
+
+  onCollide(entity: Entity) {
+    console.log('Bullet collide: ', entity);
+  }
 }
