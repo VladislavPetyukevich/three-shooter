@@ -13,6 +13,8 @@ export class Entity {
     this.velocity = velocity;
   }
 
+  onCollide(entity: Entity) { }
+
   update(delta: number) {
     this.actor.update(delta);
     this.behavior.update(delta);
