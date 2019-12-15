@@ -13,6 +13,7 @@ interface СontrolledBehaviorProps {
   walkSpeed: number;
   cameraSpeed: number;
   container: EntitiesContainer;
+  velocity: Vector3;
 }
 
 export class СontrolledBehavior implements Behavior {
@@ -24,6 +25,7 @@ export class СontrolledBehavior implements Behavior {
   walkSpeed: number;
   cameraSpeed: number;
   container: EntitiesContainer;
+  velocity: Vector3;
 
   constructor(props: СontrolledBehaviorProps) {
     this.actor = props.actor;
@@ -35,6 +37,7 @@ export class СontrolledBehavior implements Behavior {
     this.isRunning = false;
     this.cameraRotationInput = new Vector2();
     this.container = props.container;
+    this.velocity = props.velocity;
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);
@@ -70,29 +73,30 @@ export class СontrolledBehavior implements Behavior {
     let isRunning = false;
     this.camera.rotation.y -= this.cameraRotationInput.x;
     this.cameraRotationInput.set(0, 0);
+    this.camera.position.copy(this.actor.mesh.position);
+    this.velocity.set(0, 0, 0);
 
     if (keyboard.key[KEYBOARD_KEY.W]) {
       isRunning = true;
-      this.camera.position.x -= Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
-      this.camera.position.z -= Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.velocity.x -= Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.velocity.z -= Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
     }
     if (keyboard.key[KEYBOARD_KEY.S]) {
       isRunning = true;
-      this.camera.position.x += Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
-      this.camera.position.z += Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.velocity.x += Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.velocity.z += Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
     }
     if (keyboard.key[KEYBOARD_KEY.A]) {
       isRunning = true;
-      this.camera.position.x += Math.sin(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
-      this.camera.position.z += Math.cos(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
+      this.velocity.x += Math.sin(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
+      this.velocity.z += Math.cos(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
     }
     if (keyboard.key[KEYBOARD_KEY.D]) {
       isRunning = true;
-      this.camera.position.x += Math.sin(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
-      this.camera.position.z += Math.cos(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
+      this.velocity.x += Math.sin(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
+      this.velocity.z += Math.cos(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
     }
 
     this.isRunning = isRunning;
-    this.actor.mesh.position.copy(this.camera.position);
   }
 }

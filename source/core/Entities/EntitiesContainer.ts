@@ -29,7 +29,6 @@ export class EntitiesContainer {
 
   update(delta: number) {
     this.entities.forEach(entitiy => {
-      entitiy.update(delta);
       if (entitiy.velocity) {
         entitiy.actor.mesh.position.set(
           entitiy.actor.mesh.position.x + entitiy.velocity.x * delta,
@@ -38,6 +37,7 @@ export class EntitiesContainer {
         );
         this.collideChecker.updateEntityPosition(entitiy);
       }
+      entitiy.update(delta);
     });
   }
 }

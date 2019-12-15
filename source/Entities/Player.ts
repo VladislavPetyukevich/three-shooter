@@ -18,6 +18,7 @@ export class Player extends Entity {
       size: { width: PLAYER.BODY_WIDTH, height: PLAYER.BODY_HEIGHT, depth: PLAYER.BODY_DEPTH }
     });
     props.camera.position.set(props.position.x, props.position.y, props.position.z);
+    const velocity = new Vector3();
     super(
       actor,
       new СontrolledBehavior({
@@ -26,8 +27,10 @@ export class Player extends Entity {
         eyeY: PLAYER.BODY_HEIGHT,
         walkSpeed: PLAYER.WALK_SPEED,
         cameraSpeed: PLAYER.CAMERA_ROTATION_SPEED,
-        container: props.container
+        container: props.container,
+        velocity: velocity
       }),
     );
+    this.velocity = velocity;
   }
 }
