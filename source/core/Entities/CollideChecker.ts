@@ -44,6 +44,17 @@ export class CollideChecker {
     }
   }
 
+  removeEntity(meshId: number) {
+    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[meshId];
+    if (!entityMapCoordinates) {
+      throw new Error('Entity not found');
+    }
+    entityMapCoordinates.forEach(
+      coordinates => this.removeEntityFromMap(coordinates.x, coordinates.y, meshId)
+    );
+    delete this.mapMeshIdToMapCoordinates[meshId];
+  }
+
   updateEntityPosition(entity: Entity) {
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
     if (!entityMapCoordinates) {
@@ -51,7 +62,7 @@ export class CollideChecker {
     }
 
     entityMapCoordinates.forEach(
-      coordinates => this.removeEntityFromMap(coordinates.x, coordinates.y, entity)
+      coordinates => this.removeEntityFromMap(coordinates.x, coordinates.y, entity.actor.mesh.id)
     );
     delete this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
 
@@ -74,15 +85,14 @@ export class CollideChecker {
     }
   }
 
-  removeEntityFromMap(x: number, y: number, entity: Entity) {
+  removeEntityFromMap(x: number, y: number, meshId: number) {
     const mapCell = this.getMapCell(x, y);
     if (!mapCell) {
       throw new Error('Entity not found');
     }
-    const entityMeshId = entity.actor.mesh.id;
     this.map = this.map.map(record => ({
       ...record,
-      entities: record.entities.filter(entityRecord => entityRecord.actor.mesh.id !== entityMeshId)
+      entities: record.entities.filter(entityRecord => entityRecord.actor.mesh.id !== meshId)
     }));
   }
 
@@ -98,6 +108,8 @@ export class CollideChecker {
     const entitiesMeshes = entities.map(entityEl => entityEl.actor.mesh);
     const originPoint = entityMesh.position.clone();
 
+    const collisionEntitiesIndices = new Set<number>();
+
     for (let vertexIndex = 0; vertexIndex < entityMesh.geometry.vertices.length; vertexIndex++) {
       const localVertex = entityMesh.geometry.vertices[vertexIndex].clone();
       const globalVertex = localVertex.applyMatrix4(entityMesh.matrix);
@@ -110,8 +122,11 @@ export class CollideChecker {
         if (!collisionEntity) {
           throw new Error('Entity not found');
         }
-        entity.onCollide(collisionEntity);
-        collisionEntity.onCollide(entity);
+        if (!collisionEntitiesIndices.has(collisionEntity.actor.mesh.id)) {
+          entity.onCollide(collisionEntity);
+          collisionEntity.onCollide(entity);
+          collisionEntitiesIndices.add(collisionEntity.actor.mesh.id);
+        }
       });
     }
   }

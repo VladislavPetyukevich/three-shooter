@@ -60,7 +60,8 @@ export class СontrolledBehavior implements Behavior {
     );
     const bullet = new Bullet({
       position: this.actor.mesh.position,
-      velocity: bulletVelocity
+      velocity: bulletVelocity,
+      container: this.container
     });
     this.container.add(bullet);
   };

@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import { Scene, Mesh } from 'three';
 import { Entity } from './Entity';
 import { CollideChecker } from './CollideChecker';
 
@@ -18,6 +18,13 @@ export class EntitiesContainer {
     this.entities.push(entitiy);
     this.scene.add(entitiy.actor.mesh);
     return entitiy;
+  }
+
+  remove(mesh: Mesh) {
+    const meshId = mesh.id;
+    this.collideChecker.removeEntity(meshId);
+    this.entities = this.entities.filter(entityEl => entityEl.actor.mesh.id !== meshId);
+    this.scene.remove(mesh);
   }
 
   update(delta: number) {
