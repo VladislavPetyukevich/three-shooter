@@ -58,7 +58,7 @@ export class CollideChecker {
   updateEntityPosition(entity: Entity) {
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
     if (!entityMapCoordinates) {
-      return;
+      throw new Error('Entity not found');
     }
 
     entityMapCoordinates.forEach(
@@ -101,33 +101,29 @@ export class CollideChecker {
   }
 
   checkCollisions(entity: Entity, entities: Entity[]) {
-    const entityMesh = entity.actor.mesh;
-    if (entityMesh.geometry instanceof BufferGeometry) {
-      return;
-    }
-    const entitiesMeshes = entities.map(entityEl => entityEl.actor.mesh);
-    const originPoint = entityMesh.position.clone();
+    const entity1Box = new Box3().setFromObject(entity.actor.mesh);
+    const rect1 = {
+      x: entity1Box.min.x,
+      y: entity1Box.min.z,
+      width: entity1Box.max.x,
+      height: entity1Box.max.y
+    };
 
-    const collisionEntitiesIndices = new Set<number>();
-
-    for (let vertexIndex = 0; vertexIndex < entityMesh.geometry.vertices.length; vertexIndex++) {
-      const localVertex = entityMesh.geometry.vertices[vertexIndex].clone();
-      const globalVertex = localVertex.applyMatrix4(entityMesh.matrix);
-      const directionVector = globalVertex.sub(entityMesh.position);
-
-      const ray = new Raycaster(originPoint, directionVector.clone().normalize());
-      const collisionResults = ray.intersectObjects(entitiesMeshes);
-      collisionResults.forEach((collisionResult) => {
-        const collisionEntity = entities.find(entityEl => entityEl.actor.mesh.id === collisionResult.object.id);
-        if (!collisionEntity) {
-          throw new Error('Entity not found');
-        }
-        if (!collisionEntitiesIndices.has(collisionEntity.actor.mesh.id)) {
-          entity.onCollide(collisionEntity);
-          collisionEntity.onCollide(entity);
-          collisionEntitiesIndices.add(collisionEntity.actor.mesh.id);
-        }
-      });
-    }
+    entities.forEach((cellEntity) => {
+      const entity2Box = new Box3().setFromObject(cellEntity.actor.mesh);
+      const rect2 = {
+        x: entity2Box.min.x,
+        y: entity2Box.min.z,
+        width: entity2Box.max.x,
+        height: entity2Box.max.y
+      };
+      if (rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y) {
+        entity.onCollide(cellEntity);
+        cellEntity.onCollide(entity);
+      }
+    });
   }
 }

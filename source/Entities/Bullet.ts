@@ -3,6 +3,7 @@ import { BulletActor } from '@/Entities/Actors/BulletActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { BulletBehavior } from './Behaviors/BulletBehavior';
 import { Vector3 } from 'three';
+import { Player } from './Player';
 
 interface BulletProps {
   position: Vector3;
@@ -25,6 +26,12 @@ export class Bullet extends Entity {
   }
 
   onCollide(entity: Entity) {
+    if (entity instanceof Bullet) {
+      return;
+    }
+    if (entity instanceof Player) {
+      return;
+    }
     this.container.remove(this.actor.mesh);
   }
 }
