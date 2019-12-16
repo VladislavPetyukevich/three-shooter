@@ -61,8 +61,14 @@ export class СontrolledBehavior implements Behavior {
       0,
       -Math.cos(this.camera.rotation.y) * 4
     );
+    const bulletPosition = new Vector3(
+      this.actor.mesh.position.x - Math.sin(this.camera.rotation.y),
+      this.actor.mesh.position.y,
+      this.actor.mesh.position.z - Math.cos(this.camera.rotation.y)
+    );
+
     const bullet = new Bullet({
-      position: this.actor.mesh.position,
+      position: bulletPosition,
       velocity: bulletVelocity,
       container: this.container
     });

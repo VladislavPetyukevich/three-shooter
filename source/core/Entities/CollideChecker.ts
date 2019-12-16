@@ -58,7 +58,7 @@ export class CollideChecker {
   updateEntityPosition(entity: Entity) {
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
     if (!entityMapCoordinates) {
-      throw new Error('Entity not found');
+      return;
     }
 
     entityMapCoordinates.forEach(

@@ -25,9 +25,6 @@ export class Bullet extends Entity {
   }
 
   onCollide(entity: Entity) {
-    if (entity instanceof Bullet) {
-      return;
-    }
     this.container.remove(this.actor.mesh);
   }
 }
