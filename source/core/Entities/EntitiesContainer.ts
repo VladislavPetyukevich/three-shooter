@@ -1,4 +1,4 @@
-import { Scene, Mesh } from 'three';
+import { Scene, Mesh, Vector3 } from 'three';
 import { Entity } from './Entity';
 import { CollideChecker } from './CollideChecker';
 
@@ -28,16 +28,32 @@ export class EntitiesContainer {
   }
 
   update(delta: number) {
-    this.entities.forEach(entitiy => {
-      if (entitiy.velocity) {
-        entitiy.actor.mesh.position.set(
-          entitiy.actor.mesh.position.x + entitiy.velocity.x * delta,
-          entitiy.actor.mesh.position.y + entitiy.velocity.y * delta,
-          entitiy.actor.mesh.position.z + entitiy.velocity.z * delta
-        );
-        this.collideChecker.updateEntityPosition(entitiy);
+    this.entities.forEach(entity => {
+      if (!entity.velocity) {
+        entity.update(delta);
+        return;
       }
-      entitiy.update(delta);
+
+      const newPosition = new Vector3(
+        entity.actor.mesh.position.x + entity.velocity.x * delta,
+        entity.actor.mesh.position.y + entity.velocity.y * delta,
+        entity.actor.mesh.position.z + entity.velocity.z * delta
+      );
+      const collisionsResult = this.collideChecker.detectCollisions(entity, newPosition);
+      if (collisionsResult.entities.length === 0) {
+        this.collideChecker.updateEntityPosition(entity, newPosition);
+        entity.update(delta);
+        return;
+      }
+
+      collisionsResult.entities.forEach(collideEntity => {
+        collideEntity.onCollide(entity);
+        const isEntityCanMove = entity.onCollide(collideEntity);
+        if (isEntityCanMove) {
+          this.collideChecker.updateEntityPosition(entity, newPosition);
+        }
+      });
+      entity.update(delta);
     });
   }
 }

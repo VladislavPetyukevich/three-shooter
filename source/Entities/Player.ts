@@ -4,6 +4,7 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './Actors/PlayerActor';
 import { СontrolledBehavior } from './Behaviors/СontrolledBehavior';
 import { PLAYER } from '@/constants';
+import { Wall } from './Wall';
 
 export interface PlayerProps {
   position: Vector3;
@@ -32,5 +33,9 @@ export class Player extends Entity {
       }),
     );
     this.velocity = velocity;
+  }
+
+  onCollide(entity: Entity) {
+    return !(entity instanceof Wall);
   }
 }
