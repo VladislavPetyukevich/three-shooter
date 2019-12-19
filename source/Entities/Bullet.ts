@@ -3,7 +3,7 @@ import { BulletActor } from '@/Entities/Actors/BulletActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { BulletBehavior } from './Behaviors/BulletBehavior';
 import { Vector3 } from 'three';
-import { Player } from './Player';
+import { ENTITY_TYPE } from '@/constants';
 
 interface BulletProps {
   position: Vector3;
@@ -21,15 +21,19 @@ export class Bullet extends Entity {
     });
     const behavior = new BulletBehavior({});
     const velocity = props.velocity;
-    super(actor, behavior, velocity);
+    super(
+      ENTITY_TYPE.BULLET,
+      actor,
+      behavior, velocity
+    );
     this.container = props.container;
   }
 
   onCollide(entity: Entity) {
-    if (entity instanceof Bullet) {
+    if (entity.type === ENTITY_TYPE.BULLET) {
       return true;
     }
-    if (entity instanceof Player) {
+    if (entity.type === ENTITY_TYPE.PLAYER) {
       return true;
     }
     this.container.remove(this.actor.mesh);

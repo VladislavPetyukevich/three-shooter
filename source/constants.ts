@@ -9,6 +9,12 @@ export const enum KEYBOARD_KEY {
   D = 68
 };
 
+export const enum ENTITY_TYPE {
+  PLAYER = 'PLAYER',
+  BULLET = 'BULLET',
+  WALL = 'WALL'
+};
+
 export const GUN = {
   BOB_SPEED: 5,
   BOB_DISTANCE: 0.05
@@ -42,11 +48,6 @@ export const PLAYER = {
   BODY_HEIGHT: 1.5,
   BODY_DEPTH: 1.5,
   CAMERA_ROTATION_SPEED: Math.PI * 0.5
-};
-
-export enum ENTITY_TYPE {
-  INANIMATE,
-  CREATURE
 };
 
 export const enum EVENT_TYPES {

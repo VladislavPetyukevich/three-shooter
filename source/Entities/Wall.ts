@@ -2,6 +2,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { WallActor } from '@/Entities/Actors/WallActor';
 import { WallBehavior } from './Behaviors/WallBehavior';
 import { Vector3 } from 'three';
+import { ENTITY_TYPE } from '@/constants';
 
 interface WallProps {
   position: Vector3;
@@ -14,6 +15,10 @@ export class Wall extends Entity {
       size: { width: 3, height: 3, depth: 3 }
     });
     const behavior = new WallBehavior({});
-    super(actor, behavior);
+    super(
+      ENTITY_TYPE.WALL,
+      actor,
+      behavior
+    );
   }
 }

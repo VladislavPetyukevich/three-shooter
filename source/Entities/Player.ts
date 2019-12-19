@@ -3,8 +3,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './Actors/PlayerActor';
 import { СontrolledBehavior } from './Behaviors/СontrolledBehavior';
-import { PLAYER } from '@/constants';
-import { Wall } from './Wall';
+import { PLAYER, ENTITY_TYPE } from '@/constants';
 
 export interface PlayerProps {
   position: Vector3;
@@ -21,6 +20,7 @@ export class Player extends Entity {
     props.camera.position.set(props.position.x, props.position.y, props.position.z);
     const velocity = new Vector3();
     super(
+      ENTITY_TYPE.PLAYER,
       actor,
       new СontrolledBehavior({
         actor: actor,
@@ -36,6 +36,6 @@ export class Player extends Entity {
   }
 
   onCollide(entity: Entity) {
-    return !(entity instanceof Wall);
+    return entity.type !== ENTITY_TYPE.WALL;
   }
 }
