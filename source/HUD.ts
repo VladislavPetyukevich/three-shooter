@@ -16,10 +16,11 @@ export class HUD {
     const gunTexture = textureLoader.load(gunTextureFile);
     const gunMaterial = new SpriteMaterial({ map: gunTexture });
     const gun = new Sprite(gunMaterial);
-    const gunWidth = width * 0.5;
-    const gunHeight = width * 0.5;
-    gun.scale.set(gunWidth, gunHeight, 1);
-    gun.position.set(0.5, -height + gunHeight / 2, 1);
+    const gunMaxScaleWidth = width * 0.5;
+    const gunMaxScaleHeight = height * 0.5;
+    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
+    gun.scale.set(gunScale, gunScale, 1);
+    gun.position.set(0.5, -height + gunScale / 2, 1);
     this.scene.add(gun);
   }
 }
