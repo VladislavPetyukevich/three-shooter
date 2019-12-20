@@ -8,8 +8,6 @@ interface CollisionsResult {
 interface EntityBounds {
   xMin: number;
   xMax: number;
-  yMin: number;
-  yMax: number;
   zMin: number;
   zMax: number;
 }
@@ -45,8 +43,6 @@ export class CollideChecker {
     const bounds: EntityBounds = {
       xMin: bbox.min.x,
       xMax: bbox.max.x,
-      yMin: bbox.min.y,
-      yMax: bbox.max.y,
       zMin: bbox.min.z,
       zMax: bbox.max.z,
     };
@@ -87,7 +83,6 @@ export class CollideChecker {
         }
         if (
           (bounds.xMin <= entityToCheck.bounds.xMax && bounds.xMax >= entityToCheck.bounds.xMin) &&
-          (bounds.yMin <= entityToCheck.bounds.yMax && bounds.yMax >= entityToCheck.bounds.yMin) &&
           (bounds.zMin <= entityToCheck.bounds.zMax && bounds.zMax >= entityToCheck.bounds.zMin)
         ) {
           collisionsResult.entities.push(entityToCheck.entity);
