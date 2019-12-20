@@ -27,7 +27,7 @@ interface CollideCheckerProps {
   cellSize: number;
 }
 
-export class CollideChecker {
+export class CollideChecker2d {
   map: Map;
   cellSize: number;
   mapMeshIdToMapCoordinates: { [meshId: number]: { x: number, y: number }[] };

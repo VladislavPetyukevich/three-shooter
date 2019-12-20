@@ -1,16 +1,16 @@
 import { Scene, Mesh, Vector3 } from 'three';
 import { Entity } from './Entity';
-import { CollideChecker } from './CollideChecker';
+import { CollideChecker2d } from './CollideChecker2d';
 
 export class EntitiesContainer {
   scene: Scene;
   entities: Entity[];
-  collideChecker: CollideChecker;
+  collideChecker: CollideChecker2d;
 
   constructor(scene: Scene) {
     this.scene = scene;
     this.entities = [];
-    this.collideChecker = new CollideChecker({ cellSize: 3 });
+    this.collideChecker = new CollideChecker2d({ cellSize: 3 });
   }
 
   add(entitiy: Entity) {
