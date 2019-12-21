@@ -1,7 +1,6 @@
-import { TextureLoader, Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
+import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
+import { textureLoader } from '@/TextureLoader';
 import gunTextureFile from './assets/gun.png';
-
-const textureLoader = new TextureLoader();
 
 export class HUD {
   scene: Scene;
