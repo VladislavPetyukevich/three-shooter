@@ -1,5 +1,5 @@
 import { Actor } from '@/core/Entities/Actor';
-import { Mesh, BoxGeometry, MeshBasicMaterial, Vector3 } from 'three';
+import { Mesh, BoxGeometry, MeshPhongMaterial, Vector3 } from 'three';
 
 interface WallActorProps {
   size: { width: number; height: number, depth: number };
@@ -11,7 +11,7 @@ export class WallActor implements Actor {
 
   constructor(props: WallActorProps) {
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
-    const material = new MeshBasicMaterial({ color: 'blue' });
+    const material = new MeshPhongMaterial({ color: 'blue' });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.set(
       props.position.x,
