@@ -37,6 +37,9 @@ export class Bullet extends Entity {
     if (entity.type === ENTITY_TYPE.PLAYER) {
       return true;
     }
+    if (entity.type === ENTITY_TYPE.ENEMY) {
+      return true;
+    }
     this.container.remove(this.actor.mesh);
     return false;
   }

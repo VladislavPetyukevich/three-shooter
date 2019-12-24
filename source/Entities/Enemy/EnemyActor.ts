@@ -28,6 +28,9 @@ export class EnemyActor implements Actor {
   }
 
   update(delta: number) {
-    this.mesh.lookAt(this.player.actor.mesh.position);
+    const playerMesh = this.player.actor.mesh;
+    this.mesh.rotation.y = Math.atan2(
+      (playerMesh.position.x - this.mesh.position.x), (playerMesh.position.z - this.mesh.position.z)
+    );
   }
 }

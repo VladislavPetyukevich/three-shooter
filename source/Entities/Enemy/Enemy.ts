@@ -4,10 +4,12 @@ import { ENTITY_TYPE } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
+  container: EntitiesContainer;
 }
 
 export class Enemy extends Entity {
@@ -22,6 +24,7 @@ export class Enemy extends Entity {
       actor,
       new EnemyBehavior({
         player: props.player,
+        container: props.container,
         velocity,
         actor
       })

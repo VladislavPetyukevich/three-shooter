@@ -67,7 +67,8 @@ export class TestScene extends BasicScene {
     const enemy = this.entitiesContainer.add(
       new Enemy({
         position: { x: 5, y: 1, z: -5 },
-        player: this.player
+        player: this.player,
+        container: this.entitiesContainer
       })
     );
   }
