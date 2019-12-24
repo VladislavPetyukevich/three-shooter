@@ -13,6 +13,7 @@ import { PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall';
+import { Enemy } from '@/Entities/Enemy';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -60,6 +61,13 @@ export class TestScene extends BasicScene {
         camera: this.camera,
         position: new Vector3(0, PLAYER.BODY_HEIGHT, 0),
         container: this.entitiesContainer
+      })
+    );
+
+    const enemy = this.entitiesContainer.add(
+      new Enemy({
+        position: { x: 5, y: 1, z: -5 },
+        player: this.player
       })
     );
   }

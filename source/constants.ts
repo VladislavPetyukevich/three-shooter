@@ -12,7 +12,8 @@ export const enum KEYBOARD_KEY {
 export const enum ENTITY_TYPE {
   PLAYER = 'PLAYER',
   BULLET = 'BULLET',
-  WALL = 'WALL'
+  WALL = 'WALL',
+  ENEMY = 'ENEMY'
 };
 
 export const GUN = {
@@ -36,9 +37,7 @@ export const FLYING_ENEMY = {
 };
 
 export const ENEMY = {
-  HP: 1,
-  WALK_SPEED: 18,
-  SHOOT_SOUND_INDEX: 0
+  WALK_SPEED: 2
 };
 
 export const PLAYER = {
