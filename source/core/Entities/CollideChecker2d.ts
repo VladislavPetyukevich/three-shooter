@@ -71,6 +71,9 @@ export class CollideChecker2d {
     };
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
     const collisionsResult: CollisionsResult = { entities: [] };
+    if (!entityMapCoordinates) {
+      return collisionsResult;
+    }
 
     entityMapCoordinates.forEach(coordinates => {
       if (!(this.map[coordinates.x] && this.map[coordinates.x][coordinates.y])) {
