@@ -9,7 +9,7 @@ import {
   Fog
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
-import { PI_180 } from '@/constants';
+import { PI_180, ENTITY_TYPE } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
@@ -30,7 +30,6 @@ const calculateCirclePoints = (angleStep: number, radius: number) => {
 
 export class TestScene extends BasicScene {
   pointLight: PointLight;
-  cubes: Mesh[];
   player: Player;
 
   constructor(props: BasicSceneProps) {
@@ -53,9 +52,6 @@ export class TestScene extends BasicScene {
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
 
-    this.cubes = [];
-    this.spawnObjects();
-
     this.player = this.entitiesContainer.add(
       new Player({
         camera: this.camera,
@@ -64,28 +60,68 @@ export class TestScene extends BasicScene {
       })
     );
 
-    const enemy = this.entitiesContainer.add(
-      new Enemy({
-        position: { x: 5, y: 1, z: -5 },
-        player: this.player,
-        container: this.entitiesContainer
-      })
-    );
+    const mapDictionary = {
+      1: ENTITY_TYPE.WALL,
+      2: ENTITY_TYPE.ENEMY,
+      3: ENTITY_TYPE.PLAYER
+    };
+    const mapCellSize = 3;
+    const map = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+      [1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+      [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 3, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ];
+    this.loadMap(map, mapDictionary, mapCellSize);
   }
 
-  spawnCube(coordinates: { x: number, y: number }) {
+  loadMap(map: number[][], dictionary: { [mapKey: number]: ENTITY_TYPE }, cellSize: number) {
+    for (let mapY = 0; mapY < map.length; mapY++) {
+      for (let mapX = 0; mapX < map[mapY].length; mapX++) {
+        const mapRecord = map[mapY][mapX];
+        const entityType = dictionary[mapRecord];
+        if (!entityType) {
+          continue;
+        }
+        if (entityType === ENTITY_TYPE.WALL) {
+          this.spawnWall({ x: mapX * cellSize, y: mapY * cellSize });
+        }
+        if (entityType === ENTITY_TYPE.ENEMY) {
+          this.spawnEnemy({ x: mapX * cellSize, y: mapY * cellSize });
+        }
+        if (entityType === ENTITY_TYPE.PLAYER) {
+          this.player.actor.mesh.position.set(
+            mapX * cellSize,
+            PLAYER.BODY_HEIGHT,
+            mapY * cellSize
+          );
+        }
+      }
+    }
+  }
+
+
+  spawnWall(coordinates: { x: number, y: number }) {
     const wall = new Wall({
       position: new Vector3(coordinates.x, 1.5, coordinates.y)
     });
     this.entitiesContainer.add(wall);
   }
 
-  spawnObjects() {
-    const angleStep = 45;
-    const cubeSpawnRadius = 30;
-    const cubeSpawnCoordinates = calculateCirclePoints(angleStep, cubeSpawnRadius);
-
-    cubeSpawnCoordinates.forEach(coordinates => this.spawnCube(coordinates));
+  spawnEnemy(coordinates: { x: number, y: number }) {
+    const enemy = new Enemy({
+      position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
+      player: this.player,
+      container: this.entitiesContainer
+    });
+    this.entitiesContainer.add(enemy);
   }
 
   update(delta: number) {
