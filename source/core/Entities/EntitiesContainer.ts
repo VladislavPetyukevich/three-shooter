@@ -5,17 +5,20 @@ import { CollideChecker2d } from './CollideChecker2d';
 export class EntitiesContainer {
   scene: Scene;
   entities: Entity[];
+  entitiesMeshes: Mesh[];
   collideChecker: CollideChecker2d;
 
   constructor(scene: Scene) {
     this.scene = scene;
     this.entities = [];
+    this.entitiesMeshes = [];
     this.collideChecker = new CollideChecker2d({ cellSize: 3 });
   }
 
   add(entitiy: Entity) {
     this.collideChecker.addEntity(entitiy);
     this.entities.push(entitiy);
+    this.entitiesMeshes.push(entitiy.actor.mesh);
     this.scene.add(entitiy.actor.mesh);
     return entitiy;
   }
@@ -23,7 +26,12 @@ export class EntitiesContainer {
   remove(mesh: Mesh) {
     const meshId = mesh.id;
     this.collideChecker.removeEntity(meshId);
-    this.entities = this.entities.filter(entityEl => entityEl.actor.mesh.id !== meshId);
+    this.entities = this.entities.filter(
+      entityEl => entityEl.actor.mesh.id !== meshId
+    );
+    this.entitiesMeshes = this.entitiesMeshes.filter(
+      entityMesh => entityMesh.id !== meshId
+    );
     this.scene.remove(mesh);
   }
 

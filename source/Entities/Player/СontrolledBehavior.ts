@@ -1,4 +1,4 @@
-import { Camera, Vector2, Vector3 } from 'three';
+import { Camera, Vector2, Vector3, Raycaster } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -56,23 +56,19 @@ export class СontrolledBehavior implements Behavior {
   }
 
   handleShoot = () => {
-    const bulletVelocity = new Vector3(
-      -Math.sin(this.camera.rotation.y) * 4,
-      0,
-      -Math.cos(this.camera.rotation.y) * 4
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(new Vector2(), this.camera);
+    const closestIntersect = raycaster.intersectObjects(this.container.entitiesMeshes)[0];
+    if (!closestIntersect) {
+      return;
+    }
+    const intersectedEntity = this.container.entities.find(
+      entity => entity.actor.mesh.id === closestIntersect.object.id
     );
-    const bulletPosition = new Vector3(
-      this.actor.mesh.position.x - Math.sin(this.camera.rotation.y),
-      this.actor.mesh.position.y,
-      this.actor.mesh.position.z - Math.cos(this.camera.rotation.y)
-    );
-
-    const bullet = new Bullet({
-      position: bulletPosition,
-      velocity: bulletVelocity,
-      container: this.container
-    });
-    this.container.add(bullet);
+    console.log('intersectedEntity: ', intersectedEntity);
+    if (intersectedEntity) {
+      intersectedEntity.onHit(1);
+    }
   };
 
   update(delta: number) {
