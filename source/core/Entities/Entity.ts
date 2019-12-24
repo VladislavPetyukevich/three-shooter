@@ -6,13 +6,19 @@ export class Entity {
   type: string;
   actor: Actor;
   behavior: Behavior;
+  hp?: number;
   velocity?: Vector3;
 
-  constructor(type: string, actor: Actor, behavior: Behavior, velocity?: Vector3) {
+  constructor(type: string, actor: Actor, behavior: Behavior) {
     this.type = type;
     this.actor = actor;
     this.behavior = behavior;
-    this.velocity = velocity;
+  }
+
+  onHit(damage: number) {
+    if (this.hp) {
+      this.hp -= damage;
+    }
   }
 
   onCollide(entity: Entity) {

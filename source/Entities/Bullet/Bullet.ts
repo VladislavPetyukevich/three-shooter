@@ -24,8 +24,9 @@ export class Bullet extends Entity {
     super(
       ENTITY_TYPE.BULLET,
       actor,
-      behavior, velocity
+      behavior
     );
+    this.velocity = velocity;
     this.container = props.container;
   }
 
