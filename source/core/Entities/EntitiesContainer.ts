@@ -34,26 +34,44 @@ export class EntitiesContainer {
         return;
       }
 
-      const newPosition = new Vector3(
-        entity.actor.mesh.position.x + entity.velocity.x * delta,
+      entity.actor.mesh.position.set(
+        entity.actor.mesh.position.x,
         entity.actor.mesh.position.y + entity.velocity.y * delta,
-        entity.actor.mesh.position.z + entity.velocity.z * delta
+        entity.actor.mesh.position.z
       );
-      const collisionsResult = this.collideChecker.detectCollisions(entity, newPosition);
-      if (collisionsResult.entities.length === 0) {
-        this.collideChecker.updateEntityPosition(entity, newPosition);
-        entity.update(delta);
-        return;
-      }
-
-      collisionsResult.entities.forEach(collideEntity => {
-        collideEntity.onCollide(entity);
-        const isEntityCanMove = entity.onCollide(collideEntity);
-        if (isEntityCanMove) {
-          this.collideChecker.updateEntityPosition(entity, newPosition);
-        }
-      });
+      this.updateEntityPosition(
+        entity,
+        new Vector3(
+          entity.actor.mesh.position.x + entity.velocity.x * delta,
+          entity.actor.mesh.position.y,
+          entity.actor.mesh.position.z
+        )
+      );
+      this.updateEntityPosition(
+        entity,
+        new Vector3(
+          entity.actor.mesh.position.x,
+          entity.actor.mesh.position.y,
+          entity.actor.mesh.position.z + entity.velocity.z * delta
+        )
+      );
       entity.update(delta);
+    });
+  }
+
+  updateEntityPosition(entity: Entity, newPosition: Vector3) {
+    const collisionsResult = this.collideChecker.detectCollisions(entity, newPosition);
+    if (collisionsResult.entities.length === 0) {
+      this.collideChecker.updateEntityPosition(entity, newPosition);
+      return;
+    }
+
+    collisionsResult.entities.forEach(collideEntity => {
+      collideEntity.onCollide(entity);
+      const isEntityCanMove = entity.onCollide(collideEntity);
+      if (isEntityCanMove) {
+        this.collideChecker.updateEntityPosition(entity, newPosition);
+      }
     });
   }
 }
