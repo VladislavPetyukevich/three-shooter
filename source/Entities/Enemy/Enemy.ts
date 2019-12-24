@@ -26,7 +26,7 @@ export class Enemy extends Entity {
         actor
       })
     );
-
+    this.hp = 1;
     this.velocity = velocity;
   }
 
