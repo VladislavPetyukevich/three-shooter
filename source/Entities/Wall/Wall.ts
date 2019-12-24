@@ -1,6 +1,6 @@
 import { Entity } from '@/core/Entities/Entity';
-import { WallActor } from '@/Entities/Actors/WallActor';
-import { WallBehavior } from './Behaviors/WallBehavior';
+import { WallActor } from '@/Entities/Wall/WallActor';
+import { WallBehavior } from './WallBehavior';
 import { Vector3 } from 'three';
 import { ENTITY_TYPE } from '@/constants';
 

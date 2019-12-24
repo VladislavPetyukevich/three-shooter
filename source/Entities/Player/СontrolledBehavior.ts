@@ -4,7 +4,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/PayerControls/Keyboard';
 import { PI_2, KEYBOARD_KEY } from '@/constants';
-import { Bullet } from '../Bullet';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 
 interface СontrolledBehaviorProps {
   actor: Actor;

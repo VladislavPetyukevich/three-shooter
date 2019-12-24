@@ -1,9 +1,9 @@
 import { Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
-import { EnemyActor } from './Actors/EnemyActor';
-import { EnemyBehavior } from './Behaviors/EnemyBehavior';
-import { Player } from './Player';
+import { EnemyActor } from './EnemyActor';
+import { EnemyBehavior } from './EnemyBehavior';
+import { Player } from '@/Entities/Player/Player';
 
 export interface EnemyProps {
   position: { x: number; y: number; z: number };

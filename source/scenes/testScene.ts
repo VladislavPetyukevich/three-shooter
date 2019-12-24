@@ -10,10 +10,10 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { PI_180 } from '@/constants';
-import { Player } from '@/Entities/Player';
+import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
-import { Wall } from '@/Entities/Wall';
-import { Enemy } from '@/Entities/Enemy';
+import { Wall } from '@/Entities/Wall/Wall';
+import { Enemy } from '@/Entities/Enemy/Enemy';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];

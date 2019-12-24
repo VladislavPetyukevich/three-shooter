@@ -1,7 +1,7 @@
 import { Entity } from '@/core/Entities/Entity';
-import { BulletActor } from '@/Entities/Actors/BulletActor';
+import { BulletActor } from '@/Entities/Bullet/BulletActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { BulletBehavior } from './Behaviors/BulletBehavior';
+import { BulletBehavior } from './BulletBehavior';
 import { Vector3 } from 'three';
 import { ENTITY_TYPE } from '@/constants';
 

@@ -1,6 +1,6 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, BoxGeometry, MeshPhongMaterial } from 'three';
-import { Player } from '../Player';
+import { Player } from '@/Entities/Player/Player';
 import { textureLoader } from '@/TextureLoader';
 import enemyTextureFile from '@/assets/enemy.png';
 

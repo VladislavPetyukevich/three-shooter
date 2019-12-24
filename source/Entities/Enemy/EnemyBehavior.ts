@@ -1,8 +1,8 @@
 import { Vector3 } from 'three';
 import { ENEMY } from '@/constants';
 import { Behavior } from '@/core/Entities/Behavior';
-import { Player } from '../Player';
-import { EnemyActor } from '../Actors/EnemyActor';
+import { Player } from '@/Entities/Player/Player';
+import { EnemyActor } from './EnemyActor';
 
 interface BehaviorProps {
   player: Player;
