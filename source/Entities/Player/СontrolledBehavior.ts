@@ -2,7 +2,7 @@ import { Camera, Vector2, Vector3, Raycaster } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { keyboard } from '@/PayerControls/Keyboard';
+import { keyboard } from '@/Keyboard';
 import { PI_2, KEYBOARD_KEY } from '@/constants';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 
