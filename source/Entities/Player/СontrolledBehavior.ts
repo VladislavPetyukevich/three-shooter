@@ -3,8 +3,9 @@ import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY } from '@/constants';
+import { PI_2, KEYBOARD_KEY, ENTITY_TYPE } from '@/constants';
 import { Bullet } from '@/Entities/Bullet/Bullet';
+import { Entity } from '@/core/Entities/Entity';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -58,16 +59,23 @@ export class СontrolledBehavior implements Behavior {
   handleShoot = () => {
     const raycaster = new Raycaster();
     raycaster.setFromCamera(new Vector2(), this.camera);
-    const closestIntersect = raycaster.intersectObjects(this.container.entitiesMeshes)[0];
-    if (!closestIntersect) {
-      return;
-    }
-    const intersectedEntity = this.container.entities.find(
-      entity => entity.actor.mesh.id === closestIntersect.object.id
-    );
-    console.log('intersectedEntity: ', intersectedEntity);
-    if (intersectedEntity) {
-      intersectedEntity.onHit(1);
+    const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);
+
+    for (let i = 0; i < intersects.length; i++) {
+      const intersect = intersects[i];
+      const intersectEntity = this.container.entities.find(
+        entity => entity.actor.mesh.id === intersect.object.id
+      );
+      if (!intersectEntity) {
+        continue;
+      }
+      if (intersectEntity.type === ENTITY_TYPE.WALL) {
+        break;
+      }
+      if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
+        intersectEntity.onHit(1);
+        break;
+      }
     }
   };
 
