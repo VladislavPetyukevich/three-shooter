@@ -33,6 +33,12 @@ export class Enemy extends Entity {
     this.velocity = velocity;
   }
 
+  onHit() {
+    if (!(<EnemyBehavior>this.behavior).isDead) {
+      (<EnemyBehavior>this.behavior).death();
+    }
+  }
+
   onCollide(entity: Entity) {
     if (this.velocity) {
       this.velocity.negate();

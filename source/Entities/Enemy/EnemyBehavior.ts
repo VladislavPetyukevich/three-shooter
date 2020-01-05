@@ -19,6 +19,7 @@ export class EnemyBehavior implements Behavior {
   actor: EnemyActor;
   randomMovementTimeOut: number;
   container: EntitiesContainer;
+  isDead: boolean;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
@@ -26,6 +27,7 @@ export class EnemyBehavior implements Behavior {
     this.actor = props.actor;
     this.container = props.container;
     this.randomMovementTimeOut = 3;
+    this.isDead = false;
   }
 
   shoot() {
@@ -48,6 +50,15 @@ export class EnemyBehavior implements Behavior {
     this.container.add(bullet);
   }
 
+  death() {
+    this.isDead = true;
+    this.velocity.set(0, 0, 0);
+    setTimeout(
+      () => this.container.remove(this.actor.mesh),
+      1000
+    );
+  }
+
   randomMovement() {
     const velocityX = this.randomVelocityValue();
     const velocityZ = this.randomVelocityValue();
@@ -64,6 +75,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
+    if (this.isDead) {
+      return;
+    }
     this.randomMovementTimeOut += delta;
     if (this.randomMovementTimeOut > 3) {
       this.randomMovement();
