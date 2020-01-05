@@ -37,10 +37,6 @@ export class EntitiesContainer {
 
   update(delta: number) {
     this.entities.forEach(entity => {
-      if ((typeof entity.hp === 'number') && (entity.hp === 0)) {
-        this.remove(entity.actor.mesh);
-        return;
-      }
       if (!entity.velocity) {
         entity.update(delta);
         return;
