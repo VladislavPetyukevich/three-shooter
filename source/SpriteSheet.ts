@@ -12,7 +12,8 @@ export class SpriteSheet {
   spritesVertical: number;
 
   constructor(props: SpriteSheetProps) {
-    this.texture = props.texture;
+    this.texture = props.texture.clone();
+    this.texture.needsUpdate = true;
     this.texture.wrapS = RepeatWrapping;
     this.texture.wrapT = RepeatWrapping;
     this.spritesHorizontal = props.spritesHorizontal;
