@@ -1,4 +1,4 @@
-import enemyTextureFile from '@/assets/enemy.png';
+import enemySpriteSheetFile from '@/assets/enemySpriteSheet.png';
 import wallTextureFile from '@/assets/wall.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import gunTextureFile from './assets/gun.png';
@@ -60,15 +60,15 @@ export const enum EVENT_TYPES {
 };
 
 export const gameTextures = {
-  enemyTextureFile: enemyTextureFile,
-  wallTextureFile: wallTextureFile,
-  wallNormalFile: wallNormalFile,
-  gunTextureFile: gunTextureFile
+  wallTextureFile,
+  wallNormalFile,
+  gunTextureFile,
+  enemySpriteSheetFile
 };
 
 export const enum GAME_TEXTURE_NAME {
-  enemyTextureFile = 'enemyTextureFile',
   wallTextureFile = 'wallTextureFile',
   wallNormalFile = 'wallNormalFile',
-  gunTextureFile = 'gunTextureFile'
+  gunTextureFile = 'gunTextureFile',
+  enemySpriteSheetFile = 'enemySpriteSheetFile'
 };
