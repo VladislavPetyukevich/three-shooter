@@ -20,11 +20,15 @@ export class EnemyBehavior implements Behavior {
   randomMovementTimeOut: number;
   container: EntitiesContainer;
   isDead: boolean;
+  currentTitleX: number;
+  currentTitleDisplayTime: number;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
     this.velocity = props.velocity;
     this.actor = props.actor;
+    this.currentTitleX = 0;
+    this.currentTitleDisplayTime = 0;
     this.container = props.container;
     this.randomMovementTimeOut = 3;
     this.isDead = false;
@@ -74,6 +78,17 @@ export class EnemyBehavior implements Behavior {
     return (Math.random() > 0.5) ? (ENEMY.WALK_SPEED / 2) : -(ENEMY.WALK_SPEED / 2);
   }
 
+  updateWalkSprite(delta: number) {
+    this.currentTitleDisplayTime += delta;
+    if (this.currentTitleDisplayTime < 0.6) {
+      return;
+    }
+    this.currentTitleX = this.currentTitleX ? 0 : 1;
+    this.actor.spriteSheet.displaySprite(this.currentTitleX, 0);
+    this.currentTitleDisplayTime = 0;
+  }
+
+
   update(delta: number) {
     if (this.isDead) {
       return;
@@ -82,6 +97,8 @@ export class EnemyBehavior implements Behavior {
     if (this.randomMovementTimeOut > 3) {
       this.randomMovement();
       this.randomMovementTimeOut = 0;
+    } else {
+      this.updateWalkSprite(delta);
     }
   }
 }

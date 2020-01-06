@@ -14,8 +14,6 @@ export class EnemyActor implements Actor {
   mesh: Mesh;
   player: Player;
   spriteSheet: SpriteSheet;
-  currentTitleX: number;
-  currentTitleDisplayTime: number;
 
   constructor(props: ActorProps) {
     const spriteSheetFile = texturesStore.getTexture(GAME_TEXTURE_NAME.enemySpriteSheetFile);
@@ -24,8 +22,6 @@ export class EnemyActor implements Actor {
       spritesHorizontal: 2,
       spritesVertical: 2
     });
-    this.currentTitleX = 0;
-    this.currentTitleDisplayTime = 0;
     const texture = this.spriteSheet.getTexture();
     const geometry = new BoxGeometry(1.5, 3, 0.1);
     const material = new MeshPhongMaterial({ map: texture });
@@ -39,21 +35,10 @@ export class EnemyActor implements Actor {
     this.player = props.player;
   }
 
-  updateWalkSprite(delta: number) {
-    this.currentTitleDisplayTime += delta;
-    if (this.currentTitleDisplayTime < 0.6) {
-      return;
-    }
-    this.currentTitleX = this.currentTitleX ? 0 : 1;
-    this.spriteSheet.displaySprite(this.currentTitleX, 0);
-    this.currentTitleDisplayTime = 0;
-  }
-
-  update(delta: number) {
+  update() {
     const playerMesh = this.player.actor.mesh;
     this.mesh.rotation.y = Math.atan2(
       (playerMesh.position.x - this.mesh.position.x), (playerMesh.position.z - this.mesh.position.z)
     );
-    this.updateWalkSprite(delta);
   }
 }
