@@ -1,7 +1,9 @@
-import enemySpriteSheetFile from '@/assets/enemySpriteSheet.png';
 import wallTextureFile from '@/assets/wall.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import gunTextureFile from './assets/gun.png';
+import enemyWalk1 from './assets/enemyWalk1.png';
+import enemyWalk2 from './assets/enemyWalk2.png';
+import enemyDeath from './assets/enemyDeath.png';
 
 export const PI_180 = Math.PI / 180;
 
@@ -63,12 +65,16 @@ export const gameTextures = {
   wallTextureFile,
   wallNormalFile,
   gunTextureFile,
-  enemySpriteSheetFile
+  enemyWalk1,
+  enemyWalk2,
+  enemyDeath
 };
 
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
   wallNormalFile = 'wallNormalFile',
   gunTextureFile = 'gunTextureFile',
-  enemySpriteSheetFile = 'enemySpriteSheetFile'
+  enemyWalk1 = 'enemyWalk1',
+  enemyWalk2 = 'enemyWalk2',
+  enemyDeath = 'enemyDeath'
 };

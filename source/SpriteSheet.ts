@@ -1,32 +1,21 @@
-import { Texture, RepeatWrapping } from 'three';
+import { Texture, MeshPhongMaterial } from 'three';
 
 interface SpriteSheetProps {
-  texture: Texture;
-  spritesHorizontal: number;
-  spritesVertical: number;
+  textures: Texture[];
+  material: MeshPhongMaterial;
 }
 
 export class SpriteSheet {
-  texture: Texture;
-  spritesHorizontal: number;
-  spritesVertical: number;
+  textures: Texture[];
+  material: MeshPhongMaterial;
 
   constructor(props: SpriteSheetProps) {
-    this.texture = props.texture.clone();
-    this.texture.needsUpdate = true;
-    this.texture.wrapS = RepeatWrapping;
-    this.texture.wrapT = RepeatWrapping;
-    this.spritesHorizontal = props.spritesHorizontal;
-    this.spritesVertical = props.spritesVertical;
-    this.texture.repeat.set(1 / this.spritesHorizontal, 1 / this.spritesVertical);
+    this.textures = props.textures;
+    this.material = props.material;
+    this.material.map = this.textures[0];
   }
 
-  displaySprite(x: number, y: number) {
-    this.texture.offset.x = x / this.spritesHorizontal;
-    this.texture.offset.y = y / this.spritesVertical;
-  }
-
-  getTexture() {
-    return this.texture;
+  displaySprite(spriteNumber: number) {
+    this.material.map = this.textures[spriteNumber];
   }
 }

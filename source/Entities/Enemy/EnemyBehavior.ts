@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, Material, MeshPhongMaterial } from 'three';
 import { ENEMY } from '@/constants';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
@@ -20,14 +20,14 @@ export class EnemyBehavior implements Behavior {
   randomMovementTimeOut: number;
   container: EntitiesContainer;
   isDead: boolean;
-  currentTitleX: number;
+  currentWalkSprite: number;
   currentTitleDisplayTime: number;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
     this.velocity = props.velocity;
     this.actor = props.actor;
-    this.currentTitleX = 0;
+    this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
     this.container = props.container;
     this.randomMovementTimeOut = 3;
@@ -57,7 +57,7 @@ export class EnemyBehavior implements Behavior {
   death() {
     this.isDead = true;
     this.velocity.set(0, 0, 0);
-    this.actor.spriteSheet.displaySprite(1, 1);
+    this.actor.spriteSheet.displaySprite(2);
     setTimeout(
       () => this.container.remove(this.actor.mesh),
       1000
@@ -87,8 +87,8 @@ export class EnemyBehavior implements Behavior {
     if (this.currentTitleDisplayTime < 0.6) {
       return;
     }
-    this.currentTitleX = this.currentTitleX ? 0 : 1;
-    this.actor.spriteSheet.displaySprite(this.currentTitleX, 0);
+    this.currentWalkSprite = this.currentWalkSprite ? 0 : 1;
+    this.actor.spriteSheet.displaySprite(this.currentWalkSprite);
     this.currentTitleDisplayTime = 0;
   }
 

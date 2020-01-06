@@ -16,16 +16,16 @@ export class EnemyActor implements Actor {
   spriteSheet: SpriteSheet;
 
   constructor(props: ActorProps) {
-    const spriteSheetFile = texturesStore.getTexture(GAME_TEXTURE_NAME.enemySpriteSheetFile);
-    this.spriteSheet = new SpriteSheet({
-      texture: spriteSheetFile,
-      spritesHorizontal: 2,
-      spritesVertical: 2
-    });
-    const texture = this.spriteSheet.getTexture();
+    const enemyWalk1File = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyWalk1);
+    const enemyWalk2File = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyWalk2);
+    const enemyDeathFile = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyDeath);
     const geometry = new BoxGeometry(1.5, 3, 0.1);
-    const material = new MeshPhongMaterial({ map: texture });
+    const material = new MeshPhongMaterial();
     material.transparent = true;
+    this.spriteSheet = new SpriteSheet({
+      textures: [enemyWalk1File, enemyWalk2File, enemyDeathFile],
+      material
+    });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.set(
       props.position.x,
