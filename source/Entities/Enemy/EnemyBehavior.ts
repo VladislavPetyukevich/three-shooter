@@ -57,6 +57,7 @@ export class EnemyBehavior implements Behavior {
   death() {
     this.isDead = true;
     this.velocity.set(0, 0, 0);
+    this.actor.spriteSheet.displaySprite(1, 1);
     setTimeout(
       () => this.container.remove(this.actor.mesh),
       1000
@@ -79,6 +80,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateWalkSprite(delta: number) {
+    if (this.isDead) {
+      return;
+    }
     this.currentTitleDisplayTime += delta;
     if (this.currentTitleDisplayTime < 0.6) {
       return;
