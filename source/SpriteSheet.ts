@@ -1,13 +1,13 @@
-import { Texture, MeshPhongMaterial } from 'three';
+import { Texture, MeshPhongMaterial, SpriteMaterial } from 'three';
 
 interface SpriteSheetProps {
   textures: Texture[];
-  material: MeshPhongMaterial;
+  material: MeshPhongMaterial | SpriteMaterial;
 }
 
 export class SpriteSheet {
   textures: Texture[];
-  material: MeshPhongMaterial;
+  material: MeshPhongMaterial | SpriteMaterial;
 
   constructor(props: SpriteSheetProps) {
     this.textures = props.textures;
