@@ -1,18 +1,21 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
-import { textureLoader } from '@/TextureLoader';
-import gunTextureFile from './assets/gun.png';
+import { texturesStore } from '@/TextureLoader';
+import { GAME_TEXTURE_NAME } from '@/constants';
 
 export class HUD {
   scene: Scene;
   camera: OrthographicCamera;
 
-  constructor() {
+  constructor(visible: boolean) {
     this.scene = new Scene();
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera = new OrthographicCamera(-width, width, height, -height, - 500, 1000);
 
-    const gunTexture = textureLoader.load(gunTextureFile);
+    if (!visible) {
+      return;
+    }
+    const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
     const gunMaterial = new SpriteMaterial({ map: gunTexture });
     const gun = new Sprite(gunMaterial);
     const gunMaxScaleWidth = width * 0.5;

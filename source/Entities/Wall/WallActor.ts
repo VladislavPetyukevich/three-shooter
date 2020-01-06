@@ -1,8 +1,7 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, BoxGeometry, MeshPhongMaterial, Vector3 } from 'three';
-import { textureLoader } from '@/TextureLoader';
-import wallTextureFile from '@/assets/wall.png';
-import wallNormalFile from '@/assets/wall-normal.png';
+import { texturesStore } from '@/TextureLoader';
+import { GAME_TEXTURE_NAME } from '@/constants';
 
 interface WallActorProps {
   size: { width: number; height: number, depth: number };
@@ -13,8 +12,8 @@ export class WallActor implements Actor {
   mesh: Mesh;
 
   constructor(props: WallActorProps) {
-    const texture = textureLoader.load(wallTextureFile);
-    const normal = textureLoader.load(wallNormalFile);
+    const texture = texturesStore.getTexture(GAME_TEXTURE_NAME.wallTextureFile);
+    const normal = texturesStore.getTexture(GAME_TEXTURE_NAME.wallNormalFile);
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
     const material = new MeshPhongMaterial({
       map: texture,

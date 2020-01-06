@@ -1,3 +1,8 @@
+import enemyTextureFile from '@/assets/enemy.png';
+import wallTextureFile from '@/assets/wall.png';
+import wallNormalFile from '@/assets/wall-normal.png';
+import gunTextureFile from './assets/gun.png';
+
 export const PI_180 = Math.PI / 180;
 
 export const PI_2 = Math.PI / 2;
@@ -52,4 +57,18 @@ export const PLAYER = {
 export const enum EVENT_TYPES {
   DELETE_ENTITIY,
   ENEMY_SHOOT
+};
+
+export const gameTextures = {
+  enemyTextureFile: enemyTextureFile,
+  wallTextureFile: wallTextureFile,
+  wallNormalFile: wallNormalFile,
+  gunTextureFile: gunTextureFile
+};
+
+export const enum GAME_TEXTURE_NAME {
+  enemyTextureFile = 'enemyTextureFile',
+  wallTextureFile = 'wallTextureFile',
+  wallNormalFile = 'wallNormalFile',
+  gunTextureFile = 'gunTextureFile'
 };
