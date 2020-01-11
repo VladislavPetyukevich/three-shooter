@@ -55,6 +55,7 @@ export default class ThreeShooter {
       this.prevTime = performance.now();
     });
     window.addEventListener('resize', (event) => {
+      hud.handleResize();
       this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
       this.currScene.camera.updateProjectionMatrix();
       this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);

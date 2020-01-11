@@ -3,6 +3,9 @@ import { texturesStore } from '@/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from './SpriteSheet';
 
+const CAMERA_NEAR = -500;
+const CAMERA_FAR = 1000;
+
 export class HUD {
   scene: Scene;
   camera: OrthographicCamera;
@@ -14,15 +17,11 @@ export class HUD {
     this.scene = new Scene();
     const width = window.innerWidth;
     const height = window.innerHeight;
-    this.camera = new OrthographicCamera(-width, width, height, -height, - 500, 1000);
+    this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
     this.visible = false;
 
     this.gun = new Sprite();
-    const gunMaxScaleWidth = width * 0.5;
-    const gunMaxScaleHeight = height * 0.5;
-    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
-    this.gun.scale.set(gunScale, gunScale, 1);
-    this.gun.position.set(0.5, -height + gunScale / 2, 1);
+    this.handleResize();
   }
 
   hide() {
@@ -49,6 +48,17 @@ export class HUD {
 
   gunIdle() {
     this.spriteSheet && this.spriteSheet.displaySprite(0);
+  }
+
+  handleResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
+    const gunMaxScaleWidth = width * 0.5;
+    const gunMaxScaleHeight = height * 0.5;
+    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
+    this.gun.scale.set(gunScale, gunScale, 1);
+    this.gun.position.set(0.5, -height + gunScale / 2, 1);
   }
 }
 
