@@ -132,7 +132,12 @@ export class CollideChecker2d {
     if (!mapCell) {
       throw new Error('Entity not found');
     }
-    mapCell.entities = mapCell.entities.filter(entityRecord => entityRecord.entity.actor.mesh.id !== entityMeshId);
+    for (let i = mapCell.entities.length; i--;) {
+      if (mapCell.entities[i].entity.actor.mesh.id === entityMeshId) {
+        mapCell.entities.splice(i, 1);
+        break;
+      }
+    }
   }
 
   addEntityToMap(x: number, y: number, entityRecord: EntityRecord) {
