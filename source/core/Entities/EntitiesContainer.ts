@@ -26,12 +26,13 @@ export class EntitiesContainer {
   remove(mesh: Mesh) {
     const meshId = mesh.id;
     this.collideChecker.removeEntity(meshId);
-    this.entities = this.entities.filter(
-      entityEl => entityEl.actor.mesh.id !== meshId
-    );
-    this.entitiesMeshes = this.entitiesMeshes.filter(
-      entityMesh => entityMesh.id !== meshId
-    );
+    for (let i = this.entities.length; i--;) {
+      if (this.entities[i].actor.mesh.id === meshId) {
+        this.entities.splice(i, 1);
+        this.entitiesMeshes.splice(i, 1);
+        break;
+      }
+    }
     this.scene.remove(mesh);
   }
 
