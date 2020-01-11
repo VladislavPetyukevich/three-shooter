@@ -4,8 +4,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
 import { PI_2, KEYBOARD_KEY, ENTITY_TYPE } from '@/constants';
-import { Bullet } from '@/Entities/Bullet/Bullet';
-import { Entity } from '@/core/Entities/Entity';
+import { hud } from '@/HUD';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -57,6 +56,8 @@ export class СontrolledBehavior implements Behavior {
   }
 
   handleShoot = () => {
+    hud.gunFire();
+    setTimeout(() => hud.gunIdle(), 300);
     const raycaster = new Raycaster();
     raycaster.setFromCamera(new Vector2(), this.camera);
     const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);

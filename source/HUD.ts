@@ -6,17 +6,33 @@ import { SpriteSheet } from './SpriteSheet';
 export class HUD {
   scene: Scene;
   camera: OrthographicCamera;
+  visible: boolean;
   spriteSheet?: SpriteSheet;
+  gun: Sprite;
 
-  constructor(visible: boolean) {
+  constructor() {
     this.scene = new Scene();
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera = new OrthographicCamera(-width, width, height, -height, - 500, 1000);
+    this.visible = false;
 
-    if (!visible) {
-      return;
-    }
+    this.gun = new Sprite();
+    const gunMaxScaleWidth = width * 0.5;
+    const gunMaxScaleHeight = height * 0.5;
+    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
+    this.gun.scale.set(gunScale, gunScale, 1);
+    this.gun.position.set(0.5, -height + gunScale / 2, 1);
+  }
+
+  hide() {
+    this.visible = false;
+    this.scene.remove(this.gun);
+  }
+
+  show() {
+    this.visible = true;
+    this.scene.add(this.gun);
     const gunMaterial = new SpriteMaterial();
     const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
     const gunFireTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunFireFile);
@@ -24,22 +40,16 @@ export class HUD {
       textures: [gunTexture, gunFireTexture],
       material: gunMaterial
     });
-    const gun = new Sprite(gunMaterial);
-    const gunMaxScaleWidth = width * 0.5;
-    const gunMaxScaleHeight = height * 0.5;
-    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
-    gun.scale.set(gunScale, gunScale, 1);
-    gun.position.set(0.5, -height + gunScale / 2, 1);
-    this.scene.add(gun);
-
-    document.addEventListener('click', () => this.shoot());
+    this.gun.material = gunMaterial;
   }
 
-  shoot() {
-    if (!this.spriteSheet) {
-      return;
-    }
-    this.spriteSheet.displaySprite(1);
-    setTimeout(() => this.spriteSheet && this.spriteSheet.displaySprite(0), 300);
+  gunFire() {
+    this.spriteSheet && this.spriteSheet.displaySprite(1);
+  }
+
+  gunIdle() {
+    this.spriteSheet && this.spriteSheet.displaySprite(0);
   }
 }
+
+export const hud = new HUD();

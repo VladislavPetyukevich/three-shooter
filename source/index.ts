@@ -7,7 +7,7 @@ import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
 import { LoadingScene } from './scenes/loadingScene';
 import { ImageDisplayer, imageDisplayer } from './ImageDisplayer';
-import { HUD } from './HUD';
+import { hud } from './HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
 import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
@@ -18,7 +18,6 @@ import { gameTextures } from './constants';
 
 export default class ThreeShooter {
   currScene: BasicScene;
-  hud: HUD;
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
@@ -28,7 +27,6 @@ export default class ThreeShooter {
 
   constructor(props: any) {
     this.currScene = new LoadingScene(props);
-    this.hud = new HUD(false);
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
     this.enabled = false;
@@ -61,7 +59,6 @@ export default class ThreeShooter {
       this.currScene.camera.updateProjectionMatrix();
       this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
       this.composer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
-      this.hud = new HUD(true);
     });
   }
 
@@ -89,7 +86,7 @@ export default class ThreeShooter {
   }
 
   changeScene(scene: BasicScene) {
-    this.hud = new HUD(true);
+    hud.show();
     this.currScene = scene;
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.currScene.scene, this.currScene.camera));
@@ -109,7 +106,7 @@ export default class ThreeShooter {
       this.currScene.update(delta);
       this.composer.render(delta);
       this.renderer.clearDepth();
-      this.renderer.render(this.hud.scene, this.hud.camera);
+      this.renderer.render(hud.scene, hud.camera);
       this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
       this.prevTime = time;
     }
