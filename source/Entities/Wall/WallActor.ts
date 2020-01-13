@@ -1,6 +1,6 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, BoxGeometry, MeshPhongMaterial, Vector3 } from 'three';
-import { texturesStore } from '@/TextureLoader';
+import { texturesStore } from '@/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 
 interface WallActorProps {
