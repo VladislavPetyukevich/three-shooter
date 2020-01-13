@@ -5,6 +5,7 @@ import gunFireFile from './assets/gunFire.png';
 import enemyWalk1 from './assets/enemyWalk1.png';
 import enemyWalk2 from './assets/enemyWalk2.png';
 import enemyDeath from './assets/enemyDeath.png';
+import gunShoot  from './assets/shoot.mp3';
 
 export const PI_180 = Math.PI / 180;
 
@@ -72,6 +73,10 @@ export const gameTextures = {
   enemyDeath
 };
 
+export const gameSounds = {
+  gunShoot
+};
+
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
   wallNormalFile = 'wallNormalFile',
@@ -80,4 +85,8 @@ export const enum GAME_TEXTURE_NAME {
   enemyWalk1 = 'enemyWalk1',
   enemyWalk2 = 'enemyWalk2',
   enemyDeath = 'enemyDeath'
+};
+
+export const enum GAME_SOUND_NAME {
+  gunShoot = 'gunShoot'
 };

@@ -3,9 +3,13 @@ import { BoxGeometry, MeshBasicMaterial, Mesh, Box3 } from 'three';
 
 export class LoadingScene extends BasicScene {
   rotatingCube: Mesh
+  texturesProgress: number;
+  soundsProgress: number;
 
   constructor(props: BasicSceneProps) {
     super(props);
+    this.texturesProgress = 0;
+    this.soundsProgress = 0;
 
     const geometry = new BoxGeometry(1, 1, 1);
     const material = new MeshBasicMaterial({ color: 0x00ff00 });
@@ -15,7 +19,18 @@ export class LoadingScene extends BasicScene {
     this.scene.add(this.rotatingCube);
   }
 
-  onProgress(progress: number) {
+  onTexturesProgress(progress: number) {
+    this.texturesProgress = progress;
+    this.updateProgress();
+  }
+
+  onSoundsProgress(progress: number) {
+    this.soundsProgress = progress;
+    this.updateProgress();
+  }
+
+  updateProgress() {
+    const progress = (this.texturesProgress + this.soundsProgress) / 2;
     const oldMinX = new Box3().setFromObject(this.rotatingCube).min.x;
     this.rotatingCube.scale.set(1 + progress * 8 / 100, 1, 1);
     const newMinX = new Box3().setFromObject(this.rotatingCube).min.x;

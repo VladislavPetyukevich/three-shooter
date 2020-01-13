@@ -13,8 +13,8 @@ import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
 import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
-import { texturesStore } from '@/loaders/TextureLoader';
-import { gameTextures } from './constants';
+import { texturesStore, audioStore } from '@/loaders';
+import { gameTextures, gameSounds } from './constants';
 
 export default class ThreeShooter {
   currScene: BasicScene;
@@ -65,6 +65,12 @@ export default class ThreeShooter {
 
   loadTextures(gameProps: any) {
     const onLoad = () => {
+      const soundsProgress = (<LoadingScene>this.currScene).soundsProgress;
+      const texturesProgress = (<LoadingScene>this.currScene).texturesProgress;
+      if ((soundsProgress !== 100) || (texturesProgress !== 100)) {
+        return;
+      }
+
       const pointerlockHandler = () => {
         const isRenderContainer = document.pointerLockElement === gameProps.renderContainer;
         if (!isRenderContainer) {
@@ -79,11 +85,16 @@ export default class ThreeShooter {
       document.addEventListener('pointerlockchange', pointerlockHandler);
     };
 
-    const onProgress = (progress: number) => {
-      (<LoadingScene>this.currScene).onProgress(progress);
+    const onTexturesProgress = (progress: number) => {
+      (<LoadingScene>this.currScene).onTexturesProgress(progress);
     };
 
-    texturesStore.loadTextures(gameTextures, onLoad, onProgress);
+    const onSoundsProgress = (progress: number) => {
+      (<LoadingScene>this.currScene).onSoundsProgress(progress);
+    };
+
+    texturesStore.loadTextures(gameTextures, onLoad, onTexturesProgress);
+    audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
   }
 
   changeScene(scene: BasicScene) {
