@@ -10,7 +10,7 @@ interface TexturesMap {
   [name: string]: Texture;
 }
 
-export class TexturesStore {
+export class TextureLoader {
   texturesMap: TexturesMap;
 
   constructor() {
@@ -40,4 +40,4 @@ export class TexturesStore {
   }
 }
 
-export const texturesStore = new TexturesStore();
+export const texturesStore = new TextureLoader();
