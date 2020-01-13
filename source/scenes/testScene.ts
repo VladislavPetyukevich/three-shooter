@@ -119,7 +119,8 @@ export class TestScene extends BasicScene {
     const enemy = new Enemy({
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
       player: this.player,
-      container: this.entitiesContainer
+      container: this.entitiesContainer,
+      audioListener: this.audioListener
     });
     this.entitiesContainer.add(enemy);
   }

@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, AudioListener } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
 import { EnemyActor } from './EnemyActor';
@@ -10,6 +10,7 @@ export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
   container: EntitiesContainer;
+  audioListener: AudioListener;
 }
 
 export class Enemy extends Entity {
@@ -26,7 +27,8 @@ export class Enemy extends Entity {
         player: props.player,
         container: props.container,
         velocity,
-        actor
+        actor,
+        audioListener: props.audioListener
       })
     );
     this.hp = 1;

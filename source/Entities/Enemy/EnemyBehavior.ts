@@ -1,16 +1,18 @@
-import { Vector3, Material, MeshPhongMaterial } from 'three';
-import { ENEMY } from '@/constants';
+import { Vector3, AudioListener, PositionalAudio } from 'three';
+import { ENEMY, GAME_SOUND_NAME } from '@/constants';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Bullet } from '@/Entities/Bullet/Bullet';
+import { audioStore } from '@/loaders';
 
 interface BehaviorProps {
   player: Player;
   velocity: Vector3;
   actor: EnemyActor;
   container: EntitiesContainer;
+  audioListener: AudioListener;
 }
 
 export class EnemyBehavior implements Behavior {
@@ -22,6 +24,7 @@ export class EnemyBehavior implements Behavior {
   isDead: boolean;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
+  shootSound: PositionalAudio;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
@@ -32,6 +35,10 @@ export class EnemyBehavior implements Behavior {
     this.container = props.container;
     this.randomMovementTimeOut = 3;
     this.isDead = false;
+    this.shootSound = new PositionalAudio(props.audioListener);
+    const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
+    this.shootSound.setBuffer(shootSoundBuffer);
+    this.actor.mesh.add(this.shootSound);
   }
 
   shoot() {
@@ -52,6 +59,7 @@ export class EnemyBehavior implements Behavior {
       container: this.container
     });
     this.container.add(bullet);
+    this.shootSound.play();
   }
 
   death() {
