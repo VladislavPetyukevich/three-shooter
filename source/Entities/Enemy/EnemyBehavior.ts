@@ -5,7 +5,7 @@ import { Player } from '@/Entities/Player/Player';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { audioStore } from '@/loaders';
+import { audioStore } from '@/core/loaders';
 
 interface BehaviorProps {
   player: Player;

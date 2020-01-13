@@ -13,7 +13,7 @@ import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
 import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
-import { texturesStore, audioStore } from '@/loaders';
+import { texturesStore, audioStore } from '@/core/loaders';
 import { gameTextures, gameSounds } from './constants';
 
 export default class ThreeShooter {

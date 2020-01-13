@@ -1,7 +1,7 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, BoxGeometry, MeshPhongMaterial } from 'three';
 import { Player } from '@/Entities/Player/Player';
-import { texturesStore } from '@/loaders/TextureLoader';
+import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 

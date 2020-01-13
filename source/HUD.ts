@@ -1,5 +1,5 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
-import { texturesStore } from '@/loaders/TextureLoader';
+import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from './SpriteSheet';
 
