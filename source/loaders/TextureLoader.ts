@@ -11,11 +11,9 @@ interface TexturesMap {
 }
 
 export class TexturesStore {
-  textures: Texture[];
   texturesMap: TexturesMap;
 
   constructor() {
-    this.textures = [];
     this.texturesMap = {};
   }
 
