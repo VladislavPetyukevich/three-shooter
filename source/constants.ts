@@ -6,6 +6,8 @@ import enemyWalk1 from './assets/enemyWalk1.png';
 import enemyWalk2 from './assets/enemyWalk2.png';
 import enemyDeath from './assets/enemyDeath.png';
 import gunShoot  from './assets/shoot.mp3';
+import shootMark1 from './assets/shootMark1.png';
+import shootMark2 from './assets/shootMark2.png';
 
 export const PI_180 = Math.PI / 180;
 
@@ -22,7 +24,9 @@ export const enum ENTITY_TYPE {
   PLAYER = 'PLAYER',
   BULLET = 'BULLET',
   WALL = 'WALL',
-  ENEMY = 'ENEMY'
+  ENEMY = 'ENEMY',
+  GUN = 'GUN',
+  SHOOT_MARK = 'SHOOT_MARK'
 };
 
 export const GUN = {
@@ -70,7 +74,9 @@ export const gameTextures = {
   gunFireFile,
   enemyWalk1,
   enemyWalk2,
-  enemyDeath
+  enemyDeath,
+  shootMark1,
+  shootMark2
 };
 
 export const gameSounds = {
@@ -84,7 +90,9 @@ export const enum GAME_TEXTURE_NAME {
   gunFireFile = 'gunFireFile',
   enemyWalk1 = 'enemyWalk1',
   enemyWalk2 = 'enemyWalk2',
-  enemyDeath = 'enemyDeath'
+  enemyDeath = 'enemyDeath',
+  shootMark1 = 'shootMark1',
+  shootMark2 = 'shootMark2'
 };
 
 export const enum GAME_SOUND_NAME {

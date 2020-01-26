@@ -1,4 +1,4 @@
-import { Vector3, Camera } from 'three';
+import { Vector3, Camera, AudioListener } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './PlayerActor';
@@ -9,6 +9,7 @@ export interface PlayerProps {
   position: Vector3;
   camera: Camera;
   container: EntitiesContainer;
+  audioListener: AudioListener;
 }
 
 export class Player extends Entity {
@@ -29,7 +30,8 @@ export class Player extends Entity {
         walkSpeed: PLAYER.WALK_SPEED,
         cameraSpeed: PLAYER.CAMERA_ROTATION_SPEED,
         container: props.container,
-        velocity: velocity
+        velocity: velocity,
+        audioListener: props.audioListener
       }),
     );
     this.velocity = velocity;

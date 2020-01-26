@@ -1,0 +1,101 @@
+import {
+  Camera,
+  Vector2,
+  Raycaster,
+  PointLight,
+  AudioListener,
+  Audio
+} from 'three';
+import { Behavior } from '@/core/Entities/Behavior';
+import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { audioStore } from '@/core/loaders';
+import { ENTITY_TYPE, GAME_SOUND_NAME } from '@/constants';
+import { hud } from '@/HUD';
+import { ShootMark } from '@/Entities/ShootMark/ShootMark';
+
+interface BehaviorProps {
+  playerCamera: Camera;
+  container: EntitiesContainer;
+  audioListener: AudioListener;
+}
+
+export class GunBehavior implements Behavior {
+  playerCamera: Camera;
+  container: EntitiesContainer;
+  gunShootLight: PointLight;
+  audioListener: AudioListener;
+  shootSound: Audio;
+  isShoot: boolean;
+
+  constructor(props: BehaviorProps) {
+    this.playerCamera = props.playerCamera;
+    this.container = props.container;
+    this.audioListener = props.audioListener;
+    this.shootSound = new Audio(props.audioListener);
+    this.isShoot = false;
+    const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
+    this.shootSound.setBuffer(shootSoundBuffer);
+    this.shootSound.isPlaying = false;
+    this.gunShootLight = new PointLight(0xE09E3D, 20, 100);
+    this.gunShootLight.position.set(
+      0,
+      -50,
+      0
+    );
+    this.container.scene.add(this.gunShootLight);
+  }
+
+  handleShoot = () => {
+    if (this.isShoot) {
+      return;
+    }
+    this.isShoot = true;
+    this.shootSound.play();
+
+    hud.gunFire();
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(new Vector2(), this.playerCamera);
+
+    const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);
+
+    for (let i = 0; i < intersects.length; i++) {
+      const intersect = intersects[i];
+      const intersectEntity = this.container.entities.find(
+        entity => entity.actor.mesh.id === intersect.object.id
+      );
+      if (!intersectEntity) {
+        continue;
+      }
+
+      if (intersectEntity.type === ENTITY_TYPE.WALL) {
+        const shootMark = new ShootMark({
+          playerCamera: this.playerCamera,
+          position: { x: intersect.point.x, y: intersect.point.y, z: intersect.point.z },
+          container: this.container
+        });
+        this.container.add(shootMark);
+        break;
+      }
+      if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
+        intersectEntity.onHit(1);
+        break;
+      }
+    }
+  };
+
+  update() {
+    if (this.isShoot && !this.shootSound.isPlaying) {
+      this.shootSound.stop();
+      this.isShoot = false;
+      hud.gunIdle();
+      this.gunShootLight.position.set(0, -50, 0);
+    }
+    if (this.isShoot) {
+      this.gunShootLight.position.set(
+        this.playerCamera.position.x,
+        this.playerCamera.position.y,
+        this.playerCamera.position.z
+      );
+    }
+  }
+}

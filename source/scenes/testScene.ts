@@ -56,7 +56,8 @@ export class TestScene extends BasicScene {
       new Player({
         camera: this.camera,
         position: new Vector3(0, PLAYER.BODY_HEIGHT, 0),
-        container: this.entitiesContainer
+        container: this.entitiesContainer,
+        audioListener: this.audioListener
       })
     );
 

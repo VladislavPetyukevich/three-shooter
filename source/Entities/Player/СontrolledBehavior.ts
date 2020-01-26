@@ -1,10 +1,11 @@
-import { Camera, Vector2, Vector3, Raycaster } from 'three';
+import { Camera, Vector2, Vector3, AudioListener } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY, ENTITY_TYPE } from '@/constants';
-import { hud } from '@/HUD';
+import { PI_2, KEYBOARD_KEY } from '@/constants';
+import { Gun } from '@/Entities/Gun/Gun';
+import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -14,6 +15,7 @@ interface СontrolledBehaviorProps {
   cameraSpeed: number;
   container: EntitiesContainer;
   velocity: Vector3;
+  audioListener: AudioListener;
 }
 
 export class СontrolledBehavior implements Behavior {
@@ -26,6 +28,7 @@ export class СontrolledBehavior implements Behavior {
   cameraSpeed: number;
   container: EntitiesContainer;
   velocity: Vector3;
+  gun: Gun;
 
   constructor(props: СontrolledBehaviorProps) {
     this.actor = props.actor;
@@ -38,6 +41,11 @@ export class СontrolledBehavior implements Behavior {
     this.cameraRotationInput = new Vector2();
     this.container = props.container;
     this.velocity = props.velocity;
+    this.gun = new Gun({
+      container: props.container,
+      playerCamera: props.camera,
+      audioListener: props.audioListener
+    });
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);
@@ -56,31 +64,11 @@ export class СontrolledBehavior implements Behavior {
   }
 
   handleShoot = () => {
-    hud.gunFire();
-    setTimeout(() => hud.gunIdle(), 300);
-    const raycaster = new Raycaster();
-    raycaster.setFromCamera(new Vector2(), this.camera);
-    const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);
-
-    for (let i = 0; i < intersects.length; i++) {
-      const intersect = intersects[i];
-      const intersectEntity = this.container.entities.find(
-        entity => entity.actor.mesh.id === intersect.object.id
-      );
-      if (!intersectEntity) {
-        continue;
-      }
-      if (intersectEntity.type === ENTITY_TYPE.WALL) {
-        break;
-      }
-      if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
-        intersectEntity.onHit(1);
-        break;
-      }
-    }
+    (<GunBehavior>this.gun.behavior).handleShoot();
   };
 
   update(delta: number) {
+    this.gun.update(delta);
     let isRunning = false;
     this.camera.rotation.y -= this.cameraRotationInput.x;
     this.cameraRotationInput.set(0, 0);
