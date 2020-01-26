@@ -19,7 +19,7 @@ export class ShootMarkActor implements Actor {
   constructor(props: ActorProps) {
     const shootMarkFile1 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark1);
     const shootMarkFile2 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark2);
-    const geometry = new BoxGeometry(0.1, 0.1, 0.1);
+    const geometry = new BoxGeometry(0.09, 0.09, 0.09);
     const material = new MeshPhongMaterial();
     material.transparent = true;
     this.spriteSheet = new SpriteSheet({
