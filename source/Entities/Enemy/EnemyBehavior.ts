@@ -43,9 +43,9 @@ export class EnemyBehavior implements Behavior {
 
   shoot() {
     const bulletVelocity = new Vector3(
-      Math.sin(this.actor.mesh.rotation.y) * 4,
+      Math.sin(this.actor.mesh.rotation.y) * ENEMY.BULLET_SPEED,
       0,
-      Math.cos(this.actor.mesh.rotation.y) * 4
+      Math.cos(this.actor.mesh.rotation.y) * ENEMY.BULLET_SPEED
     );
     const bulletPosition = new Vector3(
       this.actor.mesh.position.x - Math.sin(this.actor.mesh.rotation.y),

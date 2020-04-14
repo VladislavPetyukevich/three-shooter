@@ -50,7 +50,8 @@ export const FLYING_ENEMY = {
 };
 
 export const ENEMY = {
-  WALK_SPEED: 2
+  WALK_SPEED: 2,
+  BULLET_SPEED: 25
 };
 
 export const PLAYER = {
