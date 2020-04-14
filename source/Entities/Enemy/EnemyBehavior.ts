@@ -33,7 +33,7 @@ export class EnemyBehavior implements Behavior {
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
     this.container = props.container;
-    this.randomMovementTimeOut = 3;
+    this.randomMovementTimeOut = ENEMY.MOVEMENT_TIME_OUT;
     this.isDead = false;
     this.shootSound = new PositionalAudio(props.audioListener);
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
@@ -106,7 +106,7 @@ export class EnemyBehavior implements Behavior {
       return;
     }
     this.randomMovementTimeOut += delta;
-    if (this.randomMovementTimeOut > 3) {
+    if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
       this.randomMovement();
       this.randomMovementTimeOut = 0;
     } else {
