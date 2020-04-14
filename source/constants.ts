@@ -52,7 +52,8 @@ export const FLYING_ENEMY = {
 export const ENEMY = {
   WALK_SPEED: 2,
   BULLET_SPEED: 25,
-  MOVEMENT_TIME_OUT: 3
+  MOVEMENT_TIME_OUT: 3,
+  SHOOT_TIME_OUT: 1
 };
 
 export const PLAYER = {
