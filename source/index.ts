@@ -7,7 +7,7 @@ import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
 import { LoadingScene } from './scenes/loadingScene';
 import { ImageDisplayer, imageDisplayer } from './ImageDisplayer';
-import { hud } from './HUD';
+import { hud } from './HUD/HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
 import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
@@ -98,6 +98,7 @@ export default class ThreeShooter {
   }
 
   changeScene(scene: BasicScene) {
+    hud.updateMap(scene.entitiesContainer.entities);
     hud.show();
     this.currScene = scene;
     this.composer = new EffectComposer(this.renderer);

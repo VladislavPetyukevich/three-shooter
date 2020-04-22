@@ -10,7 +10,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
 import { ENTITY_TYPE, GAME_SOUND_NAME } from '@/constants';
-import { hud } from '@/HUD';
+import { hud } from '@/HUD/HUD';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
 
 interface BehaviorProps {

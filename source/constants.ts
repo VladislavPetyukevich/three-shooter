@@ -69,6 +69,10 @@ export const PLAYER = {
   CAMERA_ROTATION_SPEED: Math.PI * 0.5
 };
 
+export const HUD = {
+  MAP_SIZE: 128
+};
+
 export const enum EVENT_TYPES {
   DELETE_ENTITIY,
   ENEMY_SHOOT
