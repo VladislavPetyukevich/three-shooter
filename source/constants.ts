@@ -5,7 +5,7 @@ import gunFireFile from './assets/gunFire.png';
 import enemyWalk1 from './assets/enemyWalk1.png';
 import enemyWalk2 from './assets/enemyWalk2.png';
 import enemyDeath from './assets/enemyDeath.png';
-import gunShoot  from './assets/shoot.mp3';
+import gunShoot from './assets/shoot.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
 
@@ -27,6 +27,10 @@ export const enum ENTITY_TYPE {
   ENEMY = 'ENEMY',
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK'
+};
+
+export const WALL = {
+  SIZE: 3
 };
 
 export const GUN = {
