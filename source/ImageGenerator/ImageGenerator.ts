@@ -42,20 +42,31 @@ export class ImageGenerator {
     context.fillRect(0, 0, this.size.width, this.size.height);
     this.pixels.forEach(pixel => {
       if (typeof pixel.rotation === 'number') {
-        context.strokeStyle = pixel.color;
-        context.translate(this.size.width / 2, this.size.height / 2);
-        context.rotate(-pixel.rotation);
-        context.translate(-this.size.width / 2, -this.size.height / 2);
-
-        context.beginPath();
-        context.moveTo(pixel.x + pixel.size, pixel.y + pixel.size);
-        context.lineTo(pixel.x + pixel.size / 2, pixel.y);
-        context.lineTo(pixel.x, pixel.y + pixel.size);
-        context.stroke();
+        this.drawArrow(context, pixel);
       } else {
-        context.fillStyle = pixel.color;
-        context.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+        this.drawRect(context, pixel);
       }
     });
+  }
+
+  drawArrow(context: CanvasRenderingContext2D, pixel: ImagePixel) {
+    if (typeof pixel.rotation !== 'number') {
+      throw new Error('ImageGenerator drawArrow: pixel rotation undefined');
+    }
+    context.strokeStyle = pixel.color;
+    context.translate(this.size.width / 2, this.size.height / 2);
+    context.rotate(-pixel.rotation);
+    context.translate(-this.size.width / 2, -this.size.height / 2);
+
+    context.beginPath();
+    context.moveTo(pixel.x + pixel.size, pixel.y + pixel.size);
+    context.lineTo(pixel.x + pixel.size / 2, pixel.y);
+    context.lineTo(pixel.x, pixel.y + pixel.size);
+    context.stroke();
+  }
+
+  drawRect(context: CanvasRenderingContext2D, pixel: ImagePixel) {
+    context.fillStyle = pixel.color;
+    context.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
   }
 }
