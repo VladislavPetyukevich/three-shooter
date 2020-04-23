@@ -1,6 +1,6 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3 } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
+import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS, WALL } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 import { Entity } from '@/core/Entities/Entity';
 import { HUDMap } from './HUDMap';
@@ -24,7 +24,12 @@ export class HUD {
     this.visible = false;
 
     this.gun = new Sprite();
-    this.hudMap = new HUDMap();
+    this.hudMap = new HUDMap({
+      mapSize: HUD_CONSTANTS.MAP_SIZE,
+      renderDistance: HUD_CONSTANTS.MAP_RENDER_DISTANCE,
+      wallPixelSize: WALL.SIZE,
+      colors: HUD_CONSTANTS.COLORS
+    });
     this.handleResize();
   }
 
