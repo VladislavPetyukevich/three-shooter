@@ -69,12 +69,14 @@ export class HUDMap {
       return;
     }
     const renderDistance = this.settings.renderDistance;
-    const nearPixels = this.wallsPixels.filter(wallPixel => {
-      const xDiff = wallPixel.x - playerMeshPosition.x;
-      const yDiff = wallPixel.y - playerMeshPosition.z;
-      const distanceToPlayer = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-      return distanceToPlayer <= renderDistance;
-    });
+    const nearPixels = this.wallsPixels
+      .filter(wallPixel => {
+        const xDiff = wallPixel.x - playerMeshPosition.x;
+        const yDiff = wallPixel.y - playerMeshPosition.z;
+        const distanceToPlayer = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+        return distanceToPlayer <= renderDistance;
+      })
+      .map(pixel => ({ ...pixel, x: pixel.x - playerMeshPosition.x + renderDistance, y: pixel.y - playerMeshPosition.z + renderDistance }));
     this.initSprite(nearPixels);
   };
 }

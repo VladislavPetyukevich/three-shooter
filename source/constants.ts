@@ -70,8 +70,8 @@ export const PLAYER = {
 };
 
 export const HUD = {
-  MAP_SIZE: 128,
-  MAP_RENDER_DISTANCE: 25,
+  MAP_SIZE: 64,
+  MAP_RENDER_DISTANCE: 32,
   COLORS: {
     wall: 'red',
     player: 'blue',
