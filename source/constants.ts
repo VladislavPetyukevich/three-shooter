@@ -70,7 +70,8 @@ export const PLAYER = {
 };
 
 export const HUD = {
-  MAP_SIZE: 128
+  MAP_SIZE: 128,
+  MAP_RENDER_DISTANCE:  25
 };
 
 export const enum EVENT_TYPES {

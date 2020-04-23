@@ -1,4 +1,4 @@
-import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
+import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3 } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
@@ -57,7 +57,11 @@ export class HUD {
   }
 
   updateMap(entities: Entity[]) {
-    this.hudMap.updateSprite(entities);
+    this.hudMap.updateEntities(entities);
+  }
+
+  onPlayerMove(meshPosition: Vector3) {
+    this.hudMap.updatePlayerPosition(meshPosition);
   }
 
   handleResize() {

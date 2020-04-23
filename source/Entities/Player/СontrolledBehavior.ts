@@ -3,9 +3,10 @@ import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY } from '@/constants';
+import { PI_2, KEYBOARD_KEY, HUD } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunBehavior } from '@/Entities/Gun/GunBehavior';
+import { hud } from '@/HUD/HUD';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -94,6 +95,10 @@ export class СontrolledBehavior implements Behavior {
       isRunning = true;
       this.velocity.x += Math.sin(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
       this.velocity.z += Math.cos(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
+    }
+
+    if (isRunning) {
+      hud.onPlayerMove(this.actor.mesh.position);
     }
 
     this.isRunning = isRunning;
