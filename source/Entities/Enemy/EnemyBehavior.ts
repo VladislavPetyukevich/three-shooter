@@ -106,6 +106,11 @@ export class EnemyBehavior implements Behavior {
     if (this.isDead) {
       return;
     }
+    const distanceToPlayer = this.getDistanceToPlayer();
+    if (distanceToPlayer > ENEMY.VIEW_DISTANCE) {
+      return;
+    }
+
     this.randomMovementTimeOut += delta;
     if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
       this.randomMovement();
@@ -119,5 +124,11 @@ export class EnemyBehavior implements Behavior {
       this.shoot();
       this.shootTimeOut = 0;
     }
+  }
+
+  getDistanceToPlayer() {
+    const diffX = this.actor.mesh.position.x - this.player.actor.mesh.position.x;
+    const diffZ = this.actor.mesh.position.z - this.player.actor.mesh.position.z;
+    return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
 }

@@ -57,7 +57,8 @@ export const ENEMY = {
   WALK_SPEED: 2,
   BULLET_SPEED: 25,
   MOVEMENT_TIME_OUT: 3,
-  SHOOT_TIME_OUT: 1
+  SHOOT_TIME_OUT: 1,
+  VIEW_DISTANCE: 30
 };
 
 export const PLAYER = {
