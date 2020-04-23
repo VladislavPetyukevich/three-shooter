@@ -27,6 +27,7 @@ export class HUD {
     this.hudMap = new HUDMap({
       mapSize: HUD_CONSTANTS.MAP_SIZE,
       renderDistance: HUD_CONSTANTS.MAP_RENDER_DISTANCE,
+      updatingFPS: HUD_CONSTANTS.MAP_UPDATING_FPS,
       wallPixelSize: WALL.SIZE,
       colors: HUD_CONSTANTS.COLORS
     });

@@ -16,6 +16,7 @@ interface HUDMapSettings {
   wallPixelSize: number;
   renderDistance: number;
   colors: HUDMapCollors;
+  updatingFPS: number;
 }
 
 export class HUDMap {
@@ -23,30 +24,42 @@ export class HUDMap {
   sprite: Sprite;
   wallsPixels?: ImagePixel[];
   nearPixels: { x: number; y: number; color: string; size: number; rotation?: number | undefined; }[];
+  playerMeshPosition: Vector3;
   playerRotationY: number;
 
   constructor(settings: HUDMapSettings) {
     this.settings = settings;
     this.sprite = new Sprite();
     this.nearPixels = [];
+    this.playerMeshPosition = new Vector3();
     this.playerRotationY = 0;
+    this.startUpdating();
+  }
+
+  startUpdating = () => {
+    this.calcNearPixels();
     this.initSprite();
+    setTimeout(this.startUpdating, 1000 / this.settings.updatingFPS);
   }
 
-  updateEntities(entities: Entity[]) {
-    const getWallPixel = (entity: Entity): ImagePixel =>
-      ({
-        x: entity.actor.mesh.position.x,
-        y: entity.actor.mesh.position.z,
-        color: this.settings.colors.wall,
-        size: this.settings.wallPixelSize
-      });
-
-    this.wallsPixels =
-      entities
-        .filter(entity => entity.type === ENTITY_TYPE.WALL)
-        .map(getWallPixel);
-  }
+  calcNearPixels = () => {
+    if (!this.wallsPixels) {
+      return;
+    }
+    const renderDistance = this.settings.renderDistance;
+    this.nearPixels = this.wallsPixels
+      .filter(wallPixel => {
+        const xDiff = wallPixel.x - this.playerMeshPosition.x;
+        const yDiff = wallPixel.y - this.playerMeshPosition.z;
+        const distanceToPlayer = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+        return distanceToPlayer <= renderDistance;
+      })
+      .map(pixel => ({
+        ...pixel,
+        x: pixel.x - this.playerMeshPosition.x + renderDistance,
+        y: pixel.y - this.playerMeshPosition.z + renderDistance
+      }));
+  };
 
   initSprite() {
     const playerPixelSize = this.settings.wallPixelSize * 2;
@@ -72,28 +85,26 @@ export class HUDMap {
     });
   }
 
-  updatePlayerPosition(meshPosition: Vector3) {
-    setTimeout(this.renderMap, 0, meshPosition);
+  updateEntities(entities: Entity[]) {
+    const getWallPixel = (entity: Entity): ImagePixel =>
+      ({
+        x: entity.actor.mesh.position.x,
+        y: entity.actor.mesh.position.z,
+        color: this.settings.colors.wall,
+        size: this.settings.wallPixelSize
+      });
+
+    this.wallsPixels =
+      entities
+        .filter(entity => entity.type === ENTITY_TYPE.WALL)
+        .map(getWallPixel);
   }
 
-  renderMap = (playerMeshPosition: Vector3) => {
-    if (!this.wallsPixels) {
-      return;
-    }
-    const renderDistance = this.settings.renderDistance;
-    this.nearPixels = this.wallsPixels
-      .filter(wallPixel => {
-        const xDiff = wallPixel.x - playerMeshPosition.x;
-        const yDiff = wallPixel.y - playerMeshPosition.z;
-        const distanceToPlayer = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-        return distanceToPlayer <= renderDistance;
-      })
-      .map(pixel => ({ ...pixel, x: pixel.x - playerMeshPosition.x + renderDistance, y: pixel.y - playerMeshPosition.z + renderDistance }));
-    this.initSprite();
-  };
+  updatePlayerPosition(meshPosition: Vector3) {
+    this.playerMeshPosition = meshPosition;
+  }
 
   updatePlayerRotation(cameraRotation: Euler) {
     this.playerRotationY = cameraRotation.y;
-    this.initSprite();
   }
 }

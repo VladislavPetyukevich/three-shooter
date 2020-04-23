@@ -72,6 +72,7 @@ export const PLAYER = {
 export const HUD = {
   MAP_SIZE: 64,
   MAP_RENDER_DISTANCE: 32,
+  MAP_UPDATING_FPS: 20,
   COLORS: {
     wall: 'red',
     player: 'green',
