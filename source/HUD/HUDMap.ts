@@ -1,4 +1,4 @@
-import { Sprite, Texture, SpriteMaterial, Vector3 } from 'three';
+import { Sprite, Texture, SpriteMaterial, Vector3, Euler } from 'three';
 import { ImagePixel, ImageGenerator } from '@/ImageGenerator/ImageGenerator';
 import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
 import { threeTextureLoader } from '@/core/loaders/TextureLoader';
@@ -22,11 +22,15 @@ export class HUDMap {
   settings: HUDMapSettings;
   sprite: Sprite;
   wallsPixels?: ImagePixel[];
+  nearPixels: { x: number; y: number; color: string; size: number; rotation?: number | undefined; }[];
+  playerRotationY: number;
 
   constructor(settings: HUDMapSettings) {
     this.settings = settings;
     this.sprite = new Sprite();
-    this.initSprite([]);
+    this.nearPixels = [];
+    this.playerRotationY = 0;
+    this.initSprite();
   }
 
   updateEntities(entities: Entity[]) {
@@ -44,8 +48,16 @@ export class HUDMap {
         .map(getWallPixel);
   }
 
-  initSprite(imagePixels: ImagePixel[]) {
-    const imageGenerator = new ImageGenerator(imagePixels, { width: this.settings.mapSize, height: this.settings.mapSize });
+  initSprite() {
+    const playerPixelSize = this.settings.wallPixelSize * 2;
+    const playerPixel: ImagePixel = {
+      x: this.settings.renderDistance - playerPixelSize / 2,
+      y: this.settings.renderDistance - playerPixelSize / 2,
+      color: this.settings.colors.player,
+      size: playerPixelSize,
+      rotation: this.playerRotationY
+    };
+    const imageGenerator = new ImageGenerator([...this.nearPixels, playerPixel], { width: this.settings.mapSize, height: this.settings.mapSize });
     const imageUrlGenerator = new ImageUrlGenerator(imageGenerator);
     const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
     this.drawSprite(wallsMapImageUrl);
@@ -69,7 +81,7 @@ export class HUDMap {
       return;
     }
     const renderDistance = this.settings.renderDistance;
-    const nearPixels = this.wallsPixels
+    this.nearPixels = this.wallsPixels
       .filter(wallPixel => {
         const xDiff = wallPixel.x - playerMeshPosition.x;
         const yDiff = wallPixel.y - playerMeshPosition.z;
@@ -77,6 +89,11 @@ export class HUDMap {
         return distanceToPlayer <= renderDistance;
       })
       .map(pixel => ({ ...pixel, x: pixel.x - playerMeshPosition.x + renderDistance, y: pixel.y - playerMeshPosition.z + renderDistance }));
-    this.initSprite(nearPixels);
+    this.initSprite();
   };
+
+  updatePlayerRotation(cameraRotation: Euler) {
+    this.playerRotationY = cameraRotation.y;
+    this.initSprite();
+  }
 }

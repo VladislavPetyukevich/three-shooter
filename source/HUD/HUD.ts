@@ -1,4 +1,4 @@
-import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3 } from 'three';
+import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3, Euler } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS, WALL } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
@@ -67,6 +67,10 @@ export class HUD {
 
   onPlayerMove(meshPosition: Vector3) {
     this.hudMap.updatePlayerPosition(meshPosition);
+  }
+
+  onPlayerRotation(cameraRotation: Euler) {
+    this.hudMap.updatePlayerRotation(cameraRotation);
   }
 
   handleResize() {

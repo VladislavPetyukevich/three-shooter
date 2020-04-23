@@ -3,6 +3,7 @@ export interface ImagePixel {
   y: number;
   color: string;
   size: number;
+  rotation?: number
 }
 
 export interface ImageSize {
@@ -40,8 +41,21 @@ export class ImageGenerator {
     context.fillStyle = 'black';
     context.fillRect(0, 0, this.size.width, this.size.height);
     this.pixels.forEach(pixel => {
-      context.fillStyle = pixel.color;
-      context.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+      if (typeof pixel.rotation === 'number') {
+        context.strokeStyle = pixel.color;
+        context.translate(this.size.width / 2, this.size.height / 2);
+        context.rotate(-pixel.rotation);
+        context.translate(-this.size.width / 2, -this.size.height / 2);
+
+        context.beginPath();
+        context.moveTo(pixel.x + pixel.size, pixel.y + pixel.size);
+        context.lineTo(pixel.x + pixel.size / 2, pixel.y);
+        context.lineTo(pixel.x, pixel.y + pixel.size);
+        context.stroke();
+      } else {
+        context.fillStyle = pixel.color;
+        context.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+      }
     });
   }
 }

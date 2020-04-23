@@ -71,7 +71,10 @@ export class СontrolledBehavior implements Behavior {
   update(delta: number) {
     this.gun.update(delta);
     let isRunning = false;
-    this.camera.rotation.y -= this.cameraRotationInput.x;
+    if (this.cameraRotationInput.x) {
+      this.camera.rotation.y -= this.cameraRotationInput.x;
+      hud.onPlayerRotation(this.camera.rotation);
+    }
     this.cameraRotationInput.set(0, 0);
     this.camera.position.copy(this.actor.mesh.position);
     this.velocity.set(0, 0, 0);

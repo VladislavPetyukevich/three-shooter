@@ -74,7 +74,7 @@ export const HUD = {
   MAP_RENDER_DISTANCE: 32,
   COLORS: {
     wall: 'red',
-    player: 'blue',
+    player: 'green',
     background: 'black'
   }
 };
