@@ -14,6 +14,7 @@ import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Enemy } from '@/Entities/Enemy/Enemy';
+import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 
 const calculateCirclePoints = (angleStep: number, radius: number) => {
   const points = [];
@@ -109,7 +110,23 @@ export class TestScene extends BasicScene {
       [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ];
-    this.loadMap(map, mapDictionary, mapCellSize);
+    // this.loadMap(map, mapDictionary, mapCellSize);
+
+    const dungeonGenerator = new DungeonGenerator({ width: 50, height: 50 })
+    dungeonGenerator.generate(
+      { position: { x: 13, y: 13 }, size: { width: 8, height: 8 } }
+    );
+    const dungeon: (3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
+      dungeonRow => dungeonRow.map(dungeonCell => {
+        if (dungeonCell === DungeonCellType.Wall) {
+          return 1;
+        }
+
+        return 0;
+      })
+    );
+    dungeon[14][14] = 3;
+    this.loadMap(dungeon, mapDictionary, mapCellSize);
   }
 
   loadMap(map: number[][], dictionary: { [mapKey: number]: ENTITY_TYPE }, cellSize: number) {
