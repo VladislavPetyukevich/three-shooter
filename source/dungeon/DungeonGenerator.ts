@@ -36,7 +36,7 @@ export class DungeonGenerator {
     for (let y = 0; y < this.size.height; y++) {
       this.dungeonArr[y] = [];
       for (let x = 0; x < this.size.width; x++) {
-        this.dungeonArr[y][x] = DungeonCellType.Wall;
+        this.dungeonArr[y][x] = DungeonCellType.Empty;
       }
     }
   }
@@ -53,35 +53,35 @@ export class DungeonGenerator {
     }
   }
 
-  ifCanFillRect(rect: Rect, element: DungeonCellType) {
+  isOutOfBounds(rect: Rect) {
     if (
       rect.position.x < 0 ||
       rect.position.y < 0 ||
       rect.position.x + rect.size.width > this.size.width ||
       rect.position.y + rect.size.height > this.size.height
     ) {
-      return false;
+      return true;
     }
 
-    for (let y = rect.position.y; y < rect.position.y + rect.size.height; y++) {
-      for (let x = rect.position.x; x < rect.position.x + rect.size.width; x++) {
-        if (this.dungeonArr[y][x] === element) {
-          return false;
-        }
-      }
-    }
-    return true;
+    return false;
   }
 
   addRoom(roomRect: Rect) {
-    const elementToFill = DungeonCellType.Empty;
-
-    if (!this.ifCanFillRect(roomRect, elementToFill)) {
+    if (this.isOutOfBounds(roomRect)) {
       return;
     }
 
     this.fillRect(
       roomRect,
+      DungeonCellType.Wall
+    );
+
+    const innerFillRect: Rect = {
+      position: { x: roomRect.position.x + 1, y: roomRect.position.y + 1 },
+      size: { width: roomRect.size.width - 2, height: roomRect.size.height - 2 }
+    };
+    this.fillRect(
+      innerFillRect,
       DungeonCellType.Empty
     );
   }
@@ -176,15 +176,54 @@ export class DungeonGenerator {
     }
   }
 
-  generate(roomRect: Rect) {
-    this.addRoom(roomRect);
-
-    for (let direction = 0; direction < 4; direction++) {
-      const connectRoomRect = this.getConnectRoomRect(roomRect, direction, { width: 2, height: 4 });
-      if (connectRoomRect) {
-        this.addRoom(connectRoomRect);
+  generate() {
+    const width = 10;
+    const height = 10;
+    const cells: number[][] = [];
+    for (let i = 0; i < height; i++) {
+      cells[i] = [];
+      for (let j = 0; j < width; j++) {
+        cells[i][j] = 0;
       }
     }
 
+    const xStart = 4;
+    const yStart = 4;
+    let x = xStart;
+    let y = yStart;
+    let roomsRemaining = 10;
+    cells[y][x] = 1;
+    while (roomsRemaining > 0) {
+      if (Math.random() > 0.5) {
+        x = Math.random() > 0.5 ? x - 1 : x + 1;
+      } else {
+        y = Math.random() > 0.5 ? y - 1 : y + 1;
+      }
+      const isXOutOfBounds = x > width - 2 || x < 1;
+      const isYOutOfBounds = y > height - 2 || y < 1;
+      if (isXOutOfBounds || isYOutOfBounds) {
+        x = xStart;
+        y = yStart;
+        continue;
+      }
+      if (cells[y][x] === 1) {
+        continue;
+      }
+      cells[y][x] = 1;
+      roomsRemaining--;
+    }
+    console.log('cells: ', cells);
+    for (let currY = 0; currY < cells.length; currY++) {
+      for (let currX = 0; currX < cells[currY].length; currX++) {
+        const cell = cells[currY][currX];
+        if (cell !== 1) {
+          continue;
+        }
+        this.addRoom({
+          size: { width: 9, height: 9 },
+          position: { x: currX * 10, y: currY * 10 }
+        });
+      }
+    }
   }
 }

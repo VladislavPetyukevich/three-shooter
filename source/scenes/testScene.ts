@@ -112,12 +112,8 @@ export class TestScene extends BasicScene {
     ];
     // this.loadMap(map, mapDictionary, mapCellSize);
 
-    const dungeonGenerator = new DungeonGenerator({ width: 50, height: 50 });
-    const roomRect1 = { position: { x: 13, y: 13 }, size: { width: 8, height: 8 } };
-    const roomRect2 = { position: { x: 13, y: 2 }, size: { width: 8, height: 4 } };
-    dungeonGenerator.addRoom(roomRect1);
-    dungeonGenerator.addRoom(roomRect2);
-    dungeonGenerator.connectRooms(roomRect1, roomRect2);
+    const dungeonGenerator = new DungeonGenerator({ width: 100, height: 100 });
+    dungeonGenerator.generate();
     const dungeon: (3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
       dungeonRow => dungeonRow.map(dungeonCell => {
         if (dungeonCell === DungeonCellType.Wall) {
@@ -127,7 +123,7 @@ export class TestScene extends BasicScene {
         return 0;
       })
     );
-    dungeon[14][14] = 3;
+    dungeon[44][44] = 3;
     this.loadMap(dungeon, mapDictionary, mapCellSize);
   }
 
