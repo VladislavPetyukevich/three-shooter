@@ -22,6 +22,8 @@ export const enum DungeonCellType {
   Wall
 };
 
+type GeneratorCell = null | Rect;
+
 export class DungeonGenerator {
   size: Size;
   dungeonArr: DungeonCellType[][];
@@ -89,21 +91,20 @@ export class DungeonGenerator {
   connectRooms(roomRect1: Rect, roomRect2: Rect) {
     const direction = this.getConnectRoomDirection(roomRect1, roomRect2);
     const size = this.getConnectRoomSize(roomRect1, roomRect2, direction);
-    console.log('size: ', size);
     const connectRoomRect = this.getConnectRoomRect(roomRect2, direction, size);
     if (connectRoomRect) {
-      this.addRoom(connectRoomRect);
+      this.fillRect(connectRoomRect, DungeonCellType.Empty);
     }
   }
 
   getConnectRoomDirection(roomRect1: Rect, roomRect2: Rect) {
     const diffX = roomRect1.position.x - roomRect2.position.x;
-    if (Math.abs(diffX) > roomRect2.size.width) {
-      return diffX > 0 ? Direction.Right : Direction.Left;
+    if (Math.abs(diffX) >= roomRect2.size.width) {
+      return diffX >= 0 ? Direction.Right : Direction.Left;
     }
     const diffY = roomRect1.position.y - roomRect2.position.y;
-    if (Math.abs(diffY) > roomRect2.size.height) {
-      return diffY > 0 ? Direction.Down : Direction.Up;
+    if (Math.abs(diffY) >= roomRect2.size.height) {
+      return diffY >= 0 ? Direction.Down : Direction.Up;
     }
 
     throw new Error(`Cannot get connect room direction. diffX: ${diffX}; diffY: ${diffY};`);
@@ -179,11 +180,12 @@ export class DungeonGenerator {
   generate() {
     const width = 10;
     const height = 10;
-    const cells: number[][] = [];
+    const roomSize = { width: 10, height: 10 };
+    const cells: GeneratorCell[][] = [];
     for (let i = 0; i < height; i++) {
       cells[i] = [];
       for (let j = 0; j < width; j++) {
-        cells[i][j] = 0;
+        cells[i][j] = null;
       }
     }
 
@@ -192,8 +194,18 @@ export class DungeonGenerator {
     let x = xStart;
     let y = yStart;
     let roomsRemaining = 10;
-    cells[y][x] = 1;
+    cells[y][x] = {
+      size: roomSize,
+      position: { x: x * 10, y: y * 10 }
+    };
+    this.addRoom({
+      size: roomSize,
+      position: { x: x * 10, y: y * 10 }
+    });
+
     while (roomsRemaining > 0) {
+      const prevX = x;
+      const prevY = y;
       if (Math.random() > 0.5) {
         x = Math.random() > 0.5 ? x - 1 : x + 1;
       } else {
@@ -206,24 +218,22 @@ export class DungeonGenerator {
         y = yStart;
         continue;
       }
-      if (cells[y][x] === 1) {
+      if (cells[y][x]) {
         continue;
       }
-      cells[y][x] = 1;
+      const roomRect = {
+        size: roomSize,
+        position: { x: x * 10, y: y * 10 }
+      };
+      cells[y][x] = roomRect;
+      this.addRoom(roomRect);
+      const prevRoom = cells[prevY][prevX];
+      if (prevRoom) {
+        this.connectRooms(roomRect, prevRoom);
+        this.connectRooms(prevRoom, roomRect);
+      }
       roomsRemaining--;
     }
     console.log('cells: ', cells);
-    for (let currY = 0; currY < cells.length; currY++) {
-      for (let currX = 0; currX < cells[currY].length; currX++) {
-        const cell = cells[currY][currX];
-        if (cell !== 1) {
-          continue;
-        }
-        this.addRoom({
-          size: { width: 9, height: 9 },
-          position: { x: currX * 10, y: currY * 10 }
-        });
-      }
-    }
   }
 }
