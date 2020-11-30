@@ -46,8 +46,8 @@ export class TestScene extends BasicScene {
   constructor(props: BasicSceneProps) {
     super(props);
     this.mapCellSize = 3;
-    this.dungeonSize = { width: 100, height: 100 };
-    this.dungeonRoomSize = { width: 10, height: 10 };
+    this.dungeonSize = { width: 200, height: 200 };
+    this.dungeonRoomSize = { width: 20, height: 20 };
     this.currentRoomIndex = null;
 
     // lights
@@ -111,7 +111,9 @@ export class TestScene extends BasicScene {
         return 0;
       })
     );
-    dungeon[44][44] = 3;
+    const playerX = this.dungeonCellsPosition[0][0] + this.mapCellSize;
+    const playerY = this.dungeonCellsPosition[0][1] + this.mapCellSize;
+    dungeon[playerY][playerX] = 3;
     this.loadMap(dungeon, mapDictionary, this.mapCellSize);
   }
 

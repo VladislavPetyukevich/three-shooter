@@ -207,11 +207,11 @@ export class DungeonGenerator {
     let roomsRemaining = 10;
     cells[y][x] = {
       size: this.roomSize,
-      position: { x: x * 10, y: y * 10 }
+      position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
     };
     this.addRoom({
       size: this.roomSize,
-      position: { x: x * 10, y: y * 10 }
+      position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
     });
 
     while (roomsRemaining > 0) {
@@ -234,7 +234,7 @@ export class DungeonGenerator {
       }
       const roomRect = {
         size: this.roomSize,
-        position: { x: x * 10, y: y * 10 }
+        position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
       };
       cells[y][x] = roomRect;
       this.addRoom(roomRect);
