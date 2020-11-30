@@ -24,13 +24,20 @@ export const enum DungeonCellType {
 
 type GeneratorCell = null | Rect;
 
+interface DungeonGeneratorProps {
+  dungeonSize: Size;
+  roomSize: Size;
+}
+
 export class DungeonGenerator {
   size: Size;
+  roomSize: Size;
   dungeonArr: DungeonCellType[][];
   dungeonCells: GeneratorCell[][];
 
-  constructor(dungeonSize: Size) {
-    this.size = dungeonSize;
+  constructor(props: DungeonGeneratorProps) {
+    this.size = props.dungeonSize;
+    this.roomSize = props.roomSize;
     this.dungeonArr = [];
     this.dungeonCells = [];
     this.initDungeon();
@@ -185,7 +192,6 @@ export class DungeonGenerator {
   generate() {
     const width = 10;
     const height = 10;
-    const roomSize = { width: 10, height: 10 };
     const cells: GeneratorCell[][] = [];
     for (let i = 0; i < height; i++) {
       cells[i] = [];
@@ -200,11 +206,11 @@ export class DungeonGenerator {
     let y = yStart;
     let roomsRemaining = 10;
     cells[y][x] = {
-      size: roomSize,
+      size: this.roomSize,
       position: { x: x * 10, y: y * 10 }
     };
     this.addRoom({
-      size: roomSize,
+      size: this.roomSize,
       position: { x: x * 10, y: y * 10 }
     });
 
@@ -227,7 +233,7 @@ export class DungeonGenerator {
         continue;
       }
       const roomRect = {
-        size: roomSize,
+        size: this.roomSize,
         position: { x: x * 10, y: y * 10 }
       };
       cells[y][x] = roomRect;

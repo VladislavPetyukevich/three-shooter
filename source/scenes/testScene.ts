@@ -71,7 +71,10 @@ export class TestScene extends BasicScene {
       3: ENTITY_TYPE.PLAYER
     };
 
-    const dungeonGenerator = new DungeonGenerator({ width: 100, height: 100 });
+    const dungeonGenerator = new DungeonGenerator({
+      dungeonSize: { width: 100, height: 100 },
+      roomSize: { width: 10, height: 10 }
+    });
     dungeonGenerator.generate();
     this.dungeonCellsPosition = [];
     const cells = dungeonGenerator.cells();
