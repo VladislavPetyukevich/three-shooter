@@ -29,15 +29,26 @@ const calculateCirclePoints = (angleStep: number, radius: number) => {
   return points;
 };
 
+interface Size {
+  width: number;
+  height: number;
+}
+
 export class TestScene extends BasicScene {
   pointLight: PointLight;
   player: Player;
   mapCellSize: number;
+  dungeonSize: Size;
+  dungeonRoomSize: Size;
   dungeonCellsPosition: number[][];
+  currentRoomIndex: number | null;
 
   constructor(props: BasicSceneProps) {
     super(props);
     this.mapCellSize = 3;
+    this.dungeonSize = { width: 100, height: 100 };
+    this.dungeonRoomSize = { width: 10, height: 10 };
+    this.currentRoomIndex = null;
 
     // lights
     this.scene.add(new AmbientLight(0x404040, 0.15));
@@ -72,8 +83,8 @@ export class TestScene extends BasicScene {
     };
 
     const dungeonGenerator = new DungeonGenerator({
-      dungeonSize: { width: 100, height: 100 },
-      roomSize: { width: 10, height: 10 }
+      dungeonSize: this.dungeonSize,
+      roomSize: this.dungeonRoomSize
     });
     dungeonGenerator.generate();
     this.dungeonCellsPosition = [];
@@ -147,17 +158,27 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(enemy);
   }
 
+  spawnEnemyInRoom(roomX: number, roomY: number) {
+    const spawnX = roomX * this.mapCellSize + 10;
+    const spawnY = roomY * this.mapCellSize + 10;
+    this.spawnEnemy({ x: spawnX, y: spawnY });
+  }
+
   update(delta: number) {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCellX = ~~(this.player.actor.mesh.position.x / this.mapCellSize);
     const playerCellY = ~~(this.player.actor.mesh.position.z / this.mapCellSize);
     for(let i = this.dungeonCellsPosition.length; i--;) {
+      if (i === this.currentRoomIndex) {
+        continue;
+      }
       const cell = this.dungeonCellsPosition[i];
       const inX = (playerCellX > cell[0]) && (playerCellX < cell[2]);
       const inY = (playerCellY > cell[1]) && (playerCellY < cell[3]);
       if (inX && inY) {
-        console.log('current room index: ', i);
+        this.currentRoomIndex = i;
+        this.spawnEnemyInRoom(cell[0], cell[1]);
         break;
       }
     }
