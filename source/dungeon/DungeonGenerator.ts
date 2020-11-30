@@ -27,10 +27,12 @@ type GeneratorCell = null | Rect;
 export class DungeonGenerator {
   size: Size;
   dungeonArr: DungeonCellType[][];
+  dungeonCells: GeneratorCell[][];
 
   constructor(dungeonSize: Size) {
     this.size = dungeonSize;
     this.dungeonArr = [];
+    this.dungeonCells = [];
     this.initDungeon();
   }
 
@@ -45,6 +47,10 @@ export class DungeonGenerator {
 
   dungeon() {
     return this.dungeonArr;
+  }
+
+  cells() {
+    return this.dungeonCells;
   }
 
   fillRect(rect: Rect, element: DungeonCellType) {
@@ -113,7 +119,6 @@ export class DungeonGenerator {
   getConnectRoomSize(roomRect1: Rect, roomRect2: Rect, direction: Direction) {
     const width = Math.abs(roomRect1.position.x - roomRect2.position.x);
     const height = Math.abs(roomRect1.position.y - roomRect2.position.y);
-    console.log(roomRect1.size);
     switch (direction) {
       case Direction.Up:
       case Direction.Down:
@@ -234,6 +239,6 @@ export class DungeonGenerator {
       }
       roomsRemaining--;
     }
-    console.log('cells: ', cells);
+    this.dungeonCells = cells;
   }
 }
