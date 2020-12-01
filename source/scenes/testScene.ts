@@ -96,8 +96,10 @@ export class TestScene extends BasicScene {
         }
         this.dungeonCellsPosition.push(
           [
-            cell.position.x, cell.position.y,
-            cell.position.x + 10, cell.position.y + 10
+            cell.position.x,
+            cell.position.y,
+            cell.position.x + this.dungeonRoomSize.width,
+            cell.position.y + this.dungeonRoomSize.height
           ]
         );
       });
