@@ -6,28 +6,18 @@ import {
   Matrix4,
   MeshPhongMaterial,
   Vector3,
-  Fog
+  Fog,
+  Light
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
-import { PI_180, ENTITY_TYPE } from '@/constants';
+import { Entity } from '@/core/Entities/Entity';
+import { ENTITY_TYPE } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Enemy } from '@/Entities/Enemy/Enemy';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
-
-const calculateCirclePoints = (angleStep: number, radius: number) => {
-  const points = [];
-  const maxAngle = 360;
-  for (let angle = 0; angle < maxAngle; angle += angleStep) {
-    const angleRadians = angle * PI_180;
-    points.push({
-      x: Math.cos(angleRadians) * radius,
-      y: Math.sin(angleRadians) * radius
-    });
-  }
-  return points;
-};
+import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
 
 interface Size {
   width: number;
@@ -41,7 +31,9 @@ export class TestScene extends BasicScene {
   dungeonSize: Size;
   dungeonRoomSize: Size;
   dungeonCellsPosition: number[][];
+  dungeonCellsPositionToLight: number[];
   currentRoomIndex: number | null;
+  dungeonRoomEnimies: Entity[];
 
   constructor(props: BasicSceneProps) {
     super(props);
@@ -49,6 +41,8 @@ export class TestScene extends BasicScene {
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomSize = { width: 20, height: 20 };
     this.currentRoomIndex = null;
+    this.dungeonCellsPositionToLight = [];
+    this.dungeonRoomEnimies = [];
 
     // lights
     this.scene.add(new AmbientLight(0xffffff, 2));
@@ -102,6 +96,8 @@ export class TestScene extends BasicScene {
             cell.position.y + this.dungeonRoomSize.height
           ]
         );
+        const roomLight = this.spawnLightInRoom(cell.position.x, cell.position.y);
+        this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
       });
     });
     const dungeon: (3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
@@ -159,40 +155,51 @@ export class TestScene extends BasicScene {
       container: this.entitiesContainer,
       audioListener: this.audioListener
     });
-    this.entitiesContainer.add(enemy);
+    return this.entitiesContainer.add(enemy);
   }
 
-  spawnEnemiesInRoom(roomX: number, roomY: number) {
-    const padding = this.mapCellSize * 2;
-    const worldRoomX = roomX * this.mapCellSize;
-    const worldRoomY = roomY * this.mapCellSize;
-    const roomWidth = (roomX + this.dungeonRoomSize.width) * this.mapCellSize;
-    const roomHeight = (roomX + this.dungeonRoomSize.height) * this.mapCellSize;
-    const minX = worldRoomX + padding;
-    const minY = worldRoomY + padding;
-    const maxX = roomWidth - padding;
-    const maxY = roomHeight - padding;
-    this.spawnEnemy({ x: minX, y: minY });
-    this.spawnEnemy({ x: maxX, y: minY });
-    this.spawnEnemy({ x: minX, y: maxY });
-    this.spawnEnemy({ x: maxX, y: maxY });
+  convertToSceneCoordinates(coordinates: { x: number, y: number }) {
+    return {
+      x: coordinates.x * this.mapCellSize,
+      y: coordinates.y * this.mapCellSize
+    };
   }
 
-  addLightToRoom(roomX: number, roomY: number) {
-    const pointLight = new PointLight(0xffffff, 100, 1000);
-    const roomCenterX = ~~(this.dungeonRoomSize.width / 2);
-    const roomCenterY = ~~(this.dungeonRoomSize.height / 2);
-    pointLight.position.set(
-      (roomX + roomCenterX) * this.mapCellSize,
-      15,
-      (roomY + roomCenterY) * this.mapCellSize
-    );
+  spawnLightInRoom(roomX: number, roomY: number) {
+    const pointLight = new PointLight(0xffffff, 0, 1000);
+    const lightX = roomX + ~~(this.dungeonRoomSize.width / 2);
+    const lightY = roomY + ~~(this.dungeonRoomSize.height / 2);
+    const sceneCoordinates = this.convertToSceneCoordinates({ x: lightX, y: lightY });
+    pointLight.position.set(sceneCoordinates.x, 15, sceneCoordinates.y);
     this.scene.add(pointLight);
+    return pointLight;
+  }
+
+  onOffLightInRoom(roomIndex: number, isOn: boolean) {
+    const lightId = this.dungeonCellsPositionToLight[roomIndex];
+    const light = this.scene.getObjectById(lightId) as Light;
+    if (isOn) {
+      light.intensity = 100;
+    } else {
+      light.intensity = 0;
+    }
   }
 
   fillRoomRandom(roomX: number, roomY: number) {
-    this.addLightToRoom(roomX, roomY);
-    this.spawnEnemiesInRoom(roomX, roomY);
+    const cells = rooms[0](this.dungeonRoomSize);
+    cells.forEach(cell => {
+      const sceneCoordinates = this.convertToSceneCoordinates({
+        x: roomX + cell.position.x,
+        y: roomY + cell.position.y
+      });
+      switch (cell.type) {
+        case RoomCellType.Enemy:
+          this.dungeonRoomEnimies.push(
+            this.spawnEnemy(sceneCoordinates)
+          );
+          break;
+      }
+    });
   }
 
   update(delta: number) {
@@ -208,6 +215,10 @@ export class TestScene extends BasicScene {
       const inX = (playerCellX > cell[0]) && (playerCellX < cell[2]);
       const inY = (playerCellY > cell[1]) && (playerCellY < cell[3]);
       if (inX && inY) {
+        if (this.currentRoomIndex) {
+          this.onOffLightInRoom(this.currentRoomIndex, false);
+        }
+        this.onOffLightInRoom(i, true);
         this.currentRoomIndex = i;
         this.fillRoomRandom(cell[0], cell[1]);
         break;
