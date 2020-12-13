@@ -19,7 +19,8 @@ interface Rect {
 
 export const enum DungeonCellType {
   Empty,
-  Wall
+  Wall,
+  Door
 };
 
 type GeneratorCell = null | Rect;
@@ -106,7 +107,7 @@ export class DungeonGenerator {
     const size = this.getConnectRoomSize(roomRect1, roomRect2, direction);
     const connectRoomRect = this.getConnectRoomRect(roomRect2, direction, size);
     if (connectRoomRect) {
-      this.fillRect(connectRoomRect, DungeonCellType.Empty);
+      this.fillRect(connectRoomRect, DungeonCellType.Door);
     }
   }
 
@@ -129,10 +130,10 @@ export class DungeonGenerator {
     switch (direction) {
       case Direction.Up:
       case Direction.Down:
-        return { width: 2, height: Math.trunc(diffY / 2) };
+        return { width: 2, height: Math.trunc(diffY / 2 / 10) };
       case Direction.Left:
       case Direction.Right:
-        return { width: 2, height: Math.trunc(diffX / 2) };
+        return { width: 2, height: Math.trunc(diffX / 2 / 10) };
       default:
         throw new Error('Unsuported connect room direction');
     }

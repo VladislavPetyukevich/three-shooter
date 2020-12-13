@@ -1,4 +1,5 @@
 import wallTextureFile from '@/assets/wall.png';
+import doorTextureFile from '@/assets/door.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
@@ -24,6 +25,7 @@ export const enum ENTITY_TYPE {
   PLAYER = 'PLAYER',
   BULLET = 'BULLET',
   WALL = 'WALL',
+  DOOR = 'DOOR',
   ENEMY = 'ENEMY',
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK'
@@ -89,6 +91,7 @@ export const enum EVENT_TYPES {
 export const gameTextures = {
   wallTextureFile,
   wallNormalFile,
+  doorTextureFile,
   gunTextureFile,
   gunFireFile,
   enemyWalk1,
@@ -105,6 +108,7 @@ export const gameSounds = {
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
   wallNormalFile = 'wallNormalFile',
+  doorTextureFile = 'doorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
   enemyWalk1 = 'enemyWalk1',

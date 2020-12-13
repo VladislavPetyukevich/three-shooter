@@ -15,6 +15,7 @@ import { ENTITY_TYPE } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
+import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
@@ -73,7 +74,8 @@ export class TestScene extends BasicScene {
     const mapDictionary = {
       1: ENTITY_TYPE.WALL,
       2: ENTITY_TYPE.ENEMY,
-      3: ENTITY_TYPE.PLAYER
+      3: ENTITY_TYPE.PLAYER,
+      4: ENTITY_TYPE.DOOR
     };
 
     const dungeonGenerator = new DungeonGenerator({
@@ -100,10 +102,13 @@ export class TestScene extends BasicScene {
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
       });
     });
-    const dungeon: (3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
+    const dungeon: (4 | 3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
       dungeonRow => dungeonRow.map(dungeonCell => {
         if (dungeonCell === DungeonCellType.Wall) {
           return 1;
+        }
+        if (dungeonCell === DungeonCellType.Door) {
+          return 4;
         }
 
         return 0;
@@ -126,6 +131,9 @@ export class TestScene extends BasicScene {
         if (entityType === ENTITY_TYPE.WALL) {
           this.spawnWall({ x: mapX * cellSize, y: mapY * cellSize });
         }
+        if (entityType === ENTITY_TYPE.DOOR) {
+          this.spawnDoor({ x: mapX * cellSize, y: mapY * cellSize });
+        }
         if (entityType === ENTITY_TYPE.ENEMY) {
           this.spawnEnemy({ x: mapX * cellSize, y: mapY * cellSize });
         }
@@ -146,6 +154,14 @@ export class TestScene extends BasicScene {
       position: new Vector3(coordinates.x, 1.5, coordinates.y)
     });
     this.entitiesContainer.add(wall);
+  }
+
+  spawnDoor(coordinates: { x: number, y: number }) {
+    const door = new Door({
+      position: new Vector3(coordinates.x, 1.5, coordinates.y),
+      container: this.entitiesContainer
+    });
+    this.entitiesContainer.add(door);
   }
 
   spawnEnemy(coordinates: { x: number, y: number }) {
