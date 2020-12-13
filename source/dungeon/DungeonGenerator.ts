@@ -124,15 +124,15 @@ export class DungeonGenerator {
   }
 
   getConnectRoomSize(roomRect1: Rect, roomRect2: Rect, direction: Direction) {
-    const width = Math.abs(roomRect1.position.x - roomRect2.position.x);
-    const height = Math.abs(roomRect1.position.y - roomRect2.position.y);
+    const diffX = Math.abs(roomRect1.position.x - roomRect2.position.x);
+    const diffY = Math.abs(roomRect1.position.y - roomRect2.position.y);
     switch (direction) {
       case Direction.Up:
       case Direction.Down:
-        return { width: 2, height: height - 4};
+        return { width: 2, height: Math.trunc(diffY / 2) };
       case Direction.Left:
       case Direction.Right:
-        return { width: Math.trunc(width / 2), height: 2 };
+        return { width: 2, height: Math.trunc(diffX / 2) };
       default:
         throw new Error('Unsuported connect room direction');
     }
