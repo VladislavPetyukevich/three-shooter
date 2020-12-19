@@ -25,6 +25,11 @@ export const enum DungeonCellType {
 
 type GeneratorCell = null | Rect;
 
+interface DungeonPart {
+  type: DungeonCellType;
+  fillRect: Rect;
+}
+
 interface DungeonGeneratorProps {
   dungeonSize: Size;
   roomSize: Size;
@@ -33,7 +38,7 @@ interface DungeonGeneratorProps {
 export class DungeonGenerator {
   size: Size;
   roomSize: Size;
-  dungeonArr: DungeonCellType[][];
+  dungeonArr: DungeonPart[];
   dungeonCells: GeneratorCell[][];
 
   constructor(props: DungeonGeneratorProps) {
@@ -41,16 +46,6 @@ export class DungeonGenerator {
     this.roomSize = props.roomSize;
     this.dungeonArr = [];
     this.dungeonCells = [];
-    this.initDungeon();
-  }
-
-  initDungeon() {
-    for (let y = 0; y < this.size.height; y++) {
-      this.dungeonArr[y] = [];
-      for (let x = 0; x < this.size.width; x++) {
-        this.dungeonArr[y][x] = DungeonCellType.Empty;
-      }
-    }
   }
 
   dungeon() {
@@ -61,12 +56,95 @@ export class DungeonGenerator {
     return this.dungeonCells;
   }
 
-  fillRect(rect: Rect, element: DungeonCellType) {
-    for (let y = rect.position.y; y < rect.position.y + rect.size.height; y++) {
-      for (let x = rect.position.x; x < rect.position.x + rect.size.width; x++) {
-        this.dungeonArr[y][x] = element;
-      }
+  getSplitedRect(rect: Rect, splitRect: Rect) {
+    const isHorizontalSplit = rect.size.width > rect.size.height;
+    if (isHorizontalSplit) {
+      const splitedWidth = splitRect.position.x - rect.position.x;
+      const rect1: Rect = {
+        position: {
+          x: rect.position.x,
+          y: rect.position.y
+        },
+        size: {
+          width: splitedWidth,
+          height: rect.size.height
+        }
+      };
+      const rect2: Rect = {
+        position: {
+          x: rect.position.x + splitedWidth + splitRect.size.width,
+          y: rect.position.y
+        },
+        size: {
+          width: splitedWidth,
+          height: rect.size.height
+        }
+      };
+      return [rect1, rect2];
+    } else {
+      const splitedHeight = splitRect.position.y - rect.position.y;
+      const rect1: Rect = {
+        position: {
+          x: rect.position.x,
+          y: rect.position.y
+        },
+        size: {
+          width: rect.size.width,
+          height: splitedHeight
+        }
+      };
+      const rect2: Rect = {
+        position: {
+          x: rect.position.x,
+          y: rect.position.y + splitedHeight + splitRect.size.height
+        },
+        size: {
+          width: rect.size.width,
+          height: splitedHeight
+        }
+      };
+      return [rect1, rect2];
     }
+  }
+
+  findCollideRectIndices(rect1: Rect) {
+    const indices: number[] = [];
+    this.dungeonArr.forEach((el, index) => {
+      const rect1Pos = rect1.position;
+      const rect2Pos = el.fillRect.position;
+      const rect1Size = rect1.size;
+      const rect2Size = el.fillRect.size;
+      if (
+        (rect1Pos.x < rect2Pos.x + rect2Size.width) &&
+        (rect1Pos.x + rect1Size.width > rect2Pos.x) &&
+        (rect1Pos.y < rect2Pos.y + rect2Size.height) &&
+        (rect1Pos.y + rect1Size.height > rect2Pos.y)
+      ) {
+        indices.push(index);
+      }
+    });
+    return indices;
+  }
+
+  fillRect(rect: Rect, element: DungeonCellType) {
+    const collideIndices = this.findCollideRectIndices(rect);
+    collideIndices.forEach(index => {
+      const currRect = this.dungeonArr[index];
+      const splitedRects = this.getSplitedRect(currRect.fillRect, rect);
+      splitedRects.forEach(splitedRect => {
+        this.dungeonArr.push({
+          type: currRect.type,
+          fillRect: splitedRect
+        });
+      });
+    });
+    for (let i = collideIndices.length; i--;) {
+      this.dungeonArr.splice(collideIndices[i], 1);
+    }
+    this.dungeonArr.push({
+      type: element,
+      fillRect: rect
+    });
   }
 
   isOutOfBounds(rect: Rect) {
@@ -82,33 +160,45 @@ export class DungeonGenerator {
     return false;
   }
 
-  addRoom(roomRect: Rect) {
+  addRoomNew(roomRect: Rect) {
     if (this.isOutOfBounds(roomRect)) {
       return;
     }
-
     this.fillRect(
-      roomRect,
+      {
+        position: { x: roomRect.position.x, y: roomRect.position.y },
+        size: { width: roomRect.size.width, height: 1 }
+      },
       DungeonCellType.Wall
     );
-
-    const innerFillRect: Rect = {
-      position: { x: roomRect.position.x + 1, y: roomRect.position.y + 1 },
-      size: { width: roomRect.size.width - 2, height: roomRect.size.height - 2 }
-    };
     this.fillRect(
-      innerFillRect,
-      DungeonCellType.Empty
+      {
+        position: { x: roomRect.position.x, y: roomRect.position.y + roomRect.size.height - 1 },
+        size: { width: roomRect.size.width, height: 1 }
+      },
+      DungeonCellType.Wall
+    );
+    this.fillRect(
+      {
+        position: { x: roomRect.position.x, y: roomRect.position.y + 1 },
+        size: { width: 1, height: roomRect.size.height - 2 }
+      },
+      DungeonCellType.Wall
+    );
+    this.fillRect(
+      {
+        position: { x: roomRect.position.x + roomRect.size.width - 1, y: roomRect.position.y + 1 },
+        size: { width: 1, height: roomRect.size.height - 2 }
+      },
+      DungeonCellType.Wall
     );
   }
 
-  connectRooms(roomRect1: Rect, roomRect2: Rect) {
+  getConnectRoomsRect(roomRect1: Rect, roomRect2: Rect) {
     const direction = this.getConnectRoomDirection(roomRect1, roomRect2);
     const size = this.getConnectRoomSize(roomRect1, roomRect2, direction);
     const connectRoomRect = this.getConnectRoomRect(roomRect2, direction, size);
-    if (connectRoomRect) {
-      this.fillRect(connectRoomRect, DungeonCellType.Door);
-    }
+    return connectRoomRect;
   }
 
   getConnectRoomDirection(roomRect1: Rect, roomRect2: Rect) {
@@ -130,10 +220,10 @@ export class DungeonGenerator {
     switch (direction) {
       case Direction.Up:
       case Direction.Down:
-        return { width: 2, height: Math.trunc(diffY / 2 / 10) };
+        return { width: 4, height: Math.trunc(diffY / 10) };
       case Direction.Left:
       case Direction.Right:
-        return { width: 2, height: Math.trunc(diffX / 2 / 10) };
+        return { width: 4, height: Math.trunc(diffX / 10) };
       default:
         throw new Error('Unsuported connect room direction');
     }
@@ -145,7 +235,7 @@ export class DungeonGenerator {
         return {
           position: {
             x: roomRect.position.x + Math.round(roomRect.size.width / 2 - connectRoomSize.width / 2),
-            y: roomRect.position.y - connectRoomSize.height
+            y: roomRect.position.y - connectRoomSize.height + 1
           },
           size: {
             width: connectRoomSize.width,
@@ -156,7 +246,7 @@ export class DungeonGenerator {
         return {
           position: {
             x: roomRect.position.x + Math.round(roomRect.size.width / 2 - connectRoomSize.width / 2),
-            y: roomRect.position.y + roomRect.size.height
+            y: roomRect.position.y + roomRect.size.height - 1
           },
           size: {
             width: connectRoomSize.width,
@@ -166,7 +256,7 @@ export class DungeonGenerator {
       case Direction.Right:
         return {
           position: {
-            x: roomRect.position.x + roomRect.size.width,
+            x: roomRect.position.x + roomRect.size.width - 1,
             y: roomRect.position.y + Math.round(roomRect.size.height / 2 - connectRoomSize.width / 2)
           },
           size: {
@@ -177,7 +267,7 @@ export class DungeonGenerator {
       case Direction.Left:
         return {
           position: {
-            x: roomRect.position.x - connectRoomSize.height,
+            x: roomRect.position.x - connectRoomSize.height + 1,
             y: roomRect.position.y + Math.round(roomRect.size.height / 2 - connectRoomSize.width / 2)
           },
           size: {
@@ -210,7 +300,7 @@ export class DungeonGenerator {
       size: this.roomSize,
       position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
     };
-    this.addRoom({
+    this.addRoomNew({
       size: this.roomSize,
       position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
     });
@@ -238,11 +328,13 @@ export class DungeonGenerator {
         position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
       };
       cells[y][x] = roomRect;
-      this.addRoom(roomRect);
       const prevRoom = cells[prevY][prevX];
       if (prevRoom) {
-        this.connectRooms(roomRect, prevRoom);
-        this.connectRooms(prevRoom, roomRect);
+        const connectRoomRect = this.getConnectRoomsRect(prevRoom, roomRect);
+        if (connectRoomRect) {
+          this.addRoomNew(roomRect);
+          this.fillRect(connectRoomRect, DungeonCellType.Door);
+        }
       }
       roomsRemaining--;
     }

@@ -11,7 +11,7 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE } from '@/constants';
+import { WALL } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
@@ -71,13 +71,6 @@ export class TestScene extends BasicScene {
       })
     );
 
-    const mapDictionary = {
-      1: ENTITY_TYPE.WALL,
-      2: ENTITY_TYPE.ENEMY,
-      3: ENTITY_TYPE.PLAYER,
-      4: ENTITY_TYPE.DOOR
-    };
-
     const dungeonGenerator = new DungeonGenerator({
       dungeonSize: this.dungeonSize,
       roomSize: this.dungeonRoomSize
@@ -102,64 +95,61 @@ export class TestScene extends BasicScene {
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
       });
     });
-    const dungeon: (4 | 3 | 1 | 0)[][] = dungeonGenerator.dungeon().map(
-      dungeonRow => dungeonRow.map(dungeonCell => {
-        if (dungeonCell === DungeonCellType.Wall) {
-          return 1;
-        }
-        if (dungeonCell === DungeonCellType.Door) {
-          return 4;
-        }
-
-        return 0;
-      })
-    );
     const playerX = this.dungeonCellsPosition[0][0] + this.mapCellSize;
     const playerY = this.dungeonCellsPosition[0][1] + this.mapCellSize;
-    dungeon[playerY][playerX] = 3;
-    this.loadMap(dungeon, mapDictionary, this.mapCellSize);
-  }
-
-  loadMap(map: number[][], dictionary: { [mapKey: number]: ENTITY_TYPE }, cellSize: number) {
-    for (let mapY = 0; mapY < map.length; mapY++) {
-      for (let mapX = 0; mapX < map[mapY].length; mapX++) {
-        const mapRecord = map[mapY][mapX];
-        const entityType = dictionary[mapRecord];
-        if (!entityType) {
-          continue;
-        }
-        if (entityType === ENTITY_TYPE.WALL) {
-          this.spawnWall({ x: mapX * cellSize, y: mapY * cellSize });
-        }
-        if (entityType === ENTITY_TYPE.DOOR) {
-          this.spawnDoor({ x: mapX * cellSize, y: mapY * cellSize });
-        }
-        if (entityType === ENTITY_TYPE.ENEMY) {
-          this.spawnEnemy({ x: mapX * cellSize, y: mapY * cellSize });
-        }
-        if (entityType === ENTITY_TYPE.PLAYER) {
-          this.player.actor.mesh.position.set(
-            mapX * cellSize,
-            PLAYER.BODY_HEIGHT,
-            mapY * cellSize
-          );
-        }
+    this.player.actor.mesh.position.x = playerX * this.mapCellSize;
+    this.player.actor.mesh.position.z = playerY * this.mapCellSize;
+    dungeonGenerator.dungeon().forEach(el => {
+      if (el.type === DungeonCellType.Wall) {
+        const wallPos = this.convertToSceneCoordinates({
+          x: el.fillRect.position.x,
+          y: el.fillRect.position.y
+        });
+        const wallSize = this.convertToSceneCoordinates({
+          x: el.fillRect.size.width,
+          y: el.fillRect.size.height
+        });
+        const translateX = (wallSize.x / 2);
+        const translateY = (wallSize.y / 2);
+        this.spawnWall(
+          { x: wallPos.x + translateX, y: wallPos.y + translateY },
+          { width: wallSize.x, height: wallSize.y }
+        );
       }
-    }
+      if (el.type === DungeonCellType.Door) {
+        const wallPos = this.convertToSceneCoordinates({
+          x: el.fillRect.position.x,
+          y: el.fillRect.position.y
+        });
+        const wallSize = this.convertToSceneCoordinates({
+          x: el.fillRect.size.width,
+          y: el.fillRect.size.height
+        });
+        const translateX = (wallSize.x / 2);
+        const translateY = (wallSize.y / 2);
+        this.spawnDoor(
+          { x: wallPos.x + translateX, y: wallPos.y + translateY },
+          { width: wallSize.x, height: wallSize.y }
+        );
+      }
+    });
   }
 
-
-  spawnWall(coordinates: { x: number, y: number }) {
+  spawnWall(coordinates: { x: number, y: number }, size: { width: number, height: number }) {
+    const isHorizontalWall = size.width > size.height;
     const wall = new Wall({
-      position: new Vector3(coordinates.x, 1.5, coordinates.y)
+      position: new Vector3(coordinates.x, 1.5, coordinates.y),
+      size: { width: size.width, height: WALL.SIZE, depth: size.height },
+      isHorizontalWall: isHorizontalWall
     });
     this.entitiesContainer.add(wall);
   }
 
-  spawnDoor(coordinates: { x: number, y: number }) {
+  spawnDoor(coordinates: { x: number, y: number }, size: { width: number, height: number }) {
     const door = new Door({
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
-      container: this.entitiesContainer
+      container: this.entitiesContainer,
+      size: { width: size.width, height: WALL.SIZE, depth: size.height }
     });
     this.entitiesContainer.add(door);
   }

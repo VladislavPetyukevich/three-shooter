@@ -8,15 +8,19 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 interface DoorProps {
   position: Vector3;
   container: EntitiesContainer;
+  size?: { width: number; height: number; depth: number };
 }
 
 export class Door extends Entity {
   container: EntitiesContainer;
 
   constructor(props: DoorProps) {
+    const size = props.size ?
+      props.size :
+      { width: WALL.SIZE, height: WALL.SIZE, depth: WALL.SIZE };
     const actor = new DoorActor({
       position: props.position,
-      size: { width: WALL.SIZE, height: WALL.SIZE, depth: WALL.SIZE }
+      size: size
     });
     const behavior = new DoorBehavior({});
     super(

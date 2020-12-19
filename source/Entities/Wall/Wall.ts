@@ -6,13 +6,19 @@ import { ENTITY_TYPE, WALL } from '@/constants';
 
 interface WallProps {
   position: Vector3;
+  size?: { width: number; height: number; depth: number };
+  isHorizontalWall?: boolean;
 }
 
 export class Wall extends Entity {
   constructor(props: WallProps) {
+    const size = props.size ?
+      props.size :
+      { width: WALL.SIZE, height: WALL.SIZE, depth: WALL.SIZE };
     const actor = new WallActor({
       position: props.position,
-      size: { width: WALL.SIZE, height: WALL.SIZE, depth: WALL.SIZE }
+      size: size,
+      isHorizontalWall: props.isHorizontalWall
     });
     const behavior = new WallBehavior({});
     super(
