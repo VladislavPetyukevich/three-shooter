@@ -1,8 +1,8 @@
 import { Entity } from '@/core/Entities/Entity';
-import { DoorActor } from '@/Entities/Door/DoorActor';
+import { WallActor } from '@/Entities/Wall/WallActor';
 import { DoorBehavior } from './DoorBehavior';
 import { Vector3 } from 'three';
-import { ENTITY_TYPE, WALL } from '@/constants';
+import { ENTITY_TYPE, WALL, GAME_TEXTURE_NAME } from '@/constants';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 interface DoorProps {
@@ -18,9 +18,10 @@ export class Door extends Entity {
     const size = props.size ?
       props.size :
       { width: WALL.SIZE, height: WALL.SIZE, depth: WALL.SIZE };
-    const actor = new DoorActor({
+    const actor = new WallActor({
       position: props.position,
-      size: size
+      size: size,
+      textureFileName: GAME_TEXTURE_NAME.doorTextureFile
     });
     const behavior = new DoorBehavior({});
     super(
