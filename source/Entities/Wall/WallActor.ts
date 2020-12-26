@@ -31,6 +31,7 @@ export class WallActor implements Actor {
       normalX.repeat.y = textureX.repeat.y;
     }
     const materialX = new MeshPhongMaterial({
+      transparent: true,
       map: textureX,
       ...(normalX && { normalMap: normalX })
     });
@@ -50,6 +51,7 @@ export class WallActor implements Actor {
       normalY.repeat.y = textureY.repeat.y;
     }
     const materialY = new MeshPhongMaterial({
+      transparent: true,
       map: textureY,
       ...(normalY && { normalMap: normalY })
     });
