@@ -1,11 +1,12 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, BoxGeometry, MeshPhongMaterial, Vector3, RepeatWrapping, Material } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
 
 interface WallActorProps {
   size: { width: number; height: number, depth: number };
   position: Vector3;
+  textureFileName: string;
+  normalTextureFileName?: string;
   isHorizontalWall?: boolean;
 }
 
@@ -17,28 +18,40 @@ export class WallActor implements Actor {
     const textureXSize = props.isHorizontalWall ?
       props.size.width :
       props.size.depth;
-    const textureX = this.getSizeSpecificTexture(GAME_TEXTURE_NAME.wallTextureFile, `X${textureXSize}`);
-    const normalX = texturesStore.getTexture(GAME_TEXTURE_NAME.wallNormalFile);
-    textureX.wrapS = textureX.wrapT = normalX.wrapS = normalX.wrapT = RepeatWrapping;
-    normalX.repeat.x = textureX.repeat.x = textureXSize / 3;
-    normalX.repeat.y = textureX.repeat.y = 1;
+    const textureX = this.getSizeSpecificTexture(props.textureFileName, `X${textureXSize}`);
+    textureX.wrapS = textureX.wrapT = RepeatWrapping;
+    textureX.repeat.x = textureXSize / 3;
+    textureX.repeat.y = 1;
     textureX.needsUpdate = true;
+    let normalX;
+    if (props.normalTextureFileName) {
+      normalX = texturesStore.getTexture(props.normalTextureFileName);
+      normalX.wrapS = normalX.wrapT = RepeatWrapping;
+      normalX.repeat.x = textureX.repeat.x;
+      normalX.repeat.y = textureX.repeat.y;
+    }
     const materialX = new MeshPhongMaterial({
       map: textureX,
-      normalMap: normalX
+      ...(normalX && { normalMap: normalX })
     });
     const textureYSize = props.isHorizontalWall ?
       props.size.depth :
       props.size.width;
-    const textureY = this.getSizeSpecificTexture(GAME_TEXTURE_NAME.wallTextureFile, `Y${textureYSize}`);
-    const normalY = texturesStore.getTexture(GAME_TEXTURE_NAME.wallNormalFile);
-    textureY.wrapS = textureY.wrapT = normalY.wrapS = normalY.wrapT = RepeatWrapping;
-    normalY.repeat.x = textureY.repeat.x = textureYSize / 3;
-    normalY.repeat.y = textureY.repeat.y = 1;
+    const textureY = this.getSizeSpecificTexture(props.textureFileName, `Y${textureYSize}`);
+    textureY.wrapS = textureY.wrapT = RepeatWrapping;
+    textureY.repeat.x = textureYSize / 3;
+    textureY.repeat.y = 1;
     textureY.needsUpdate = true;
+    let normalY;
+    if (props.normalTextureFileName) {
+      normalY = texturesStore.getTexture(props.normalTextureFileName);
+      normalY.wrapS = normalY.wrapT = RepeatWrapping;
+      normalY.repeat.x = textureY.repeat.x;
+      normalY.repeat.y = textureY.repeat.y;
+    }
     const materialY = new MeshPhongMaterial({
       map: textureY,
-      normalMap: normalY
+      ...(normalY && { normalMap: normalY })
     });
     const materials: Material[] = [];
     const horizontalMaterial = props.isHorizontalWall ? materialX : materialY;
