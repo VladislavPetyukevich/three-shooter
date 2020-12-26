@@ -35,6 +35,11 @@ export const WALL = {
   SIZE: 3
 };
 
+export const DOOR = {
+  OPEN_DISTANCE: 15,
+  OPEN_SPEED: 15
+};
+
 export const GUN = {
   BOB_SPEED: 5,
   BOB_DISTANCE: 0.05

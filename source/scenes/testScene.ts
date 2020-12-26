@@ -146,10 +146,13 @@ export class TestScene extends BasicScene {
   }
 
   spawnDoor(coordinates: { x: number, y: number }, size: { width: number, height: number }) {
+    const isHorizontalWall = size.width > size.height;
     const door = new Door({
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
       container: this.entitiesContainer,
-      size: { width: size.width, height: WALL.SIZE, depth: size.height }
+      size: { width: size.width, height: WALL.SIZE, depth: size.height },
+      player: this.player,
+      isHorizontalWall: isHorizontalWall
     });
     this.entitiesContainer.add(door);
   }
