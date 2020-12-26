@@ -38,6 +38,13 @@ export class TextureLoader {
   getTexture(name: string) {
     return this.texturesMap[name];
   }
+
+  cloneTexture(originalName: string, cloneName: string) {
+    const original = this.texturesMap[originalName];
+    const clone = original.clone();
+    this.texturesMap[cloneName] = clone;
+    return clone;
+  }
 }
 
 export const texturesStore = new TextureLoader();

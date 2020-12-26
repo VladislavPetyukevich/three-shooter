@@ -91,8 +91,6 @@ export const enum EVENT_TYPES {
 export const gameTextures = {
   wallTextureFile,
   wallNormalFile,
-  wallTextureFile2: wallTextureFile,
-  wallNormalFile2: wallTextureFile,
   doorTextureFile,
   gunTextureFile,
   gunFireFile,
@@ -110,8 +108,6 @@ export const gameSounds = {
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
   wallNormalFile = 'wallNormalFile',
-  wallTextureFile2 = 'wallTextureFile2',
-  wallNormalFile2 = 'wallNormalFile2',
   doorTextureFile = 'doorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
