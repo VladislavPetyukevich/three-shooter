@@ -5,6 +5,7 @@ import { texturesStore } from '@/core/loaders/TextureLoader';
 interface WallActorProps {
   size: { width: number; height: number, depth: number };
   position: Vector3;
+  textureSize: number;
   textureFileName: string;
   normalTextureFileName?: string;
   isHorizontalWall?: boolean;
@@ -20,7 +21,7 @@ export class WallActor implements Actor {
       props.size.depth;
     const textureX = this.getSizeSpecificTexture(props.textureFileName, `X${textureXSize}`);
     textureX.wrapS = textureX.wrapT = RepeatWrapping;
-    textureX.repeat.x = textureXSize / 3;
+    textureX.repeat.x = textureXSize / props.textureSize;
     textureX.repeat.y = 1;
     textureX.needsUpdate = true;
     let normalX;
@@ -40,7 +41,7 @@ export class WallActor implements Actor {
       props.size.width;
     const textureY = this.getSizeSpecificTexture(props.textureFileName, `Y${textureYSize}`);
     textureY.wrapS = textureY.wrapT = RepeatWrapping;
-    textureY.repeat.x = textureYSize / 3;
+    textureY.repeat.x = textureYSize / props.textureSize;
     textureY.repeat.y = 1;
     textureY.needsUpdate = true;
     let normalY;

@@ -20,7 +20,8 @@ export class Wall extends Entity {
       size: size,
       isHorizontalWall: props.isHorizontalWall,
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
-      normalTextureFileName: GAME_TEXTURE_NAME.wallNormalFile
+      normalTextureFileName: GAME_TEXTURE_NAME.wallNormalFile,
+      textureSize: 3
     });
     const behavior = new WallBehavior({});
     super(
