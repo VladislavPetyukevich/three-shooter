@@ -11,9 +11,8 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
-import { WALL } from '@/constants';
+import { PLAYER, WALL } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
-import { PLAYER } from '@/constants';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
@@ -61,6 +60,13 @@ export class TestScene extends BasicScene {
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
+
+    const roofGeometry = new PlaneGeometry(1000, 1000);
+    roofGeometry.applyMatrix(new Matrix4().makeRotationX(Math.PI / 2));
+    const roofMaterial = new MeshPhongMaterial({ color: 'white' });
+    const roofMesh = new Mesh(roofGeometry, roofMaterial);
+    roofMesh.position.y = WALL.SIZE;
+    this.scene.add(roofMesh);
 
     this.player = this.entitiesContainer.add(
       new Player({
