@@ -27,6 +27,7 @@ export class EnemyActor implements Actor {
       material
     });
     this.mesh = new Mesh(geometry, material);
+    this.mesh.renderOrder = 1;
     this.mesh.position.set(
       props.position.x,
       props.position.y,
