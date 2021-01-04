@@ -2,6 +2,7 @@ import wallTextureFile from '@/assets/wall.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import doorTextureFile from '@/assets/door.png';
 import doorNormalFile from '@/assets/door-normal.png';
+import floorTextureFile from '@/assets/floor3_fixed2.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
 import enemyWalk1 from './assets/enemyWalk1.png';
@@ -99,6 +100,7 @@ export const gameTextures = {
   wallNormalFile,
   doorTextureFile,
   doorNormalFile,
+  floorTextureFile,
   gunTextureFile,
   gunFireFile,
   enemyWalk1,
@@ -117,6 +119,7 @@ export const enum GAME_TEXTURE_NAME {
   wallNormalFile = 'wallNormalFile',
   doorTextureFile = 'doorTextureFile',
   doorNormalFile = 'doorNormalFile',
+  floorTextureFile = 'floorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
   enemyWalk1 = 'enemyWalk1',

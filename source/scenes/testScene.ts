@@ -7,11 +7,13 @@ import {
   MeshPhongMaterial,
   Vector3,
   Fog,
-  Light
+  Light,
+  RepeatWrapping
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
-import { PLAYER, WALL } from '@/constants';
+import { texturesStore } from '@/core/loaders/TextureLoader';
+import { PLAYER, WALL, GAME_TEXTURE_NAME } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Door } from '@/Entities/Door/Door';
@@ -56,7 +58,11 @@ export class TestScene extends BasicScene {
 
     const floorGeometry = new PlaneGeometry(1000, 1000);
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
-    const floormaterial = new MeshPhongMaterial({ color: 'white' });
+    const floorTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile);
+    floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
+    floorTexture.repeat.x = floorTexture.repeat.y = 1000 / 1;
+    floorTexture.needsUpdate = true;
+    const floormaterial = new MeshPhongMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
