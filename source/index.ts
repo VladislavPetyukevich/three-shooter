@@ -14,6 +14,7 @@ import { EffectComposer } from './Postprocessing/EffectComposer';
 import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { texturesStore, audioStore } from '@/core/loaders';
+import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, gameSounds } from './constants';
 
 export default class ThreeShooter {
@@ -50,11 +51,11 @@ export default class ThreeShooter {
 
     props.renderContainer.appendChild(this.renderer.domElement);
     this.update();
-    document.addEventListener('pointerlockchange', (event) => {
+    document.addEventListener('pointerlockchange', () => {
       this.enabled = document.pointerLockElement === props.renderContainer;
       this.prevTime = performance.now();
     });
-    window.addEventListener('resize', (event) => {
+    window.addEventListener('resize', () => {
       hud.handleResize();
       this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
       this.currScene.camera.updateProjectionMatrix();
@@ -64,6 +65,7 @@ export default class ThreeShooter {
   }
 
   loadTextures(gameProps: any) {
+    const imageScaler = new ImageScaler(8);
     const onLoad = () => {
       const soundsProgress = (<LoadingScene>this.currScene).soundsProgress;
       const texturesProgress = (<LoadingScene>this.currScene).texturesProgress;
@@ -93,7 +95,14 @@ export default class ThreeShooter {
       (<LoadingScene>this.currScene).onSoundsProgress(progress);
     };
 
-    texturesStore.loadTextures(gameTextures, onLoad, onTexturesProgress);
+    const onImagesScale = (imagesInfo: { [name: string]: string }) => {
+      texturesStore.loadTextures(imagesInfo, onLoad, onTexturesProgress);
+    };
+
+    const onImagesScaleProgress = (progress: number) => {
+      (<LoadingScene>this.currScene).onImagesScaleProgress(progress);
+    };
+    imageScaler.scaleImages(gameTextures, onImagesScale, onImagesScaleProgress);
     audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
   }
 
