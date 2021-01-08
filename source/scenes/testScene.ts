@@ -36,6 +36,7 @@ export class TestScene extends BasicScene {
   dungeonCellsPositionToLight: number[];
   currentRoomIndex: number | null;
   dungeonRoomEnimies: Entity[];
+  visitedRooms: Set<number>;
 
   constructor(props: BasicSceneProps) {
     super(props);
@@ -45,6 +46,7 @@ export class TestScene extends BasicScene {
     this.currentRoomIndex = null;
     this.dungeonCellsPositionToLight = [];
     this.dungeonRoomEnimies = [];
+    this.visitedRooms = new Set();
 
     // lights
     this.scene.add(new AmbientLight(0xffffff, 2));
@@ -236,11 +238,15 @@ export class TestScene extends BasicScene {
       const inX = (playerCellX > cell[0]) && (playerCellX < cell[2]);
       const inY = (playerCellY > cell[1]) && (playerCellY < cell[3]);
       if (inX && inY) {
+        if (this.visitedRooms.has(i)) {
+          break;
+        }
         if (this.currentRoomIndex) {
           this.onOffLightInRoom(this.currentRoomIndex, false);
         }
         this.onOffLightInRoom(i, true);
         this.currentRoomIndex = i;
+        this.visitedRooms.add(i);
         this.fillRoomRandom(cell[0], cell[1]);
         break;
       }
