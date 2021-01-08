@@ -85,6 +85,7 @@ export default class ThreeShooter {
         document.removeEventListener('pointerlockchange', pointerlockHandler);
       };
       document.addEventListener('pointerlockchange', pointerlockHandler);
+      gameProps.onLoad();
     };
 
     const onTexturesProgress = (progress: number) => {

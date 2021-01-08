@@ -27,11 +27,15 @@
     var blocker = document.getElementById('blocker');
     var instructions = document.getElementById('instructions');
     var renderContainer = document.getElementById('render-container');
+    function onLoad() {
+      console.log('game loaded');
+    }
 
     var threeShooter = new ThreeShooter.default({
       renderContainer: renderContainer,
       renderWidth: renderContainer.offsetWidth,
-      renderHeight: renderContainer.offsetHeight
+      renderHeight: renderContainer.offsetHeight,
+      onLoad: onLoad
     });
 
     instructions.addEventListener('click', function (event) {
