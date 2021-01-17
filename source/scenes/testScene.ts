@@ -11,7 +11,6 @@ import {
   RepeatWrapping
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
-import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { PLAYER, WALL, GAME_TEXTURE_NAME } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
@@ -35,7 +34,7 @@ export class TestScene extends BasicScene {
   dungeonCellsPosition: number[][];
   dungeonCellsPositionToLight: number[];
   currentRoomIndex: number | null;
-  dungeonRoomEnimies: Entity[];
+  dungeonRoomEnimiesCount: number;
   visitedRooms: Set<number>;
 
   constructor(props: BasicSceneProps) {
@@ -45,7 +44,7 @@ export class TestScene extends BasicScene {
     this.dungeonRoomSize = { width: 20, height: 20 };
     this.currentRoomIndex = null;
     this.dungeonCellsPositionToLight = [];
-    this.dungeonRoomEnimies = [];
+    this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
 
     // lights
@@ -171,6 +170,13 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(door);
   }
 
+  onEnemyDeath = () => {
+    this.dungeonRoomEnimiesCount--;
+    if (this.dungeonRoomEnimiesCount === 0) {
+      console.log('room clean');
+    }
+  }
+
   spawnEnemy(coordinates: { x: number, y: number }) {
     const enemy = new Enemy({
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
@@ -178,6 +184,7 @@ export class TestScene extends BasicScene {
       container: this.entitiesContainer,
       audioListener: this.audioListener
     });
+    enemy.onDeath(this.onEnemyDeath);
     return this.entitiesContainer.add(enemy);
   }
 
@@ -209,6 +216,7 @@ export class TestScene extends BasicScene {
   }
 
   fillRoomRandom(roomX: number, roomY: number) {
+    this.dungeonRoomEnimiesCount = 0;
     const cells = rooms[0](this.dungeonRoomSize);
     cells.forEach(cell => {
       const sceneCoordinates = this.convertToSceneCoordinates({
@@ -217,9 +225,8 @@ export class TestScene extends BasicScene {
       });
       switch (cell.type) {
         case RoomCellType.Enemy:
-          this.dungeonRoomEnimies.push(
-            this.spawnEnemy(sceneCoordinates)
-          );
+          this.spawnEnemy(sceneCoordinates)
+          this.dungeonRoomEnimiesCount++;
           break;
       }
     });

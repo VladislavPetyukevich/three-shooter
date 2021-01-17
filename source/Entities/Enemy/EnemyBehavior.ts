@@ -26,6 +26,7 @@ export class EnemyBehavior implements Behavior {
   currentTitleDisplayTime: number;
   shootSound: PositionalAudio;
   shootTimeOut: number;
+  onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
@@ -69,7 +70,12 @@ export class EnemyBehavior implements Behavior {
     this.velocity.set(0, 0, 0);
     this.actor.spriteSheet.displaySprite(2);
     setTimeout(
-      () => this.container.remove(this.actor.mesh),
+      () => {
+        this.container.remove(this.actor.mesh);
+        if (this.onDeathCallback) {
+          this.onDeathCallback();
+        }
+      },
       1000
     );
   }
