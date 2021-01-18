@@ -8,11 +8,13 @@ export class Entity {
   behavior: Behavior;
   hp?: number;
   velocity?: Vector3;
+  isCollideTransparent: boolean;
 
   constructor(type: string, actor: Actor, behavior: Behavior) {
     this.type = type;
     this.actor = actor;
     this.behavior = behavior;
+    this.isCollideTransparent = false;
   }
 
   onHit(damage: number) {

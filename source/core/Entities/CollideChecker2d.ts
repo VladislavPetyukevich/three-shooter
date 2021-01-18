@@ -60,6 +60,10 @@ export class CollideChecker2d {
   }
 
   detectCollisions(entity: Entity, newPosition: Vector3): CollisionsResult {
+    const collisionsResult: CollisionsResult = { entities: [] };
+    if (entity.isCollideTransparent) {
+      return collisionsResult;
+    }
     const entityGeometrySize = this.getSize(entity);
     var bounds = {
       xMin: newPosition.x - entityGeometrySize.width / 2,
@@ -70,7 +74,6 @@ export class CollideChecker2d {
       zMax: newPosition.z + entityGeometrySize.width / 2,
     };
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
-    const collisionsResult: CollisionsResult = { entities: [] };
     if (!entityMapCoordinates) {
       return collisionsResult;
     }
@@ -81,6 +84,9 @@ export class CollideChecker2d {
       }
 
       this.map[coordinates.x][coordinates.y].entities.forEach(entityToCheck => {
+        if (entityToCheck.entity.isCollideTransparent) {
+          return;
+        }
         if (entityToCheck.entity.actor.mesh.id === entity.actor.mesh.id) {
           return;
         }
