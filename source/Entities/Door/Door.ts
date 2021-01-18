@@ -43,6 +43,7 @@ export class Door extends Entity {
       actor,
       behavior
     );
+    behavior.onOpen = () => this.onOpen();
     this.container = props.container;
     if (props.isHorizontalWall) {
       delete (this.actor.mesh.material as MeshPhongMaterial[])[0];
@@ -53,12 +54,16 @@ export class Door extends Entity {
     }
   }
 
-  onCollide(entity: Entity) {
-    if (entity.type === ENTITY_TYPE.PLAYER) {
-      this.container.remove(this.actor.mesh);
-      return false;
-    }
-    return true;
+  lock() {
+    (<DoorBehavior>this.behavior).isLocked = true;
+  }
+
+  unlock() {
+    (<DoorBehavior>this.behavior).isLocked = false;
+  }
+
+  onOpen() {
+    this.container.remove(this.actor.mesh);
   }
 }
 

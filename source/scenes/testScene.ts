@@ -35,6 +35,7 @@ export class TestScene extends BasicScene {
   dungeonCellsPositionToLight: number[];
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
+  doors: Door[];
   visitedRooms: Set<number>;
 
   constructor(props: BasicSceneProps) {
@@ -46,6 +47,7 @@ export class TestScene extends BasicScene {
     this.dungeonCellsPositionToLight = [];
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
+    this.doors = [];
 
     // lights
     this.scene.add(new AmbientLight(0xffffff, 2));
@@ -167,13 +169,25 @@ export class TestScene extends BasicScene {
       player: this.player,
       isHorizontalWall: isHorizontalWall
     });
+    door.lock();
+    this.doors.push(door);
     this.entitiesContainer.add(door);
+  }
+
+  lockUnlockAllDoors(isLock: boolean) {
+    this.doors.forEach(door => {
+      if (isLock) {
+        door.lock();
+      } else {
+        door.unlock();
+      }
+    });
   }
 
   onEnemyDeath = () => {
     this.dungeonRoomEnimiesCount--;
     if (this.dungeonRoomEnimiesCount === 0) {
-      console.log('room clean');
+      this.lockUnlockAllDoors(false);
     }
   }
 
@@ -254,6 +268,7 @@ export class TestScene extends BasicScene {
         this.onOffLightInRoom(i, true);
         this.currentRoomIndex = i;
         this.visitedRooms.add(i);
+        this.lockUnlockAllDoors(true);
         this.fillRoomRandom(cell[0], cell[1]);
         break;
       }
