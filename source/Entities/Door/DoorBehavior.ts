@@ -19,6 +19,7 @@ export class DoorBehavior implements Behavior {
   isOpened: boolean;
   maxOffset: number;
   isLocked: boolean;
+  initialPositon: number;
   isHorizontalWall?: boolean;
   onOpen?: Function;
 
@@ -32,6 +33,9 @@ export class DoorBehavior implements Behavior {
     const position = props.isHorizontalWall ? props.position.x : props.position.z;
     this.maxOffset = size + position;
     this.isLocked = false;
+    this.initialPositon = this.isHorizontalWall ?
+      this.initialPositon = this.actor.mesh.position.x :
+      this.initialPositon = this.actor.mesh.position.z;
   }
 
   getDistanceToPlayer() {
@@ -60,6 +64,14 @@ export class DoorBehavior implements Behavior {
     this.isOpenAnimation = false;
     if (this.onOpen) {
       this.onOpen();
+    }
+  }
+
+  resetOpenAnimation() {
+    if (this.isHorizontalWall) {
+      this.actor.mesh.position.x = this.initialPositon;
+    } else {
+      this.actor.mesh.position.z = this.initialPositon;
     }
   }
 

@@ -56,6 +56,8 @@ export class Door extends Entity {
 
   lock() {
     (<DoorBehavior>this.behavior).isLocked = true;
+    (<DoorBehavior>this.behavior).resetOpenAnimation();
+    this.isCollideTransparent = false;
   }
 
   unlock() {
@@ -63,7 +65,7 @@ export class Door extends Entity {
   }
 
   onOpen() {
-    this.container.remove(this.actor.mesh);
+    this.isCollideTransparent = true;
   }
 }
 
