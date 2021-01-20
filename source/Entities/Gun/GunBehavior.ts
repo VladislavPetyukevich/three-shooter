@@ -36,7 +36,7 @@ export class GunBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
-    this.gunShootLight = new PointLight(0xE09E3D, 20, 100);
+    this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(
       0,
       -50,
