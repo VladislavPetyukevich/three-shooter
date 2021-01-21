@@ -33,6 +33,7 @@ export class TestScene extends BasicScene {
   dungeonRoomSize: Size;
   dungeonCellsPosition: number[][];
   dungeonCellsPositionToLight: number[];
+  dungeonCellDoors: Door[][];
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
   doors: Door[];
@@ -48,6 +49,7 @@ export class TestScene extends BasicScene {
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
     this.doors = [];
+    this.dungeonCellDoors = [];
 
     // lights
     this.scene.add(new AmbientLight(0xffffff, 2));
@@ -142,10 +144,37 @@ export class TestScene extends BasicScene {
         });
         const translateX = (wallSize.x / 2);
         const translateY = (wallSize.y / 2);
-        this.spawnDoor(
+        const door = this.spawnDoor(
           { x: wallPos.x + translateX, y: wallPos.y + translateY },
           { width: wallSize.x, height: wallSize.y }
         );
+        this.dungeonCellsPosition.forEach((cellPos1, index1) => {
+          this.dungeonCellsPosition.forEach((cellPos2, index2) => {
+            const intersectRoomRect = {
+              x: Math.min(cellPos1[0], cellPos2[0]),
+              y: Math.min(cellPos1[1], cellPos2[1]),
+              maxX: Math.max(cellPos1[2], cellPos2[2]),
+              maxY: Math.max(cellPos1[3], cellPos2[3])
+            };
+            if (
+              (el.fillRect.position.x >= intersectRoomRect.x) &&
+              (el.fillRect.position.x <= intersectRoomRect.maxX) &&
+              (el.fillRect.position.y >= intersectRoomRect.y) &&
+              (el.fillRect.position.y <= intersectRoomRect.maxY)
+            ) {
+              if (!this.dungeonCellDoors[index1]) {
+                this.dungeonCellDoors[index1] = [door];
+              } else {
+                this.dungeonCellDoors[index1].push(door);
+              }
+              if (!this.dungeonCellDoors[index2]) {
+                this.dungeonCellDoors[index2] = [door];
+              } else {
+                this.dungeonCellDoors[index2].push(door);
+              }
+            }
+          });
+        });
       }
     });
   }
@@ -172,10 +201,14 @@ export class TestScene extends BasicScene {
     door.lock();
     this.doors.push(door);
     this.entitiesContainer.add(door);
+    return door;
   }
 
-  lockUnlockAllDoors(isLock: boolean) {
-    this.doors.forEach(door => {
+  lockUnlockAllDoors(roomIndex: number, isLock: boolean) {
+    if (!this.dungeonCellDoors[roomIndex]) {
+      return;
+    }
+    this.dungeonCellDoors[roomIndex].forEach(door => {
       if (isLock) {
         door.lock();
       } else {
@@ -187,7 +220,9 @@ export class TestScene extends BasicScene {
   onEnemyDeath = () => {
     this.dungeonRoomEnimiesCount--;
     if (this.dungeonRoomEnimiesCount === 0) {
-      this.lockUnlockAllDoors(false);
+      if (typeof this.currentRoomIndex === 'number') {
+        this.lockUnlockAllDoors(this.currentRoomIndex, false);
+      }
     }
   }
 
@@ -268,7 +303,7 @@ export class TestScene extends BasicScene {
         this.onOffLightInRoom(i, true);
         this.currentRoomIndex = i;
         this.visitedRooms.add(i);
-        this.lockUnlockAllDoors(true);
+        this.lockUnlockAllDoors(i, true);
         this.fillRoomRandom(cell[0], cell[1]);
         break;
       }
