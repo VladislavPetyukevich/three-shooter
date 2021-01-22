@@ -3,6 +3,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { DOOR } from '@/constants';
+import { StateMachine } from '@/StateMachine';
 
 interface DoorBehaviorProps {
   actor: WallActor;
@@ -15,76 +16,81 @@ interface DoorBehaviorProps {
 export class DoorBehavior implements Behavior {
   player: Player;
   actor: WallActor;
-  isOpenAnimation: boolean;
-  isOpened: boolean;
-  maxOffset: number;
-  isLocked: boolean;
-  initialPositon: number;
+  maxPosition: number;
+  minPositon: number;
   isHorizontalWall?: boolean;
+  stateMachine: StateMachine;
   onOpen?: Function;
+  onClose?: Function;
 
   constructor(props: DoorBehaviorProps) {
     this.player = props.player;
     this.actor = props.actor;
-    this.isOpenAnimation = false;
-    this.isOpened = false;
     this.isHorizontalWall = props.isHorizontalWall;
     const size = props.isHorizontalWall ? props.size.width : props.size.depth;
     const position = props.isHorizontalWall ? props.position.x : props.position.z;
-    this.maxOffset = size + position;
-    this.isLocked = false;
-    this.initialPositon = this.isHorizontalWall ?
-      this.initialPositon = this.actor.mesh.position.x :
-      this.initialPositon = this.actor.mesh.position.z;
+    this.maxPosition = size + position;
+    this.minPositon = this.isHorizontalWall ?
+      this.actor.mesh.position.x :
+      this.actor.mesh.position.z;
+    this.stateMachine = new StateMachine({
+      initialState: 'closed',
+      transitions: [
+        { name: 'open', from: 'closed', to: 'opening' },
+        { name: 'openEnd', from: 'opening', to: 'opened', callback: this.onOpneEnd },
+        { name: 'close', from: 'opened', to: 'closing' },
+        { name: 'closeEnd', from: 'closing', to: 'closed', callback: this.onCloseEnd }
+      ]
+    });
   }
 
-  getDistanceToPlayer() {
-    const diffX = this.actor.mesh.position.x - this.player.actor.mesh.position.x;
-    const diffZ = this.actor.mesh.position.z - this.player.actor.mesh.position.z;
-    return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
+  open() {
+    this.stateMachine.doTransition('open');
   }
 
-  offsetDoor(offset: number) {
-    if (this.isHorizontalWall) {
-      if (this.actor.mesh.position.x > this.maxOffset) {
-        this.doorOpened();
-        return;
-      }
-      this.actor.mesh.position.x += offset;
-    } else {
-      if (this.actor.mesh.position.z > this.maxOffset) {
-        this.doorOpened();
-        return;
-      }
-      this.actor.mesh.position.z += offset;
-    }
+  close() {
+    this.stateMachine.doTransition('close');
   }
 
-  doorOpened() {
-    this.isOpenAnimation = false;
+  onOpneEnd = () => {
     if (this.onOpen) {
       this.onOpen();
     }
   }
 
-  resetOpenAnimation() {
-    if (this.isHorizontalWall) {
-      this.actor.mesh.position.x = this.initialPositon;
-    } else {
-      this.actor.mesh.position.z = this.initialPositon;
+  onCloseEnd = () => {
+    if (this.onClose) {
+      this.onClose();
     }
   }
 
-  update(delta: number) {
-    if (this.isLocked) {
-      return;
+  offsetDoor(offset: number) {
+    if (this.isHorizontalWall) {
+      this.actor.mesh.position.x += offset;
+    } else {
+      this.actor.mesh.position.z += offset;
     }
-    const distanceToPlayer = this.getDistanceToPlayer();
-    if (!this.isOpenAnimation && (distanceToPlayer < DOOR.OPEN_DISTANCE)) {
-      this.isOpenAnimation = true;
-    } else if (this.isOpenAnimation) {
-      const offset = delta * DOOR.OPEN_SPEED;
-      this.offsetDoor(offset);
+    let meshPosition = this.isHorizontalWall ?
+      this.actor.mesh.position.x :
+      this.actor.mesh.position.z;
+    if (meshPosition > this.maxPosition) {
+      this.stateMachine.doTransition('openEnd');
+    } else if (meshPosition < this.minPositon) {
+      this.stateMachine.doTransition('closeEnd');
+    }
+  }
+
+
+  update(delta: number) {
+    switch (this.stateMachine.state()) {
+      case 'opening':
+        this.offsetDoor(delta * DOOR.OPEN_SPEED);
+        break;
+      case 'closing':
+        this.offsetDoor(-delta * DOOR.OPEN_SPEED);
+        break;
+      default:
+        break;
     }
   }
 }

@@ -198,7 +198,7 @@ export class TestScene extends BasicScene {
       player: this.player,
       isHorizontalWall: isHorizontalWall
     });
-    door.lock();
+    door.close();
     this.doors.push(door);
     this.entitiesContainer.add(door);
     return door;
@@ -210,9 +210,9 @@ export class TestScene extends BasicScene {
     }
     this.dungeonCellDoors[roomIndex].forEach(door => {
       if (isLock) {
-        door.lock();
+        door.close();
       } else {
-        door.unlock();
+        door.open();
       }
     });
   }

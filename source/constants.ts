@@ -38,7 +38,6 @@ export const WALL = {
 };
 
 export const DOOR = {
-  OPEN_DISTANCE: 15,
   OPEN_SPEED: 15
 };
 
