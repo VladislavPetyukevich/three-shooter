@@ -1,6 +1,6 @@
 interface Transition {
   name: string;
-  from: string;
+  from: string | string[];
   to: string;
   callback?: Function;
 }
@@ -21,7 +21,7 @@ export class StateMachine {
 
   doTransition(transitionName: string) {
     const transition = this.findTransition(transitionName);
-    if (this.currentState !== transition.from) {
+    if (!this.checkIsCanPerformTransition(transition)) {
       return;
     }
     this.currentState = transition.to;
@@ -48,6 +48,14 @@ export class StateMachine {
       throw new Error(`Transition ${transitionName} not found`);
     }
     return transition;
+  }
+
+  checkIsCanPerformTransition(transition: Transition) {
+    if (typeof transition.from === 'string') {
+      return this.currentState === transition.from;
+    } else {
+      return transition.from.some(fromState => this.currentState === fromState);
+    }
   }
 }
 
