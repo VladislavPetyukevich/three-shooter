@@ -36,7 +36,7 @@ export class Enemy extends Entity {
   }
 
   onHit() {
-    if (!(<EnemyBehavior>this.behavior).isDead) {
+    if ((<EnemyBehavior>this.behavior).stateMachine.not('dead')) {
       (<EnemyBehavior>this.behavior).death();
     }
   }

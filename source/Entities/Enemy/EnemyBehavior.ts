@@ -6,6 +6,7 @@ import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { audioStore } from '@/core/loaders';
+import { StateMachine } from '@/StateMachine';
 
 interface BehaviorProps {
   player: Player;
@@ -21,11 +22,11 @@ export class EnemyBehavior implements Behavior {
   actor: EnemyActor;
   randomMovementTimeOut: number;
   container: EntitiesContainer;
-  isDead: boolean;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
   shootSound: PositionalAudio;
   shootTimeOut: number;
+  stateMachine: StateMachine;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -37,11 +38,18 @@ export class EnemyBehavior implements Behavior {
     this.container = props.container;
     this.randomMovementTimeOut = ENEMY.MOVEMENT_TIME_OUT;
     this.shootTimeOut = ENEMY.SHOOT_TIME_OUT;
-    this.isDead = false;
     this.shootSound = new PositionalAudio(props.audioListener);
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
+    this.stateMachine = new StateMachine({
+      initialState: 'walkingAround',
+      transitions: [
+        { name: 'walkAround', from: 'attacking', to: 'walkingAround' },
+        { name: 'attack', from: 'walkingAround', to: 'attacking' },
+        { name: 'dead', from: ['walkingAround', 'attacking'], to: 'dies' }
+      ]
+    });
   }
 
   shoot() {
@@ -66,7 +74,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   death() {
-    this.isDead = true;
+    this.stateMachine.doTransition('dead');
     this.velocity.set(0, 0, 0);
     this.actor.spriteSheet.displaySprite(2);
     setTimeout(
@@ -95,7 +103,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateWalkSprite(delta: number) {
-    if (this.isDead) {
+    if (this.stateMachine.is('dies')) {
       return;
     }
     this.currentTitleDisplayTime += delta;
@@ -107,34 +115,49 @@ export class EnemyBehavior implements Behavior {
     this.currentTitleDisplayTime = 0;
   }
 
-
-  update(delta: number) {
-    if (this.isDead) {
-      return;
-    }
-    const distanceToPlayer = this.getDistanceToPlayer();
-    if (distanceToPlayer > ENEMY.VIEW_DISTANCE) {
-      return;
-    }
-
-    this.randomMovementTimeOut += delta;
-    if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
-      this.randomMovement();
-      this.randomMovementTimeOut = 0;
-    } else {
-      this.updateWalkSprite(delta);
-    }
-
-    this.shootTimeOut += delta;
-    if (this.shootTimeOut > ENEMY.SHOOT_TIME_OUT) {
-      this.shoot();
-      this.shootTimeOut = 0;
-    }
-  }
-
   getDistanceToPlayer() {
     const diffX = this.actor.mesh.position.x - this.player.actor.mesh.position.x;
     const diffZ = this.actor.mesh.position.z - this.player.actor.mesh.position.z;
     return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
+
+  checkIsPlayerInAttackDistance() {
+    const distanceToPlayer = this.getDistanceToPlayer();
+    return distanceToPlayer <= ENEMY.ATTACK_DISTANCE;
+  }
+
+  update(delta: number) {
+    switch (this.stateMachine.state()) {
+      case 'dies':
+        break;
+      case 'idle':
+      case 'walkingAround':
+        if (this.checkIsPlayerInAttackDistance()) {
+          this.stateMachine.doTransition('attack');
+          break;
+        }
+        this.randomMovementTimeOut += delta;
+        if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
+          this.randomMovement();
+          this.randomMovementTimeOut = 0;
+        } else {
+          this.updateWalkSprite(delta);
+        }
+        break;
+      case 'attacking':
+        if (!this.checkIsPlayerInAttackDistance()) {
+          this.stateMachine.doTransition('walkAround');
+          break;
+        }
+        this.shootTimeOut += delta;
+        if (this.shootTimeOut > ENEMY.SHOOT_TIME_OUT) {
+          this.shoot();
+          this.shootTimeOut = 0;
+        }
+        break;
+      default:
+        break;
+    }
+  }
 }
+
