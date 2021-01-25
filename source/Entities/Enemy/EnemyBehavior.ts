@@ -130,7 +130,6 @@ export class EnemyBehavior implements Behavior {
     switch (this.stateMachine.state()) {
       case 'dies':
         break;
-      case 'idle':
       case 'walkingAround':
         if (this.checkIsPlayerInAttackDistance()) {
           this.stateMachine.doTransition('attack');
