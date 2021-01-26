@@ -281,32 +281,40 @@ export class TestScene extends BasicScene {
     });
   }
 
-  update(delta: number) {
-    super.update(delta);
-    this.pointLight.position.copy(this.player.actor.mesh.position);
+  getPlayerCell() {
     const playerCellX = ~~(this.player.actor.mesh.position.x / this.mapCellSize);
     const playerCellY = ~~(this.player.actor.mesh.position.z / this.mapCellSize);
+    const roomPadding = 3;
     for(let i = this.dungeonCellsPosition.length; i--;) {
       if (i === this.currentRoomIndex) {
         continue;
       }
       const cell = this.dungeonCellsPosition[i];
-      const inX = (playerCellX > cell[0]) && (playerCellX < cell[2]);
-      const inY = (playerCellY > cell[1]) && (playerCellY < cell[3]);
+      const inX = (playerCellX > cell[0] + roomPadding) && (playerCellX < cell[2] - roomPadding);
+      const inY = (playerCellY > cell[1] + roomPadding) && (playerCellY < cell[3] - roomPadding);
       if (inX && inY) {
-        if (this.visitedRooms.has(i)) {
-          break;
-        }
-        if (this.currentRoomIndex) {
-          this.onOffLightInRoom(this.currentRoomIndex, false);
-        }
-        this.onOffLightInRoom(i, true);
-        this.currentRoomIndex = i;
-        this.visitedRooms.add(i);
-        this.lockUnlockAllDoors(i, true);
-        this.fillRoomRandom(cell[0], cell[1]);
-        break;
+        return { value: cell, index: i };
       }
+    }
+  }
+
+  handleRoomChange(newCell: number[], newCellIndex: number) {
+    if (this.currentRoomIndex) {
+      this.onOffLightInRoom(this.currentRoomIndex, false);
+    }
+    this.onOffLightInRoom(newCellIndex, true);
+    this.currentRoomIndex = newCellIndex;
+    this.visitedRooms.add(newCellIndex);
+    this.lockUnlockAllDoors(newCellIndex, true);
+    this.fillRoomRandom(newCell[0], newCell[1]);
+  }
+
+  update(delta: number) {
+    super.update(delta);
+    this.pointLight.position.copy(this.player.actor.mesh.position);
+    const playerCell = this.getPlayerCell();
+    if (playerCell && !this.visitedRooms.has(playerCell.index)) {
+      this.handleRoomChange(playerCell.value, playerCell.index);
     }
   }
 }
