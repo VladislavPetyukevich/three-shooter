@@ -46,8 +46,9 @@ export class EnemyBehavior implements Behavior {
       initialState: 'walkingAround',
       transitions: [
         { name: 'walkAround', from: 'attacking', to: 'walkingAround' },
-        { name: 'attack', from: 'walkingAround', to: 'attacking' },
-        { name: 'dead', from: ['walkingAround', 'attacking'], to: 'dies' }
+        { name: 'attack', from: ['walkingAround', 'followingPlayer'], to: 'attacking' },
+        { name: 'dead', from: ['walkingAround', 'attacking'], to: 'dies' },
+        { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
       ]
     });
   }
@@ -102,6 +103,14 @@ export class EnemyBehavior implements Behavior {
     return (Math.random() > 0.5) ? (ENEMY.WALK_SPEED / 2) : -(ENEMY.WALK_SPEED / 2);
   }
 
+  moveToPlayer() {
+    this.velocity.set(
+      Math.sin(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED,
+      0,
+      Math.cos(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED
+    );
+  }
+
   updateWalkSprite(delta: number) {
     if (this.stateMachine.is('dies')) {
       return;
@@ -143,9 +152,22 @@ export class EnemyBehavior implements Behavior {
           this.updateWalkSprite(delta);
         }
         break;
+      case 'followingPlayer':
+        if (this.checkIsPlayerInAttackDistance()) {
+          this.stateMachine.doTransition('attack');
+          break;
+        }
+        this.randomMovementTimeOut += delta;
+        if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
+          this.moveToPlayer();
+          this.randomMovementTimeOut = 0;
+        } else {
+          this.updateWalkSprite(delta);
+        }
+        break;
       case 'attacking':
         if (!this.checkIsPlayerInAttackDistance()) {
-          this.stateMachine.doTransition('walkAround');
+          this.stateMachine.doTransition('followPlayer');
           break;
         }
         this.shootTimeOut += delta;
