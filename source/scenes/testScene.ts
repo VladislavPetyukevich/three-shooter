@@ -1,7 +1,6 @@
 import {
   PlaneGeometry,
   Mesh,
-  AmbientLight,
   PointLight,
   Matrix4,
   MeshPhongMaterial,
@@ -52,8 +51,15 @@ export class TestScene extends BasicScene {
     this.dungeonCellDoors = [];
 
     // lights
-    this.scene.add(new AmbientLight(0xffffff, 2));
-    this.pointLight = new PointLight(0xffffff, 50, 100);
+    // this.scene.add(new AmbientLight(0xFF0000, 1));
+    const pointLightColor = 0xFFFFFF;
+    const pointLightIntensity = 30;
+    const pointLightDistance = 100;
+    this.pointLight = new PointLight(
+      pointLightColor,
+      pointLightIntensity,
+      pointLightDistance
+    );
     this.pointLight.castShadow = true;
     this.pointLight.shadow.camera.near = 0.1;
     this.pointLight.shadow.camera.far = 25;
