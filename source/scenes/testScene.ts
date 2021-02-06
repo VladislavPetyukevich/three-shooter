@@ -228,6 +228,7 @@ export class TestScene extends BasicScene {
     if (this.dungeonRoomEnimiesCount === 0) {
       if (typeof this.currentRoomIndex === 'number') {
         this.lockUnlockAllDoors(this.currentRoomIndex, false);
+        this.onOffLightInRoom(this.currentRoomIndex, true);
       }
     }
   }
@@ -305,10 +306,6 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomChange(newCell: number[], newCellIndex: number) {
-    if (this.currentRoomIndex) {
-      this.onOffLightInRoom(this.currentRoomIndex, false);
-    }
-    this.onOffLightInRoom(newCellIndex, true);
     this.currentRoomIndex = newCellIndex;
     this.visitedRooms.add(newCellIndex);
     this.lockUnlockAllDoors(newCellIndex, true);
