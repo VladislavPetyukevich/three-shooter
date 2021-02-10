@@ -154,35 +154,37 @@ export class TestScene extends BasicScene {
           { x: wallPos.x + translateX, y: wallPos.y + translateY },
           { width: wallSize.x, height: wallSize.y }
         );
-        this.dungeonCellsPosition.forEach((cellPos1, index1) => {
-          this.dungeonCellsPosition.forEach((cellPos2, index2) => {
-            const intersectRoomRect = {
-              x: Math.min(cellPos1[0], cellPos2[0]),
-              y: Math.min(cellPos1[1], cellPos2[1]),
-              maxX: Math.max(cellPos1[2], cellPos2[2]),
-              maxY: Math.max(cellPos1[3], cellPos2[3])
-            };
-            if (
-              (el.fillRect.position.x >= intersectRoomRect.x) &&
-              (el.fillRect.position.x <= intersectRoomRect.maxX) &&
-              (el.fillRect.position.y >= intersectRoomRect.y) &&
-              (el.fillRect.position.y <= intersectRoomRect.maxY)
-            ) {
-              if (!this.dungeonCellDoors[index1]) {
-                this.dungeonCellDoors[index1] = [door];
-              } else {
-                this.dungeonCellDoors[index1].push(door);
-              }
-              if (!this.dungeonCellDoors[index2]) {
-                this.dungeonCellDoors[index2] = [door];
-              } else {
-                this.dungeonCellDoors[index2].push(door);
-              }
-            }
-          });
+        this.dungeonCellsPosition.forEach((cellPos, index) => {
+          const diffTop = Math.abs(el.fillRect.position.y - cellPos[1]);
+          const diffBottom = Math.abs(el.fillRect.position.y + el.fillRect.size.height - cellPos[3]);
+          const shift = 1;
+          if (
+            (diffTop <= el.fillRect.size.height + shift) ||
+            (diffBottom <= el.fillRect.size.height + shift)
+          ) {
+            this.addDungeonCellDoor(index, door);
+            return;
+          }
+          const diffLeft = Math.abs(el.fillRect.position.x - cellPos[0]);
+          const diffRight = Math.abs(el.fillRect.position.x + el.fillRect.size.width - cellPos[2]);
+          if (
+            (diffLeft < el.fillRect.size.width) ||
+            (diffRight < el.fillRect.size.width)
+          ) {
+            this.addDungeonCellDoor(index, door);
+            return;
+          }
         });
       }
     });
+  }
+
+  addDungeonCellDoor(index: number, door: Door) {
+    if (!this.dungeonCellDoors[index]) {
+      this.dungeonCellDoors[index] = [door];
+    } else {
+      this.dungeonCellDoors[index].push(door);
+    }
   }
 
   spawnWall(coordinates: { x: number, y: number }, size: { width: number, height: number }) {
