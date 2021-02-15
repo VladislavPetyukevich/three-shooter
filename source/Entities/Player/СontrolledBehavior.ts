@@ -3,7 +3,7 @@ import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY, HUD } from '@/constants';
+import { PI_2, KEYBOARD_KEY } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 import { hud } from '@/HUD/HUD';
@@ -70,40 +70,41 @@ export class СontrolledBehavior implements Behavior {
 
   update(delta: number) {
     this.gun.update(delta);
-    let isRunning = false;
+    this.isRunning = false;
     if (this.cameraRotationInput.x) {
       this.camera.rotation.y -= this.cameraRotationInput.x;
       hud.onPlayerRotation(this.camera.rotation);
     }
     this.cameraRotationInput.set(0, 0);
     this.camera.position.copy(this.actor.mesh.position);
-    this.velocity.set(0, 0, 0);
+    const moveDirection = new Vector3();
 
     if (keyboard.key[KEYBOARD_KEY.W]) {
-      isRunning = true;
-      this.velocity.x -= Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
-      this.velocity.z -= Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.isRunning = true;
+      moveDirection.x -= Math.sin(this.camera.rotation.y);
+      moveDirection.z -= Math.cos(this.camera.rotation.y);
     }
     if (keyboard.key[KEYBOARD_KEY.S]) {
-      isRunning = true;
-      this.velocity.x += Math.sin(this.camera.rotation.y) * this.walkSpeed * delta;
-      this.velocity.z += Math.cos(this.camera.rotation.y) * this.walkSpeed * delta;
+      this.isRunning = true;
+      moveDirection.x += Math.sin(this.camera.rotation.y);
+      moveDirection.z += Math.cos(this.camera.rotation.y);
     }
     if (keyboard.key[KEYBOARD_KEY.A]) {
-      isRunning = true;
-      this.velocity.x += Math.sin(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
-      this.velocity.z += Math.cos(this.camera.rotation.y - PI_2) * this.walkSpeed * delta;
+      this.isRunning = true;
+      moveDirection.x += Math.sin(this.camera.rotation.y - PI_2);
+      moveDirection.z += Math.cos(this.camera.rotation.y - PI_2);
     }
     if (keyboard.key[KEYBOARD_KEY.D]) {
-      isRunning = true;
-      this.velocity.x += Math.sin(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
-      this.velocity.z += Math.cos(this.camera.rotation.y + PI_2) * this.walkSpeed * delta;
+      this.isRunning = true;
+      moveDirection.x += Math.sin(this.camera.rotation.y + PI_2);
+      moveDirection.z += Math.cos(this.camera.rotation.y + PI_2);
     }
+    this.velocity.copy(
+      moveDirection.normalize().multiplyScalar(this.walkSpeed * delta)
+    );
 
-    if (isRunning) {
+    if (this.isRunning) {
       hud.onPlayerMove(this.actor.mesh.position);
     }
-
-    this.isRunning = isRunning;
   }
 }
