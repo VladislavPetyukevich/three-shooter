@@ -71,7 +71,8 @@ export const ENEMY = {
 
 export const PLAYER = {
   HP: 100,
-  WALK_SPEED: 1000,
+  WALK_SPEED: 800,
+  WALK_INERTIA: 15,
   BODY_WIDTH: 1.5,
   BODY_HEIGHT: 1.5,
   BODY_DEPTH: 1.5,
