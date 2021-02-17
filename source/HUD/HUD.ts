@@ -2,7 +2,7 @@ import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3, Euler } fro
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS, WALL } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
-import { Entity } from '@/core/Entities/Entity';
+import { GeneratorCell } from '@/dungeon/DungeonGenerator';
 import { HUDMap } from './HUDMap';
 
 const CAMERA_NEAR = -500;
@@ -27,7 +27,6 @@ export class HUD {
     this.hudMap = new HUDMap({
       mapSize: HUD_CONSTANTS.MAP_SIZE,
       renderDistance: HUD_CONSTANTS.MAP_RENDER_DISTANCE,
-      updatingFPS: HUD_CONSTANTS.MAP_UPDATING_FPS,
       wallPixelSize: WALL.SIZE,
       colors: HUD_CONSTANTS.COLORS
     });
@@ -62,8 +61,8 @@ export class HUD {
     this.spriteSheet && this.spriteSheet.displaySprite(0);
   }
 
-  updateMap(entities: Entity[]) {
-    this.hudMap.updateEntities(entities);
+  updateMap(cells: GeneratorCell[][]) {
+    this.hudMap.updateDungeon(cells);
   }
 
   onPlayerMove(meshPosition: Vector3) {
@@ -89,6 +88,10 @@ export class HUD {
     const mapY = height - mapScale / 2;
     this.hudMap.sprite.scale.set(mapScale, mapScale, 1);
     this.hudMap.sprite.position.set(mapX, mapY, 1);
+  }
+
+  update() {
+    this.hudMap.update();
   }
 }
 

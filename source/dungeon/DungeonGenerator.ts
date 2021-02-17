@@ -23,7 +23,7 @@ export const enum DungeonCellType {
   Door
 };
 
-type GeneratorCell = null | Rect;
+export type GeneratorCell = null | Rect;
 
 interface DungeonPart {
   type: DungeonCellType;

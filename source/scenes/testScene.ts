@@ -18,6 +18,7 @@ import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
+import { hud } from '@/HUD/HUD';
 
 interface Size {
   width: number;
@@ -101,6 +102,7 @@ export class TestScene extends BasicScene {
     dungeonGenerator.generate();
     this.dungeonCellsPosition = [];
     const cells = dungeonGenerator.cells();
+    hud.updateMap(cells);
     cells.forEach(row => {
       row.forEach(cell => {
         if (!cell) {

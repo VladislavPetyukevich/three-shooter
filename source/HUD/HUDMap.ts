@@ -1,9 +1,8 @@
-import { Sprite, Texture, SpriteMaterial, Vector3, Euler } from 'three';
+import { Sprite, Texture, Vector3, Euler } from 'three';
 import { ImagePixel, ImageGenerator } from '@/ImageGenerator/ImageGenerator';
 import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
 import { threeTextureLoader } from '@/core/loaders/TextureLoader';
-import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE } from '@/constants';
+import { GeneratorCell } from '@/dungeon/DungeonGenerator';
 
 interface HUDMapCollors {
   wall: string;
@@ -16,88 +15,89 @@ interface HUDMapSettings {
   wallPixelSize: number;
   renderDistance: number;
   colors: HUDMapCollors;
-  updatingFPS: number;
 }
 
 export class HUDMap {
   settings: HUDMapSettings;
   sprite: Sprite;
-  wallsPixels?: ImagePixel[];
-  nearPixels: { x: number; y: number; color: string; size: number; rotation?: number | undefined; }[];
   playerMeshPosition: Vector3;
   playerRotationY: number;
+  imageGenerator: ImageGenerator;
+  dungeonCells: GeneratorCell[][];
+  isDungeonCellsNeedsUpdate: boolean;
 
   constructor(settings: HUDMapSettings) {
     this.settings = settings;
     this.sprite = new Sprite();
-    this.nearPixels = [];
     this.playerMeshPosition = new Vector3();
     this.playerRotationY = 0;
-    this.startUpdating();
+    this.imageGenerator = new ImageGenerator({ width: this.settings.mapSize, height: this.settings.mapSize });
+    this.dungeonCells = [];
+    this.isDungeonCellsNeedsUpdate = false;
   }
 
-  startUpdating = () => {
-    this.calcNearPixels();
-    this.initSprite();
-    setTimeout(this.startUpdating, 1000 / this.settings.updatingFPS);
+
+  updateDungeon(cells: GeneratorCell[][]) {
+    console.log('cells:', cells);
+    this.dungeonCells = cells;
+    this.isDungeonCellsNeedsUpdate = true;
   }
 
-  calcNearPixels = () => {
-    if (!this.wallsPixels) {
-      return;
+  drawDungeon() {
+    this.isDungeonCellsNeedsUpdate = false;
+    console.log('drawDungeon');
+    this.imageGenerator.drawRect({
+      x: 0,
+      y: 0,
+      width: this.imageGenerator.size.width,
+      height: this.imageGenerator.size.height,
+      color: 'black'
+    });
+    const cells = this.dungeonCells;
+    for (let currY = 0; currY < cells.length; currY++) {
+      for (let currX = 0; currX < cells[currY].length; currX++) {
+        const cell = cells[currY][currX];
+        if (!cell) {
+          continue;
+        }
+        console.log('cell:', cell);
+        this.imageGenerator.drawRect({
+          x: cell.position.x,
+          y: cell.position.y,
+          width: cell.size.width,
+          height: cell.size.height,
+          color: 'red'
+        });
+      }
     }
-    const renderDistance = this.settings.renderDistance;
-    this.nearPixels = this.wallsPixels
-      .filter(wallPixel => {
-        const xDiff = wallPixel.x - this.playerMeshPosition.x;
-        const yDiff = wallPixel.y - this.playerMeshPosition.z;
-        const distanceToPlayer = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-        return distanceToPlayer <= renderDistance;
-      })
-      .map(pixel => ({
-        ...pixel,
-        x: pixel.x - this.playerMeshPosition.x + renderDistance,
-        y: pixel.y - this.playerMeshPosition.z + renderDistance
-      }));
-  };
 
-  initSprite() {
+    const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
+    const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
+    this.drawSprite(wallsMapImageUrl);
+  }
+
+  drawPlayer() {
     const playerPixelSize = this.settings.wallPixelSize * 2;
     const playerPixel: ImagePixel = {
       x: this.settings.renderDistance - playerPixelSize / 2,
       y: this.settings.renderDistance - playerPixelSize / 2,
       color: this.settings.colors.player,
-      size: playerPixelSize,
+      width: playerPixelSize,
+      height: playerPixelSize,
       rotation: this.playerRotationY
     };
-    const imageGenerator = new ImageGenerator([...this.nearPixels, playerPixel], { width: this.settings.mapSize, height: this.settings.mapSize });
-    const imageUrlGenerator = new ImageUrlGenerator(imageGenerator);
+    this.imageGenerator.clear();
+    this.imageGenerator.drawArrow(playerPixel);
+    const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
     const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
     this.drawSprite(wallsMapImageUrl);
   }
 
   drawSprite(imageUrl: string) {
     threeTextureLoader.load(imageUrl, (texture: Texture) => {
-      const mapMaterial = new SpriteMaterial({
-        map: texture
-      });
-      this.sprite.material = mapMaterial;
+      this.sprite.material.map = texture;
+      this.sprite.material.needsUpdate = true;
     });
-  }
-
-  updateEntities(entities: Entity[]) {
-    const getWallPixel = (entity: Entity): ImagePixel =>
-      ({
-        x: entity.actor.mesh.position.x,
-        y: entity.actor.mesh.position.z,
-        color: this.settings.colors.wall,
-        size: this.settings.wallPixelSize
-      });
-
-    this.wallsPixels =
-      entities
-        .filter(entity => entity.type === ENTITY_TYPE.WALL)
-        .map(getWallPixel);
   }
 
   updatePlayerPosition(meshPosition: Vector3) {
@@ -106,5 +106,12 @@ export class HUDMap {
 
   updatePlayerRotation(cameraRotation: Euler) {
     this.playerRotationY = cameraRotation.y;
+  }
+
+  update() {
+    // this.drawDungeon();
+    if (this.isDungeonCellsNeedsUpdate) {
+      this.drawDungeon();
+    }
   }
 }

@@ -1,8 +1,9 @@
 export interface ImagePixel {
   x: number;
   y: number;
+  width: number;
+  height: number;
   color: string;
-  size: number;
   rotation?: number
 }
 
@@ -12,61 +13,47 @@ export interface ImageSize {
 }
 
 export class ImageGenerator {
-  pixels: ImagePixel[];
   size: ImageSize;
-  canvas?: HTMLCanvasElement;
+  canvas: HTMLCanvasElement;
+  canvasContext: CanvasRenderingContext2D;
 
-  constructor(pixels: ImagePixel[], size: ImageSize) {
-    this.pixels = pixels;
+  constructor(size: ImageSize) {
     this.size = size;
-    this.initCanvas();
-    this.drawOnCanvas();
-  }
-
-  initCanvas() {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('width', `${this.size.width}`);
     canvas.setAttribute('height', `${this.size.height}`);
     this.canvas = canvas;
-  }
-
-  drawOnCanvas() {
-    if (!this.canvas) {
-      throw new Error('SpriteGenerator: Canvas not initialized');
-    }
     const context = this.canvas.getContext('2d');
     if (!context) {
       throw new Error('SpriteGenerator: Canvas context not found');
     }
-    context.fillStyle = 'black';
-    context.fillRect(0, 0, this.size.width, this.size.height);
-    this.pixels.forEach(pixel => {
-      if (typeof pixel.rotation === 'number') {
-        this.drawArrow(context, pixel);
-      } else {
-        this.drawRect(context, pixel);
-      }
-    });
+    this.canvasContext = context;
   }
 
-  drawArrow(context: CanvasRenderingContext2D, pixel: ImagePixel) {
+  clear() {
+    this.canvasContext.clearRect(0, 0, this.size.width, this.size.height);
+  }
+
+  drawArrow(pixel: ImagePixel) {
     if (typeof pixel.rotation !== 'number') {
       throw new Error('ImageGenerator drawArrow: pixel rotation undefined');
     }
-    context.strokeStyle = pixel.color;
-    context.translate(this.size.width / 2, this.size.height / 2);
-    context.rotate(-pixel.rotation);
-    context.translate(-this.size.width / 2, -this.size.height / 2);
+    this.canvasContext.strokeStyle = pixel.color;
+    this.canvasContext.translate(this.size.width / 2, this.size.height / 2);
+    this.canvasContext.rotate(-pixel.rotation);
+    this.canvasContext.translate(-this.size.width / 2, -this.size.height / 2);
 
-    context.beginPath();
-    context.moveTo(pixel.x + pixel.size, pixel.y + pixel.size);
-    context.lineTo(pixel.x + pixel.size / 2, pixel.y);
-    context.lineTo(pixel.x, pixel.y + pixel.size);
-    context.stroke();
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(pixel.x + pixel.width, pixel.y + pixel.height);
+    this.canvasContext.lineTo(pixel.x + pixel.width / 2, pixel.y);
+    this.canvasContext.lineTo(pixel.x, pixel.y + pixel.width);
+    this.canvasContext.stroke();
+
+    this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  drawRect(context: CanvasRenderingContext2D, pixel: ImagePixel) {
-    context.fillStyle = pixel.color;
-    context.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+  drawRect(pixel: ImagePixel) {
+    this.canvasContext.fillStyle = pixel.color;
+    this.canvasContext.fillRect(pixel.x, pixel.y, pixel.width, pixel.height);
   }
 }

@@ -108,7 +108,6 @@ export default class ThreeShooter {
   }
 
   changeScene(scene: BasicScene) {
-    hud.updateMap(scene.entitiesContainer.entities);
     hud.show();
     this.currScene = scene;
     this.composer = new EffectComposer(this.renderer);
@@ -127,6 +126,7 @@ export default class ThreeShooter {
       const delta = (time - this.prevTime) / 1000;
       this.renderer.clear();
       this.currScene.update(delta);
+      hud.update();
       this.composer.render(delta);
       this.renderer.clearDepth();
       this.renderer.render(hud.scene, hud.camera);
