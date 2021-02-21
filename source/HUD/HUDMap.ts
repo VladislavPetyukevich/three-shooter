@@ -52,13 +52,7 @@ export class HUDMap {
   drawDungeon() {
     this.isDungeonCellsNeedsUpdate = false;
     console.log('drawDungeon');
-    this.imageGenerator.drawRect({
-      x: 0,
-      y: 0,
-      width: this.imageGenerator.size.width,
-      height: this.imageGenerator.size.height,
-      color: 'black'
-    });
+    this.imageGenerator.clear();
     const cells = this.dungeonCells;
     let cellIndex = -1;
     for (let currY = 0; currY < cells.length; currY++) {
