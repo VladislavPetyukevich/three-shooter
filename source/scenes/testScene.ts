@@ -233,6 +233,7 @@ export class TestScene extends BasicScene {
       if (typeof this.currentRoomIndex === 'number') {
         this.lockUnlockAllDoors(this.currentRoomIndex, false);
         this.onOffLightInRoom(this.currentRoomIndex, true);
+        hud.onPlayerFreeRoom(this.currentRoomIndex);
       }
     }
   }
@@ -310,7 +311,11 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomChange(newCell: number[], newCellIndex: number) {
+    hud.onPlayerChangeRoom(newCellIndex);
     this.currentRoomIndex = newCellIndex;
+    if (this.visitedRooms.has(newCellIndex)) {
+      return;
+    }
     this.visitedRooms.add(newCellIndex);
     this.lockUnlockAllDoors(newCellIndex, true);
     this.fillRoomRandom(newCell[0], newCell[1]);
@@ -320,7 +325,7 @@ export class TestScene extends BasicScene {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCell = this.getPlayerCell();
-    if (playerCell && !this.visitedRooms.has(playerCell.index)) {
+    if (playerCell) {
       this.handleRoomChange(playerCell.value, playerCell.index);
     }
   }

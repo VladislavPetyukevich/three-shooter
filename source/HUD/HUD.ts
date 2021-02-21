@@ -73,6 +73,14 @@ export class HUD {
     this.hudMap.updatePlayerRotation(cameraRotation);
   }
 
+  onPlayerChangeRoom(roomIndex: number) {
+    this.hudMap.updatePlayerRoom(roomIndex);
+  }
+
+  onPlayerFreeRoom(roomIndex: number) {
+    this.hudMap.addFreeRoom(roomIndex);
+  }
+
   handleResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;

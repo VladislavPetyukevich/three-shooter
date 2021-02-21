@@ -1,13 +1,14 @@
 import { Sprite, Texture, Vector3, Euler } from 'three';
+import { HUD } from '@/constants';
 import { ImagePixel, ImageGenerator } from '@/ImageGenerator/ImageGenerator';
 import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
 import { threeTextureLoader } from '@/core/loaders/TextureLoader';
 import { GeneratorCell } from '@/dungeon/DungeonGenerator';
 
 interface HUDMapCollors {
-  wall: string;
-  player: string;
-  background: string;
+  room: string;
+  roomCurrent: string;
+  roomFree: string;
 }
 
 interface HUDMapSettings {
@@ -24,6 +25,9 @@ export class HUDMap {
   playerRotationY: number;
   imageGenerator: ImageGenerator;
   dungeonCells: GeneratorCell[][];
+  visitedRooms: Set<number>;
+  currentRoom: number;
+  currentRoomCellPadding: number;
   isDungeonCellsNeedsUpdate: boolean;
 
   constructor(settings: HUDMapSettings) {
@@ -33,7 +37,10 @@ export class HUDMap {
     this.playerRotationY = 0;
     this.imageGenerator = new ImageGenerator({ width: this.settings.mapSize, height: this.settings.mapSize });
     this.dungeonCells = [];
+    this.visitedRooms = new Set();
+    this.currentRoom = -1;
     this.isDungeonCellsNeedsUpdate = false;
+    this.currentRoomCellPadding = 6;
   }
 
 
@@ -54,20 +61,32 @@ export class HUDMap {
       color: 'black'
     });
     const cells = this.dungeonCells;
+    let cellIndex = -1;
     for (let currY = 0; currY < cells.length; currY++) {
       for (let currX = 0; currX < cells[currY].length; currX++) {
         const cell = cells[currY][currX];
         if (!cell) {
           continue;
         }
-        console.log('cell:', cell);
+        cellIndex++;
+        const cellColor = this.visitedRooms.has(cellIndex) ? HUD.COLORS.roomFree : HUD.COLORS.room;
         this.imageGenerator.drawRect({
           x: cell.position.x,
           y: cell.position.y,
           width: cell.size.width,
           height: cell.size.height,
-          color: 'red'
+          color: cellColor
         });
+        const isCurrentRoom = cellIndex === this.currentRoom;
+        if (isCurrentRoom) {
+          this.imageGenerator.drawRect({
+            x: cell.position.x + this.currentRoomCellPadding,
+            y: cell.position.y + this.currentRoomCellPadding,
+            width: cell.size.width - this.currentRoomCellPadding * 2,
+            height: cell.size.height - this.currentRoomCellPadding * 2,
+            color: HUD.COLORS.roomCurrent
+          });
+        }
       }
     }
 
@@ -76,21 +95,19 @@ export class HUDMap {
     this.drawSprite(wallsMapImageUrl);
   }
 
-  drawPlayer() {
-    const playerPixelSize = this.settings.wallPixelSize * 2;
+  drawPlayer(pixelData: ImagePixel) {
     const playerPixel: ImagePixel = {
-      x: this.settings.renderDistance - playerPixelSize / 2,
-      y: this.settings.renderDistance - playerPixelSize / 2,
-      color: this.settings.colors.player,
-      width: playerPixelSize,
-      height: playerPixelSize,
+      x: pixelData.x,
+      y: pixelData.y,
+      color: pixelData.color,
+      width: pixelData.width,
+      height: pixelData.height,
       rotation: this.playerRotationY
     };
-    this.imageGenerator.clear();
     this.imageGenerator.drawArrow(playerPixel);
-    const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
-    const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
-    this.drawSprite(wallsMapImageUrl);
+    // const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
+    // const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
+    // this.drawSprite(wallsMapImageUrl);
   }
 
   drawSprite(imageUrl: string) {
@@ -106,6 +123,16 @@ export class HUDMap {
 
   updatePlayerRotation(cameraRotation: Euler) {
     this.playerRotationY = cameraRotation.y;
+  }
+
+  updatePlayerRoom(roomIndex: number) {
+    this.currentRoom = roomIndex;
+    this.isDungeonCellsNeedsUpdate = true;
+  }
+
+  addFreeRoom(roomIndex: number) {
+    this.visitedRooms.add(roomIndex);
+    this.isDungeonCellsNeedsUpdate = true;
   }
 
   update() {

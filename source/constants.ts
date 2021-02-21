@@ -83,9 +83,9 @@ export const HUD = {
   MAP_SIZE: 256,
   MAP_RENDER_DISTANCE: 64,
   COLORS: {
-    wall: 'red',
-    player: 'green',
-    background: 'black'
+    room: 'blue',
+    roomCurrent: 'red',
+    roomFree: 'green'
   }
 };
 
