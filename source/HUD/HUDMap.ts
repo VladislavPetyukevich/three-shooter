@@ -1,5 +1,4 @@
 import { Sprite, Texture, Vector3, Euler } from 'three';
-import { HUD } from '@/constants';
 import { ImagePixel, ImageGenerator } from '@/ImageGenerator/ImageGenerator';
 import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
 import { threeTextureLoader } from '@/core/loaders/TextureLoader';
@@ -69,7 +68,9 @@ export class HUDMap {
           continue;
         }
         cellIndex++;
-        const cellColor = this.visitedRooms.has(cellIndex) ? HUD.COLORS.roomFree : HUD.COLORS.room;
+        const cellColor = this.visitedRooms.has(cellIndex) ?
+          this.settings.colors.roomFree :
+          this.settings.colors.room;
         this.imageGenerator.drawRect({
           x: cell.position.x,
           y: cell.position.y,
@@ -84,7 +85,7 @@ export class HUDMap {
             y: cell.position.y + this.currentRoomCellPadding,
             width: cell.size.width - this.currentRoomCellPadding * 2,
             height: cell.size.height - this.currentRoomCellPadding * 2,
-            color: HUD.COLORS.roomCurrent
+            color: this.settings.colors.roomCurrent
           });
         }
       }
