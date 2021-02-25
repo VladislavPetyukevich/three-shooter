@@ -82,10 +82,13 @@ export const PLAYER = {
 export const HUD = {
   MAP_SIZE: 256,
   MAP_RENDER_DISTANCE: 64,
+  STATS_SIZE: 512,
+  STATS_FONT_SIZE: 70,
   COLORS: {
     room: 'blue',
     roomCurrent: 'red',
-    roomFree: 'green'
+    roomFree: 'green',
+    stats: 'blue'
   }
 };
 

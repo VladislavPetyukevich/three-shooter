@@ -103,7 +103,6 @@ export class TestScene extends BasicScene {
     dungeonGenerator.generate();
     this.dungeonCellsPosition = [];
     const cells = dungeonGenerator.cells();
-    hud.updateMap(cells);
     cells.forEach(row => {
       row.forEach(cell => {
         if (!cell) {
@@ -121,6 +120,7 @@ export class TestScene extends BasicScene {
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
       });
     });
+    hud.updateMap(cells, this.dungeonCellsPosition.length);
     const playerX = this.dungeonCellsPosition[0][0] + this.mapCellSize;
     const playerY = this.dungeonCellsPosition[0][1] + this.mapCellSize;
     this.player.actor.mesh.position.x = playerX * this.mapCellSize;

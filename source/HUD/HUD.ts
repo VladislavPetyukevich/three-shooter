@@ -4,6 +4,7 @@ import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS, WALL } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 import { GeneratorCell } from '@/dungeon/DungeonGenerator';
 import { HUDMap } from './HUDMap';
+import { HUDStats } from './HUDStats';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -15,6 +16,7 @@ export class HUD {
   spriteSheet?: SpriteSheet;
   gun: Sprite;
   hudMap: HUDMap;
+  hudStats: HUDStats;
 
   constructor() {
     this.scene = new Scene();
@@ -30,6 +32,11 @@ export class HUD {
       wallPixelSize: WALL.SIZE,
       colors: HUD_CONSTANTS.COLORS
     });
+    this.hudStats = new HUDStats({
+      size: HUD_CONSTANTS.STATS_SIZE,
+      color: HUD_CONSTANTS.COLORS.stats,
+      fontSize: HUD_CONSTANTS.STATS_FONT_SIZE
+    });
     this.handleResize();
   }
 
@@ -37,12 +44,14 @@ export class HUD {
     this.visible = false;
     this.scene.remove(this.gun);
     this.scene.remove(this.hudMap.sprite);
+    this.scene.remove(this.hudStats.sprite);
   }
 
   show() {
     this.visible = true;
     this.scene.add(this.gun);
     this.scene.add(this.hudMap.sprite);
+    this.scene.add(this.hudStats.sprite);
     const gunMaterial = new SpriteMaterial();
     const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
     const gunFireTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunFireFile);
@@ -61,8 +70,9 @@ export class HUD {
     this.spriteSheet && this.spriteSheet.displaySprite(0);
   }
 
-  updateMap(cells: GeneratorCell[][]) {
+  updateMap(cells: GeneratorCell[][], roomsCount: number) {
     this.hudMap.updateDungeon(cells);
+    this.hudStats.init(roomsCount);
   }
 
   onPlayerMove(meshPosition: Vector3) {
@@ -79,6 +89,7 @@ export class HUD {
 
   onPlayerFreeRoom(roomIndex: number) {
     this.hudMap.addFreeRoom(roomIndex);
+    this.hudStats.addFreeRoom();
   }
 
   handleResize() {
@@ -96,10 +107,15 @@ export class HUD {
     const mapY = height - mapScale / 2;
     this.hudMap.sprite.scale.set(mapScale, mapScale, 1);
     this.hudMap.sprite.position.set(mapX, mapY, 1);
+    const statsX = width - mapScale / 2;
+    const statsY = height - mapScale / 2;
+    this.hudStats.sprite.scale.set(mapScale, mapScale, 1);
+    this.hudStats.sprite.position.set(statsX, statsY, 1);
   }
 
   update() {
     this.hudMap.update();
+    this.hudStats.update();
   }
 }
 

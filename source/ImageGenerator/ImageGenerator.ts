@@ -4,7 +4,8 @@ export interface ImagePixel {
   width: number;
   height: number;
   color: string;
-  rotation?: number
+  rotation?: number;
+  content?: string;
 }
 
 export interface ImageSize {
@@ -55,5 +56,18 @@ export class ImageGenerator {
   drawRect(pixel: ImagePixel) {
     this.canvasContext.fillStyle = pixel.color;
     this.canvasContext.fillRect(pixel.x, pixel.y, pixel.width, pixel.height);
+  }
+
+  drawText(imagePixel: ImagePixel) {
+    if (!imagePixel.content) {
+      throw new Error('No content for text');
+    }
+    this.canvasContext.fillStyle = imagePixel.color;
+    this.canvasContext.font = `${imagePixel.width}px Arial`;
+    this.canvasContext.fillText(
+      imagePixel.content,
+      imagePixel.x,
+      imagePixel.y
+    );
   }
 }
