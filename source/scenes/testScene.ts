@@ -7,6 +7,7 @@ import {
   Vector3,
   Fog,
   Light,
+  AmbientLight,
   RepeatWrapping
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
@@ -52,7 +53,7 @@ export class TestScene extends BasicScene {
     this.dungeonCellDoors = [];
 
     // lights
-    // this.scene.add(new AmbientLight(0xFF0000, 1));
+    this.scene.add(new AmbientLight(0xFFFFFF, 1));
     const pointLightColor = 0xFFFFFF;
     const pointLightIntensity = 30;
     const pointLightDistance = 100;
