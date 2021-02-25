@@ -94,6 +94,7 @@ export class ImageGenerator {
       this.canvasContext.fillStyle = imagePixel.color;
       this.canvasContext.fill();
     } else {
+      this.canvasContext.lineWidth = 4;
       this.canvasContext.strokeStyle = imagePixel.color;
       this.canvasContext.stroke();
     }
