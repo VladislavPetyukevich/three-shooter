@@ -108,7 +108,7 @@ export class HUD {
     this.hudMap.sprite.scale.set(mapScale, mapScale, 1);
     this.hudMap.sprite.position.set(mapX, mapY, 1);
     const statsX = width - mapScale / 2;
-    const statsY = height - mapScale / 2;
+    const statsY = -height + mapScale / 2;
     this.hudStats.sprite.scale.set(mapScale, mapScale, 1);
     this.hudStats.sprite.position.set(statsX, statsY, 1);
   }
