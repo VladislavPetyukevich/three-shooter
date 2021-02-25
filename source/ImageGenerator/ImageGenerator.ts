@@ -70,4 +70,32 @@ export class ImageGenerator {
       imagePixel.y
     );
   }
+
+  toRads(angle: number) {
+    return angle * Math.PI / 180;
+  }
+
+  drawCircle(imagePixel: ImagePixel, isFilled: boolean) {
+    const size = imagePixel.height;
+    const angle = 180 * (imagePixel.width / 100);
+    const shiftAngle = 90;
+    const startAngle = this.toRads(-angle + shiftAngle);
+    const endAngle = this.toRads(angle + shiftAngle);
+    this.canvasContext.beginPath();
+    this.canvasContext.arc(
+      imagePixel.x,
+      imagePixel.y,
+      size,
+      startAngle,
+      endAngle,
+      false
+    );
+    if (isFilled) {
+      this.canvasContext.fillStyle = imagePixel.color;
+      this.canvasContext.fill();
+    } else {
+      this.canvasContext.strokeStyle = imagePixel.color;
+      this.canvasContext.stroke();
+    }
+  }
 }

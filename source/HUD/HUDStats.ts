@@ -44,14 +44,20 @@ export class HUDStats {
     this.isStatsNeedsUpdate = false;
     this.imageGenerator.clear();
     const progress = this.clearRoomsCount / this.totalRoomsCount * 100;
-    this.imageGenerator.drawText({
-      x: 0,
-      y: this.settings.fontSize,
-      width: this.settings.fontSize,
-      height: this.settings.fontSize,
-      color: this.settings.color,
-      content: `Progress: ${progress.toFixed(1)}%`
-    });
+    this.imageGenerator.drawCircle({
+      x: 200,
+      y: 200,
+      width: ~~progress,
+      height: 200,
+      color: this.settings.color
+    }, true);
+    this.imageGenerator.drawCircle({
+      x: 200,
+      y: 200,
+      width: 100,
+      height: 200,
+      color: this.settings.color
+    }, false);
 
     const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
     const wallsMapImageUrl = imageUrlGenerator.getImageUrl();

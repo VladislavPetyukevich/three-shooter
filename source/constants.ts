@@ -88,7 +88,7 @@ export const HUD = {
     room: 'blue',
     roomCurrent: 'red',
     roomFree: 'green',
-    stats: 'blue'
+    stats: 'red'
   }
 };
 
