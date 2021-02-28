@@ -31,13 +31,23 @@ export class Enemy extends Entity {
         audioListener: props.audioListener
       })
     );
-    this.hp = 1;
+    this.hp = 3;
     this.velocity = velocity;
   }
 
   onHit() {
-    if ((<EnemyBehavior>this.behavior).stateMachine.not('dead')) {
-      (<EnemyBehavior>this.behavior).death();
+    if (typeof this.hp !== 'number') {
+      return;
+    }
+    this.hp--;
+    if (this.hp > 0) {
+      if ((<EnemyBehavior>this.behavior).stateMachine.not('hurted')) {
+        (<EnemyBehavior>this.behavior).hurt();
+      }
+    } else {
+      if ((<EnemyBehavior>this.behavior).stateMachine.not('dead')) {
+        (<EnemyBehavior>this.behavior).death();
+      }
     }
   }
 
