@@ -39,7 +39,7 @@ export class Enemy extends Entity {
     if (typeof this.hp !== 'number') {
       return;
     }
-    this.hp-= damage;
+    super.onHit(damage);
     if (this.hp > 0) {
       if ((<EnemyBehavior>this.behavior).stateMachine.not('hurted')) {
         (<EnemyBehavior>this.behavior).hurt();
