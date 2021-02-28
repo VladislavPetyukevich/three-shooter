@@ -90,15 +90,15 @@ export class EnemyBehavior implements Behavior {
   randomMovement() {
     const velocityX = this.randomVelocityValue();
     const velocityZ = this.randomVelocityValue();
-    this.velocity.set(
-      velocityX,
-      0,
-      velocityZ
+    const direction = new Vector3(velocityX, 0, velocityZ);
+    this.velocity.copy(
+      direction.normalize().multiplyScalar(ENEMY.WALK_SPEED)
     );
   }
 
   randomVelocityValue() {
-    return (Math.random() > 0.5) ? (ENEMY.WALK_SPEED / 2) : -(ENEMY.WALK_SPEED / 2);
+    const randomVal = Math.random();
+    return (Math.random() > 0.5) ? randomVal : -randomVal;
   }
 
   moveToPlayer() {
