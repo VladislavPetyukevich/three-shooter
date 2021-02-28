@@ -35,11 +35,11 @@ export class Enemy extends Entity {
     this.velocity = velocity;
   }
 
-  onHit() {
+  onHit(damage: number) {
     if (typeof this.hp !== 'number') {
       return;
     }
-    this.hp--;
+    this.hp-= damage;
     if (this.hp > 0) {
       if ((<EnemyBehavior>this.behavior).stateMachine.not('hurted')) {
         (<EnemyBehavior>this.behavior).hurt();
