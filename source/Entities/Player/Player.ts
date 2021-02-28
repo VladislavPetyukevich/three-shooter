@@ -13,6 +13,8 @@ export interface PlayerProps {
 }
 
 export class Player extends Entity {
+  onHitCallback?: Function;
+
   constructor(props: PlayerProps) {
     const actor = new PlayerActor({
       position: new Vector3(props.position.x, props.position.y, props.position.z),
@@ -35,9 +37,21 @@ export class Player extends Entity {
       }),
     );
     this.velocity = velocity;
+    this.hp = PLAYER.HP;
   }
 
   onCollide(entity: Entity) {
     return entity.type !== ENTITY_TYPE.WALL;
+  }
+
+  onHit(damage: number) {
+    super.onHit(damage);
+    if (this.onHitCallback) {
+      this.onHitCallback();
+    }
+  }
+
+  setOnHitCallback(callback: Function) {
+    this.onHitCallback = callback;
   }
 }

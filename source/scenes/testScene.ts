@@ -28,6 +28,7 @@ interface Size {
 
 export class TestScene extends BasicScene {
   pointLight: PointLight;
+  ambientLight: AmbientLight;
   player: Player;
   mapCellSize: number;
   dungeonSize: Size;
@@ -53,7 +54,8 @@ export class TestScene extends BasicScene {
     this.dungeonCellDoors = [];
 
     // lights
-    this.scene.add(new AmbientLight(0xFFFFFF, 1));
+    this.ambientLight = new AmbientLight(0xFFFFFF, 1);
+    this.scene.add(this.ambientLight);
     const pointLightColor = 0xFFFFFF;
     const pointLightIntensity = 30;
     const pointLightDistance = 100;
@@ -94,7 +96,11 @@ export class TestScene extends BasicScene {
         container: this.entitiesContainer,
         audioListener: this.audioListener
       })
-    );
+    ) as Player;
+    this.player.setOnHitCallback(() => {
+      this.ambientLight.color.setHex(0xFF0000);
+      setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
+    });
 
     const dungeonGenerator = new DungeonGenerator({
       dungeonSize: this.dungeonSize,
