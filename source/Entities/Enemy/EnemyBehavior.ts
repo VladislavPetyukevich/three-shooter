@@ -7,6 +7,7 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { audioStore } from '@/core/loaders';
 import { StateMachine } from '@/StateMachine';
+import { randomNumbers } from '@/RandomNumbers';
 
 interface BehaviorProps {
   player: Player;
@@ -97,8 +98,8 @@ export class EnemyBehavior implements Behavior {
   }
 
   randomVelocityValue() {
-    const randomVal = Math.random();
-    return (Math.random() > 0.5) ? randomVal : -randomVal;
+    const randomVal = randomNumbers.getRandom();
+    return (randomNumbers.getRandom() > 0.5) ? randomVal : -randomVal;
   }
 
   moveToPlayer() {
