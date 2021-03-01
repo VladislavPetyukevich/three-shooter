@@ -23,6 +23,7 @@ export class EnemyBehavior implements Behavior {
   actor: EnemyActor;
   randomMovementTimeOut: number;
   hurtTimeOut: number;
+  bulletPositionOffset: number;
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
@@ -37,6 +38,7 @@ export class EnemyBehavior implements Behavior {
     this.actor = props.actor;
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
+    this.bulletPositionOffset = 1.4;
     this.container = props.container;
     this.randomMovementTimeOut = ENEMY.MOVEMENT_TIME_OUT;
     this.hurtTimeOut = 0;
@@ -65,10 +67,12 @@ export class EnemyBehavior implements Behavior {
       0,
       Math.cos(this.actor.mesh.rotation.y) * ENEMY.BULLET_SPEED
     );
+    const offsetX = this.bulletPositionOffset * Math.sin(this.actor.mesh.rotation.y);
+    const offsetZ = this.bulletPositionOffset * Math.cos(this.actor.mesh.rotation.y);
     const bulletPosition = new Vector3(
-      this.actor.mesh.position.x - Math.sin(this.actor.mesh.rotation.y),
+      this.actor.mesh.position.x + offsetX,
       this.actor.mesh.position.y,
-      this.actor.mesh.position.z - Math.cos(this.actor.mesh.rotation.y)
+      this.actor.mesh.position.z + offsetZ
     );
 
     const bullet = new Bullet({
