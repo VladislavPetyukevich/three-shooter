@@ -75,12 +75,16 @@ export class EntitiesContainer {
       return;
     }
 
+    let isEntityCanMove = true;
     collisionsResult.entities.forEach(collideEntity => {
       collideEntity.onCollide(entity);
-      const isEntityCanMove = entity.onCollide(collideEntity);
-      if (isEntityCanMove) {
-        this.collideChecker.updateEntityPosition(entity, newPosition);
+      const collideResult = entity.onCollide(collideEntity);
+      if (!collideResult) {
+        isEntityCanMove = false;
       }
     });
+    if (isEntityCanMove) {
+      this.collideChecker.updateEntityPosition(entity, newPosition);
+    }
   }
 }
