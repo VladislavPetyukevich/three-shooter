@@ -1,18 +1,21 @@
 import { Scene, Mesh, Vector3 } from 'three';
 import { Entity } from './Entity';
 import { CollideChecker2d } from './CollideChecker2d';
+import { CollideCheckerRaycast } from './CollideCheckerRaycast';
 
 export class EntitiesContainer {
   scene: Scene;
   entities: Entity[];
   entitiesMeshes: Mesh[];
   collideChecker: CollideChecker2d;
+  collideCheckerRaycast: CollideCheckerRaycast;
 
   constructor(scene: Scene) {
     this.scene = scene;
     this.entities = [];
     this.entitiesMeshes = [];
     this.collideChecker = new CollideChecker2d({ cellSize: 3 });
+    this.collideCheckerRaycast = new CollideCheckerRaycast(this.scene);
   }
 
   add(entitiy: Entity) {
@@ -48,24 +51,52 @@ export class EntitiesContainer {
         entity.actor.mesh.position.y + entity.velocity.y * delta,
         entity.actor.mesh.position.z
       );
-      this.updateEntityPosition(
-        entity,
-        new Vector3(
-          entity.actor.mesh.position.x + entity.velocity.x * delta,
-          entity.actor.mesh.position.y,
-          entity.actor.mesh.position.z
-        )
-      );
-      this.updateEntityPosition(
-        entity,
-        new Vector3(
-          entity.actor.mesh.position.x,
-          entity.actor.mesh.position.y,
-          entity.actor.mesh.position.z + entity.velocity.z * delta
-        )
-      );
+      const newPositionX = entity.actor.mesh.position.x + entity.velocity.x * delta;
+      const newPositionZ = entity.actor.mesh.position.z + entity.velocity.z * delta;
+      if (delta < 0.066) { // > 15 fps
+        this.updateEntityPosition(
+          entity,
+          new Vector3(
+            newPositionX,
+            entity.actor.mesh.position.y,
+            entity.actor.mesh.position.z
+          )
+        );
+        this.updateEntityPosition(
+          entity,
+          new Vector3(
+            entity.actor.mesh.position.x,
+            entity.actor.mesh.position.y,
+            newPositionZ
+          )
+        );
+      } else {
+        this.updateEntityPositionRaycast(
+          entity,
+          new Vector3(
+            newPositionX,
+            entity.actor.mesh.position.y,
+            entity.actor.mesh.position.z
+          )
+        );
+        this.updateEntityPositionRaycast(
+          entity,
+          new Vector3(
+            entity.actor.mesh.position.x,
+            entity.actor.mesh.position.y,
+            newPositionZ
+          )
+        );
+      }
       entity.update(delta);
     });
+  }
+
+  updateEntityPositionRaycast(entity: Entity, newPosition: Vector3) {
+    const collisionsResult = this.collideCheckerRaycast.detectCollisions(entity, newPosition);
+    if (collisionsResult.length === 0) {
+      this.collideChecker.updateEntityPosition(entity, newPosition);
+    }
   }
 
   updateEntityPosition(entity: Entity, newPosition: Vector3) {
