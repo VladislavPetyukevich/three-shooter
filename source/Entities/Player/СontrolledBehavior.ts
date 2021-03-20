@@ -7,6 +7,7 @@ import { PI_2, KEYBOARD_KEY, PLAYER } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 import { hud } from '@/HUD/HUD';
+import { globalSettings } from '@/GlobalSettings';
 
 interface СontrolledBehaviorProps {
   actor: Actor;
@@ -31,8 +32,11 @@ export class СontrolledBehavior implements Behavior {
   targetVelocity: Vector3;
   velocity: Vector3;
   gun: Gun;
+  mouseSensitivity: number;
 
   constructor(props: СontrolledBehaviorProps) {
+    this.mouseSensitivity = globalSettings.getMouseSensivity();
+    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.actor = props.actor;
     this.eyeY = props.eyeY;
     this.camera = props.camera;
@@ -54,11 +58,15 @@ export class СontrolledBehavior implements Behavior {
     document.addEventListener('click', this.handleShoot, false);
   }
 
+  onUpdateGlobalSettings = () => {
+    this.mouseSensitivity = globalSettings.getMouseSensivity();
+  }
+
   handleMouseMove = (event: MouseEvent) => {
     // if (this.enabled === false) return;
 
-    var movementX = event.movementX * 0.002;
-    var movementY = event.movementY * 0.002;
+    var movementX = event.movementX * this.mouseSensitivity;
+    var movementY = event.movementY * this.mouseSensitivity;
 
     this.cameraRotationInput.set(
       this.cameraRotationInput.x += movementX,

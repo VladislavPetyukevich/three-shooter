@@ -16,6 +16,7 @@ import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionS
 import { texturesStore, audioStore } from '@/core/loaders';
 import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, gameSounds } from './constants';
+import { globalSettings } from '@/GlobalSettings';
 
 export default class ThreeShooter {
   currScene: BasicScene;
@@ -119,6 +120,10 @@ export default class ThreeShooter {
     const effectFilm = new FilmPass(0.15, 0.015, 648, 0);
     this.composer.addPass(effectFilm);
   }
+
+  updateMouseSensitivity = (value: number) => {
+    globalSettings.setMouseSensivity(value);
+  };
 
   update = () => {
     if (this.enabled || !this.loaded) {

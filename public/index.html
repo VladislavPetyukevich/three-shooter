@@ -13,12 +13,18 @@
 <body>
   <div id="blocker">
     <div id="instructions">
-      <span style="font-size:40px; color: red;">WARNING</span>
+      <div style="font-size:40px; color: red;">WARNING</div>
+      <div>This video game contains fast flashing images</div>
       <br />
-      <span>This video game contains fast flashing images</span>
-      <br /><br />
-      <span style="font-size:25px">Click to play</span>
-      <br /> (W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)
+      <div style="font-size:25px">Click to play</div>
+      <div>(W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)</div>
+      <br />
+      <div id="settings">
+        <div>Game settings:</div>
+        <span>Mouse sensitivity:</span>
+        <input id="mouse-sensitivity" type="range" min="1" max="400" value="200" step="1" >
+        <span id="mouse-sensitivity-value">0.200</span>
+      </div>
     </div>
   </div>
   <div id="render-container" />
@@ -27,6 +33,17 @@
     var blocker = document.getElementById('blocker');
     var instructions = document.getElementById('instructions');
     var renderContainer = document.getElementById('render-container');
+    var settings = document.getElementById('settings');
+    var mouseSensitivity = document.getElementById('mouse-sensitivity');
+    var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
+
+    function updateMouseSensitivityValue(value) {
+      var valueFormated = (value * 100).toFixed(3);
+      var valueNode = document.createTextNode(valueFormated);
+      mouseSensitivityValue.innerHTML = '';
+      mouseSensitivityValue.appendChild(valueNode);
+    }
+
     function onLoad() {
       console.log('game loaded');
     }
@@ -42,6 +59,17 @@
       instructions.style.display = 'none';
       blocker.style.display = 'none';
       renderContainer.requestPointerLock();
+    });
+
+    settings.addEventListener('click', function(event) {
+      event.stopPropagation();
+    });
+
+    mouseSensitivity.addEventListener('input', function(event) {
+      const value = +event.target.value;
+      const newSensitivity = (0.002 * value) / 200;
+      threeShooter.updateMouseSensitivity(newSensitivity);
+      updateMouseSensitivityValue(newSensitivity);
     });
 
     document.addEventListener('pointerlockchange', function (event) {
