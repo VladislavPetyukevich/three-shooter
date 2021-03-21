@@ -33,9 +33,17 @@ export class СontrolledBehavior implements Behavior {
   velocity: Vector3;
   gun: Gun;
   mouseSensitivity: number;
+  sinTable: number[];
+  currentSinTableIndex: number;
+  bobTimeout: number;
+  maxBobTimeout: number;
 
   constructor(props: СontrolledBehaviorProps) {
     this.mouseSensitivity = globalSettings.getMouseSensivity();
+    this.sinTable = this.generateSinTable(1, 0.06);
+    this.currentSinTableIndex = 0;
+    this.bobTimeout = 0;
+    this.maxBobTimeout = 0.001;
     globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.actor = props.actor;
     this.eyeY = props.eyeY;
@@ -62,6 +70,27 @@ export class СontrolledBehavior implements Behavior {
     this.mouseSensitivity = globalSettings.getMouseSensivity();
   }
 
+  generateSinTable(step: number, amplitude: number) {
+    const toRadians = (degrees:number) => {
+      return degrees * (Math.PI / 180);
+    }
+    const sinTable = [];
+    for (let i = 0; i < 360; i+=step) {
+      const sinValue = Math.sin(toRadians(i));
+      sinTable.push(amplitude * sinValue);
+    }
+    return sinTable;
+  }
+
+  getNextSinValue() {
+    if (this.currentSinTableIndex === this.sinTable.length - 1) {
+      this.currentSinTableIndex = 0;
+    } else {
+      this.currentSinTableIndex++;
+    }
+    return this.sinTable[this.currentSinTableIndex];
+  }
+
   handleMouseMove = (event: MouseEvent) => {
     // if (this.enabled === false) return;
 
@@ -78,6 +107,15 @@ export class СontrolledBehavior implements Behavior {
     (<GunBehavior>this.gun.behavior).handleShoot();
   };
 
+  updateBob(delta: number) {
+    this.bobTimeout += delta;
+    if (this.bobTimeout >= this.maxBobTimeout) {
+      this.bobTimeout = 0;
+      const sinValue = this.getNextSinValue();
+      this.camera.position.y = this.actor.mesh.position.y + sinValue;
+    }
+  }
+
   update(delta: number) {
     this.gun.update(delta);
     this.isRunning = false;
@@ -86,7 +124,8 @@ export class СontrolledBehavior implements Behavior {
       hud.onPlayerRotation(this.camera.rotation);
     }
     this.cameraRotationInput.set(0, 0);
-    this.camera.position.copy(this.actor.mesh.position);
+    this.camera.position.x = this.actor.mesh.position.x;
+    this.camera.position.z = this.actor.mesh.position.z;
     const isKeyW = keyboard.key[KEYBOARD_KEY.W];
     const isKeyS = keyboard.key[KEYBOARD_KEY.S];
     const isKeyA = keyboard.key[KEYBOARD_KEY.A];
@@ -124,6 +163,8 @@ export class СontrolledBehavior implements Behavior {
 
     if (this.isRunning) {
       hud.onPlayerMove(this.actor.mesh.position);
+    } else {
+      this.updateBob(delta);
     }
   }
 }
