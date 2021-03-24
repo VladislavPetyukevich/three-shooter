@@ -67,10 +67,41 @@
 
     mouseSensitivity.addEventListener('input', function(event) {
       const value = +event.target.value;
+      updateMouseSensitivity(value);
+    });
+
+    function updateMouseSensitivity(value) {
       const newSensitivity = (0.002 * value) / 200;
       threeShooter.updateMouseSensitivity(newSensitivity);
       updateMouseSensitivityValue(newSensitivity);
-    });
+      saveSettings();
+    }
+
+    var settingsKey = 'settings';
+
+    function saveSettings() {
+      if (!localStorage) {
+        return;
+      }
+      var settings = {
+        mouseSensitivity: +mouseSensitivity.value
+      };
+      localStorage.setItem(settingsKey, JSON.stringify(settings));
+    }
+
+    function loadSetting() {
+      if (!localStorage) {
+        return;
+      }
+      try {
+        var settings = JSON.parse(localStorage.getItem(settingsKey));
+        mouseSensitivity.value = settings.mouseSensitivity;
+        updateMouseSensitivity(settings.mouseSensitivity);
+      } catch {
+        console.error('Falied to load game settings');
+      }
+    }
+    loadSetting();
 
     document.addEventListener('pointerlockchange', function (event) {
       if (document.pointerLockElement != renderContainer) {
