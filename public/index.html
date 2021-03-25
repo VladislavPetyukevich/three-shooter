@@ -23,7 +23,11 @@
         <div>Game settings:</div>
         <span>Mouse sensitivity:</span>
         <input id="mouse-sensitivity" type="range" min="1" max="400" value="200" step="1" >
-        <span id="mouse-sensitivity-value">0.200</span>
+        <span id="mouse-sensitivity-value"></span>
+        <br />
+        <span>Audio volume:</span>
+        <input id="audio-volume" type="range" min="0" max="10" value="10" step="1" >
+        <span id="audio-volume-value"></span>
       </div>
     </div>
   </div>
@@ -36,12 +40,20 @@
     var settings = document.getElementById('settings');
     var mouseSensitivity = document.getElementById('mouse-sensitivity');
     var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
+    var audioVolume = document.getElementById('audio-volume');
+    var audioVolumeValue = document.getElementById('audio-volume-value');
 
     function updateMouseSensitivityValue(value) {
       var valueFormated = (value * 100).toFixed(3);
       var valueNode = document.createTextNode(valueFormated);
       mouseSensitivityValue.innerHTML = '';
       mouseSensitivityValue.appendChild(valueNode);
+    }
+
+    function updateAudioVolumeValue(value) {
+      var valueNode = document.createTextNode(value.toFixed(1));
+      audioVolumeValue.innerHTML = '';
+      audioVolumeValue.appendChild(valueNode);
     }
 
     function onLoad() {
@@ -66,14 +78,26 @@
     });
 
     mouseSensitivity.addEventListener('input', function(event) {
-      const value = +event.target.value;
+      var value = +event.target.value;
       updateMouseSensitivity(value);
     });
 
     function updateMouseSensitivity(value) {
-      const newSensitivity = (0.002 * value) / 200;
+      var newSensitivity = (0.002 * value) / 200;
       threeShooter.updateMouseSensitivity(newSensitivity);
       updateMouseSensitivityValue(newSensitivity);
+      saveSettings();
+    }
+
+    audioVolume.addEventListener('input', function(event) {
+      const value = +event.target.value;
+      updateAudioVolume(value);
+    });
+
+    function updateAudioVolume(value) {
+      var newVolume = value / 10;
+      threeShooter.updateAudioVolume(newVolume);
+      updateAudioVolumeValue(newVolume);
       saveSettings();
     }
 
@@ -84,7 +108,8 @@
         return;
       }
       var settings = {
-        mouseSensitivity: +mouseSensitivity.value
+        mouseSensitivity: +mouseSensitivity.value,
+        audioVolume: +audioVolume.value
       };
       localStorage.setItem(settingsKey, JSON.stringify(settings));
     }
@@ -97,6 +122,8 @@
         var settings = JSON.parse(localStorage.getItem(settingsKey));
         mouseSensitivity.value = settings.mouseSensitivity;
         updateMouseSensitivity(settings.mouseSensitivity);
+        audioVolume.value = settings.audioVolume;
+        updateAudioVolume(settings.audioVolume);
       } catch {
         console.error('Falied to load game settings');
       }

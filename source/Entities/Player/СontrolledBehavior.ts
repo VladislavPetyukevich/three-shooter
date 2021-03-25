@@ -39,7 +39,7 @@ export class СontrolledBehavior implements Behavior {
   maxBobTimeout: number;
 
   constructor(props: СontrolledBehaviorProps) {
-    this.mouseSensitivity = globalSettings.getMouseSensivity();
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
     this.sinTable = this.generateSinTable(1, 0.06);
     this.currentSinTableIndex = 0;
     this.bobTimeout = 0;
@@ -67,7 +67,7 @@ export class СontrolledBehavior implements Behavior {
   }
 
   onUpdateGlobalSettings = () => {
-    this.mouseSensitivity = globalSettings.getMouseSensivity();
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
   }
 
   generateSinTable(step: number, amplitude: number) {

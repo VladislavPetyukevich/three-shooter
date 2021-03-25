@@ -122,7 +122,11 @@ export default class ThreeShooter {
   }
 
   updateMouseSensitivity = (value: number) => {
-    globalSettings.setMouseSensivity(value);
+    globalSettings.setSetting('mouseSensitivity', value);
+  };
+
+  updateAudioVolume = (value: number) => {
+    globalSettings.setSetting('audioVolume', value);
   };
 
   update = () => {

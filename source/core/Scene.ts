@@ -4,6 +4,7 @@ import {
   AudioListener
 } from 'three';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { globalSettings } from '@/GlobalSettings';
 
 export interface BasicSceneProps {
   renderWidth: number;
@@ -21,9 +22,20 @@ export class BasicScene {
     this.camera = new PerspectiveCamera(100, props.renderWidth / props.renderHeight, 0.1, 1000);
 
     this.audioListener = new AudioListener();
+    this.setAudioVolume(globalSettings.getSetting('audioVolume'));
     this.camera.add(this.audioListener);
 
+    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
+
     this.entitiesContainer = new EntitiesContainer(this.scene);
+  }
+
+  onUpdateGlobalSettings = () => {
+    this.setAudioVolume(globalSettings.getSetting('audioVolume'));
+  }
+
+  setAudioVolume(value: number) {
+    this.audioListener.setMasterVolume(value);
   }
 
   update(delta: number) {
