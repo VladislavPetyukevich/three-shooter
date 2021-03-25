@@ -1,6 +1,6 @@
 import {
   Camera,
-  Vector2,
+  Vector3,
   Raycaster,
   PointLight,
   AudioListener,
@@ -12,6 +12,7 @@ import { audioStore } from '@/core/loaders';
 import { ENTITY_TYPE, GAME_SOUND_NAME } from '@/constants';
 import { hud } from '@/HUD/HUD';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
+import { randomNumbers } from '@/RandomNumbers';
 
 interface BehaviorProps {
   playerCamera: Camera;
@@ -53,8 +54,16 @@ export class GunBehavior implements Behavior {
     this.shootSound.play();
 
     hud.gunFire();
-    const raycaster = new Raycaster();
-    raycaster.setFromCamera(new Vector2(), this.playerCamera);
+    const raycasterDirection = new Vector3();
+    this.playerCamera.getWorldDirection(raycasterDirection);
+
+    const angleOffset = randomNumbers.getRandom() / 4 - 0.125;
+    const c = Math.cos(angleOffset);
+    const s = Math.sin(angleOffset);
+    raycasterDirection.x = raycasterDirection.x * c - raycasterDirection.z * s;
+    raycasterDirection.z = raycasterDirection.x * s + raycasterDirection.z * c;
+
+    const raycaster = new Raycaster(this.playerCamera.position, raycasterDirection);
 
     const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);
 
