@@ -1,26 +1,26 @@
-import { Camera, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
-import { ShootMarkActor } from './ShootMarkActor';
-import { ShootMarkBehavior } from './ShootMarkBehavior';
+import { ShootTraceActor } from './ShootTraceActor';
+import { ShootTraceBehavior } from './ShootTraceBehavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 export interface Props {
-  position: Vector3;
-  playerCamera: Camera;
+  startPos: Vector3;
+  endPos: Vector3;
   container: EntitiesContainer;
 }
 
-export class ShootMark extends Entity {
+export class ShootTrace extends Entity {
   lifeTime: number;
   container: EntitiesContainer;
 
   constructor(props: Props) {
-    const actor = new ShootMarkActor({
-      position: props.position,
-      playerCamera: props.playerCamera
+    const actor = new ShootTraceActor({
+      startPos: props.startPos,
+      endPos: props.endPos,
     });
-    const behavior = new ShootMarkBehavior();
+    const behavior = new ShootTraceBehavior();
 
     super(
       ENTITY_TYPE.SHOOT_MARK,
@@ -40,3 +40,4 @@ export class ShootMark extends Entity {
     }
   }
 }
+

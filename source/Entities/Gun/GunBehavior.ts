@@ -12,6 +12,7 @@ import { audioStore } from '@/core/loaders';
 import { ENTITY_TYPE, GAME_SOUND_NAME } from '@/constants';
 import { hud } from '@/HUD/HUD';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
+import { ShootTrace } from '@/Entities/ShootTrace/ShootTrace';
 import { randomNumbers } from '@/RandomNumbers';
 
 interface BehaviorProps {
@@ -79,9 +80,15 @@ export class GunBehavior implements Behavior {
       if (intersectEntity.type === ENTITY_TYPE.WALL) {
         const shootMark = new ShootMark({
           playerCamera: this.playerCamera,
-          position: { x: intersect.point.x, y: intersect.point.y, z: intersect.point.z },
+          position: intersect.point,
           container: this.container
         });
+        const shootTrace = new ShootTrace({
+          endPos: this.playerCamera.position,
+          startPos: intersect.point,
+          container: this.container,
+        });
+        this.container.add(shootTrace);
         this.container.add(shootMark);
         break;
       }
