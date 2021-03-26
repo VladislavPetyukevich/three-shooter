@@ -35,24 +35,16 @@ export const enum ENTITY_TYPE {
   SHOOT_MARK = 'SHOOT_MARK'
 };
 
+const GAME_SPEED = 800;
+const ENEMY_GAME_SPEED = GAME_SPEED / 100;
+const BASE_DISTANCE = 20;
+
 export const WALL = {
   SIZE: 3
 };
 
 export const DOOR = {
   OPEN_SPEED: 15
-};
-
-export const GUN = {
-  BOB_SPEED: 5,
-  BOB_DISTANCE: 0.05
-};
-
-export const BULLET = {
-  LIFE_TIME: 5,
-  MASS: 5,
-  SHAPE_RADIUS: 0.3,
-  COLOR: 'red'
 };
 
 export const FLYING_ENEMY = {
@@ -64,17 +56,17 @@ export const FLYING_ENEMY = {
 };
 
 export const ENEMY = {
-  WALK_SPEED: 2,
-  BULLET_SPEED: 25,
-  MOVEMENT_TIME_OUT: 3,
+  WALK_SPEED: ENEMY_GAME_SPEED * 0.5,
+  BULLET_SPEED: ENEMY_GAME_SPEED * 4,
+  MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.4,
   HURT_TIME_OUT: 0.3,
-  SHOOT_TIME_OUT: 1,
-  ATTACK_DISTANCE: 30
+  SHOOT_TIME_OUT: ENEMY_GAME_SPEED * 0.1,
+  ATTACK_DISTANCE: BASE_DISTANCE
 };
 
 export const PLAYER = {
   HP: 100,
-  WALK_SPEED: 800,
+  WALK_SPEED: GAME_SPEED,
   WALK_INERTIA: 15,
   BODY_WIDTH: 1.5,
   BODY_HEIGHT: 1.5,
