@@ -54,7 +54,7 @@ export class СontrolledBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
-    this.strafeCameraRotation = 2 * PI_180;
+    this.strafeCameraRotation = 1.3 * PI_180;
     this.strafeCameraSpeed = 10;
     this.cameraRotationInput = new Vector2();
     this.container = props.container;
