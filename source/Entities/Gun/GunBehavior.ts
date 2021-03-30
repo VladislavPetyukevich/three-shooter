@@ -83,9 +83,14 @@ export class GunBehavior implements Behavior {
           position: intersect.point,
           container: this.container
         });
+        const shootTraceStartPos = new Vector3(
+          this.playerCamera.position.x,
+          0,
+          this.playerCamera.position.z,
+        );
         const shootTrace = new ShootTrace({
-          endPos: this.playerCamera.position,
-          startPos: intersect.point,
+          startPos: shootTraceStartPos,
+          endPos: intersect.point,
           container: this.container,
         });
         this.container.add(shootTrace);
