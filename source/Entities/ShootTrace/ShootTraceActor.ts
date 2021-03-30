@@ -1,5 +1,6 @@
-import { BufferGeometry, LineBasicMaterial, Mesh, Vector3, Line } from 'three';
+import { BufferGeometry, LineBasicMaterial, Mesh, Vector3, Line, Color } from 'three';
 import { Actor } from '@/core/Entities/Actor';
+import { randomNumbers } from '@/RandomNumbers';
 
 interface ActorProps {
   startPos: Vector3;
@@ -7,10 +8,11 @@ interface ActorProps {
 }
 
 export class ShootTraceActor implements Actor {
+  material: LineBasicMaterial;
   mesh: Mesh;
 
   constructor(props: ActorProps) {
-    const material = new LineBasicMaterial({
+    this.material = new LineBasicMaterial({
       color: 'red',
     });
     const points = [
@@ -18,11 +20,17 @@ export class ShootTraceActor implements Actor {
       props.endPos,
     ];
     const geometry = new BufferGeometry().setFromPoints(points);
-    const line = new Line(geometry, material);
+    const line = new Line(geometry, this.material);
     this.mesh = new Mesh();
     this.mesh.add(line);
   }
 
-  update() {}
+  update() {
+    if (randomNumbers.getRandom() > 0.5) {
+      this.material.color = new Color('red');
+    } else {
+      this.material.color = new Color('white');
+    }
+  }
 }
 
