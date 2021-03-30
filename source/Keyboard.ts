@@ -2,7 +2,7 @@ class Keyboard {
 	key: boolean[];
 
 	constructor() {
-		this.key = [];
+		this.key = Array.from({ length: 222 }, () => false);
 
 		window.addEventListener('keydown', (event) => {
 			this.key[event.keyCode] = true;
@@ -17,3 +17,4 @@ class Keyboard {
 var keyboard = new Keyboard();
 
 export { keyboard };
+

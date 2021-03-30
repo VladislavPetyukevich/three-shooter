@@ -3,7 +3,7 @@ import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY, PLAYER } from '@/constants';
+import { PI_2, KEYBOARD_KEY, PLAYER, PI_180 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 import { hud } from '@/HUD/HUD';
@@ -24,6 +24,8 @@ export class СontrolledBehavior implements Behavior {
   actor: Actor;
   camera: Camera;
   isRunning: boolean;
+  strafeCameraRotation: number;
+  strafeCameraSpeed: number;
   cameraRotationInput: Vector2;
   eyeY: number;
   walkSpeed: number;
@@ -52,6 +54,8 @@ export class СontrolledBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
+    this.strafeCameraRotation = 2 * PI_180;
+    this.strafeCameraSpeed = 10;
     this.cameraRotationInput = new Vector2();
     this.container = props.container;
     this.velocity = props.velocity;
@@ -116,6 +120,18 @@ export class СontrolledBehavior implements Behavior {
     }
   }
 
+  lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
+  }
+
+  lerpCameraRotationZ(targetRotation: number, speed: number) {
+    this.camera.rotation.z = this.lerp(
+      this.camera.rotation.z,
+      targetRotation,
+      speed
+    );
+  }
+
   update(delta: number) {
     this.gun.update(delta);
     this.isRunning = false;
@@ -163,7 +179,24 @@ export class СontrolledBehavior implements Behavior {
 
     if (this.isRunning) {
       hud.onPlayerMove(this.actor.mesh.position);
+      if (isKeyA != isKeyD) {
+        this.lerpCameraRotationZ(
+          isKeyA ? this.strafeCameraRotation : -this.strafeCameraRotation,
+          delta * this.strafeCameraSpeed
+        );
+      } else {
+        this.lerpCameraRotationZ(
+          0,
+          delta * this.strafeCameraSpeed
+        );
+      }
     } else {
+      if (this.camera.rotation.z !== 0) {
+        this.lerpCameraRotationZ(
+          0,
+          delta * this.strafeCameraSpeed
+        );
+      }
       this.updateBob(delta);
     }
   }
