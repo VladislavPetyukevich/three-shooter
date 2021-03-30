@@ -35,7 +35,7 @@ export class ShootTrace extends Entity {
     this.actor.update(delta);
     this.lifeTime += delta;
 
-    if (this.lifeTime >= 0.2) {
+    if (this.lifeTime >= 0.1) {
       this.container.remove(this.actor.mesh);
     }
   }
