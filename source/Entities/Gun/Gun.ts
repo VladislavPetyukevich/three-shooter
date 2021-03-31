@@ -9,6 +9,7 @@ export interface Props {
   playerCamera: Camera;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  shootOffsetAngle: number;
 }
 
 export class Gun extends Entity {
@@ -17,7 +18,8 @@ export class Gun extends Entity {
     const behavior = new GunBehavior({
       container: props.container,
       playerCamera: props.playerCamera,
-      audioListener: props.audioListener
+      audioListener: props.audioListener,
+      shootOffsetAngle: props.shootOffsetAngle,
     });
 
     super(

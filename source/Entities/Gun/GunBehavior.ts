@@ -9,7 +9,7 @@ import {
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
-import { ENTITY_TYPE, GAME_SOUND_NAME } from '@/constants';
+import { ENTITY_TYPE, GAME_SOUND_NAME, PI_180 } from '@/constants';
 import { hud } from '@/HUD/HUD';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
 import { ShootTrace } from '@/Entities/ShootTrace/ShootTrace';
@@ -19,6 +19,7 @@ interface BehaviorProps {
   playerCamera: Camera;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  shootOffsetAngle: number;
 }
 
 export class GunBehavior implements Behavior {
@@ -28,6 +29,7 @@ export class GunBehavior implements Behavior {
   audioListener: AudioListener;
   shootSound: Audio;
   isShoot: boolean;
+  shootOffsetRadians: number;
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
@@ -35,6 +37,7 @@ export class GunBehavior implements Behavior {
     this.audioListener = props.audioListener;
     this.shootSound = new Audio(props.audioListener);
     this.isShoot = false;
+    this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
@@ -58,7 +61,9 @@ export class GunBehavior implements Behavior {
     const raycasterDirection = new Vector3();
     this.playerCamera.getWorldDirection(raycasterDirection);
 
-    const angleOffset = randomNumbers.getRandom() / 4 - 0.125;
+    const angleOffsetX2 = this.shootOffsetRadians * 2;
+    const angleOffset =
+      angleOffsetX2 * randomNumbers.getRandom() - this.shootOffsetRadians;
     const c = Math.cos(angleOffset);
     const s = Math.sin(angleOffset);
     raycasterDirection.x = raycasterDirection.x * c - raycasterDirection.z * s;
