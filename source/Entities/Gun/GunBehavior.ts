@@ -20,6 +20,7 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   shootOffsetAngle: number;
+  bulletsPerShoot: number;
 }
 
 export class GunBehavior implements Behavior {
@@ -30,6 +31,7 @@ export class GunBehavior implements Behavior {
   shootSound: Audio;
   isShoot: boolean;
   shootOffsetRadians: number;
+  bulletsPerShoot: number;
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
@@ -38,6 +40,7 @@ export class GunBehavior implements Behavior {
     this.shootSound = new Audio(props.audioListener);
     this.isShoot = false;
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
+    this.bulletsPerShoot = props.bulletsPerShoot;
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
@@ -58,6 +61,12 @@ export class GunBehavior implements Behavior {
     this.shootSound.play();
 
     hud.gunFire();
+    for (let i = this.bulletsPerShoot; i--;) {
+      this.shootRaycast();
+    }
+  };
+
+  shootRaycast() {
     const raycasterDirection = new Vector3();
     this.playerCamera.getWorldDirection(raycasterDirection);
 
@@ -107,7 +116,7 @@ export class GunBehavior implements Behavior {
         break;
       }
     }
-  };
+  }
 
   update() {
     if (this.isShoot && !this.shootSound.isPlaying) {

@@ -64,7 +64,8 @@ export class СontrolledBehavior implements Behavior {
       container: props.container,
       playerCamera: props.camera,
       audioListener: props.audioListener,
-      shootOffsetAngle: 3
+      shootOffsetAngle: 3,
+      bulletsPerShoot: 2,
     });
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
