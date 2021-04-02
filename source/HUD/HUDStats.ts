@@ -1,7 +1,5 @@
-import { Sprite, Texture } from 'three';
+import { Sprite, CanvasTexture } from 'three';
 import { ImageGenerator } from '@/ImageGenerator/ImageGenerator';
-import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
-import { threeTextureLoader } from '@/core/loaders/TextureLoader';
 
 interface HUDStatsSettings {
   size: number;
@@ -59,16 +57,11 @@ export class HUDStats {
       color: this.settings.color
     }, false);
 
-    const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
-    const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
-    this.drawSprite(wallsMapImageUrl);
+    this.drawSprite(this.imageGenerator.canvas);
   }
 
-  drawSprite(imageUrl: string) {
-    threeTextureLoader.load(imageUrl, (texture: Texture) => {
-      this.sprite.material.map = texture;
-      this.sprite.material.needsUpdate = true;
-    });
+  drawSprite(canvas: HTMLCanvasElement) {
+    this.sprite.material.map = new CanvasTexture(canvas);
   }
 
   update() {

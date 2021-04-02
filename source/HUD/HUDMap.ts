@@ -1,7 +1,5 @@
-import { Sprite, Texture, Vector3, Euler } from 'three';
+import { Sprite, CanvasTexture, Vector3, Euler } from 'three';
 import { ImagePixel, ImageGenerator } from '@/ImageGenerator/ImageGenerator';
-import { ImageUrlGenerator } from '@/ImageGenerator/ImageUrlGenerator';
-import { threeTextureLoader } from '@/core/loaders/TextureLoader';
 import { GeneratorCell } from '@/dungeon/DungeonGenerator';
 
 interface HUDMapCollors {
@@ -44,14 +42,12 @@ export class HUDMap {
 
 
   updateDungeon(cells: GeneratorCell[][]) {
-    console.log('cells:', cells);
     this.dungeonCells = cells;
     this.isDungeonCellsNeedsUpdate = true;
   }
 
   drawDungeon() {
     this.isDungeonCellsNeedsUpdate = false;
-    console.log('drawDungeon');
     this.imageGenerator.clear();
     const cells = this.dungeonCells;
     let cellIndex = -1;
@@ -85,9 +81,7 @@ export class HUDMap {
       }
     }
 
-    const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
-    const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
-    this.drawSprite(wallsMapImageUrl);
+    this.drawSprite(this.imageGenerator.canvas);
   }
 
   drawPlayer(pixelData: ImagePixel) {
@@ -100,16 +94,10 @@ export class HUDMap {
       rotation: this.playerRotationY
     };
     this.imageGenerator.drawArrow(playerPixel);
-    // const imageUrlGenerator = new ImageUrlGenerator(this.imageGenerator);
-    // const wallsMapImageUrl = imageUrlGenerator.getImageUrl();
-    // this.drawSprite(wallsMapImageUrl);
   }
 
-  drawSprite(imageUrl: string) {
-    threeTextureLoader.load(imageUrl, (texture: Texture) => {
-      this.sprite.material.map = texture;
-      this.sprite.material.needsUpdate = true;
-    });
+  drawSprite(canvas: HTMLCanvasElement) {
+    this.sprite.material.map = new CanvasTexture(canvas);
   }
 
   updatePlayerPosition(meshPosition: Vector3) {
@@ -131,7 +119,6 @@ export class HUDMap {
   }
 
   update() {
-    // this.drawDungeon();
     if (this.isDungeonCellsNeedsUpdate) {
       this.drawDungeon();
     }
