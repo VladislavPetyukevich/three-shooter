@@ -17,6 +17,7 @@ import { Player } from '@/Entities/Player/Player';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
+import { Trigger } from '@/Entities/Trigger/Trigger';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
@@ -124,6 +125,7 @@ export class TestScene extends BasicScene {
         );
         const roomLight = this.spawnLightInRoom(cell.position.x, cell.position.y);
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
+        this.spawnRoomTrigger(cell.position.x, cell.position.y);
       });
     });
     hud.updateMap(cells, this.dungeonCellsPosition.length);
@@ -273,6 +275,20 @@ export class TestScene extends BasicScene {
     return pointLight;
   }
 
+  spawnRoomTrigger(roomX: number, roomY: number) {
+    const x = roomX + ~~(this.dungeonRoomSize.width / 2);
+    const y = roomY + ~~(this.dungeonRoomSize.height / 2);
+    const sceneCoordinates = this.convertToSceneCoordinates({ x: x, y: y });
+    this.entitiesContainer.add(new Trigger({
+      size: new Vector3(3, 3, 3),
+      position: new Vector3(
+        sceneCoordinates.x, PLAYER.BODY_HEIGHT, sceneCoordinates.y
+      ),
+      entitiesContainer: this.entitiesContainer,
+      onTrigger: this.onRoomTrigger,
+    }));
+  }
+
   onOffLightInRoom(roomIndex: number, isOn: boolean) {
     const lightId = this.dungeonCellsPositionToLight[roomIndex];
     const light = this.scene.getObjectById(lightId) as Light;
@@ -305,9 +321,6 @@ export class TestScene extends BasicScene {
     const playerCellY = ~~(this.player.actor.mesh.position.z / this.mapCellSize);
     const roomPadding = 3;
     for(let i = this.dungeonCellsPosition.length; i--;) {
-      if (i === this.currentRoomIndex) {
-        continue;
-      }
       const cell = this.dungeonCellsPosition[i];
       const inX = (playerCellX > cell[0] + roomPadding) && (playerCellX < cell[2] - roomPadding);
       const inY = (playerCellY > cell[1] + roomPadding) && (playerCellY < cell[3] - roomPadding);
@@ -317,23 +330,32 @@ export class TestScene extends BasicScene {
     }
   }
 
-  handleRoomChange(newCell: number[], newCellIndex: number) {
-    hud.onPlayerChangeRoom(newCellIndex);
+  onRoomTrigger = () => {
+    const playerCell = this.getPlayerCell();
+    if (!playerCell) {
+      return;
+    }
+    const newCell = playerCell.value;
+    hud.onPlayerChangeRoom(playerCell.index);
+    this.fillRoomRandom(newCell[0], newCell[1]);
+  };
+
+  handleRoomChange(newCellIndex: number) {
     this.currentRoomIndex = newCellIndex;
+    hud.onPlayerChangeRoom(newCellIndex);
     if (this.visitedRooms.has(newCellIndex)) {
       return;
     }
     this.visitedRooms.add(newCellIndex);
     this.lockUnlockAllDoors(newCellIndex, true);
-    this.fillRoomRandom(newCell[0], newCell[1]);
   }
 
   update(delta: number) {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCell = this.getPlayerCell();
-    if (playerCell) {
-      this.handleRoomChange(playerCell.value, playerCell.index);
+    if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
+      this.handleRoomChange(playerCell.index);
     }
   }
 }

@@ -32,7 +32,8 @@ export const enum ENTITY_TYPE {
   DOOR = 'DOOR',
   ENEMY = 'ENEMY',
   GUN = 'GUN',
-  SHOOT_MARK = 'SHOOT_MARK'
+  SHOOT_MARK = 'SHOOT_MARK',
+  TRIGGER = 'TRIGGER',
 };
 
 const GAME_SPEED = 800;
