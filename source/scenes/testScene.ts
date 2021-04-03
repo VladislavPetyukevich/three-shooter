@@ -320,7 +320,7 @@ export class TestScene extends BasicScene {
   getPlayerCell() {
     const playerCellX = ~~(this.player.actor.mesh.position.x / this.mapCellSize);
     const playerCellY = ~~(this.player.actor.mesh.position.z / this.mapCellSize);
-    const roomPadding = 3;
+    const roomPadding = 1;
     for(let i = this.dungeonCellsPosition.length; i--;) {
       const cell = this.dungeonCellsPosition[i];
       const inX = (playerCellX > cell[0] + roomPadding) && (playerCellX < cell[2] - roomPadding);
