@@ -12,7 +12,7 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { PLAYER, WALL, GAME_TEXTURE_NAME } from '@/constants';
+import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Wall } from '@/Entities/Wall/Wall';
 import { Door } from '@/Entities/Door/Door';
@@ -90,6 +90,7 @@ export class TestScene extends BasicScene {
     roofMesh.position.y = WALL.SIZE;
     this.scene.add(roofMesh);
 
+    this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
       new Player({
         camera: this.camera,
