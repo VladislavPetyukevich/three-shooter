@@ -36,7 +36,7 @@ export const enum ENTITY_TYPE {
   TRIGGER = 'TRIGGER',
 };
 
-const GAME_SPEED = 800;
+const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 100;
 const BASE_DISTANCE = 20;
 
