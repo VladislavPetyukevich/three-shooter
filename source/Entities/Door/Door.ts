@@ -43,6 +43,7 @@ export class Door extends Entity {
       actor,
       behavior
     );
+    this.actor.mesh.renderOrder = 1;
     behavior.onOpen = () => this.onOpen();
     behavior.onClose = () => this.onClose();
     this.container = props.container;
