@@ -243,7 +243,6 @@ export class TestScene extends BasicScene {
       if (typeof this.currentRoomIndex === 'number') {
         this.lockUnlockAllDoors(this.currentRoomIndex, false);
         this.onOffLightInRoom(this.currentRoomIndex, true);
-        hud.onPlayerFreeRoom(this.currentRoomIndex);
       }
     }
   }
@@ -338,6 +337,7 @@ export class TestScene extends BasicScene {
     }
     const newCell = playerCell.value;
     hud.onPlayerChangeRoom(playerCell.index);
+    hud.onPlayerFreeRoom(playerCell.index);
     this.fillRoomRandom(newCell[0], newCell[1]);
   };
 
