@@ -24,6 +24,7 @@ export default class ThreeShooter {
   prevTime: number;
   enabled: boolean;
   loaded: boolean;
+  pixelRatio: number;
   renderer: WebGLRenderer;
   composer: EffectComposer;
 
@@ -35,9 +36,10 @@ export default class ThreeShooter {
     this.loaded = false;
     this.loadTextures(props);
 
+    this.pixelRatio = 1;
     this.renderer = new WebGLRenderer();
     this.renderer.setSize(props.renderWidth, props.renderHeight);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.autoClear = false;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = BasicShadowMap;
