@@ -20,6 +20,7 @@ import { globalSettings } from '@/GlobalSettings';
 
 export default class ThreeShooter {
   currScene: BasicScene;
+  loadedScene?: BasicScene;
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
@@ -82,11 +83,12 @@ export default class ThreeShooter {
           return;
         }
         this.loaded = true;
-        this.changeScene(
-          new TestScene(gameProps)
-        );
+        if (this.loadedScene) {
+          this.changeScene(this.loadedScene);
+        }
         document.removeEventListener('pointerlockchange', pointerlockHandler);
       };
+      this.loadScene(TestScene, gameProps);
       document.addEventListener('pointerlockchange', pointerlockHandler);
       gameProps.onLoad();
     };
@@ -108,6 +110,10 @@ export default class ThreeShooter {
     };
     imageScaler.scaleImages(gameTextures, onImagesScale, onImagesScaleProgress);
     audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
+  }
+
+  loadScene(constructor: typeof BasicScene, gameProps: any) {
+    this.loadedScene = new constructor(gameProps);
   }
 
   changeScene(scene: BasicScene) {
