@@ -96,9 +96,7 @@ export class HUD {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
-    const gunMaxScaleWidth = width * 0.5;
-    const gunMaxScaleHeight = height * 0.5;
-    const gunScale = Math.max(gunMaxScaleWidth, gunMaxScaleHeight);
+    const gunScale = height * 0.75;
     this.gun.scale.set(gunScale, gunScale, 1);
     this.gun.position.set(0.5, -height + gunScale / 2, 1);
 
