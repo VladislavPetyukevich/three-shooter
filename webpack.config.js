@@ -82,6 +82,10 @@ const common = {
             }
           }
         ]
+      },
+      {
+        test: /\.glsl$/i,
+        use: 'raw-loader'
       }
     ]
   }
