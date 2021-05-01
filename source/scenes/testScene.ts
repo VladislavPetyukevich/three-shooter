@@ -8,7 +8,10 @@ import {
   Fog,
   Light,
   AmbientLight,
-  RepeatWrapping
+  RepeatWrapping,
+  ShaderMaterial,
+  BackSide,
+  SphereBufferGeometry,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -21,6 +24,8 @@ import { Trigger } from '@/Entities/Trigger/Trigger';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
+import skyboxFragmentShader from './skyboxFragmentShader.glsl';
+import skyboxVertexShader from './skyboxVertexShader.glsl';
 
 interface Size {
   width: number;
@@ -41,9 +46,12 @@ export class TestScene extends BasicScene {
   dungeonRoomEnimiesCount: number;
   doors: Door[];
   visitedRooms: Set<number>;
+  skyboxMaterial: ShaderMaterial;
+  timeStart: number;
 
   constructor(props: BasicSceneProps) {
     super(props);
+    this.timeStart = Date.now();
     this.mapCellSize = 3;
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomSize = { width: 20, height: 20 };
@@ -83,12 +91,17 @@ export class TestScene extends BasicScene {
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
 
-    const roofGeometry = new PlaneGeometry(1000, 1000);
-    roofGeometry.applyMatrix(new Matrix4().makeRotationX(Math.PI / 2));
-    const roofMaterial = new MeshPhongMaterial({ color: 'white' });
-    const roofMesh = new Mesh(roofGeometry, roofMaterial);
-    roofMesh.position.y = WALL.SIZE;
-    this.scene.add(roofMesh);
+    const skyboxSize = 1500;
+    const skyboxGeometry = new SphereBufferGeometry(skyboxSize, 500, 500);
+    this.skyboxMaterial = new ShaderMaterial({
+      uniforms: { time: { type: 'f', value: 0.0 } },
+      vertexShader: skyboxVertexShader,
+      fragmentShader: skyboxFragmentShader,
+      side: BackSide
+    });
+    const skyboxMesh = new Mesh(skyboxGeometry, this.skyboxMaterial);
+    skyboxMesh.position.y = skyboxSize / 2;
+    this.scene.add(skyboxMesh);
 
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -354,6 +367,7 @@ export class TestScene extends BasicScene {
   update(delta: number) {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
+    this.skyboxMaterial.uniforms['time'].value = .00025 * (Date.now() - this.timeStart);
     const playerCell = this.getPlayerCell();
     if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
       this.handleRoomChange(playerCell.index);
