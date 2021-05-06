@@ -17,6 +17,10 @@ export class HUD {
   gun: Sprite;
   hudMap: HUDMap;
   hudStats: HUDStats;
+  sinTable: number[];
+  currentSinTableIndex: number;
+  bobTimeout: number;
+  maxBobTimeout: number;
 
   constructor() {
     this.scene = new Scene();
@@ -38,6 +42,22 @@ export class HUD {
       fontSize: HUD_CONSTANTS.STATS_FONT_SIZE
     });
     this.handleResize();
+    this.sinTable = this.generateSinTable(10, 1.8);
+    this.currentSinTableIndex = 0;
+    this.bobTimeout = 0;
+    this.maxBobTimeout = 0.001;
+  }
+
+  generateSinTable(step: number, amplitude: number) {
+    const toRadians = (degrees:number) => {
+      return degrees * (Math.PI / 180);
+    }
+    const sinTable = [];
+    for (let i = 0; i < 360; i+=step) {
+      const sinValue = Math.sin(toRadians(i));
+      sinTable.push(amplitude * sinValue);
+    }
+    return sinTable;
   }
 
   hide() {
@@ -68,6 +88,24 @@ export class HUD {
 
   gunIdle() {
     this.spriteSheet && this.spriteSheet.displaySprite(0);
+  }
+
+  gunBob(delta: number) {
+    this.bobTimeout += delta;
+    if (this.bobTimeout >= this.maxBobTimeout) {
+      this.bobTimeout = 0;
+      const sinValue = this.getNextSinValue();
+      this.gun.translateY(-sinValue);
+    }
+  }
+
+  getNextSinValue() {
+    if (this.currentSinTableIndex === this.sinTable.length - 1) {
+      this.currentSinTableIndex = 0;
+    } else {
+      this.currentSinTableIndex++;
+    }
+    return this.sinTable[this.currentSinTableIndex];
   }
 
   updateMap(cells: GeneratorCell[][], roomsCount: number) {

@@ -181,6 +181,7 @@ export class СontrolledBehavior implements Behavior {
 
     if (this.isRunning) {
       hud.onPlayerMove(this.actor.mesh.position);
+      hud.gunBob(delta);
       if (isKeyA != isKeyD) {
         this.lerpCameraRotationZ(
           isKeyA ? this.strafeCameraRotation : -this.strafeCameraRotation,
