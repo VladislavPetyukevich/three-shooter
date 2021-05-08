@@ -56,9 +56,9 @@ return 49.*(dot(m0*m0,vec3(dot(p0,x0),dot(p1,x1),dot(p2,x2)))+dot(m1*m1,vec2(dot
 }
 float fbm(vec4 p){float sum=0.;float amp=1.;float scale=1.;for(int i=0;i<6;i++){sum +=snoise(p*scale)*amp;p.w +=100.;amp *=0.9;scale *=2.0;}return sum;}
 void main() {
-float speed=.01;float scale=.00025;
+float speed=.035;float scale=.00025;
 vec4 p=vec4(vPosition*scale,time*speed);
 float noisy=fbm(p);
-vec4 color=vec4(.5);
+vec4 color=vec4(.1);
 gl_FragColor=vec4(noisy)*color;
 }
