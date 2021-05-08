@@ -40,7 +40,7 @@ export const enum ENTITY_TYPE {
 };
 
 const GAME_SPEED = 1100;
-const ENEMY_GAME_SPEED = GAME_SPEED / 100;
+const ENEMY_GAME_SPEED = GAME_SPEED / 80;
 const BASE_DISTANCE = 20;
 
 export const WALL = {
