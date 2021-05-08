@@ -21,6 +21,7 @@ import { Wall } from '@/Entities/Wall/Wall';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
 import { Trigger } from '@/Entities/Trigger/Trigger';
+import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
@@ -299,6 +300,30 @@ export class TestScene extends BasicScene {
       ),
       entitiesContainer: this.entitiesContainer,
       onTrigger: this.onRoomTrigger,
+    }));
+    this.entitiesContainer.add(new Torch({
+      position: new Vector3(
+        sceneCoordinates.x - 3, 0.5, sceneCoordinates.y
+      ),
+      player: this.player
+    }));
+    this.entitiesContainer.add(new Torch({
+      position: new Vector3(
+        sceneCoordinates.x + 3, 0.5, sceneCoordinates.y
+      ),
+      player: this.player
+    }));
+    this.entitiesContainer.add(new Torch({
+      position: new Vector3(
+        sceneCoordinates.x, 0.5, sceneCoordinates.y - 3
+      ),
+      player: this.player
+    }));
+    this.entitiesContainer.add(new Torch({
+      position: new Vector3(
+        sceneCoordinates.x, 0.5, sceneCoordinates.y + 3
+      ),
+      player: this.player
     }));
   }
 

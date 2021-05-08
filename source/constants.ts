@@ -11,6 +11,9 @@ import enemyDeath from './assets/enemyDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
+import torch from './assets/torch.png';
+import torchFire1 from './assets/torch1.png';
+import torchFire2 from './assets/torch2.png';
 
 export const PI_180 = Math.PI / 180;
 
@@ -105,7 +108,10 @@ export const gameTextures = {
   enemyWalk2,
   enemyDeath,
   shootMark1,
-  shootMark2
+  shootMark2,
+  torch,
+  torchFire1,
+  torchFire2
 };
 
 export const gameSounds = {
@@ -124,7 +130,10 @@ export const enum GAME_TEXTURE_NAME {
   enemyWalk2 = 'enemyWalk2',
   enemyDeath = 'enemyDeath',
   shootMark1 = 'shootMark1',
-  shootMark2 = 'shootMark2'
+  shootMark2 = 'shootMark2',
+  torch = 'torch',
+  torchFire1 = 'torchFire1',
+  torchFire2 = 'torchFire2',
 };
 
 export const enum GAME_SOUND_NAME {
