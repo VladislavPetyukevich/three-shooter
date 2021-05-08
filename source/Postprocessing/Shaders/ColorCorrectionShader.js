@@ -13,9 +13,9 @@ var ColorCorrectionShader = {
 	uniforms: {
 
 		"tDiffuse": { value: null },
-		"powRGB": { value: new Vector3( 2, 2, 2 ) },
+		"powRGB": { value: new Vector3( 2, 2, 2.1 ) },
 		"mulRGB": { value: new Vector3( 1, 1, 1 ) },
-		"addRGB": { value: new Vector3( 0, 0, 0 ) }
+		"addRGB": { value: new Vector3( 0, 0, 0.01 ) }
 
 	},
 
