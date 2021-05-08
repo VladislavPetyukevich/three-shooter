@@ -14,7 +14,7 @@ export class EntitiesContainer {
     this.scene = scene;
     this.entities = [];
     this.entitiesMeshes = [];
-    this.collideChecker = new CollideChecker2d({ cellSize: 3 });
+    this.collideChecker = new CollideChecker2d({ cellSize: 4 });
     this.collideCheckerRaycast = new CollideCheckerRaycast(this.scene);
   }
 
