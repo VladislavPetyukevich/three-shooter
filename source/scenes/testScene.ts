@@ -25,8 +25,6 @@ import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
-import skyboxFragmentShader from './skyboxFragmentShader.glsl';
-import skyboxVertexShader from './skyboxVertexShader.glsl';
 
 interface Size {
   width: number;
@@ -47,7 +45,6 @@ export class TestScene extends BasicScene {
   dungeonRoomEnimiesCount: number;
   doors: Door[];
   visitedRooms: Set<number>;
-  skyboxMaterial: ShaderMaterial;
   timeStart: number;
 
   constructor(props: BasicSceneProps) {
@@ -91,18 +88,6 @@ export class TestScene extends BasicScene {
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
-
-    const skyboxSize = 1500;
-    const skyboxGeometry = new SphereBufferGeometry(skyboxSize, 500, 500);
-    this.skyboxMaterial = new ShaderMaterial({
-      uniforms: { time: { type: 'f', value: 0.0 } },
-      vertexShader: skyboxVertexShader,
-      fragmentShader: skyboxFragmentShader,
-      side: BackSide
-    });
-    const skyboxMesh = new Mesh(skyboxGeometry, this.skyboxMaterial);
-    skyboxMesh.position.y = skyboxSize / 2;
-    this.scene.add(skyboxMesh);
 
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -392,7 +377,6 @@ export class TestScene extends BasicScene {
   update(delta: number) {
     super.update(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
-    this.skyboxMaterial.uniforms['time'].value = .00025 * (Date.now() - this.timeStart);
     const playerCell = this.getPlayerCell();
     if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
       this.handleRoomChange(playerCell.index);
