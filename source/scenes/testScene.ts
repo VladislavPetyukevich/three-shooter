@@ -9,9 +9,6 @@ import {
   Light,
   AmbientLight,
   RepeatWrapping,
-  ShaderMaterial,
-  BackSide,
-  SphereBufferGeometry,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
