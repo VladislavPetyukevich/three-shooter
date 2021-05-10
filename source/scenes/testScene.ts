@@ -41,6 +41,7 @@ export class TestScene extends BasicScene {
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
   doors: Door[];
+  torches: Torch[];
   visitedRooms: Set<number>;
   timeStart: number;
 
@@ -55,6 +56,20 @@ export class TestScene extends BasicScene {
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
     this.doors = [];
+    this.camera.rotation.y = 225 * PI_180;
+    this.player = this.entitiesContainer.add(
+      new Player({
+        camera: this.camera,
+        position: new Vector3(0, PLAYER.BODY_HEIGHT, 0),
+        container: this.entitiesContainer,
+        audioListener: this.audioListener
+      })
+    ) as Player;
+    this.player.setOnHitCallback(() => {
+      this.ambientLight.color.setHex(0xFF0000);
+      setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
+    });
+    this.torches = this.getSceneTorches();
     this.dungeonCellDoors = [];
 
     // lights
@@ -85,20 +100,6 @@ export class TestScene extends BasicScene {
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
-
-    this.camera.rotation.y = 225 * PI_180;
-    this.player = this.entitiesContainer.add(
-      new Player({
-        camera: this.camera,
-        position: new Vector3(0, PLAYER.BODY_HEIGHT, 0),
-        container: this.entitiesContainer,
-        audioListener: this.audioListener
-      })
-    ) as Player;
-    this.player.setOnHitCallback(() => {
-      this.ambientLight.color.setHex(0xFF0000);
-      setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
-    });
 
     const dungeonGenerator = new DungeonGenerator({
       dungeonSize: this.dungeonSize,
@@ -185,6 +186,19 @@ export class TestScene extends BasicScene {
         });
       }
     });
+  }
+
+  getSceneTorches() {
+    const torches: Torch[] = [];
+    for (let i = 4; i--;) {
+      torches.push(
+        this.entitiesContainer.add(new Torch({
+          position: new Vector3(0, -1000, 0),
+          player: this.player
+        }))
+      );
+    }
+    return torches;
   }
 
   addDungeonCellDoor(index: number, door: Door) {
@@ -283,30 +297,6 @@ export class TestScene extends BasicScene {
       entitiesContainer: this.entitiesContainer,
       onTrigger: this.onRoomTrigger,
     }));
-    this.entitiesContainer.add(new Torch({
-      position: new Vector3(
-        sceneCoordinates.x - 3, 0.5, sceneCoordinates.y
-      ),
-      player: this.player
-    }));
-    this.entitiesContainer.add(new Torch({
-      position: new Vector3(
-        sceneCoordinates.x + 3, 0.5, sceneCoordinates.y
-      ),
-      player: this.player
-    }));
-    this.entitiesContainer.add(new Torch({
-      position: new Vector3(
-        sceneCoordinates.x, 0.5, sceneCoordinates.y - 3
-      ),
-      player: this.player
-    }));
-    this.entitiesContainer.add(new Torch({
-      position: new Vector3(
-        sceneCoordinates.x, 0.5, sceneCoordinates.y + 3
-      ),
-      player: this.player
-    }));
   }
 
   onOffLightInRoom(roomIndex: number, isOn: boolean) {
@@ -361,6 +351,22 @@ export class TestScene extends BasicScene {
     this.fillRoomRandom(newCell[0], newCell[1]);
   };
 
+  moveTorchesToRoom(roomIndex: number) {
+    const roomPosSize = this.dungeonCellsPosition[roomIndex];
+    const x = roomPosSize[0] + ~~(this.dungeonRoomSize.width / 2);
+    const y = roomPosSize[1] + ~~(this.dungeonRoomSize.height / 2);
+    const sceneCoordinates = this.convertToSceneCoordinates({ x: x, y: y });
+    this.torches.forEach((torch, index) => {
+      const xShift = (index === 0) ? -3 : (index === 1) ? 3 : 0;
+      const yShift = (index === 2) ? -3 : (index === 3) ? 3 : 0;
+      torch.actor.mesh.position.set(
+        sceneCoordinates.x + xShift,
+        0.5,
+        sceneCoordinates.y + yShift
+      );
+    });
+  }
+
   handleRoomChange(newCellIndex: number) {
     this.currentRoomIndex = newCellIndex;
     hud.onPlayerChangeRoom(newCellIndex);
@@ -369,6 +375,7 @@ export class TestScene extends BasicScene {
     }
     this.visitedRooms.add(newCellIndex);
     this.lockUnlockAllDoors(newCellIndex, true);
+    this.moveTorchesToRoom(newCellIndex);
   }
 
   update(delta: number) {
