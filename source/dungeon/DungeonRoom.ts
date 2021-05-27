@@ -1,3 +1,5 @@
+import { randomNumbers } from '@/RandomNumbers';
+
 export const enum RoomCellType {
   Empty,
   Enemy
@@ -23,6 +25,20 @@ export const rooms: RoomConstructor[] = [
       { position: { x: props.width - 3, y: props.height - 3 }, type: RoomCellType.Enemy },
       { position: { x: props.width - 3, y: 2 }, type: RoomCellType.Enemy },
     ];
-  }
+  },
+  (props: RoomProps) => {
+    const cells: RoomCell[] = [];
+    const step = Math.round(props.width / 4);
+    for (let x = 2; x < props.width - 2; x += step) {
+      cells.push(
+        { position: { x: x, y: props.height - 2 }, type: RoomCellType.Enemy },
+      );
+    }
+    return cells;
+  },
 ];
+
+export const getRandomRoomIndex = () => {
+  return Math.floor(randomNumbers.getRandom() * rooms.length);
+};
 

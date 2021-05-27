@@ -20,12 +20,21 @@ import { Enemy } from '@/Entities/Enemy/Enemy';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
-import { RoomCellType, rooms } from '@/dungeon/DungeonRoom';
+import {
+  RoomCellType,
+  rooms,
+  getRandomRoomIndex
+} from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
 
 interface Size {
   width: number;
   height: number;
+}
+
+interface PlayerCell {
+  index: number;
+  value: number[];
 }
 
 export class TestScene extends BasicScene {
@@ -38,6 +47,7 @@ export class TestScene extends BasicScene {
   dungeonCellsPosition: number[][];
   dungeonCellsPositionToLight: number[];
   dungeonCellDoors: Door[][];
+  dungeonCellRandomRoomIndex: number[];
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
   doors: Door[];
@@ -69,6 +79,7 @@ export class TestScene extends BasicScene {
     });
     this.torches = this.getSceneTorches();
     this.dungeonCellDoors = [];
+    this.dungeonCellRandomRoomIndex = [];
 
     // lights
     this.ambientLight = new AmbientLight(0xFFFFFF, 1);
@@ -122,6 +133,8 @@ export class TestScene extends BasicScene {
         const roomLight = this.spawnLightInRoom(cell.position.x, cell.position.y);
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
         this.spawnRoomTrigger(cell.position.x, cell.position.y);
+        const roomIndex = this.dungeonCellsPosition.length - 1;
+        this.dungeonCellRandomRoomIndex[roomIndex] = getRandomRoomIndex();
       });
     });
     hud.updateMap(cells, this.dungeonCellsPosition.length);
@@ -307,13 +320,14 @@ export class TestScene extends BasicScene {
     }
   }
 
-  fillRoomRandom(roomX: number, roomY: number) {
+  fillRoomRandom(playerCell: PlayerCell) {
     this.dungeonRoomEnimiesCount = 0;
-    const cells = rooms[0](this.dungeonRoomSize);
+    const randomRoomIndex = this.dungeonCellRandomRoomIndex[playerCell.index];
+    const cells = rooms[randomRoomIndex](this.dungeonRoomSize);
     cells.forEach(cell => {
       const sceneCoordinates = this.convertToSceneCoordinates({
-        x: roomX + cell.position.x,
-        y: roomY + cell.position.y
+        x: playerCell.value[0] + cell.position.x,
+        y: playerCell.value[1] + cell.position.y
       });
       switch (cell.type) {
         case RoomCellType.Enemy:
@@ -343,10 +357,9 @@ export class TestScene extends BasicScene {
     if (!playerCell) {
       return;
     }
-    const newCell = playerCell.value;
     hud.onPlayerChangeRoom(playerCell.index);
     hud.onPlayerFreeRoom(playerCell.index);
-    this.fillRoomRandom(newCell[0], newCell[1]);
+    this.fillRoomRandom(playerCell);
   };
 
   moveTorchesToRoom(roomIndex: number) {
