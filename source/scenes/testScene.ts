@@ -43,11 +43,9 @@ export class TestScene extends BasicScene {
   doors: Door[];
   torches: Torch[];
   visitedRooms: Set<number>;
-  timeStart: number;
 
   constructor(props: BasicSceneProps) {
     super(props);
-    this.timeStart = Date.now();
     this.mapCellSize = 3;
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomSize = { width: 20, height: 20 };
