@@ -22,8 +22,8 @@ import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import {
   RoomCellType,
-  rooms,
-  getRandomRoomIndex
+  RoomConstructor,
+  getRandomRoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
 
@@ -47,7 +47,7 @@ export class TestScene extends BasicScene {
   dungeonCellsPosition: number[][];
   dungeonCellsPositionToLight: number[];
   dungeonCellDoors: Door[][];
-  dungeonCellRandomRoomIndex: number[];
+  dungeonRoomConstructors: RoomConstructor[];
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
   doors: Door[];
@@ -79,7 +79,7 @@ export class TestScene extends BasicScene {
     });
     this.torches = this.getSceneTorches();
     this.dungeonCellDoors = [];
-    this.dungeonCellRandomRoomIndex = [];
+    this.dungeonRoomConstructors = [];
 
     // lights
     this.ambientLight = new AmbientLight(0xFFFFFF, 1);
@@ -134,7 +134,11 @@ export class TestScene extends BasicScene {
         this.dungeonCellsPositionToLight[this.dungeonCellsPosition.length - 1] = roomLight.id;
         this.spawnRoomTrigger(cell.position.x, cell.position.y);
         const roomIndex = this.dungeonCellsPosition.length - 1;
-        this.dungeonCellRandomRoomIndex[roomIndex] = getRandomRoomIndex();
+        this.dungeonRoomConstructors[roomIndex] = getRandomRoomConstructor();
+        this.fillRoomRandomBeforeVisit({
+          index: roomIndex,
+          value: [cell.position.x, cell.position.y]
+        });
       });
     });
     hud.updateMap(cells, this.dungeonCellsPosition.length);
@@ -320,10 +324,29 @@ export class TestScene extends BasicScene {
     }
   }
 
-  fillRoomRandom(playerCell: PlayerCell) {
+  fillRoomRandomBeforeVisit(playerCell: PlayerCell) {
+    const roomConstructor = this.dungeonRoomConstructors[playerCell.index];
+    const cells = roomConstructor.constructBeforeVisit(this.dungeonRoomSize);
+    cells.forEach(cell => {
+      const sceneCoordinates = this.convertToSceneCoordinates({
+        x: playerCell.value[0] + cell.position.x,
+        y: playerCell.value[1] + cell.position.y
+      });
+      switch (cell.type) {
+        case RoomCellType.Wall:
+          this.spawnWall(
+            sceneCoordinates,
+            { width: this.mapCellSize, height: this.mapCellSize }
+          );
+          break;
+      }
+    });
+  }
+
+  fillRoomRandomAfterVisit(playerCell: PlayerCell) {
     this.dungeonRoomEnimiesCount = 0;
-    const randomRoomIndex = this.dungeonCellRandomRoomIndex[playerCell.index];
-    const cells = rooms[randomRoomIndex](this.dungeonRoomSize);
+    const roomConstructor = this.dungeonRoomConstructors[playerCell.index];
+    const cells = roomConstructor.constructAfterVisit(this.dungeonRoomSize);
     cells.forEach(cell => {
       const sceneCoordinates = this.convertToSceneCoordinates({
         x: playerCell.value[0] + cell.position.x,
@@ -359,7 +382,7 @@ export class TestScene extends BasicScene {
     }
     hud.onPlayerChangeRoom(playerCell.index);
     hud.onPlayerFreeRoom(playerCell.index);
-    this.fillRoomRandom(playerCell);
+    this.fillRoomRandomAfterVisit(playerCell);
   };
 
   moveTorchesToRoom(roomIndex: number) {
