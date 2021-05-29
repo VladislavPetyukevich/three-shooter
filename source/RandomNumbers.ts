@@ -14,7 +14,7 @@ class RandomNumbers {
 
   getRandom() {
     this.i++;
-    if (this.i > this.values.length - 1) {
+    if (this.i === this.values.length) {
       this.i = 0;
     }
     return this.values[this.i];
