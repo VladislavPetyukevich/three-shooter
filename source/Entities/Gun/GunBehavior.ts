@@ -21,6 +21,7 @@ interface BehaviorProps {
   audioListener: AudioListener;
   shootOffsetAngle: number;
   bulletsPerShoot: number;
+  recoilTime: number;
 }
 
 export class GunBehavior implements Behavior {
@@ -32,6 +33,8 @@ export class GunBehavior implements Behavior {
   isShoot: boolean;
   shootOffsetRadians: number;
   bulletsPerShoot: number;
+  recoilTime: number;
+  currentRecoilTime: number;
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
@@ -41,6 +44,8 @@ export class GunBehavior implements Behavior {
     this.isShoot = false;
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
     this.bulletsPerShoot = props.bulletsPerShoot;
+    this.recoilTime = props.recoilTime;
+    this.currentRecoilTime = 0;
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
@@ -118,19 +123,26 @@ export class GunBehavior implements Behavior {
     }
   }
 
-  update() {
-    if (this.isShoot && !this.shootSound.isPlaying) {
-      this.shootSound.stop();
-      this.isShoot = false;
-      hud.gunIdle();
-      this.gunShootLight.position.set(0, -50, 0);
+  updateRecoil(delta: number) {
+    if (this.currentRecoilTime < this.recoilTime) {
+      this.currentRecoilTime += delta;
+      return;
     }
+    this.currentRecoilTime = 0;
+    this.shootSound.stop();
+    this.isShoot = false;
+    hud.gunIdle();
+    this.gunShootLight.position.set(0, -50, 0);
+  }
+
+  update(delta: number) {
     if (this.isShoot) {
       this.gunShootLight.position.set(
         this.playerCamera.position.x,
         this.playerCamera.position.y,
         this.playerCamera.position.z
       );
+      this.updateRecoil(delta);
     }
   }
 }

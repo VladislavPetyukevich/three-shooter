@@ -11,6 +11,7 @@ export interface Props {
   audioListener: AudioListener;
   shootOffsetAngle: number;
   bulletsPerShoot: number;
+  recoilTime: number;
 }
 
 export class Gun extends Entity {
@@ -22,6 +23,7 @@ export class Gun extends Entity {
       audioListener: props.audioListener,
       shootOffsetAngle: props.shootOffsetAngle,
       bulletsPerShoot: props.bulletsPerShoot,
+      recoilTime: props.recoilTime,
     });
 
     super(

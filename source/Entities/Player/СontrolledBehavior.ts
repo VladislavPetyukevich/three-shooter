@@ -66,6 +66,7 @@ export class СontrolledBehavior implements Behavior {
       audioListener: props.audioListener,
       shootOffsetAngle: 3,
       bulletsPerShoot: 2,
+      recoilTime: 0.2,
     });
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
