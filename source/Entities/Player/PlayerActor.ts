@@ -13,6 +13,7 @@ export class PlayerActor implements Actor {
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
     const material = new MeshBasicMaterial();
     this.mesh = new Mesh(geometry, material);
+    this.mesh.visible = false;
     this.mesh.position.set(
       props.position.x,
       props.position.y,

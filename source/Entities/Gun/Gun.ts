@@ -33,6 +33,10 @@ export class Gun extends Entity {
     );
   }
 
+  checkIsRecoil() {
+    return (<GunBehavior>this.behavior).isShoot;
+  }
+
   update(delta: number) {
     this.behavior.update(delta);
   }

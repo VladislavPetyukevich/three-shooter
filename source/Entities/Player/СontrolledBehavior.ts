@@ -24,6 +24,10 @@ export class СontrolledBehavior implements Behavior {
   actor: Actor;
   camera: Camera;
   isRunning: boolean;
+  isKeyOnward: boolean;
+  isKeyForward: boolean;
+  isKeyLeft: boolean;
+  isKeyRight: boolean;
   strafeCameraRotation: number;
   strafeCameraSpeed: number;
   cameraRotationInput: Vector2;
@@ -54,6 +58,10 @@ export class СontrolledBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
+    this.isKeyOnward = false;
+    this.isKeyForward = false;
+    this.isKeyLeft = false;
+    this.isKeyRight = false;
     this.strafeCameraRotation = 1.3 * PI_180;
     this.strafeCameraSpeed = 10;
     this.cameraRotationInput = new Vector2();
@@ -112,6 +120,7 @@ export class СontrolledBehavior implements Behavior {
 
   handleShoot = () => {
     (<GunBehavior>this.gun.behavior).handleShoot();
+    this.camera.position.y += 0.035;
   };
 
   updateBob(delta: number) {
@@ -137,39 +146,55 @@ export class СontrolledBehavior implements Behavior {
 
   update(delta: number) {
     this.gun.update(delta);
-    this.isRunning = false;
+    this.updateCamera();
+    this.updateKeysState();
+    this.updateVelocity(delta);
+    this.updatePlayerBob(delta);
+    hud.onPlayerMove(this.actor.mesh.position);
+  }
+
+  updateCamera() {
     if (this.cameraRotationInput.x) {
       this.camera.rotation.y -= this.cameraRotationInput.x;
-      hud.onPlayerRotation(this.camera.rotation);
     }
     this.cameraRotationInput.set(0, 0);
     this.camera.position.x = this.actor.mesh.position.x;
     this.camera.position.z = this.actor.mesh.position.z;
-    const isKeyW = keyboard.key[KEYBOARD_KEY.W];
-    const isKeyS = keyboard.key[KEYBOARD_KEY.S];
-    const isKeyA = keyboard.key[KEYBOARD_KEY.A];
-    const isKeyD = keyboard.key[KEYBOARD_KEY.D];
-    const moveDirection = new Vector3();
+  }
 
-    if (!this.isRunning && !isKeyW && !isKeyS && !isKeyA && !isKeyD) {
+  updateKeysState() {
+    this.isKeyOnward = keyboard.key[KEYBOARD_KEY.W];
+    this.isKeyForward = keyboard.key[KEYBOARD_KEY.S];
+    this.isKeyLeft = keyboard.key[KEYBOARD_KEY.A];
+    this.isKeyRight = keyboard.key[KEYBOARD_KEY.D];
+    this.isRunning =
+      this.isKeyOnward ||
+      this.isKeyForward ||
+      this.isKeyLeft ||
+      this.isKeyRight;
+  }
+
+  updateVelocity(delta: number) {
+    const moveDirection = new Vector3();
+    if (!this.isRunning) {
       this.targetVelocity.set(0, 0, 0);
     } else {
-      if (isKeyW) {
+      if (this.isKeyOnward) {
         this.isRunning = true;
         moveDirection.x -= Math.sin(this.camera.rotation.y);
         moveDirection.z -= Math.cos(this.camera.rotation.y);
       }
-      if (isKeyS) {
+      if (this.isKeyForward) {
         this.isRunning = true;
         moveDirection.x += Math.sin(this.camera.rotation.y);
         moveDirection.z += Math.cos(this.camera.rotation.y);
       }
-      if (isKeyA) {
+      if (this.isKeyLeft) {
         this.isRunning = true;
         moveDirection.x += Math.sin(this.camera.rotation.y - PI_2);
         moveDirection.z += Math.cos(this.camera.rotation.y - PI_2);
       }
-      if (isKeyD) {
+      if (this.isKeyRight) {
         this.isRunning = true;
         moveDirection.x += Math.sin(this.camera.rotation.y + PI_2);
         moveDirection.z += Math.cos(this.camera.rotation.y + PI_2);
@@ -179,13 +204,18 @@ export class СontrolledBehavior implements Behavior {
       moveDirection.normalize().multiplyScalar(this.walkSpeed * delta)
     );
     this.velocity.lerp(this.targetVelocity, delta * PLAYER.WALK_INERTIA);
+  }
 
+  updatePlayerBob(delta: number) {
+    const isGunRecoil = this.gun.checkIsRecoil();
     if (this.isRunning) {
-      hud.onPlayerMove(this.actor.mesh.position);
       hud.gunBob(delta);
-      if (isKeyA != isKeyD) {
+      if (!isGunRecoil && this.camera.position.y > this.eyeY) {
+        this.camera.position.y = this.eyeY;
+      }
+      if (this.isKeyLeft != this.isKeyRight) {
         this.lerpCameraRotationZ(
-          isKeyA ? this.strafeCameraRotation : -this.strafeCameraRotation,
+          this.isKeyLeft ? this.strafeCameraRotation : -this.strafeCameraRotation,
           delta * this.strafeCameraSpeed
         );
       } else {
@@ -201,7 +231,9 @@ export class СontrolledBehavior implements Behavior {
           delta * this.strafeCameraSpeed
         );
       }
-      this.updateBob(delta);
+      if (!isGunRecoil) {
+        this.updateBob(delta);
+      }
     }
   }
 }
