@@ -35,6 +35,7 @@ export class СontrolledBehavior implements Behavior {
   walkSpeed: number;
   cameraSpeed: number;
   container: EntitiesContainer;
+  moveDirection: Vector3;
   targetVelocity: Vector3;
   velocity: Vector3;
   gun: Gun;
@@ -68,6 +69,7 @@ export class СontrolledBehavior implements Behavior {
     this.container = props.container;
     this.velocity = props.velocity;
     this.targetVelocity = new Vector3();
+    this.moveDirection = new Vector3();
     this.gun = new Gun({
       container: props.container,
       playerCamera: props.camera,
@@ -175,33 +177,33 @@ export class СontrolledBehavior implements Behavior {
   }
 
   updateVelocity(delta: number) {
-    const moveDirection = new Vector3();
+    this.moveDirection.set(0, 0, 0);
     if (!this.isRunning) {
       this.targetVelocity.set(0, 0, 0);
     } else {
       if (this.isKeyOnward) {
         this.isRunning = true;
-        moveDirection.x -= Math.sin(this.camera.rotation.y);
-        moveDirection.z -= Math.cos(this.camera.rotation.y);
+        this.moveDirection.x -= Math.sin(this.camera.rotation.y);
+        this.moveDirection.z -= Math.cos(this.camera.rotation.y);
       }
       if (this.isKeyForward) {
         this.isRunning = true;
-        moveDirection.x += Math.sin(this.camera.rotation.y);
-        moveDirection.z += Math.cos(this.camera.rotation.y);
+        this.moveDirection.x += Math.sin(this.camera.rotation.y);
+        this.moveDirection.z += Math.cos(this.camera.rotation.y);
       }
       if (this.isKeyLeft) {
         this.isRunning = true;
-        moveDirection.x += Math.sin(this.camera.rotation.y - PI_2);
-        moveDirection.z += Math.cos(this.camera.rotation.y - PI_2);
+        this.moveDirection.x += Math.sin(this.camera.rotation.y - PI_2);
+        this.moveDirection.z += Math.cos(this.camera.rotation.y - PI_2);
       }
       if (this.isKeyRight) {
         this.isRunning = true;
-        moveDirection.x += Math.sin(this.camera.rotation.y + PI_2);
-        moveDirection.z += Math.cos(this.camera.rotation.y + PI_2);
+        this.moveDirection.x += Math.sin(this.camera.rotation.y + PI_2);
+        this.moveDirection.z += Math.cos(this.camera.rotation.y + PI_2);
       }
     }
     this.targetVelocity.copy(
-      moveDirection.normalize().multiplyScalar(this.walkSpeed * delta)
+      this.moveDirection.normalize().multiplyScalar(this.walkSpeed * delta)
     );
     this.velocity.lerp(this.targetVelocity, delta * PLAYER.WALK_INERTIA);
   }
