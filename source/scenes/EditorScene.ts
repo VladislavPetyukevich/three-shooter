@@ -49,6 +49,7 @@ export class EditorScene extends TestScene {
   enableEditorMode() {
     this.isEditorMode = true;
     console.log('++++EDITOR MODE ENABLED++++');
+    this.restoreEditorMap();
     document.exitPointerLock();
     setTimeout(() => {
       this.disableBlockerInstructions();
@@ -187,6 +188,23 @@ export class EditorScene extends TestScene {
         if (xRow[cellY]) {
           this.removeEditorCellEntity(cellX, cellY);
           delete xRow[cellY];
+        }
+      }
+    }
+  }
+
+  restoreEditorMap() {
+    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
+      const xRow = this.currentEditorEntities[cellX];
+      if (!xRow) {
+        continue;
+      }
+      for (let cellY = 0; cellY < xRow.length; cellY++) {
+        if (xRow[cellY]) {
+          const entity = this.currentEditorEntities[cellX][cellY];
+          this.entitiesContainer.remove(entity.actor.mesh);
+          const newEntity = this.spawnEntityInRoom(cellX, cellY, entity.type as ENTITY_TYPE);
+          this.currentEditorEntities[cellX][cellY] = newEntity;
         }
       }
     }
