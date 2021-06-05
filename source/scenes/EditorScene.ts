@@ -16,6 +16,7 @@ export class EditorScene extends TestScene {
   currentEditorEntities: Entity[][];
   currentEntityType: ENTITY_TYPE;
   cellColors: CellColors;
+  padding: number;
 
   constructor(props: BasicSceneProps) {
     super(props);
@@ -29,6 +30,7 @@ export class EditorScene extends TestScene {
       enemy: 'red',
       wall: 'gray',
     };
+    this.padding = 2;
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
     this.createEntitiesButtons();
@@ -63,8 +65,8 @@ export class EditorScene extends TestScene {
     mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
-    for (let cellX = 2; cellX < this.dungeonRoomSize.width - 2; cellX++) {
-      for (let cellY = 2; cellY < this.dungeonRoomSize.height - 2; cellY++) {
+    for (let cellX = this.padding; cellX < this.dungeonRoomSize.width - this.padding; cellX++) {
+      for (let cellY = this.padding; cellY < this.dungeonRoomSize.height - this.padding; cellY++) {
         const mapCellEl = document.createElement('div');
         mapCellEl.style.display = 'inline-block';
         mapCellEl.style.width = '12px';
@@ -131,6 +133,32 @@ export class EditorScene extends TestScene {
       this.clearEditorEntities();
     };
     blockerEl.appendChild(clearButton);
+    const exportButton = document.createElement('button');
+    exportButton.style.position = 'absolute';
+    exportButton.style.top = '260px';
+    exportButton.innerHTML = 'Log to console';
+    exportButton.onclick = () => this.logDungeonToConsole();
+    blockerEl.appendChild(exportButton);
+  }
+
+  logDungeonToConsole() {
+    let resultJson = '[';
+    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
+      const xRow = this.currentEditorEntities[cellX];
+      if (!xRow) {
+        continue;
+      }
+      for (let cellY = 0; cellY < xRow.length; cellY++) {
+        if (xRow[cellY]) {
+          resultJson += '\n  {';
+          resultJson += ` position: { x: ${cellX}, y: ${cellY} },`;
+          resultJson += ` type: RoomCellType.${this.currentEditorEntities[cellX][cellY].type}`;
+          resultJson += ' },';
+        }
+      }
+    }
+    resultJson += '\n];';
+    console.log(resultJson);
   }
 
   clearMapElements() {
