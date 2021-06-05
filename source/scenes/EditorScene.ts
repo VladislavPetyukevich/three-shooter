@@ -7,12 +7,14 @@ interface CellColors {
   border: string;
   empty: string;
   enemy: string;
+  wall: string;
 }
 
 export class EditorScene extends TestScene {
   enableKey: string;
   isEditorMode: boolean;
   currentEditorEntities: Entity[][];
+  currentEntityType: ENTITY_TYPE;
   cellColors: CellColors;
 
   constructor(props: BasicSceneProps) {
@@ -20,13 +22,17 @@ export class EditorScene extends TestScene {
     this.enableKey = '`';
     this.isEditorMode = false;
     this.currentEditorEntities = [];
+    this.currentEntityType = ENTITY_TYPE.ENEMY;
     this.cellColors = {
       border: 'white',
       empty: 'black',
       enemy: 'red',
+      wall: 'gray',
     };
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
+    this.createEntitiesButtons();
+    this.deleteTriggersFromScene();
     document.addEventListener('keypress', (event) => {
       const isEnableKey = event.key === this.enableKey;
       if (!isEnableKey) {
@@ -41,9 +47,6 @@ export class EditorScene extends TestScene {
   }
 
   enableEditorMode() {
-    this.clearMapElements();
-    this.deleteTriggersFromScene();
-    this.deleteEnemiesFromScene();
     this.isEditorMode = true;
     console.log('++++EDITOR MODE ENABLED++++');
     document.exitPointerLock();
@@ -70,8 +73,8 @@ export class EditorScene extends TestScene {
         mapCellEl.onclick = (event) => {
           const cellEntity = this.getEditorCellEntity(cellX, cellY);
           if (!cellEntity) {
-            (<HTMLDivElement>event.target).style.background = this.cellColors.enemy;
-            const entity = this.spawnEnemyInRoom(cellX, cellY);
+            (<HTMLDivElement>event.target).style.background = this.getCurrentCellColor();
+            const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
             this.addEditorCellEntity(cellX, cellY, entity);
           } else {
             (<HTMLDivElement>event.target).style.background = this.cellColors.empty;
@@ -87,6 +90,48 @@ export class EditorScene extends TestScene {
     blockerEl.appendChild(mapContainer);
   }
 
+  getCurrentCellColor() {
+    switch (this.currentEntityType) {
+      case ENTITY_TYPE.ENEMY:
+        return this.cellColors.enemy;
+      case ENTITY_TYPE.WALL:
+        return this.cellColors.wall;
+      default:
+        return '';
+    }
+  }
+
+  createEntitiesButtons() {
+    const blockerEl = this.getBlockerElement();
+    const enemyButton = document.createElement('button');
+    enemyButton.style.position = 'absolute';
+    enemyButton.style.top = '230px';
+    enemyButton.style.left = '60px';
+    enemyButton.style.background = this.cellColors.enemy;
+    enemyButton.innerHTML = 'Enemy';
+    enemyButton.onclick = () => this.currentEntityType = ENTITY_TYPE.ENEMY;
+    blockerEl.appendChild(enemyButton);
+    const wallButton = document.createElement('button');
+    wallButton.style.position = 'absolute';
+    wallButton.style.top = '230px';
+    wallButton.style.left = '120px';
+    wallButton.style.background = this.cellColors.wall;
+    wallButton.innerHTML = 'Wall';
+    wallButton.onclick = () => this.currentEntityType = ENTITY_TYPE.WALL;
+    blockerEl.appendChild(wallButton);
+    const clearButton = document.createElement('button');
+    clearButton.style.position = 'absolute';
+    clearButton.style.top = '230px';
+    clearButton.style.background = this.cellColors.empty;
+    clearButton.style.color = this.cellColors.border;
+    clearButton.innerHTML = 'Clear';
+    clearButton.onclick = () => {
+      this.clearMapElements();
+      this.clearEditorEntities();
+    };
+    blockerEl.appendChild(clearButton);
+  }
+
   clearMapElements() {
     const blockerEl = this.getBlockerElement();
     const buttons = blockerEl.children[1].children;
@@ -98,10 +143,6 @@ export class EditorScene extends TestScene {
 
   deleteTriggersFromScene() {
     this.deleteEntitiesFromScene(ENTITY_TYPE.TRIGGER);
-  }
-
-  deleteEnemiesFromScene() {
-    this.deleteEntitiesFromScene(ENTITY_TYPE.ENEMY);
   }
 
   deleteEntitiesFromScene(entityType: ENTITY_TYPE) {
@@ -136,6 +177,21 @@ export class EditorScene extends TestScene {
     return this.currentEditorEntities[cellX][cellY];
   }
 
+  clearEditorEntities() {
+    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
+      const xRow = this.currentEditorEntities[cellX];
+      if (!xRow) {
+        continue;
+      }
+      for (let cellY = 0; cellY < xRow.length; cellY++) {
+        if (xRow[cellY]) {
+          this.removeEditorCellEntity(cellX, cellY);
+          delete xRow[cellY];
+        }
+      }
+    }
+  }
+
   removeBackgroundColorFromBlocker() {
     const blockerEl = this.getBlockerElement();
     blockerEl.style.backgroundColor = 'initial';
@@ -158,15 +214,28 @@ export class EditorScene extends TestScene {
     domEl.style.display = 'block';
   }
 
-  spawnEnemyInRoom(cellX: number, cellY: number) {
+  spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
     const playerCell = this.getPlayerCell();
     if (!playerCell) {
       throw new Error('Can not get player cell');
     }
-    return this.spawnEnemy({
-      x: playerCell.value[0] * this.mapCellSize + cellX * this.mapCellSize,
-      y: playerCell.value[1] * this.mapCellSize + cellY * this.mapCellSize,
-    });
+    switch (entityType) {
+      case ENTITY_TYPE.ENEMY:
+        return this.spawnEnemy({
+          x: playerCell.value[0] * this.mapCellSize + cellX * this.mapCellSize,
+          y: playerCell.value[1] * this.mapCellSize + cellY * this.mapCellSize,
+        });
+      case ENTITY_TYPE.WALL:
+        return this.spawnWall({
+          x: playerCell.value[0] * this.mapCellSize + cellX * this.mapCellSize,
+          y: playerCell.value[1] * this.mapCellSize + cellY * this.mapCellSize,
+        }, {
+          width: this.mapCellSize,
+          height: this.mapCellSize,
+        });
+      default:
+        throw new Error(`Cant spawn entity with type ${entityType}`);
+    }
   }
 
   getBlockerElement() {

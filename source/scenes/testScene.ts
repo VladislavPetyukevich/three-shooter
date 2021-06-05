@@ -231,7 +231,7 @@ export class TestScene extends BasicScene {
       size: { width: size.width, height: WALL.SIZE, depth: size.height },
       isHorizontalWall: isHorizontalWall
     });
-    this.entitiesContainer.add(wall);
+    return this.entitiesContainer.add(wall);
   }
 
   spawnDoor(coordinates: { x: number, y: number }, size: { width: number, height: number }) {
