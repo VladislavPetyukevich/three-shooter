@@ -44,6 +44,7 @@ export class TestScene extends BasicScene {
   mapCellSize: number;
   dungeonSize: Size;
   dungeonRoomSize: Size;
+  dungeonRoomsCount: number;
   dungeonCellsPosition: number[][];
   dungeonCellsPositionToLight: number[];
   dungeonCellDoors: Door[][];
@@ -59,6 +60,7 @@ export class TestScene extends BasicScene {
     this.mapCellSize = 3;
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomSize = { width: 20, height: 20 };
+    this.dungeonRoomsCount = 10;
     this.currentRoomIndex = null;
     this.dungeonCellsPositionToLight = [];
     this.dungeonRoomEnimiesCount = 0;
@@ -112,7 +114,8 @@ export class TestScene extends BasicScene {
 
     const dungeonGenerator = new DungeonGenerator({
       dungeonSize: this.dungeonSize,
-      roomSize: this.dungeonRoomSize
+      roomSize: this.dungeonRoomSize,
+      roomsCount: this.dungeonRoomsCount,
     });
     dungeonGenerator.generate();
     this.dungeonCellsPosition = [];

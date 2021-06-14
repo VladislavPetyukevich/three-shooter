@@ -33,17 +33,20 @@ interface DungeonPart {
 interface DungeonGeneratorProps {
   dungeonSize: Size;
   roomSize: Size;
+  roomsCount: number;
 }
 
 export class DungeonGenerator {
   size: Size;
   roomSize: Size;
+  roomsCount: number;
   dungeonArr: DungeonPart[];
   dungeonCells: GeneratorCell[][];
 
   constructor(props: DungeonGeneratorProps) {
     this.size = props.dungeonSize;
     this.roomSize = props.roomSize;
+    this.roomsCount = props.roomsCount;
     this.dungeonArr = [];
     this.dungeonCells = [];
   }
@@ -295,7 +298,7 @@ export class DungeonGenerator {
     const yStart = 4;
     let x = xStart;
     let y = yStart;
-    let roomsRemaining = 10;
+    let roomsRemaining = this.roomsCount - 1;
     cells[y][x] = {
       size: this.roomSize,
       position: { x: x * this.roomSize.width, y: y * this.roomSize.height }
