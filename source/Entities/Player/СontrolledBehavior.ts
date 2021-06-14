@@ -28,6 +28,7 @@ export class СontrolledBehavior implements Behavior {
   isKeyForward: boolean;
   isKeyLeft: boolean;
   isKeyRight: boolean;
+  isCanMove: boolean;
   strafeCameraRotation: number;
   strafeCameraSpeed: number;
   cameraRotationInput: Vector2;
@@ -63,6 +64,7 @@ export class СontrolledBehavior implements Behavior {
     this.isKeyForward = false;
     this.isKeyLeft = false;
     this.isKeyRight = false;
+    this.isCanMove = true;
     this.strafeCameraRotation = 1.3 * PI_180;
     this.strafeCameraSpeed = 10;
     this.cameraRotationInput = new Vector2();
@@ -150,8 +152,12 @@ export class СontrolledBehavior implements Behavior {
     this.gun.update(delta);
     this.updateCamera();
     this.updateKeysState();
-    this.updateVelocity(delta);
-    this.updatePlayerBob(delta);
+    if (this.isCanMove) {
+      this.updateVelocity(delta);
+      this.updatePlayerBob(delta);
+    } else {
+      this.velocity.set(0, 0, 0);
+    }
     hud.onPlayerMove(this.actor.mesh.position);
   }
 

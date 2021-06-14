@@ -54,4 +54,8 @@ export class Player extends Entity {
   setOnHitCallback(callback: Function) {
     this.onHitCallback = callback;
   }
+
+  cantMove() {
+    (<СontrolledBehavior>this.behavior).isCanMove = false;
+  }
 }

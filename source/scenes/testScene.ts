@@ -54,17 +54,19 @@ export class TestScene extends BasicScene {
   doors: Door[];
   torches: Torch[];
   visitedRooms: Set<number>;
+  isDungeonClear: boolean;
 
   constructor(props: BasicSceneProps) {
     super(props);
     this.mapCellSize = 3;
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomSize = { width: 20, height: 20 };
-    this.dungeonRoomsCount = 10;
+    this.dungeonRoomsCount = 3;
     this.currentRoomIndex = null;
     this.dungeonCellsPositionToLight = [];
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
+    this.isDungeonClear = false;
     this.doors = [];
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -267,12 +269,19 @@ export class TestScene extends BasicScene {
 
   onEnemyDeath = () => {
     this.dungeonRoomEnimiesCount--;
-    if (this.dungeonRoomEnimiesCount === 0) {
-      if (typeof this.currentRoomIndex === 'number') {
-        this.lockUnlockAllDoors(this.currentRoomIndex, false);
-        this.onOffLightInRoom(this.currentRoomIndex, true);
-      }
+    if (this.dungeonRoomEnimiesCount !== 0) {
+      return;
     }
+    if (typeof this.currentRoomIndex !== 'number') {
+      return;
+    }
+    if (this.visitedRooms.size === this.dungeonRoomsCount) {
+      const cellPos = this.dungeonCellsPosition[this.currentRoomIndex];
+      this.spawnRoomHole(cellPos[0], cellPos[1]);
+      return;
+    }
+    this.lockUnlockAllDoors(this.currentRoomIndex, false);
+    this.onOffLightInRoom(this.currentRoomIndex, true);
   }
 
   spawnEnemy(coordinates: { x: number, y: number }) {
@@ -314,6 +323,20 @@ export class TestScene extends BasicScene {
       ),
       entitiesContainer: this.entitiesContainer,
       onTrigger: this.onRoomTrigger,
+    }));
+  }
+
+  spawnRoomHole(roomX: number, roomY: number) {
+    const x = roomX + ~~(this.dungeonRoomSize.width / 2);
+    const y = roomY + ~~(this.dungeonRoomSize.height / 2);
+    const sceneCoordinates = this.convertToSceneCoordinates({ x: x, y: y });
+    this.entitiesContainer.add(new Trigger({
+      size: new Vector3(3, 3, 3),
+      position: new Vector3(
+        sceneCoordinates.x, PLAYER.BODY_HEIGHT, sceneCoordinates.y
+      ),
+      entitiesContainer: this.entitiesContainer,
+      onTrigger: () => this.isDungeonClear = true,
     }));
   }
 
@@ -417,6 +440,11 @@ export class TestScene extends BasicScene {
 
   update(delta: number) {
     super.update(delta);
+    if (this.isDungeonClear) {
+      this.player.cantMove();
+      this.camera.position.y -= delta;
+      return;
+    }
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCell = this.getPlayerCell();
     if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
