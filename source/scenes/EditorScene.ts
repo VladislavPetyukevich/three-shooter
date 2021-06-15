@@ -3,6 +3,12 @@ import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
 import { TestScene } from './testScene';
 
+interface SavedCell {
+  x: number;
+  y: number;
+  type: ENTITY_TYPE;
+}
+
 interface CellColors {
   border: string;
   empty: string;
@@ -17,6 +23,7 @@ export class EditorScene extends TestScene {
   currentEntityType: ENTITY_TYPE;
   cellColors: CellColors;
   padding: number;
+  localStorageKey: string;
 
   constructor(props: BasicSceneProps) {
     super(props);
@@ -31,10 +38,12 @@ export class EditorScene extends TestScene {
       wall: 'gray',
     };
     this.padding = 2;
+    this.localStorageKey = 'editor-map';
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
     this.createEntitiesButtons();
     this.deleteTriggersFromScene();
+    this.loadFromLocalStorage();
     document.addEventListener('keypress', (event) => {
       const isEnableKey = event.key === this.enableKey;
       if (!isEnableKey) {
@@ -45,6 +54,18 @@ export class EditorScene extends TestScene {
       } else {
         this.enableEditorMode();
       }
+    });
+  }
+
+  loadFromLocalStorage() {
+    const data = localStorage.getItem(this.localStorageKey);
+    if (!data) {
+      return;
+    }
+    const parsed: SavedCell[] = JSON.parse(data);
+    parsed.forEach(cell => {
+      const entity = this.spawnEntityInRoom(cell.x, cell.y, cell.type);
+      this.addEditorCellEntity(cell.x, cell.y, entity);
     });
   }
 
@@ -139,6 +160,12 @@ export class EditorScene extends TestScene {
     exportButton.innerHTML = 'Log to console';
     exportButton.onclick = () => this.logDungeonToConsole();
     blockerEl.appendChild(exportButton);
+    const saveButton = document.createElement('button');
+    saveButton.style.position = 'absolute';
+    saveButton.style.top = '285px';
+    saveButton.innerHTML = 'Save to local storage';
+    saveButton.onclick = () => this.saveDungeonToLocalStorage();
+    blockerEl.appendChild(saveButton);
   }
 
   logDungeonToConsole() {
@@ -159,6 +186,25 @@ export class EditorScene extends TestScene {
     }
     resultJson += '\n];';
     console.log(resultJson);
+  }
+
+  saveDungeonToLocalStorage() {
+    const data = [];
+    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
+      const xRow = this.currentEditorEntities[cellX];
+      if (!xRow) {
+        continue;
+      }
+      for (let cellY = 0; cellY < xRow.length; cellY++) {
+        if (xRow[cellY]) {
+          const entity = this.getEditorCellEntity(cellX, cellY);
+          data.push(
+            { x: cellX, y: cellY, type: entity?.type }
+          );
+        }
+      }
+    }
+    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
   }
 
   clearMapElements() {
