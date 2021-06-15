@@ -45,6 +45,8 @@ export class СontrolledBehavior implements Behavior {
   currentSinTableIndex: number;
   bobTimeout: number;
   maxBobTimeout: number;
+  cameraRecoil: number;
+  isCameraRecoil: boolean;
 
   constructor(props: СontrolledBehaviorProps) {
     this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
@@ -52,6 +54,8 @@ export class СontrolledBehavior implements Behavior {
     this.currentSinTableIndex = 0;
     this.bobTimeout = 0;
     this.maxBobTimeout = 0.001;
+    this.cameraRecoil= 0.035;
+    this.isCameraRecoil= false;
     globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.actor = props.actor;
     this.eyeY = props.eyeY;
@@ -124,8 +128,13 @@ export class СontrolledBehavior implements Behavior {
 
   handleShoot = () => {
     (<GunBehavior>this.gun.behavior).handleShoot();
-    this.camera.position.y += 0.035;
+    this.cameraRecoilJump();
   };
+
+  cameraRecoilJump() {
+    this.isCameraRecoil= true;
+    this.camera.position.y += this.cameraRecoil;
+  }
 
   updateBob(delta: number) {
     this.bobTimeout += delta;
@@ -216,11 +225,12 @@ export class СontrolledBehavior implements Behavior {
 
   updatePlayerBob(delta: number) {
     const isGunRecoil = this.gun.checkIsRecoil();
+    if (this.isCameraRecoil && !isGunRecoil) {
+      this.camera.position.y -= this.cameraRecoil;
+      this.isCameraRecoil = false;
+    }
     if (this.isRunning) {
       hud.gunBob(delta);
-      if (!isGunRecoil && this.camera.position.y > this.eyeY) {
-        this.camera.position.y = this.eyeY;
-      }
       if (this.isKeyLeft != this.isKeyRight) {
         this.lerpCameraRotationZ(
           this.isKeyLeft ? this.strafeCameraRotation : -this.strafeCameraRotation,
