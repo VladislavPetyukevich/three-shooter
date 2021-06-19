@@ -55,6 +55,10 @@ export class Player extends Entity {
     this.onHitCallback = callback;
   }
 
+  canMove() {
+    (<СontrolledBehavior>this.behavior).isCanMove = true;
+  }
+
   cantMove() {
     (<СontrolledBehavior>this.behavior).isCanMove = false;
   }

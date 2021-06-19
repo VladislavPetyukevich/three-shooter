@@ -58,7 +58,10 @@ export class TestScene extends BasicScene {
   doors: Door[];
   torches: Torch[];
   visitedRooms: Set<number>;
-  isDungeonClear: boolean;
+  initialCameraY: number;
+  isPlayerFalling: boolean;
+  isPlayerFallingAtStart: boolean;
+  playerFallInitialValue: number;
   playerFallCurrenValue: number;
   playerFallMaxValue: number;
   onFinish: Function;
@@ -73,8 +76,11 @@ export class TestScene extends BasicScene {
     this.dungeonCellsPositionToLight = [];
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
-    this.isDungeonClear = false;
-    this.playerFallCurrenValue = 0.3;
+    this.initialCameraY = 70;
+    this.isPlayerFalling = false;
+    this.isPlayerFallingAtStart = true;
+    this.playerFallInitialValue = 0.3;
+    this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
     this.onFinish = props.onFinish;
     this.doors = [];
@@ -87,6 +93,8 @@ export class TestScene extends BasicScene {
         audioListener: this.audioListener
       })
     ) as Player;
+    this.camera.position.y = this.initialCameraY;
+    this.player.cantMove();
     this.player.setOnHitCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
       setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
@@ -346,7 +354,7 @@ export class TestScene extends BasicScene {
         sceneCoordinates.x, PLAYER.BODY_HEIGHT, sceneCoordinates.y
       ),
       entitiesContainer: this.entitiesContainer,
-      onTrigger: () => this.isDungeonClear = true,
+      onTrigger: () => this.isPlayerFalling = true,
     }));
   }
 
@@ -450,20 +458,36 @@ export class TestScene extends BasicScene {
 
   update(delta: number) {
     super.update(delta);
-    if (this.isDungeonClear) {
-      this.player.cantMove();
-      this.playerFallCurrenValue += delta / 2;
-      this.camera.position.y -= Math.pow(this.playerFallCurrenValue, 4);
-      if (this.playerFallCurrenValue >= this.playerFallMaxValue) {
-        this.isDungeonClear = false;
-        this.onFinish();
-      }
-      return;
-    }
+    this.updateFalling(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCell = this.getPlayerCell();
     if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
       this.handleRoomChange(playerCell.index);
+    }
+  }
+
+  updateFalling(delta: number) {
+    if (!this.isPlayerFalling && !this.isPlayerFallingAtStart) {
+      return;
+    }
+    this.player.cantMove();
+    this.playerFallCurrenValue += delta / 2;
+    this.camera.position.y -= Math.pow(this.playerFallCurrenValue, 4);
+    if (this.isPlayerFallingAtStart) {
+      if (this.camera.position.y <= PLAYER.BODY_HEIGHT) {
+        this.camera.position.y = PLAYER.BODY_HEIGHT;
+        this.isPlayerFallingAtStart = false;
+        this.playerFallCurrenValue = this.playerFallInitialValue;
+        this.player.canMove();
+      }
+      return;
+    }
+    if (this.isPlayerFalling) {
+      if (this.playerFallCurrenValue >= this.playerFallMaxValue) {
+        this.isPlayerFalling = false;
+        this.onFinish();
+      }
+      return;
     }
   }
 }

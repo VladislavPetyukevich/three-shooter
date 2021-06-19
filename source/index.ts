@@ -115,17 +115,25 @@ export default class ThreeShooter {
   }
 
   onDungeonFinish = () => {
-    const newScene = new TestScene({
-      ...this.gameProps,
-      onFinish: this.onDungeonFinish
-    });
-    this.changeScene(newScene);
+    setTimeout(
+      () => {
+        this.loadScene(
+          TestScene,
+          { ...this.gameProps, onFinish: this.onDungeonFinish },
+          () => this.loadedScene && this.changeScene(this.loadedScene)
+        );
+      },
+      0
+    );
   }
 
-  loadScene(constructor: typeof BasicScene, gameProps: any) {
+  loadScene(constructor: typeof BasicScene, gameProps: any, onLoaded?: Function) {
     this.loadedScene = new constructor({
       ...gameProps, onFinish: this.onDungeonFinish
     });
+    if (onLoaded) {
+      onLoaded();
+    }
   }
 
   changeScene(scene: BasicScene) {
