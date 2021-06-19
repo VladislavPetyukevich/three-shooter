@@ -1,5 +1,6 @@
-import { Vector3, AudioListener, PositionalAudio } from 'three';
-import { ENEMY, GAME_SOUND_NAME } from '@/constants';
+import { Vector3, AudioListener, PositionalAudio, BoxGeometry } from 'three';
+import { ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { EnemyActor } from './EnemyActor';
@@ -20,8 +21,11 @@ interface BehaviorProps {
 export class EnemyBehavior implements Behavior {
   player: Player;
   velocity: Vector3;
+  backupVelocity: Vector3;
   actor: EnemyActor;
   randomMovementTimeOut: number;
+  currentStrafeAngle: number;
+  strafeAngle: number;
   hurtTimeOut: number;
   bulletPositionOffset: number;
   container: EntitiesContainer;
@@ -35,12 +39,15 @@ export class EnemyBehavior implements Behavior {
   constructor(props: BehaviorProps) {
     this.player = props.player;
     this.velocity = props.velocity;
+    this.backupVelocity = new Vector3();
     this.actor = props.actor;
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
-    this.bulletPositionOffset = 1.4;
+    this.bulletPositionOffset = 1.5;
     this.container = props.container;
     this.randomMovementTimeOut = ENEMY.MOVEMENT_TIME_OUT;
+    this.currentStrafeAngle = 0;
+    this.strafeAngle = 22.5;
     this.hurtTimeOut = 0;
     this.shootTimeOut = ENEMY.SHOOT_TIME_OUT;
     this.shootSound = new PositionalAudio(props.audioListener);
@@ -92,6 +99,34 @@ export class EnemyBehavior implements Behavior {
     this.stateMachine.doTransition('death');
   }
 
+  onCollide(entity: Entity) {
+    const currentState = this.stateMachine.state();
+    const isGettingAround = randomNumbers.getRandom() > 0.3;
+    if (
+      !isGettingAround &&
+      (currentState !== 'followingPlayer') &&
+      (currentState !== 'attacking')
+    ) {
+      this.velocity.negate();
+      return;
+    }
+    if (entity.actor.mesh.geometry.type === 'BoxGeometry') {
+      const collideGeometryParams = (<BoxGeometry>entity.actor.mesh.geometry).parameters;
+      const actorPos = this.actor.mesh.position;
+      const collidePos = entity.actor.mesh.position;
+      const halfWidth = collideGeometryParams.width / 2;
+      const isHorizontal =
+        (actorPos.x >= collidePos.x + halfWidth) ||
+        (actorPos.x <= collidePos.x - halfWidth);
+      const velocityValue = randomNumbers.getRandom() * ENEMY.WALK_SPEED;
+      if (isHorizontal) {
+        this.velocity.set(0, 0, velocityValue);
+      } else {
+        this.velocity.set(velocityValue, 0, 0);
+      }
+    }
+  }
+
   randomMovement() {
     const velocityX = this.randomVelocityValue();
     const velocityZ = this.randomVelocityValue();
@@ -104,6 +139,30 @@ export class EnemyBehavior implements Behavior {
   randomVelocityValue() {
     const randomVal = randomNumbers.getRandom();
     return (randomNumbers.getRandom() > 0.5) ? randomVal : -randomVal;
+  }
+
+  randomStrafe() {
+    const strafeAngle = this.randomStrafeRotation() * PI_180;
+    if (strafeAngle === this.currentStrafeAngle) {
+      return;
+    }
+    const angle = strafeAngle - this.currentStrafeAngle;
+    this.velocity.set(
+      this.velocity.x * Math.cos(angle) - this.velocity.z * Math.sin(angle),
+      0,
+      this.velocity.x * Math.sin(angle) + this.velocity.z * Math.cos(angle),
+    );
+  }
+
+  randomStrafeRotation() {
+    const randValue = randomNumbers.getRandom();
+    if (randValue < 0.33) {
+      return -this.strafeAngle;
+    }
+    if (randValue < 0.66) {
+      return this.strafeAngle;
+    }
+    return 0;
   }
 
   moveToPlayer() {
@@ -139,7 +198,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
-    switch (this.stateMachine.state()) {
+    const currentState = this.stateMachine.state();
+    this.updateMovement(delta, currentState);
+    switch (currentState) {
       case 'died':
         break;
       case 'dies':
@@ -161,25 +222,11 @@ export class EnemyBehavior implements Behavior {
           this.stateMachine.doTransition('attack');
           break;
         }
-        this.randomMovementTimeOut += delta;
-        if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
-          this.randomMovement();
-          this.randomMovementTimeOut = 0;
-        } else {
-          this.updateWalkSprite(delta);
-        }
         break;
       case 'followingPlayer':
         if (this.checkIsPlayerInAttackDistance()) {
           this.stateMachine.doTransition('attack');
           break;
-        }
-        this.randomMovementTimeOut += delta;
-        if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
-          this.moveToPlayer();
-          this.randomMovementTimeOut = 0;
-        } else {
-          this.updateWalkSprite(delta);
         }
         break;
       case 'attacking':
@@ -195,6 +242,7 @@ export class EnemyBehavior implements Behavior {
         }
         break;
       case 'hurting':
+        this.backupVelocity.copy(this.velocity);
         this.velocity.set(0, 0, 0);
         this.actor.spriteSheet.displaySprite(2);
         this.stateMachine.doTransition('hurts');
@@ -202,6 +250,7 @@ export class EnemyBehavior implements Behavior {
       case 'hurted':
         this.hurtTimeOut += delta;
         if (this.hurtTimeOut > ENEMY.HURT_TIME_OUT) {
+          this.velocity.copy(this.backupVelocity);
           this.hurtTimeOut = 0;
           this.actor.spriteSheet.displaySprite(0);
           this.stateMachine.doTransition('attack');
@@ -209,6 +258,30 @@ export class EnemyBehavior implements Behavior {
         break;
       default:
         break;
+    }
+  }
+
+  updateMovement(delta: number, state: string) {
+    if (
+      (state === 'dies') ||
+      (state === 'died')
+    ) {
+      return;
+    }
+    this.randomMovementTimeOut += delta;
+    if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
+      this.randomMovementTimeOut = 0;
+      if (
+        (state === 'followingPlayer') ||
+        (state === 'attacking')
+      ){
+        this.moveToPlayer();
+        this.randomStrafe();
+      } else {
+        this.randomMovement();
+      }
+    } else {
+      this.updateWalkSprite(delta);
     }
   }
 }

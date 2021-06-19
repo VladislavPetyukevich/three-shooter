@@ -55,10 +55,8 @@ export class Enemy extends Entity {
     (<EnemyBehavior>this.behavior).onDeathCallback = callback;
   }
 
-  onCollide() {
-    if (this.velocity) {
-      this.velocity.negate();
-    }
+  onCollide(entity: Entity) {
+    (<EnemyBehavior>this.behavior).onCollide(entity);
     return false;
   }
 }
