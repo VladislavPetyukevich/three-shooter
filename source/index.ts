@@ -19,6 +19,7 @@ import { gameTextures, gameSounds } from './constants';
 import { globalSettings } from '@/GlobalSettings';
 
 export default class ThreeShooter {
+  gameProps: any;
   currScene: BasicScene;
   loadedScene?: BasicScene;
   imageDisplayer: ImageDisplayer;
@@ -30,6 +31,7 @@ export default class ThreeShooter {
   composer: EffectComposer;
 
   constructor(props: any) {
+    this.gameProps = props;
     this.currScene = new LoadingScene(props);
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
@@ -112,8 +114,18 @@ export default class ThreeShooter {
     audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
   }
 
+  onDungeonFinish = () => {
+    const newScene = new TestScene({
+      ...this.gameProps,
+      onFinish: this.onDungeonFinish
+    });
+    this.changeScene(newScene);
+  }
+
   loadScene(constructor: typeof BasicScene, gameProps: any) {
-    this.loadedScene = new constructor(gameProps);
+    this.loadedScene = new constructor({
+      ...gameProps, onFinish: this.onDungeonFinish
+    });
   }
 
   changeScene(scene: BasicScene) {

@@ -1,7 +1,6 @@
-import { BasicSceneProps } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
-import { TestScene } from './testScene';
+import { TestSceneProps, TestScene } from './testScene';
 
 interface SavedCell {
   x: number;
@@ -25,7 +24,7 @@ export class EditorScene extends TestScene {
   padding: number;
   localStorageKey: string;
 
-  constructor(props: BasicSceneProps) {
+  constructor(props: TestSceneProps) {
     super(props);
     this.enableKey = '`';
     this.isEditorMode = false;

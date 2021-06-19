@@ -37,6 +37,10 @@ interface PlayerCell {
   value: number[];
 }
 
+export interface TestSceneProps extends BasicSceneProps {
+  onFinish: Function;
+}
+
 export class TestScene extends BasicScene {
   pointLight: PointLight;
   ambientLight: AmbientLight;
@@ -55,8 +59,11 @@ export class TestScene extends BasicScene {
   torches: Torch[];
   visitedRooms: Set<number>;
   isDungeonClear: boolean;
+  playerFallCurrenValue: number;
+  playerFallMaxValue: number;
+  onFinish: Function;
 
-  constructor(props: BasicSceneProps) {
+  constructor(props: TestSceneProps) {
     super(props);
     this.mapCellSize = 3;
     this.dungeonSize = { width: 200, height: 200 };
@@ -67,6 +74,9 @@ export class TestScene extends BasicScene {
     this.dungeonRoomEnimiesCount = 0;
     this.visitedRooms = new Set();
     this.isDungeonClear = false;
+    this.playerFallCurrenValue = 0.3;
+    this.playerFallMaxValue = 1.25;
+    this.onFinish = props.onFinish;
     this.doors = [];
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -442,7 +452,12 @@ export class TestScene extends BasicScene {
     super.update(delta);
     if (this.isDungeonClear) {
       this.player.cantMove();
-      this.camera.position.y -= delta;
+      this.playerFallCurrenValue += delta / 2;
+      this.camera.position.y -= Math.pow(this.playerFallCurrenValue, 4);
+      if (this.playerFallCurrenValue >= this.playerFallMaxValue) {
+        this.isDungeonClear = false;
+        this.onFinish();
+      }
       return;
     }
     this.pointLight.position.copy(this.player.actor.mesh.position);
