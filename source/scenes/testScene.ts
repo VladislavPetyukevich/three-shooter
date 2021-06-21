@@ -38,6 +38,7 @@ interface PlayerCell {
 }
 
 export interface TestSceneProps extends BasicSceneProps {
+  onPlayerDeath: Function;
   onFinish: Function;
 }
 
@@ -98,6 +99,10 @@ export class TestScene extends BasicScene {
     this.player.setOnHitCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
       setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
+    });
+    this.player.setOnDeathCallback(() => {
+      this.ambientLight.color.setHex(0xFF0000);
+      setTimeout(() => this.onFinish(), 400);
     });
     this.torches = this.getSceneTorches();
     this.dungeonCellDoors = [];
@@ -458,12 +463,28 @@ export class TestScene extends BasicScene {
 
   update(delta: number) {
     super.update(delta);
+    this.updateDeathCamera(delta);
     this.updateFalling(delta);
     this.pointLight.position.copy(this.player.actor.mesh.position);
     const playerCell = this.getPlayerCell();
     if (playerCell && (playerCell.index !== this.currentRoomIndex)) {
       this.handleRoomChange(playerCell.index);
     }
+  }
+
+  updateDeathCamera(delta: number) {
+    if (!this.player.isDead) {
+      return;
+    }
+    this.camera.position.y = this.lerp(
+      this.camera.position.y,
+      0,
+      delta,
+    );
+  }
+
+  lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
   }
 
   updateFalling(delta: number) {

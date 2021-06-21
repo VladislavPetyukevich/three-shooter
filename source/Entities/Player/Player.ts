@@ -13,7 +13,10 @@ export interface PlayerProps {
 }
 
 export class Player extends Entity {
+  hp: number;
+  isDead: boolean;
   onHitCallback?: Function;
+  onDeathCallback?: Function;
 
   constructor(props: PlayerProps) {
     const actor = new PlayerActor({
@@ -38,6 +41,7 @@ export class Player extends Entity {
     );
     this.velocity = velocity;
     this.hp = PLAYER.HP;
+    this.isDead = false;
   }
 
   onCollide(entity: Entity) {
@@ -46,6 +50,17 @@ export class Player extends Entity {
 
   onHit(damage: number) {
     super.onHit(damage);
+    if (this.isDead) {
+      return;
+    }
+    if (this.hp <= 0) {
+      this.isDead = true;
+      this.cantMove();
+      if (this.onDeathCallback) {
+        this.onDeathCallback();
+      }
+      return;
+    }
     if (this.onHitCallback) {
       this.onHitCallback();
     }
@@ -53,6 +68,10 @@ export class Player extends Entity {
 
   setOnHitCallback(callback: Function) {
     this.onHitCallback = callback;
+  }
+
+  setOnDeathCallback(callback: Function) {
+    this.onDeathCallback = callback;
   }
 
   canMove() {

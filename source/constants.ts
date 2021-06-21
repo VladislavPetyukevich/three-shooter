@@ -69,7 +69,7 @@ export const ENEMY = {
 };
 
 export const PLAYER = {
-  HP: 100,
+  HP: 10,
   WALK_SPEED: GAME_SPEED,
   WALK_INERTIA: 15,
   BODY_WIDTH: 1.5,
