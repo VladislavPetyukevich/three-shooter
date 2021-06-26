@@ -64,7 +64,7 @@ export class EditorScene extends TestScene {
     const parsed: SavedCell[] = JSON.parse(data);
     parsed.forEach(cell => {
       const entity = this.spawnEntityInRoom(cell.x, cell.y, cell.type);
-      this.addEditorCellEntity(cell.x, cell.y, entity);
+      console.log('COMMENTED LINE: this.addEditorCellEntity(cell.x, cell.y, entity);');
     });
   }
 
@@ -85,8 +85,8 @@ export class EditorScene extends TestScene {
     mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
-    for (let cellX = this.padding; cellX < this.dungeonRoomSize.width - this.padding; cellX++) {
-      for (let cellY = this.padding; cellY < this.dungeonRoomSize.height - this.padding; cellY++) {
+    for (let cellX = this.padding; cellX < this.roomSize.width - this.padding; cellX++) {
+      for (let cellY = this.padding; cellY < this.roomSize.height - this.padding; cellY++) {
         const mapCellEl = document.createElement('div');
         mapCellEl.style.display = 'inline-block';
         mapCellEl.style.width = '12px';
@@ -98,7 +98,7 @@ export class EditorScene extends TestScene {
           if (!cellEntity) {
             (<HTMLDivElement>event.target).style.background = this.getCurrentCellColor();
             const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
-            this.addEditorCellEntity(cellX, cellY, entity);
+            console.log('COMMENTED LINE: this.addEditorCellEntity(cellX, cellY, entity);');
           } else {
             (<HTMLDivElement>event.target).style.background = this.cellColors.empty;
             this.removeEditorCellEntity(cellX, cellY);
@@ -277,7 +277,7 @@ export class EditorScene extends TestScene {
           const entity = this.currentEditorEntities[cellX][cellY];
           this.entitiesContainer.remove(entity.actor.mesh);
           const newEntity = this.spawnEntityInRoom(cellX, cellY, entity.type as ENTITY_TYPE);
-          this.currentEditorEntities[cellX][cellY] = newEntity;
+          console.log('COMMENTED LINE: this.currentEditorEntities[cellX][cellY] = newEntity;');
         }
       }
     }
@@ -306,27 +306,8 @@ export class EditorScene extends TestScene {
   }
 
   spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
-    const playerCell = this.getPlayerCell();
-    if (!playerCell) {
-      throw new Error('Can not get player cell');
-    }
-    switch (entityType) {
-      case ENTITY_TYPE.ENEMY:
-        return this.spawnEnemy({
-          x: playerCell.value[0] * this.mapCellSize + cellX * this.mapCellSize,
-          y: playerCell.value[1] * this.mapCellSize + cellY * this.mapCellSize,
-        });
-      case ENTITY_TYPE.WALL:
-        return this.spawnWall({
-          x: playerCell.value[0] * this.mapCellSize + cellX * this.mapCellSize,
-          y: playerCell.value[1] * this.mapCellSize + cellY * this.mapCellSize,
-        }, {
-          width: this.mapCellSize,
-          height: this.mapCellSize,
-        });
-      default:
-        throw new Error(`Cant spawn entity with type ${entityType}`);
-    }
+    console.log('TODO: Rework spawnEntityInRoom');
+    throw new Error('TODO: Rework spawnEntityInRoom');
   }
 
   getBlockerElement() {
