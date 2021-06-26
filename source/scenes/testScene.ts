@@ -29,9 +29,17 @@ import {
 } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
 
+const enum Direction {
+  Top, Bottom, Left, Right
+}
+
 export interface Room {
   cellPosition: Vector2;
-  entities: Entity[];
+  doorTop: Door;
+  doorBottom: Door;
+  doorLeft: Door;
+  doorRight: Door;
+  walls: Entity[];
 }
 
 interface Size {
@@ -136,17 +144,21 @@ export class TestScene extends BasicScene {
   }
 
   createRoom(cellPosition: Vector2): Room {
+    const worldCoordinates = this.cellToWorldCoordinates(cellPosition);
+    const worldSize = this.cellToWorldCoordinates(this.roomSize);
     return {
       cellPosition: cellPosition,
-      entities: [
-        ...this.spawnRoomWalls(cellPosition)
+      doorTop: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
+      doorBottom: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Bottom),
+      doorLeft: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Left),
+      doorRight: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Right),
+      walls: [
+        ...this.spawnRoomWalls(worldCoordinates, worldSize)
       ],
     };
   }
 
-  spawnRoomWalls(cellPosition: Vector2): Entity[] {
-    const worldCoordinates = this.cellToWorldCoordinates(cellPosition);
-    const worldSize = this.cellToWorldCoordinates(this.roomSize);
+  spawnRoomWalls(worldCoordinates: Vector2, worldSize: Vector2): Entity[] {
     const doorPadding = this.doorWidthHalf * this.mapCellSize;
     const halfWidth = worldSize.x / 2;
     const halfHeight = worldSize.y / 2;
@@ -198,6 +210,38 @@ export class TestScene extends BasicScene {
     );
   }
 
+  spawnRoomDoor(worldCoordinates: Vector2, worldSize: Vector2, direction: Direction) {
+    const doorPadding = this.doorWidthHalf * this.mapCellSize;
+    const halfWidth = worldSize.x / 2;
+    const halfHeight = worldSize.y / 2;
+    const isVertical = (
+      (direction === Direction.Top) || (direction === Direction.Bottom)
+    );
+    const doorX = (direction === Direction.Left) ?
+      worldCoordinates.x :
+      (direction === Direction.Right) ?
+        worldCoordinates.x + worldSize.x - this.mapCellSize :
+        worldCoordinates.x + halfWidth - this.mapCellSize;
+    const doorY = (direction === Direction.Top) ?
+      worldCoordinates.y :
+      (direction === Direction.Bottom) ?
+        worldCoordinates.y + worldSize.y - this.mapCellSize :
+        worldCoordinates.y + halfHeight - doorPadding;
+    const doorWidth = isVertical ?
+      doorPadding * 2 :
+      this.mapCellSize;
+    const doorHeight = isVertical ?
+      this.mapCellSize :
+      doorPadding * 2;
+    const position = new Vector2(doorX, doorY);
+    const size = new Vector2(doorWidth, doorHeight);
+
+    return this.spawnDoor(
+      this.getCenterPosition(position, size),
+      size
+    );
+  }
+
   cellToWorldCoordinates(cellCoordinates: Vector2) {
     return new Vector2(
       cellCoordinates.x * this.mapCellSize,
@@ -245,7 +289,6 @@ export class TestScene extends BasicScene {
       isHorizontalWall: isHorizontalWall
     });
     door.close();
-    this.doors.push(door);
     this.entitiesContainer.add(door);
     return door;
   }
