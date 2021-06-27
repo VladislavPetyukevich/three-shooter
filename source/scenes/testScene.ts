@@ -87,6 +87,7 @@ export class TestScene extends BasicScene {
     this.doorWidthHalf = 1;
     this.currentRoom = this.createRoom(new Vector2(0, 0));
     console.log('this.currentRoom:', this.currentRoom);
+    this.createConnectedRoom(this.currentRoom.cellPosition, Direction.Top);
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomsCount = 3;
     this.currentRoomIndex = null;
@@ -143,6 +144,24 @@ export class TestScene extends BasicScene {
     this.scene.add(this.pointLight);
 
     this.scene.fog = new Fog(0x000000, 1.15, 200);
+  }
+
+  createConnectedRoom(cellPosition: Vector2, direction: Direction) {
+    const connectedRoomX = (direction === Direction.Left) ?
+      cellPosition.x - this.roomSize.x :
+      (direction === Direction.Right) ?
+        cellPosition.x + this.roomSize.x :
+        cellPosition.x;
+    const connectedRoomY = (direction === Direction.Top) ?
+      cellPosition.y - this.roomSize.y :
+      (direction === Direction.Bottom) ?
+        cellPosition.y + this.roomSize.y :
+        cellPosition.y;
+    const connectedRoomCellPosition = new Vector2(
+      connectedRoomX,
+      connectedRoomY
+    );
+    return this.createRoom(connectedRoomCellPosition);
   }
 
   createRoom(cellPosition: Vector2): Room {
