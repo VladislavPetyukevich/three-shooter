@@ -35,11 +35,13 @@ const enum Direction {
 
 export interface Room {
   cellPosition: Vector2;
-  doorTop: Door;
-  doorBottom: Door;
-  doorLeft: Door;
-  doorRight: Door;
   walls: Entity[];
+  doors: {
+    top: Door;
+    bottom: Door;
+    left: Door;
+    right: Door;
+  };
 }
 
 interface Size {
@@ -148,13 +150,15 @@ export class TestScene extends BasicScene {
     const worldSize = this.cellToWorldCoordinates(this.roomSize);
     return {
       cellPosition: cellPosition,
-      doorTop: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
-      doorBottom: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Bottom),
-      doorLeft: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Left),
-      doorRight: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Right),
       walls: [
         ...this.spawnRoomWalls(worldCoordinates, worldSize)
       ],
+      doors: {
+        top: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
+        bottom: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Bottom),
+        left: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Left),
+        right: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Right),
+      }
     };
   }
 
