@@ -33,7 +33,15 @@ const enum Direction {
   Top, Bottom, Left, Right
 }
 
+export const enum RoomType {
+  Neutral,
+  Apathy,
+  Cowardice,
+  SexualPerversions,
+}
+
 export interface Room {
+  type: RoomType;
   cellPosition: Vector2;
   walls: Entity[];
   doors: {
@@ -41,6 +49,12 @@ export interface Room {
     bottom: Door;
     left: Door;
     right: Door;
+  };
+  neighboringRooms: {
+    top: Room | null;
+    bottom: Room | null;
+    left: Room | null;
+    right: Room | null;
   };
 }
 
@@ -85,9 +99,8 @@ export class TestScene extends BasicScene {
     this.mapCellSize = 3;
     this.roomSize = new Vector2(20, 20);
     this.doorWidthHalf = 1;
-    this.currentRoom = this.createRoom(new Vector2(0, 0));
-    console.log('this.currentRoom:', this.currentRoom);
-    this.createConnectedRoom(this.currentRoom.cellPosition, Direction.Top);
+    this.currentRoom = this.createRoom(new Vector2(0, 0), RoomType.Neutral);
+    this.createNeighboringRooms(this.currentRoom);
     this.dungeonSize = { width: 200, height: 200 };
     this.dungeonRoomsCount = 3;
     this.currentRoomIndex = null;
@@ -146,7 +159,28 @@ export class TestScene extends BasicScene {
     this.scene.fog = new Fog(0x000000, 1.15, 200);
   }
 
-  createConnectedRoom(cellPosition: Vector2, direction: Direction) {
+  createNeighboringRooms(room: Room) {
+    const apathyRoom = this.createConnectedRoom(
+      room.cellPosition,
+      Direction.Top,
+      RoomType.Apathy,
+    );
+    const cowardiceRoom = this.createConnectedRoom(
+      room.cellPosition,
+      Direction.Left,
+      RoomType.Cowardice,
+    );
+    const sexualPerversionsRoom = this.createConnectedRoom(
+      room.cellPosition,
+      Direction.Right,
+      RoomType.SexualPerversions,
+    );
+    room.neighboringRooms.top = apathyRoom;
+    room.neighboringRooms.left = cowardiceRoom;
+    room.neighboringRooms.right = sexualPerversionsRoom;
+  }
+
+  createConnectedRoom(cellPosition: Vector2, direction: Direction, type: RoomType) {
     const connectedRoomX = (direction === Direction.Left) ?
       cellPosition.x - this.roomSize.x :
       (direction === Direction.Right) ?
@@ -161,13 +195,14 @@ export class TestScene extends BasicScene {
       connectedRoomX,
       connectedRoomY
     );
-    return this.createRoom(connectedRoomCellPosition);
+    return this.createRoom(connectedRoomCellPosition, type);
   }
 
-  createRoom(cellPosition: Vector2): Room {
+  createRoom(cellPosition: Vector2, type: RoomType): Room {
     const worldCoordinates = this.cellToWorldCoordinates(cellPosition);
     const worldSize = this.cellToWorldCoordinates(this.roomSize);
     return {
+      type: type,
       cellPosition: cellPosition,
       walls: [
         ...this.spawnRoomWalls(worldCoordinates, worldSize)
@@ -177,7 +212,13 @@ export class TestScene extends BasicScene {
         bottom: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Bottom),
         left: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Left),
         right: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Right),
-      }
+      },
+      neighboringRooms: {
+        top: null,
+        left: null,
+        right: null,
+        bottom: null,
+      },
     };
   }
 
@@ -311,7 +352,7 @@ export class TestScene extends BasicScene {
       player: this.player,
       isHorizontalWall: isHorizontalWall
     });
-    door.close();
+    door.open();
     this.entitiesContainer.add(door);
     return door;
   }
