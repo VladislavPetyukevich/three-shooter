@@ -157,6 +157,18 @@ export class TestScene extends BasicScene {
     this.scene.add(this.pointLight);
 
     this.scene.fog = new Fog(0x000000, 1.15, 200);
+
+    const floorSize = 5000;
+    const floorGeometry = new PlaneGeometry(floorSize, floorSize);
+    floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
+    const floorTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile);
+    floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
+    floorTexture.repeat.x = floorTexture.repeat.y = floorSize;
+    floorTexture.needsUpdate = true;
+    const floormaterial = new MeshPhongMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
+    const floormesh = new Mesh(floorGeometry, floormaterial);
+    floormesh.receiveShadow = true;
+    this.scene.add(floormesh);
   }
 
   createNeighboringRooms(room: Room) {
