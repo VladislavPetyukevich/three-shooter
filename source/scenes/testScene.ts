@@ -28,7 +28,9 @@ import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import {
   RoomCellType,
+  RoomCell,
   RoomConstructor,
+  RoomConstructors,
   getRandomRoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { hud } from '@/HUD/HUD';
@@ -60,6 +62,7 @@ export interface Room {
     left: Room | null;
     right: Room | null;
   };
+  constructors: RoomConstructors | null;
 }
 
 interface Size {
@@ -84,7 +87,6 @@ export class TestScene extends BasicScene {
   dungeonRoomsCount: number;
   dungeonCellsPositionToLight: number[];
   dungeonCellDoors: Door[][];
-  dungeonRoomConstructors: RoomConstructor[];
   currentRoomIndex: number | null;
   dungeonRoomEnimiesCount: number;
   doors: Door[];
@@ -142,7 +144,6 @@ export class TestScene extends BasicScene {
     });
     this.torches = this.getSceneTorches();
     this.dungeonCellDoors = [];
-    this.dungeonRoomConstructors = [];
 
     // lights
     this.ambientLight = new AmbientLight(0xFFFFFF, 1);
@@ -217,7 +218,7 @@ export class TestScene extends BasicScene {
   createRoom(cellPosition: Vector2, type: RoomType): Room {
     const worldCoordinates = this.cellToWorldCoordinates(cellPosition);
     const worldSize = this.cellToWorldCoordinates(this.roomSize);
-    return {
+    const room = {
       type: type,
       cellPosition: cellPosition,
       walls: [
@@ -235,7 +236,10 @@ export class TestScene extends BasicScene {
         right: null,
         bottom: null,
       },
+      constructors: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
     };
+    this.fillRoomBeforeVisit(room);
+    return room;
   }
 
   spawnRoomWalls(worldCoordinates: Vector2, worldSize: Vector2, roomType: RoomType): Entity[] {
@@ -323,6 +327,51 @@ export class TestScene extends BasicScene {
     );
   }
 
+  getSceneTorches() {
+    const torches: Torch[] = [];
+    for (let i = 4; i--;) {
+      torches.push(
+        this.entitiesContainer.add(new Torch({
+          position: new Vector3(0, -1000, 0),
+          player: this.player
+        }))
+      );
+    }
+    return torches;
+  }
+
+  fillRoomBeforeVisit(room: Room) {
+    if (!room.constructors) {
+      return;
+    }
+    const cells = room.constructors.constructBeforeVisit(this.roomSize);
+    this.fillRoomCells(room, cells);
+  }
+
+  fillRoomCells(room: Room, cells: RoomCell[]) {
+    cells.forEach(cell => {
+      const roomCoordinates = this.cellToWorldCoordinates(room.cellPosition);
+      const cellCoordinates =
+        this.cellToWorldCoordinates(cell.position).add(roomCoordinates);
+      switch (cell.type) {
+        case RoomCellType.Wall:
+          this.spawnWall(
+            cellCoordinates,
+            new Vector2(this.mapCellSize, this.mapCellSize),
+            room.type
+          );
+          break;
+        case RoomCellType.Enemy:
+          this.spawnEnemy(
+            cellCoordinates,
+          );
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
   cellToWorldCoordinates(cellCoordinates: Vector2) {
     return new Vector2(
       cellCoordinates.x * this.mapCellSize,
@@ -335,19 +384,6 @@ export class TestScene extends BasicScene {
       position.x + size.x / 2,
       position.y + size.y / 2
     );
-  }
-
-  getSceneTorches() {
-    const torches: Torch[] = [];
-    for (let i = 4; i--;) {
-      torches.push(
-        this.entitiesContainer.add(new Torch({
-          position: new Vector3(0, -1000, 0),
-          player: this.player
-        }))
-      );
-    }
-    return torches;
   }
 
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType) {

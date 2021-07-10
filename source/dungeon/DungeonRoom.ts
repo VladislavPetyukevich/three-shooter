@@ -1,3 +1,4 @@
+import { Vector2 } from 'three';
 import { randomNumbers } from '@/RandomNumbers';
 
 export const enum RoomCellType {
@@ -6,40 +7,35 @@ export const enum RoomCellType {
   Wall,
 }
 
-interface RoomProps {
-  width: number,
-  height: number
-}
-
-interface RoomCell {
-  position: { x: number, y: number },
+export interface RoomCell {
+  position: Vector2,
   type: RoomCellType
 }
 
-type Constructor = (props: RoomProps) => RoomCell[];
+export type RoomConstructor = (size: Vector2) => RoomCell[];
 
-export interface RoomConstructor {
-  constructBeforeVisit: Constructor;
-  constructAfterVisit: Constructor;
+export interface RoomConstructors {
+  constructBeforeVisit: RoomConstructor;
+  constructAfterVisit: RoomConstructor;
 }
 
 const emptyConstructor = () => [];
 
 const beforeConstructors = [
   emptyConstructor,
-  (props: RoomProps) => {
+  (size: Vector2) => {
     const stipSize = 2;
     const padding = 4;
-    const centerX = Math.floor(props.width / 2);
-    const centerY = Math.floor(props.height / 2);
+    const centerX = Math.floor(size.x / 2);
+    const centerY = Math.floor(size.y / 2);
     const cells: RoomCell[] = [];
     for (let x = centerX - stipSize; x < centerX + stipSize; x++) {
       if (x % 2 !== 0) {
         continue;
       }
       cells.push(
-        { position: { x: x, y: padding }, type: RoomCellType.Wall },
-        { position: { x: x, y: props.height - padding }, type: RoomCellType.Wall },
+        { position: new Vector2(x, padding), type: RoomCellType.Wall },
+        { position: new Vector2(x, size.y - padding), type: RoomCellType.Wall },
       );
     }
     for (let y = centerY - stipSize; y < centerY + stipSize; y++) {
@@ -47,8 +43,8 @@ const beforeConstructors = [
         continue;
       }
       cells.push(
-        { position: { x: padding, y: y }, type: RoomCellType.Wall },
-        { position: { x: props.width - padding, y: y }, type: RoomCellType.Wall },
+        { position: new Vector2(padding, y), type: RoomCellType.Wall },
+        { position: new Vector2(size.x - padding, y), type: RoomCellType.Wall },
       );
     }
     return cells;
@@ -56,37 +52,37 @@ const beforeConstructors = [
 ];
 
 const afterConstructors = [
-  (props: RoomProps) => {
+  (size: Vector2) => {
     const cells: RoomCell[] = [];
-    const step = Math.round(props.width / 4);
-    for (let x = 2; x < props.width - 2; x += step) {
+    const step = Math.round(size.x / 4);
+    for (let x = 2; x < size.x - 2; x += step) {
       cells.push(
-        { position: { x: x, y: props.height - 2 }, type: RoomCellType.Enemy },
+        { position: new Vector2(x, size.y - 2), type: RoomCellType.Enemy },
       );
     }
     return cells;
   },
-  (props: RoomProps) => {
+  (size: Vector2) => {
     return [
-      { position: { x: 2, y: 2 }, type: RoomCellType.Enemy },
-      { position: { x: 2, y: props.height - 3 }, type: RoomCellType.Enemy },
-      { position: { x: props.width - 3, y: props.height - 3 }, type: RoomCellType.Enemy },
-      { position: { x: props.width - 3, y: 2 }, type: RoomCellType.Enemy },
+      { position: new Vector2(2, 2), type: RoomCellType.Enemy },
+      { position: new Vector2(2, size.y - 3), type: RoomCellType.Enemy },
+      { position: new Vector2(size.x - 3, size.y - 3), type: RoomCellType.Enemy },
+      { position: new Vector2(size.x - 3, 2), type: RoomCellType.Enemy },
     ];
   },
 ];
 
-const getRandomConstructor = (constructors: Constructor[]) => {
+const getRandomConstructor = (constructors: RoomConstructor[]) => {
   const index = Math.floor(randomNumbers.getRandom() * constructors.length);
   return constructors[index];
 };
 
-export const getRandomRoomConstructor = (): RoomConstructor => {
+export const getRandomRoomConstructor = (): RoomConstructors => {
   const beforeConstructor = getRandomConstructor(beforeConstructors);
   let afterConstructor = getRandomConstructor(afterConstructors);
-  const testRoomPorps = { width: 10, height: 10 };
+  const testRoomSize = new Vector2(10, 10);
   for (let i = 10; i--;) {
-    const isConflictedPair = checkConfilt(beforeConstructor, afterConstructor, testRoomPorps);
+    const isConflictedPair = checkConfilt(beforeConstructor, afterConstructor, testRoomSize);
     if (!isConflictedPair) {
       break;
     }
@@ -103,12 +99,12 @@ export const getRandomRoomConstructor = (): RoomConstructor => {
 };
 
 const checkConfilt = (
-  constructorA: Constructor,
-  constructorB: Constructor,
-  testRoomPorps: RoomProps
+  constructorA: RoomConstructor,
+  constructorB: RoomConstructor,
+  testRoomSize: Vector2
 ) => {
-  const cellsA = constructorA(testRoomPorps);
-  const cellsB = constructorB(testRoomPorps);
+  const cellsA = constructorA(testRoomSize);
+  const cellsB = constructorB(testRoomSize);
   const conflict = cellsA.some(cellA =>
     cellsB.some(cellB => {
       const isSameX = cellA.position.x === cellB.position.x;
