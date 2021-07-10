@@ -1,13 +1,14 @@
 import { Entity } from '@/core/Entities/Entity';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { WallBehavior } from './WallBehavior';
-import { Vector3 } from 'three';
+import { Vector3, Color } from 'three';
 import { ENTITY_TYPE, WALL, GAME_TEXTURE_NAME } from '@/constants';
 
-interface WallProps {
+export interface WallProps {
   position: Vector3;
   size?: { width: number; height: number; depth: number };
   isHorizontalWall?: boolean;
+  color?: Color;
 }
 
 export class Wall extends Entity {
@@ -21,7 +22,8 @@ export class Wall extends Entity {
       isHorizontalWall: props.isHorizontalWall,
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
       normalTextureFileName: GAME_TEXTURE_NAME.wallNormalFile,
-      textureSize: 3
+      textureSize: 3,
+      color: props.color,
     });
     const behavior = new WallBehavior({});
     super(

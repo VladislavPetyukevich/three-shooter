@@ -1,3 +1,4 @@
+import { Color } from 'three';
 import wallTextureFile from '@/assets/wall.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import doorTextureFile from '@/assets/door.png';
@@ -37,6 +38,27 @@ export const enum ENTITY_TYPE {
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK',
   TRIGGER = 'TRIGGER',
+};
+
+const DarkColor = new Color(0);
+
+const darker = (color: Color, factor: number) => {
+  const newColor = color.clone();
+  return newColor.lerp(DarkColor, factor);
+};
+
+export const COLORS = {
+  Apathy: new Color(42, 140, 186),
+  Cowardice: new Color(104, 142, 11),
+  SexualPerversions: new Color(166, 15, 11),
+};
+
+const WallDarkerFactor = 0.9977;
+export const WALL_COLORS = {
+  Neutral: darker(new Color(180, 180, 180), WallDarkerFactor),
+  Apathy: darker(COLORS.Apathy, WallDarkerFactor),
+  Cowardice: darker(COLORS.Cowardice, WallDarkerFactor),
+  SexualPerversions: darker(COLORS.SexualPerversions, WallDarkerFactor),
 };
 
 const GAME_SPEED = 1100;

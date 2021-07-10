@@ -16,7 +16,11 @@ import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
-import { Wall } from '@/Entities/Wall/Wall';
+import { WallProps } from '@/Entities/Wall/Wall';
+import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
+import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
+import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
+import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy } from '@/Entities/Enemy/Enemy';
 import { Trigger } from '@/Entities/Trigger/Trigger';
@@ -217,7 +221,7 @@ export class TestScene extends BasicScene {
       type: type,
       cellPosition: cellPosition,
       walls: [
-        ...this.spawnRoomWalls(worldCoordinates, worldSize)
+        ...this.spawnRoomWalls(worldCoordinates, worldSize, type)
       ],
       doors: {
         top: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
@@ -234,7 +238,7 @@ export class TestScene extends BasicScene {
     };
   }
 
-  spawnRoomWalls(worldCoordinates: Vector2, worldSize: Vector2): Entity[] {
+  spawnRoomWalls(worldCoordinates: Vector2, worldSize: Vector2, roomType: RoomType): Entity[] {
     const doorPadding = this.doorWidthHalf * this.mapCellSize;
     const halfWidth = worldSize.x / 2;
     const halfHeight = worldSize.y / 2;
@@ -281,7 +285,8 @@ export class TestScene extends BasicScene {
     return wallsPositionSize.map(
       info => this.spawnWall(
         this.getCenterPosition(info.position, info.size),
-        info.size
+        info.size,
+        roomType,
       )
     );
   }
@@ -345,14 +350,31 @@ export class TestScene extends BasicScene {
     return torches;
   }
 
-  spawnWall(coordinates: Vector2, size: Vector2) {
+  spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType) {
     const isHorizontalWall = size.x > size.y;
-    const wall = new Wall({
+    const props: WallProps = {
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
       size: { width: size.x, height: WALL.SIZE, depth: size.y },
-      isHorizontalWall: isHorizontalWall
-    });
-    return this.entitiesContainer.add(wall);
+      isHorizontalWall: isHorizontalWall,
+    };
+    switch (roomType) {
+      case RoomType.Apathy:
+        return this.entitiesContainer.add(
+          new WallApathy(props)
+        );
+      case RoomType.Cowardice:
+        return this.entitiesContainer.add(
+          new WallCowardice(props)
+        );
+      case RoomType.SexualPerversions:
+        return this.entitiesContainer.add(
+          new WallSexualPerversions(props)
+        );
+      default:
+        return this.entitiesContainer.add(
+          new WallNeutral(props)
+        );
+    }
   }
 
   spawnDoor(coordinates: Vector2, size: Vector2) {

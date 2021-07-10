@@ -1,5 +1,13 @@
 import { Actor } from '@/core/Entities/Actor';
-import { Mesh, BoxGeometry, MeshPhongMaterial, Vector3, RepeatWrapping, Material } from 'three';
+import {
+  Mesh,
+  BoxGeometry,
+  MeshPhongMaterial,
+  Vector3,
+  RepeatWrapping,
+  Material,
+  Color,
+} from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 
 interface WallActorProps {
@@ -9,6 +17,7 @@ interface WallActorProps {
   textureFileName: string;
   normalTextureFileName?: string;
   isHorizontalWall?: boolean;
+  color?: Color;
 }
 
 export class WallActor implements Actor {
@@ -34,7 +43,8 @@ export class WallActor implements Actor {
     const materialX = new MeshPhongMaterial({
       transparent: true,
       map: textureX,
-      ...(normalX && { normalMap: normalX })
+      ...(normalX && { normalMap: normalX }),
+      ...(props.color && { color: props.color }),
     });
     const textureYSize = props.isHorizontalWall ?
       props.size.depth :
@@ -54,7 +64,8 @@ export class WallActor implements Actor {
     const materialY = new MeshPhongMaterial({
       transparent: true,
       map: textureY,
-      ...(normalY && { normalMap: normalY })
+      ...(normalY && { normalMap: normalY }),
+      ...(props.color && { color: props.color }),
     });
     const materials: Material[] = [];
     const horizontalMaterial = props.isHorizontalWall ? materialX : materialY;
