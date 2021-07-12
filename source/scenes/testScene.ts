@@ -62,6 +62,7 @@ export interface Room {
     left: Room | null;
     right: Room | null;
   };
+  entities: Entity[];
   constructors: RoomConstructors | null;
 }
 
@@ -208,7 +209,7 @@ export class TestScene extends BasicScene {
   createRoom(cellPosition: Vector2, type: RoomType): Room {
     const worldCoordinates = this.cellToWorldCoordinates(cellPosition);
     const worldSize = this.cellToWorldCoordinates(this.roomSize);
-    const room = {
+    const room: Room = {
       type: type,
       cellPosition: cellPosition,
       walls: [
@@ -226,11 +227,14 @@ export class TestScene extends BasicScene {
         right: null,
         bottom: null,
       },
+      entities: [],
       constructors: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {
-      this.spawnRoomActivateTrigger(room);
+      room.entities.push(
+        this.spawnRoomActivateTrigger(room)
+      );
     }
     return room;
   }
@@ -346,7 +350,7 @@ export class TestScene extends BasicScene {
         entitiesContainer: this.entitiesContainer,
         onTrigger: () => this.handleRoomVisit(room),
       })
-    );
+    ) as Trigger;
   }
 
   handleRoomVisit(room: Room) {
@@ -366,6 +370,59 @@ export class TestScene extends BasicScene {
       );
     }
     return torches;
+  }
+
+  deleteNeighboringRooms(room: Room) {
+    this.deleteRoomRelations(room);
+  }
+
+  deleteRoom(room: Room | null) {
+    if (!room) {
+      return;
+    }
+    room.walls.forEach(wall =>
+      this.entitiesContainer.remove(wall.actor.mesh)
+    );
+    room.entities.forEach(entity =>
+      this.entitiesContainer.remove(entity.actor.mesh)
+    );
+    const doors = room.doors;
+    this.removeEntity(doors.top);
+    this.removeEntity(doors.bottom);
+    this.removeEntity(doors.left);
+    this.removeEntity(doors.right);
+    this.deleteRoomRelations(room);
+  }
+
+  deleteRoomRelations(room: Room) {
+    const neighboringRooms = room.neighboringRooms;
+    if (neighboringRooms.top) {
+      neighboringRooms.top.neighboringRooms.bottom = null;
+      this.deleteRoom(neighboringRooms.top);
+      neighboringRooms.top = null;
+    }
+    if (neighboringRooms.bottom) {
+      neighboringRooms.bottom.neighboringRooms.top = null;
+      this.deleteRoom(neighboringRooms.bottom);
+      neighboringRooms.bottom = null;
+    }
+    if (neighboringRooms.left) {
+      neighboringRooms.left.neighboringRooms.right = null;
+      this.deleteRoom(neighboringRooms.left);
+      neighboringRooms.left = null;
+    }
+    if (neighboringRooms.right) {
+      neighboringRooms.right.neighboringRooms.left = null;
+      this.deleteRoom(neighboringRooms.right);
+      neighboringRooms.right = null;
+    }
+  }
+
+  removeEntity(entity: Entity | null) {
+    if (!entity) {
+      return;
+    }
+    this.entitiesContainer.remove(entity.actor.mesh);
   }
 
   fillRoomAfterVisit(room: Room) {
@@ -391,10 +448,12 @@ export class TestScene extends BasicScene {
         this.cellToWorldCoordinates(cell.position).add(roomCoordinates);
       switch (cell.type) {
         case RoomCellType.Wall:
-          this.spawnWall(
-            cellCoordinates,
-            new Vector2(this.mapCellSize, this.mapCellSize),
-            room.type
+          room.entities.push(
+            this.spawnWall(
+              cellCoordinates,
+              new Vector2(this.mapCellSize, this.mapCellSize),
+              room.type
+            )
           );
           break;
         case RoomCellType.Enemy:
@@ -504,6 +563,8 @@ export class TestScene extends BasicScene {
   }
 
   onRoomClear(room: Room) {
+    this.deleteNeighboringRooms(room);
+    this.createNeighboringRooms(room);
     this.openCloseDoors(room, false);
   }
 
