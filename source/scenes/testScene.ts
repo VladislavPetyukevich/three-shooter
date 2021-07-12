@@ -83,15 +83,8 @@ export class TestScene extends BasicScene {
   currentRoom: Room;
   roomSize: Vector2;
   doorWidthHalf: number;
-  dungeonSize: Size;
-  dungeonRoomsCount: number;
-  dungeonCellsPositionToLight: number[];
-  dungeonCellDoors: Door[][];
-  currentRoomIndex: number | null;
-  dungeonRoomEnimiesCount: number;
-  doors: Door[];
+  currentRoomEnimiesCount: number;
   torches: Torch[];
-  visitedRooms: Set<number>;
   initialCameraY: number;
   isPlayerFalling: boolean;
   isPlayerFallingAtStart: boolean;
@@ -105,14 +98,10 @@ export class TestScene extends BasicScene {
     this.mapCellSize = 3;
     this.roomSize = new Vector2(20, 20);
     this.doorWidthHalf = 1;
+    this.currentRoomEnimiesCount = 0;
     this.currentRoom = this.createRoom(new Vector2(0, 0), RoomType.Neutral);
     this.createNeighboringRooms(this.currentRoom);
-    this.dungeonSize = { width: 200, height: 200 };
-    this.dungeonRoomsCount = 3;
-    this.currentRoomIndex = null;
-    this.dungeonCellsPositionToLight = [];
-    this.dungeonRoomEnimiesCount = 0;
-    this.visitedRooms = new Set();
+    this.openCloseDoors(this.currentRoom, false);
     this.initialCameraY = 70;
     this.isPlayerFalling = false;
     this.isPlayerFallingAtStart = true;
@@ -120,7 +109,6 @@ export class TestScene extends BasicScene {
     this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
     this.onFinish = props.onFinish;
-    this.doors = [];
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
       new Player({
@@ -143,7 +131,6 @@ export class TestScene extends BasicScene {
       setTimeout(() => this.onFinish(), 400);
     });
     this.torches = this.getSceneTorches();
-    this.dungeonCellDoors = [];
 
     // lights
     this.ambientLight = new AmbientLight(0xFFFFFF, 1);
@@ -193,8 +180,11 @@ export class TestScene extends BasicScene {
       RoomType.SexualPerversions,
     );
     room.neighboringRooms.top = apathyRoom;
+    apathyRoom.neighboringRooms.bottom = room;
     room.neighboringRooms.left = cowardiceRoom;
+    cowardiceRoom.neighboringRooms.right = room;
     room.neighboringRooms.right = sexualPerversionsRoom;
+    sexualPerversionsRoom.neighboringRooms.left = room;
   }
 
   createConnectedRoom(cellPosition: Vector2, direction: Direction, type: RoomType) {
@@ -360,7 +350,9 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomVisit(room: Room) {
+    this.currentRoom = room;
     this.fillRoomAfterVisit(room);
+    this.openCloseDoors(room, true);
   }
 
   getSceneTorches() {
@@ -406,6 +398,7 @@ export class TestScene extends BasicScene {
           );
           break;
         case RoomCellType.Enemy:
+          this.currentRoomEnimiesCount++;
           this.spawnEnemy(
             cellCoordinates,
           );
@@ -414,6 +407,38 @@ export class TestScene extends BasicScene {
           break;
       }
     });
+  }
+
+  openCloseDoors(room: Room, isClose: boolean) {
+    const doors = room.doors;
+    const neighboringRooms = room.neighboringRooms;
+    if (neighboringRooms.top) {
+      this.openCloseDoor(doors.top, isClose);
+      this.openCloseDoor(neighboringRooms.top.doors.bottom, isClose);
+    }
+    if (neighboringRooms.bottom) {
+      this.openCloseDoor(doors.bottom, isClose);
+      this.openCloseDoor(neighboringRooms.bottom.doors.top, isClose);
+    }
+    if (neighboringRooms.left) {
+      this.openCloseDoor(doors.left, isClose);
+      this.openCloseDoor(neighboringRooms.left.doors.right, isClose);
+    }
+    if (neighboringRooms.right) {
+      this.openCloseDoor(doors.right, isClose);
+      this.openCloseDoor(neighboringRooms.right.doors.left, isClose);
+    }
+  }
+
+  openCloseDoor(door: Door | null, isClose: boolean) {
+    if (!door) {
+      return;
+    }
+    if (isClose) {
+      door.close();
+    } else {
+       door.open();
+    }
   }
 
   cellToWorldCoordinates(cellCoordinates: Vector2) {
@@ -466,25 +491,20 @@ export class TestScene extends BasicScene {
       player: this.player,
       isHorizontalWall: isHorizontalWall
     });
-    door.open();
     this.entitiesContainer.add(door);
     return door;
   }
 
   onEnemyDeath = () => {
-    this.dungeonRoomEnimiesCount--;
-    if (this.dungeonRoomEnimiesCount !== 0) {
+    this.currentRoomEnimiesCount--;
+    if (this.currentRoomEnimiesCount !== 0) {
       return;
     }
-    if (typeof this.currentRoomIndex !== 'number') {
-      return;
-    }
-    if (this.visitedRooms.size === this.dungeonRoomsCount) {
-      // const cellPos = this.dungeonCellsPosition[this.currentRoomIndex];
-      // this.spawnRoomHole(cellPos[0], cellPos[1]);
-      console.log('TODO: spawn hole trigger in room');
-      return;
-    }
+    this.onRoomClear(this.currentRoom);
+  }
+
+  onRoomClear(room: Room) {
+    this.openCloseDoors(room, false);
   }
 
   spawnEnemy(coordinates: Vector2) {
