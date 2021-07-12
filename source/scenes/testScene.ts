@@ -66,6 +66,14 @@ export interface Room {
   constructors: RoomConstructors | null;
 }
 
+type RoomTorchesPool = [Torch, Torch, Torch, Torch];
+
+interface RoomTorches {
+  apathy: RoomTorchesPool,
+  cowardice: RoomTorchesPool,
+  sexualPerversions: RoomTorchesPool,
+}
+
 interface Size {
   width: number;
   height: number;
@@ -85,7 +93,7 @@ export class TestScene extends BasicScene {
   roomSize: Vector2;
   doorWidthHalf: number;
   currentRoomEnimiesCount: number;
-  torches: Torch[];
+  torches: RoomTorches;
   initialCameraY: number;
   isPlayerFalling: boolean;
   isPlayerFallingAtStart: boolean;
@@ -96,13 +104,7 @@ export class TestScene extends BasicScene {
 
   constructor(props: TestSceneProps) {
     super(props);
-    this.mapCellSize = 3;
-    this.roomSize = new Vector2(20, 20);
-    this.doorWidthHalf = 1;
-    this.currentRoomEnimiesCount = 0;
-    this.currentRoom = this.createRoom(new Vector2(0, 0), RoomType.Neutral);
-    this.createNeighboringRooms(this.currentRoom);
-    this.openCloseDoors(this.currentRoom, false);
+
     this.initialCameraY = 70;
     this.isPlayerFalling = false;
     this.isPlayerFallingAtStart = true;
@@ -120,8 +122,6 @@ export class TestScene extends BasicScene {
       })
     ) as Player;
     this.camera.position.y = this.initialCameraY;
-    this.player.actor.mesh.position.x = (this.currentRoom.cellPosition.x + 2) * this.mapCellSize;
-    this.player.actor.mesh.position.z = (this.currentRoom.cellPosition.y + 2) * this.mapCellSize;
     this.player.cantMove();
     this.player.setOnHitCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
@@ -131,7 +131,17 @@ export class TestScene extends BasicScene {
       this.ambientLight.color.setHex(0xFF0000);
       setTimeout(() => this.onFinish(), 400);
     });
+    this.mapCellSize = 3;
+    this.roomSize = new Vector2(20, 20);
+    this.doorWidthHalf = 1;
     this.torches = this.getSceneTorches();
+    this.currentRoomEnimiesCount = 0;
+    this.currentRoom = this.createRoom(new Vector2(0, 0), RoomType.Neutral);
+    this.createNeighboringRooms(this.currentRoom);
+    this.openCloseDoors(this.currentRoom, false);
+
+    this.player.actor.mesh.position.x = (this.currentRoom.cellPosition.x + 2) * this.mapCellSize;
+    this.player.actor.mesh.position.z = (this.currentRoom.cellPosition.y + 2) * this.mapCellSize;
 
     // lights
     this.ambientLight = new AmbientLight(0xFFFFFF, 1);
@@ -235,6 +245,7 @@ export class TestScene extends BasicScene {
       room.entities.push(
         this.spawnRoomActivateTrigger(room)
       );
+      this.moveTorchesToRoom(room);
     }
     return room;
   }
@@ -360,16 +371,91 @@ export class TestScene extends BasicScene {
   }
 
   getSceneTorches() {
-    const torches: Torch[] = [];
-    for (let i = 4; i--;) {
-      torches.push(
-        this.entitiesContainer.add(new Torch({
-          position: new Vector3(0, -1000, 0),
-          player: this.player
-        }))
-      );
+    return {
+      apathy: this.createTorchesPool(),
+      cowardice: this.createTorchesPool(),
+      sexualPerversions: this.createTorchesPool()
+    };
+  }
+
+  createTorchesPool(): RoomTorchesPool {
+    return [
+      this.createTorch(),
+      this.createTorch(),
+      this.createTorch(),
+      this.createTorch(),
+    ];
+  }
+
+  createTorch() {
+    return this.entitiesContainer.add(new Torch({
+      position: new Vector3(0, -1000, 0),
+      player: this.player
+    }));
+  }
+
+  moveTorchesToRoom(room: Room) {
+    if (room.type === RoomType.Neutral) {
+      return;
     }
-    return torches;
+    const torches = this.getRoomTorches(room.type);
+    const posO = this.cellToWorldCoordinates(
+      new Vector2(
+        room.cellPosition.x + this.roomSize.x / 2 - 0.5,
+        room.cellPosition.y + this.roomSize.y / 2 + 0.5
+      )
+    );
+    torches[0].actor.mesh.position.set(
+      posO.x,
+      0,
+      posO.y
+    );
+    const pos1 = this.cellToWorldCoordinates(
+      new Vector2(
+        room.cellPosition.x + this.roomSize.x / 2 + 0.5,
+        room.cellPosition.y + this.roomSize.y / 2 - 0.5
+      )
+    );
+    torches[1].actor.mesh.position.set(
+      pos1.x,
+      0,
+      pos1.y
+    );
+    const pos2 = this.cellToWorldCoordinates(
+      new Vector2(
+        room.cellPosition.x + this.roomSize.x / 2 + 1.5,
+        room.cellPosition.y + this.roomSize.y / 2 + 0.5
+      )
+    );
+    torches[2].actor.mesh.position.set(
+      pos2.x,
+      0,
+      pos2.y
+    );
+    const pos3 = this.cellToWorldCoordinates(
+      new Vector2(
+        room.cellPosition.x + this.roomSize.x / 2 + 0.5,
+        room.cellPosition.y + this.roomSize.y / 2 + 1.5
+      )
+    );
+    torches[3].actor.mesh.position.set(
+      pos3.x,
+      0,
+      pos3.y
+    );
+  }
+
+  getRoomTorches(roomType: RoomType) {
+    switch (roomType) {
+      case RoomType.Apathy:
+        return this.torches.apathy;
+      case RoomType.Cowardice:
+        return this.torches.cowardice;
+      case RoomType.SexualPerversions:
+        return this.torches.sexualPerversions;
+      default:
+        throw new Error(`Cannot get room torches for room type ${roomType}`);
+    }
   }
 
   deleteNeighboringRooms(room: Room) {
