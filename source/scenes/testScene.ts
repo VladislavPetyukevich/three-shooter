@@ -239,6 +239,9 @@ export class TestScene extends BasicScene {
       constructors: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
     };
     this.fillRoomBeforeVisit(room);
+    if (room.type !== RoomType.Neutral) {
+      this.spawnRoomActivateTrigger(room);
+    }
     return room;
   }
 
@@ -327,6 +330,39 @@ export class TestScene extends BasicScene {
     );
   }
 
+  spawnRoomActivateTrigger(room: Room) {
+    const size = new Vector2(this.mapCellSize, this.mapCellSize);
+    const position = this.getCenterPosition(
+      this.cellToWorldCoordinates(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2,
+          room.cellPosition.y + this.roomSize.y / 2
+        )
+      ),
+      size
+    );
+    return this.entitiesContainer.add(
+      new Trigger({
+        position: new Vector3(
+          position.x,
+          this.mapCellSize / 2,
+          position.y,
+        ),
+        size: new Vector3(
+          size.x,
+          this.mapCellSize,
+          size.y,
+        ),
+        entitiesContainer: this.entitiesContainer,
+        onTrigger: () => this.handleRoomVisit(room),
+      })
+    );
+  }
+
+  handleRoomVisit(room: Room) {
+    this.fillRoomAfterVisit(room);
+  }
+
   getSceneTorches() {
     const torches: Torch[] = [];
     for (let i = 4; i--;) {
@@ -338,6 +374,14 @@ export class TestScene extends BasicScene {
       );
     }
     return torches;
+  }
+
+  fillRoomAfterVisit(room: Room) {
+    if (!room.constructors) {
+      return;
+    }
+    const cells = room.constructors.constructAfterVisit(this.roomSize);
+    this.fillRoomCells(room, cells);
   }
 
   fillRoomBeforeVisit(room: Room) {
