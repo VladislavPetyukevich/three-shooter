@@ -61,6 +61,10 @@ export const WALL_COLORS = {
   SexualPerversions: darker(COLORS.SexualPerversions, WallDarkerFactor),
 };
 
+export const ENEMY_COLORS = {
+  Apathy: darker(new Color(2470578), 0.9),
+};
+
 const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 70;
 const BASE_DISTANCE = 20;

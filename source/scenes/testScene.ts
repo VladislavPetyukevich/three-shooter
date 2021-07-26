@@ -22,7 +22,7 @@ import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
 import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
-import { Enemy } from '@/Entities/Enemy/Enemy';
+import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
@@ -87,6 +87,7 @@ export interface TestSceneProps extends BasicSceneProps {
 export class TestScene extends BasicScene {
   pointLight: PointLight;
   ambientLight: AmbientLight;
+  ambientLightColor: number;
   player: Player;
   mapCellSize: number;
   currentRoom: Room;
@@ -125,7 +126,7 @@ export class TestScene extends BasicScene {
     this.player.cantMove();
     this.player.setOnHitCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
-      setTimeout(() => this.ambientLight.color.setHex(0xFFFFFF), 100);
+      setTimeout(() => this.ambientLight.color.setHex(this.ambientLightColor), 100);
     });
     this.player.setOnDeathCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
@@ -144,7 +145,8 @@ export class TestScene extends BasicScene {
     this.player.actor.mesh.position.z = (this.currentRoom.cellPosition.y + 2) * this.mapCellSize;
 
     // lights
-    this.ambientLight = new AmbientLight(0xFFFFFF, 1);
+    this.ambientLightColor = 0x404040;
+    this.ambientLight = new AmbientLight(this.ambientLightColor, 1);
     this.scene.add(this.ambientLight);
     const pointLightColor = 0xFFFFFF;
     const pointLightIntensity = 30;
@@ -655,7 +657,7 @@ export class TestScene extends BasicScene {
   }
 
   spawnEnemy(coordinates: Vector2) {
-    const enemy = new Enemy({
+    const enemy = new EnemyApathy({
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
       player: this.player,
       container: this.entitiesContainer,

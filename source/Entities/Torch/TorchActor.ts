@@ -1,4 +1,4 @@
-import { Mesh, BoxGeometry, MeshBasicMaterial, PointLight } from 'three';
+import { Mesh, BoxGeometry, MeshBasicMaterial, PointLight, Color } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Player } from '@/Entities/Player/Player';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -22,7 +22,7 @@ export class TorchActor implements Actor {
     const geometry = new BoxGeometry(1.5, 1.5, 0.001);
     const material = new MeshBasicMaterial();
     material.transparent = true;
-    const light = new PointLight('red', 50, 50);
+    const light = new PointLight(new Color(0x600004), 80, 20);
     light.position.y = 1.5;
     this.spriteSheet = new SpriteSheet({
       textures: [torchFile, torchFire1File, torchFire2File],
