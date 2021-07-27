@@ -6,12 +6,19 @@ import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
+export interface EnemyTextures {
+  walk1: string;
+  walk2: string;
+  death: string;
+}
+
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
   color: Color;
+  textures: EnemyTextures;
 }
 
 export class Enemy extends Entity {
@@ -20,7 +27,8 @@ export class Enemy extends Entity {
     const actor = new EnemyActor({
       position: props.position,
       player: props.player,
-      color: props.color
+      color: props.color,
+      textures: props.textures,
     });
     super(
       ENTITY_TYPE.ENEMY,

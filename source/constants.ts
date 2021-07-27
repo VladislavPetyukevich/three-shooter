@@ -6,9 +6,9 @@ import doorNormalFile from '@/assets/door-normal.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
-import enemyWalk1 from './assets/enemyWalk1.png';
-import enemyWalk2 from './assets/enemyWalk2.png';
-import enemyDeath from './assets/enemyDeath.png';
+import enemyApathyWalk1 from './assets/enemyWalk1.png';
+import enemyApathyWalk2 from './assets/enemyWalk2.png';
+import enemyApathyDeath from './assets/enemyDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
@@ -130,9 +130,9 @@ export const gameTextures = {
   floorTextureFile,
   gunTextureFile,
   gunFireFile,
-  enemyWalk1,
-  enemyWalk2,
-  enemyDeath,
+  enemyApathyWalk1,
+  enemyApathyWalk2,
+  enemyApathyDeath,
   shootMark1,
   shootMark2,
   torch,
@@ -152,14 +152,22 @@ export const enum GAME_TEXTURE_NAME {
   floorTextureFile = 'floorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
-  enemyWalk1 = 'enemyWalk1',
-  enemyWalk2 = 'enemyWalk2',
-  enemyDeath = 'enemyDeath',
+  enemyApathyWalk1 = 'enemyApathyWalk1',
+  enemyApathyWalk2 = 'enemyApathyWalk2',
+  enemyApathyDeath = 'enemyApathyDeath',
   shootMark1 = 'shootMark1',
   shootMark2 = 'shootMark2',
   torch = 'torch',
   torchFire1 = 'torchFire1',
   torchFire2 = 'torchFire2',
+};
+
+export const ENEMY_TEXTURES = {
+  Apathy: {
+    walk1: GAME_TEXTURE_NAME.enemyApathyWalk2,
+    walk2: GAME_TEXTURE_NAME.enemyApathyWalk2,
+    death: GAME_TEXTURE_NAME.enemyApathyDeath,
+  },
 };
 
 export const enum GAME_SOUND_NAME {

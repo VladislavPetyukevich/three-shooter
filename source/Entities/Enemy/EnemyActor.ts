@@ -1,14 +1,15 @@
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, Color, BoxGeometry, MeshLambertMaterial } from 'three';
 import { Player } from '@/Entities/Player/Player';
+import { EnemyTextures } from './Enemy';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 
 interface ActorProps {
   position: { x: number; y: number; z: number };
   player: Player;
   color: Color;
+  textures: EnemyTextures;
 }
 
 export class EnemyActor implements Actor {
@@ -17,9 +18,9 @@ export class EnemyActor implements Actor {
   spriteSheet: SpriteSheet;
 
   constructor(props: ActorProps) {
-    const enemyWalk1File = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyWalk1);
-    const enemyWalk2File = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyWalk2);
-    const enemyDeathFile = texturesStore.getTexture(GAME_TEXTURE_NAME.enemyDeath);
+    const enemyWalk1File = texturesStore.getTexture(props.textures.walk1);
+    const enemyWalk2File = texturesStore.getTexture(props.textures.walk2);
+    const enemyDeathFile = texturesStore.getTexture(props.textures.death);
     const geometry = new BoxGeometry(1.5, 3, 0.1);
     const material = new MeshLambertMaterial({
       color: props.color,
