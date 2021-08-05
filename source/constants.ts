@@ -9,6 +9,9 @@ import gunFireFile from './assets/gunFire.png';
 import enemyApathyWalk1 from './assets/enemyWalk1.png';
 import enemyApathyWalk2 from './assets/enemyWalk2.png';
 import enemyApathyDeath from './assets/enemyDeath.png';
+import enemyCowardiceWalk1 from './assets/enemyCowardiceWalk1.png';
+import enemyCowardiceWalk2 from './assets/enemyCowardiceWalk2.png';
+import enemyCowardiceDeath from './assets/enemyCowardiceDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
@@ -53,16 +56,18 @@ export const COLORS = {
   SexualPerversions: new Color(166, 15, 11),
 };
 
-const WallDarkerFactor = 0.9977;
+const wallDarkerFactor = 0.9977;
 export const WALL_COLORS = {
-  Neutral: darker(new Color(180, 180, 180), WallDarkerFactor),
-  Apathy: darker(COLORS.Apathy, WallDarkerFactor),
-  Cowardice: darker(COLORS.Cowardice, WallDarkerFactor),
-  SexualPerversions: darker(COLORS.SexualPerversions, WallDarkerFactor),
+  Neutral: darker(new Color(180, 180, 180), wallDarkerFactor),
+  Apathy: darker(COLORS.Apathy, wallDarkerFactor),
+  Cowardice: darker(COLORS.Cowardice, wallDarkerFactor),
+  SexualPerversions: darker(COLORS.SexualPerversions, wallDarkerFactor),
 };
 
+const enemyDarkerFactor = 0.9;
 export const ENEMY_COLORS = {
-  Apathy: darker(new Color(2470578), 0.9),
+  Apathy: darker(new Color(2470578), enemyDarkerFactor),
+  Cowardice: darker(new Color(6930959), enemyDarkerFactor),
 };
 
 const GAME_SPEED = 1100;
@@ -133,6 +138,9 @@ export const gameTextures = {
   enemyApathyWalk1,
   enemyApathyWalk2,
   enemyApathyDeath,
+  enemyCowardiceWalk1,
+  enemyCowardiceWalk2,
+  enemyCowardiceDeath,
   shootMark1,
   shootMark2,
   torch,
@@ -155,6 +163,9 @@ export const enum GAME_TEXTURE_NAME {
   enemyApathyWalk1 = 'enemyApathyWalk1',
   enemyApathyWalk2 = 'enemyApathyWalk2',
   enemyApathyDeath = 'enemyApathyDeath',
+  enemyCowardiceWalk1 = 'enemyCowardiceWalk1',
+  enemyCowardiceWalk2 = 'enemyCowardiceWalk2',
+  enemyCowardiceDeath = 'enemyCowardiceDeath',
   shootMark1 = 'shootMark1',
   shootMark2 = 'shootMark2',
   torch = 'torch',
@@ -164,9 +175,14 @@ export const enum GAME_TEXTURE_NAME {
 
 export const ENEMY_TEXTURES = {
   Apathy: {
-    walk1: GAME_TEXTURE_NAME.enemyApathyWalk2,
+    walk1: GAME_TEXTURE_NAME.enemyApathyWalk1,
     walk2: GAME_TEXTURE_NAME.enemyApathyWalk2,
     death: GAME_TEXTURE_NAME.enemyApathyDeath,
+  },
+  Cowardice: {
+    walk1: GAME_TEXTURE_NAME.enemyCowardiceWalk1,
+    walk2: GAME_TEXTURE_NAME.enemyCowardiceWalk2,
+    death: GAME_TEXTURE_NAME.enemyCowardiceDeath,
   },
 };
 

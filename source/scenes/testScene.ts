@@ -23,6 +23,7 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
+import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
@@ -72,11 +73,6 @@ interface RoomTorches {
   apathy: RoomTorchesPool,
   cowardice: RoomTorchesPool,
   sexualPerversions: RoomTorchesPool,
-}
-
-interface Size {
-  width: number;
-  height: number;
 }
 
 export interface TestSceneProps extends BasicSceneProps {
@@ -540,7 +536,7 @@ export class TestScene extends BasicScene {
             this.spawnWall(
               cellCoordinates,
               new Vector2(this.mapCellSize, this.mapCellSize),
-              room.type
+              room.type,
             )
           );
           break;
@@ -548,6 +544,7 @@ export class TestScene extends BasicScene {
           this.currentRoomEnimiesCount++;
           this.spawnEnemy(
             cellCoordinates,
+            room.type,
           );
           break;
         default:
@@ -656,15 +653,27 @@ export class TestScene extends BasicScene {
     this.openCloseDoors(room, false);
   }
 
-  spawnEnemy(coordinates: Vector2) {
-    const enemy = new EnemyApathy({
+  spawnEnemy(coordinates: Vector2, roomType: RoomType) {
+    const enemy = this.getEnemy(coordinates, roomType);
+    enemy.onDeath(this.onEnemyDeath);
+    return this.entitiesContainer.add(enemy);
+  }
+
+  getEnemy(coordinates: Vector2, roomType: RoomType) {
+    const props = {
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
       player: this.player,
       container: this.entitiesContainer,
       audioListener: this.audioListener
-    });
-    enemy.onDeath(this.onEnemyDeath);
-    return this.entitiesContainer.add(enemy);
+    };
+    switch (roomType) {
+      case RoomType.Apathy:
+        return new EnemyApathy(props);
+      case RoomType.Cowardice:
+        return new EnemyCowardice(props);
+      default:
+        throw new Error(`Cannot get enemy for room type:${roomType}`);
+    }
   }
 
   update(delta: number) {
