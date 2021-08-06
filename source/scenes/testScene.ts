@@ -32,6 +32,7 @@ import {
   RoomConstructors,
   getRandomRoomConstructor,
 } from '@/dungeon/DungeonRoom';
+import { mindState } from '@/MindState';
 
 const enum Direction {
   Top, Bottom, Left, Right
@@ -645,9 +646,26 @@ export class TestScene extends BasicScene {
   }
 
   onRoomClear(room: Room) {
+    this.increaseMindState(room);
     this.deleteNeighboringRooms(room);
     this.createNeighboringRooms(room);
     this.openCloseDoors(room, false);
+  }
+
+  increaseMindState(room: Room) {
+    switch(room.type) {
+      case RoomType.Apathy:
+        mindState.increaseValue('apathy');
+        break;
+      case RoomType.Cowardice:
+        mindState.increaseValue('cowardice');
+        break;
+      case RoomType.SexualPerversions:
+        mindState.increaseValue('sexualPerversions');
+        break;
+      default:
+        break;
+    }
   }
 
   spawnEnemy(coordinates: Vector2, roomType: RoomType) {
