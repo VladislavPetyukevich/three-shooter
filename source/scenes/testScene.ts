@@ -24,6 +24,7 @@ import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
 import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
+import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
@@ -671,6 +672,8 @@ export class TestScene extends BasicScene {
         return new EnemyApathy(props);
       case RoomType.Cowardice:
         return new EnemyCowardice(props);
+      case RoomType.SexualPerversions:
+        return new EnemySP(props);
       default:
         throw new Error(`Cannot get enemy for room type:${roomType}`);
     }

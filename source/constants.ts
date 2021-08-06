@@ -12,6 +12,9 @@ import enemyApathyDeath from './assets/enemyDeath.png';
 import enemyCowardiceWalk1 from './assets/enemyCowardiceWalk1.png';
 import enemyCowardiceWalk2 from './assets/enemyCowardiceWalk2.png';
 import enemyCowardiceDeath from './assets/enemyCowardiceDeath.png';
+import enemySPWalk1 from './assets/enemySPWalk1.png';
+import enemySPWalk2 from './assets/enemySPWalk2.png';
+import enemySPDeath from './assets/enemySPDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
@@ -68,6 +71,7 @@ const enemyDarkerFactor = 0.9;
 export const ENEMY_COLORS = {
   Apathy: darker(new Color(2470578), enemyDarkerFactor),
   Cowardice: darker(new Color(6930959), enemyDarkerFactor),
+  SP: darker(new Color(11646155), enemyDarkerFactor),
 };
 
 const GAME_SPEED = 1100;
@@ -141,6 +145,9 @@ export const gameTextures = {
   enemyCowardiceWalk1,
   enemyCowardiceWalk2,
   enemyCowardiceDeath,
+  enemySPWalk1,
+  enemySPWalk2,
+  enemySPDeath,
   shootMark1,
   shootMark2,
   torch,
@@ -166,6 +173,9 @@ export const enum GAME_TEXTURE_NAME {
   enemyCowardiceWalk1 = 'enemyCowardiceWalk1',
   enemyCowardiceWalk2 = 'enemyCowardiceWalk2',
   enemyCowardiceDeath = 'enemyCowardiceDeath',
+  enemySPWalk1 = 'enemySPWalk1',
+  enemySPWalk2 = 'enemySPWalk2',
+  enemySPDeath = 'enemySPDeath',
   shootMark1 = 'shootMark1',
   shootMark2 = 'shootMark2',
   torch = 'torch',
@@ -183,6 +193,11 @@ export const ENEMY_TEXTURES = {
     walk1: GAME_TEXTURE_NAME.enemyCowardiceWalk1,
     walk2: GAME_TEXTURE_NAME.enemyCowardiceWalk2,
     death: GAME_TEXTURE_NAME.enemyCowardiceDeath,
+  },
+  SP: {
+    walk1: GAME_TEXTURE_NAME.enemySPWalk1,
+    walk2: GAME_TEXTURE_NAME.enemySPWalk2,
+    death: GAME_TEXTURE_NAME.enemySPDeath,
   },
 };
 
