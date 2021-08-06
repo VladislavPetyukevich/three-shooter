@@ -7,7 +7,6 @@ import {
   Vector2,
   Vector3,
   Fog,
-  Light,
   AmbientLight,
   RepeatWrapping,
 } from 'three';
@@ -27,15 +26,12 @@ import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
 import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
-import { DungeonGenerator, DungeonCellType } from '@/dungeon/DungeonGenerator';
 import {
   RoomCellType,
   RoomCell,
-  RoomConstructor,
   RoomConstructors,
   getRandomRoomConstructor,
 } from '@/dungeon/DungeonRoom';
-import { hud } from '@/HUD/HUD';
 
 const enum Direction {
   Top, Bottom, Left, Right
