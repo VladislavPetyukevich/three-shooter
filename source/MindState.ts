@@ -16,11 +16,7 @@ export class MindState {
     this.increaseAmount = 0.01;
     this.onUpdateCallbacks = [];
     this.localStorageKey = 'mindState';
-    this.props = {
-      apathy: this.initialValue,
-      cowardice: this.initialValue,
-      sexualPerversions: this.initialValue,
-    };
+    this.props = this.getInitialProps();
     this.loadFromLocalStorage();
   }
 
@@ -81,6 +77,26 @@ export class MindState {
 
   onUpdate() {
     this.onUpdateCallbacks.forEach(callback => callback());
+  }
+
+  checkIsSomePropReachValue(value: number) {
+    return Object.values(this.props).some(
+      val => val >= value
+    );
+  }
+
+  reset() {
+    this.props = this.getInitialProps();
+    this.onUpdate();
+    this.saveToLocalStorage();
+  }
+
+  getInitialProps() {
+    return {
+      apathy: this.initialValue,
+      cowardice: this.initialValue,
+      sexualPerversions: this.initialValue,
+    };
   }
 }
 

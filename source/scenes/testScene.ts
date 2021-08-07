@@ -95,6 +95,7 @@ export class TestScene extends BasicScene {
   playerFallInitialValue: number;
   playerFallCurrenValue: number;
   playerFallMaxValue: number;
+  maxMindStateValue: number;
   onFinish: Function;
 
   constructor(props: TestSceneProps) {
@@ -106,6 +107,7 @@ export class TestScene extends BasicScene {
     this.playerFallInitialValue = 0.3;
     this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
+    this.maxMindStateValue = 0.3;
     this.onFinish = props.onFinish;
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -647,6 +649,11 @@ export class TestScene extends BasicScene {
 
   onRoomClear(room: Room) {
     this.increaseMindState(room);
+    if (mindState.checkIsSomePropReachValue(this.maxMindStateValue)) {
+      mindState.reset();
+      this.onFinish();
+      return;
+    }
     this.deleteNeighboringRooms(room);
     this.createNeighboringRooms(room);
     this.openCloseDoors(room, false);
