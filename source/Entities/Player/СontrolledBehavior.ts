@@ -132,7 +132,10 @@ export class СontrolledBehavior implements Behavior {
   };
 
   cameraRecoilJump() {
-    this.isCameraRecoil= true;
+    if (this.isCameraRecoil) {
+      return;
+    }
+    this.isCameraRecoil = true;
     this.camera.position.y += this.cameraRecoil;
   }
 
