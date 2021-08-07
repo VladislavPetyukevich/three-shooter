@@ -17,6 +17,7 @@ import { texturesStore, audioStore } from '@/core/loaders';
 import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, gameSounds } from './constants';
 import { globalSettings } from '@/GlobalSettings';
+import { mindState } from '@/MindState';
 
 export default class ThreeShooter {
   gameProps: any;
@@ -29,6 +30,7 @@ export default class ThreeShooter {
   pixelRatio: number;
   renderer: WebGLRenderer;
   composer: EffectComposer;
+  effectColorCorrection?: ShaderPass;
 
   constructor(props: any) {
     this.gameProps = props;
@@ -68,6 +70,7 @@ export default class ThreeShooter {
       this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
       this.composer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
     });
+    mindState.addUpdateListener(this.onUpdateMindState);
   }
 
   loadTextures(gameProps: any) {
@@ -142,11 +145,23 @@ export default class ThreeShooter {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.currScene.scene, this.currScene.camera));
 
-    const effectColorCorrection = new ShaderPass(ColorCorrectionShader);
-    this.composer.addPass(effectColorCorrection);
+    this.effectColorCorrection = new ShaderPass(ColorCorrectionShader);
+    this.composer.addPass(this.effectColorCorrection);
 
     const effectFilm = new FilmPass(0.15, 0.015, 648, 0);
     this.composer.addPass(effectFilm);
+  }
+
+  onUpdateMindState = () => {
+    if (!this.effectColorCorrection) {
+      return;
+    }
+    const uniforms = (<typeof ColorCorrectionShader['uniforms']>this.effectColorCorrection.uniforms);
+    uniforms.addRGB.value.set(
+      mindState.props.sexualPerversions,
+      mindState.props.cowardice,
+      mindState.props.apathy,
+    );
   }
 
   updateMouseSensitivity = (value: number) => {

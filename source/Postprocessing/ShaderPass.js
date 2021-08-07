@@ -22,7 +22,7 @@ var ShaderPass = function ( shader, textureID ) {
 
 	} else if ( shader ) {
 
-		this.uniforms = UniformsUtils.clone( shader.uniforms );
+		this.uniforms = shader.uniforms;
 
 		this.material = new ShaderMaterial( {
 
