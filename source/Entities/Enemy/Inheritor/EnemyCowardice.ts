@@ -17,6 +17,7 @@ export class EnemyCowardice extends Enemy {
       ...props,
       textures: ENEMY_TEXTURES.Cowardice,
       color: ENEMY_COLORS.Cowardice,
+      hp: 1,
     });
   }
 }

@@ -17,6 +17,7 @@ export class EnemySP extends Enemy {
       ...props,
       textures: ENEMY_TEXTURES.SP,
       color: ENEMY_COLORS.SP,
+      hp: 1,
     });
   }
 }

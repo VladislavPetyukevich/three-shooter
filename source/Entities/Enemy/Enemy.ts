@@ -19,6 +19,7 @@ export interface EnemyProps {
   audioListener: AudioListener;
   color: Color;
   textures: EnemyTextures;
+  hp: number;
 }
 
 export class Enemy extends Entity {
@@ -41,7 +42,7 @@ export class Enemy extends Entity {
         audioListener: props.audioListener
       })
     );
-    this.hp = 3;
+    this.hp = props.hp;
     this.velocity = velocity;
   }
 

@@ -17,6 +17,7 @@ export class EnemyApathy extends Enemy {
       ...props,
       textures: ENEMY_TEXTURES.Apathy,
       color: ENEMY_COLORS.Apathy,
+      hp: 1,
     });
   }
 }
