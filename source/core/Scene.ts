@@ -19,7 +19,7 @@ export class BasicScene {
 
   constructor(props: BasicSceneProps) {
     this.scene = new Scene();
-    this.camera = new PerspectiveCamera(100, props.renderWidth / props.renderHeight, 0.1, 1000);
+    this.camera = new PerspectiveCamera(95, props.renderWidth / props.renderHeight, 0.1, 1000);
 
     this.audioListener = new AudioListener();
     this.setAudioVolume(globalSettings.getSetting('audioVolume'));
