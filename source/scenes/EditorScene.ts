@@ -1,3 +1,4 @@
+import { Vector2 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
 import { TestSceneProps, TestScene } from './testScene';
@@ -64,7 +65,7 @@ export class EditorScene extends TestScene {
     const parsed: SavedCell[] = JSON.parse(data);
     parsed.forEach(cell => {
       const entity = this.spawnEntityInRoom(cell.x, cell.y, cell.type);
-      console.log('COMMENTED LINE: this.addEditorCellEntity(cell.x, cell.y, entity);');
+      this.addEditorCellEntity(cell.x, cell.y, entity);
     });
   }
 
@@ -98,7 +99,7 @@ export class EditorScene extends TestScene {
           if (!cellEntity) {
             (<HTMLDivElement>event.target).style.background = this.getCurrentCellColor();
             const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
-            console.log('COMMENTED LINE: this.addEditorCellEntity(cellX, cellY, entity);');
+            this.addEditorCellEntity(cellX, cellY, entity);
           } else {
             (<HTMLDivElement>event.target).style.background = this.cellColors.empty;
             this.removeEditorCellEntity(cellX, cellY);
@@ -215,8 +216,14 @@ export class EditorScene extends TestScene {
     }
   }
 
+  // openCloseDoors() {}
+
+  fillRoomAfterVisit() {
+    this.enableEditorMode();
+  }
+
   deleteTriggersFromScene() {
-    this.deleteEntitiesFromScene(ENTITY_TYPE.TRIGGER);
+    // this.deleteEntitiesFromScene(ENTITY_TYPE.TRIGGER);
   }
 
   deleteEntitiesFromScene(entityType: ENTITY_TYPE) {
@@ -277,7 +284,7 @@ export class EditorScene extends TestScene {
           const entity = this.currentEditorEntities[cellX][cellY];
           this.entitiesContainer.remove(entity.actor.mesh);
           const newEntity = this.spawnEntityInRoom(cellX, cellY, entity.type as ENTITY_TYPE);
-          console.log('COMMENTED LINE: this.currentEditorEntities[cellX][cellY] = newEntity;');
+          this.currentEditorEntities[cellX][cellY] = newEntity;
         }
       }
     }
@@ -306,8 +313,22 @@ export class EditorScene extends TestScene {
   }
 
   spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
-    console.log('TODO: Rework spawnEntityInRoom');
-    throw new Error('TODO: Rework spawnEntityInRoom');
+    const cell = new Vector2(cellX, cellY);
+    const roomCoordinates = this.cellToWorldCoordinates(this.currentRoom.cellPosition);
+    const cellCoordinates =
+        this.cellToWorldCoordinates(cell).add(roomCoordinates);
+    switch (entityType) {
+      case ENTITY_TYPE.ENEMY:
+        return this.spawnEnemy(cellCoordinates, this.currentRoom.type);
+      case ENTITY_TYPE.WALL:
+        return this.spawnWall(
+          this.getCenterPosition(cellCoordinates, new Vector2(this.mapCellSize, this.mapCellSize)),
+          new Vector2(this.mapCellSize, this.mapCellSize),
+          this.currentRoom.type,
+        );
+      default:
+        throw new Error(`entityType: ${entityType} not found`);
+    }
   }
 
   getBlockerElement() {

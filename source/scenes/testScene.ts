@@ -534,7 +534,7 @@ export class TestScene extends BasicScene {
         case RoomCellType.Wall:
           room.entities.push(
             this.spawnWall(
-              cellCoordinates,
+              this.getCenterPosition(cellCoordinates, new Vector2(this.mapCellSize, this.mapCellSize)),
               new Vector2(this.mapCellSize, this.mapCellSize),
               room.type,
             )
