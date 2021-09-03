@@ -2,6 +2,7 @@ import { Scene, Mesh, Vector3 } from 'three';
 import { Entity } from './Entity';
 import { CollideChecker2d } from './CollideChecker2d';
 import { CollideCheckerRaycast } from './CollideCheckerRaycast';
+import { Pathfinder2d } from './Pathfinder2d';
 
 export class EntitiesContainer {
   scene: Scene;
@@ -9,6 +10,7 @@ export class EntitiesContainer {
   entitiesMeshes: Mesh[];
   collideChecker: CollideChecker2d;
   collideCheckerRaycast: CollideCheckerRaycast;
+  pathfinder: Pathfinder2d;
 
   constructor(scene: Scene) {
     this.scene = scene;
@@ -16,6 +18,7 @@ export class EntitiesContainer {
     this.entitiesMeshes = [];
     this.collideChecker = new CollideChecker2d({ cellSize: 5 });
     this.collideCheckerRaycast = new CollideCheckerRaycast(this.scene);
+    this.pathfinder = new Pathfinder2d({ entitiesContainer: this });
   }
 
   add(entitiy: Entity) {

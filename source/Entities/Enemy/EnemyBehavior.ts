@@ -1,6 +1,5 @@
-import { Vector3, AudioListener, PositionalAudio, BoxGeometry } from 'three';
+import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'three';
 import { ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
-import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { EnemyActor } from './EnemyActor';
@@ -22,6 +21,9 @@ export class EnemyBehavior implements Behavior {
   player: Player;
   velocity: Vector3;
   backupVelocity: Vector3;
+  raycaster: Raycaster;
+  followingPath: Vector2[];
+  followingPoint?: Vector2;
   actor: EnemyActor;
   randomMovementTimeOut: number;
   currentStrafeAngle: number;
@@ -40,6 +42,8 @@ export class EnemyBehavior implements Behavior {
     this.player = props.player;
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
+    this.raycaster = new Raycaster();
+    this.followingPath = [];
     this.actor = props.actor;
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
@@ -99,34 +103,6 @@ export class EnemyBehavior implements Behavior {
     this.stateMachine.doTransition('death');
   }
 
-  onCollide(entity: Entity) {
-    const currentState = this.stateMachine.state();
-    const isGettingAround = randomNumbers.getRandom() > 0.3;
-    if (
-      !isGettingAround &&
-      (currentState !== 'followingPlayer') &&
-      (currentState !== 'attacking')
-    ) {
-      this.velocity.negate();
-      return;
-    }
-    if (entity.actor.mesh.geometry.type === 'BoxGeometry') {
-      const collideGeometryParams = (<BoxGeometry>entity.actor.mesh.geometry).parameters;
-      const actorPos = this.actor.mesh.position;
-      const collidePos = entity.actor.mesh.position;
-      const halfWidth = collideGeometryParams.width / 2;
-      const isHorizontal =
-        (actorPos.x >= collidePos.x + halfWidth) ||
-        (actorPos.x <= collidePos.x - halfWidth);
-      const velocityValue = randomNumbers.getRandom() * ENEMY.WALK_SPEED;
-      if (isHorizontal) {
-        this.velocity.set(0, 0, velocityValue);
-      } else {
-        this.velocity.set(velocityValue, 0, 0);
-      }
-    }
-  }
-
   randomMovement() {
     const velocityX = this.randomVelocityValue();
     const velocityZ = this.randomVelocityValue();
@@ -165,12 +141,54 @@ export class EnemyBehavior implements Behavior {
     return 0;
   }
 
-  moveToPlayer() {
+  onCollide() {
+    this.followingPath = [];
+    this.followingPoint = undefined;
+    this.velocity.negate();
+  }
+
+  findPathToPlayer() {
+    if (this.followingPath.length) {
+      return;
+    }
+    this.velocity.set(0, 0, 0);
+    const pathToPlayer = this.container.pathfinder.getPathBetweenEntities(
+      this.actor.mesh.id,
+      this.player.actor.mesh.id
+    );
+    if (pathToPlayer) {
+      this.followingPath = pathToPlayer;
+    } else {
+      this.followingPath = [];
+      this.followingPoint = undefined;
+      this.randomMovement();
+    }
+  }
+
+  velocityToPlayer() {
     this.velocity.set(
       Math.sin(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED,
       0,
       Math.cos(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED
     );
+  }
+
+  moveToPlayer() {
+    const directionToPlayer = new Vector3();
+    this.actor.mesh.getWorldDirection(directionToPlayer);
+    this.raycaster.set(
+      this.actor.mesh.position,
+      directionToPlayer
+    );
+    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
+    const playerIndex = intersectObjects.findIndex(
+      intersect => intersect.object.uuid === this.player.actor.mesh.uuid
+    );
+    if (playerIndex === 0) {
+      this.velocityToPlayer();
+    } else {
+      this.findPathToPlayer();
+    }
   }
 
   updateWalkSprite(delta: number) {
@@ -198,6 +216,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
+    if (this.followingPath.length !== 0) {
+      this.updateFollowPath();
+    }
     const currentState = this.stateMachine.state();
     this.updateMovement(delta, currentState);
     switch (currentState) {
@@ -261,6 +282,32 @@ export class EnemyBehavior implements Behavior {
     }
   }
 
+  updateFollowPoint() {
+    this.followingPoint = this.followingPath.shift();
+  }
+
+  updateFollowPath() {
+    if (!this.followingPoint) {
+      this.updateFollowPoint();
+      return;
+    }
+    const diffX = Math.abs(this.actor.mesh.position.x - this.followingPoint.x);
+    const diffY = Math.abs(this.actor.mesh.position.z - this.followingPoint.y);
+    if (
+      (diffX < 1) &&
+      (diffY < 1)
+    ) {
+      this.updateFollowPoint();
+      return;
+    }
+    const direction = new Vector3(
+      this.followingPoint.x - this.actor.mesh.position.x,
+      0,
+      this.followingPoint.y - this.actor.mesh.position.z,
+    ).normalize().multiplyScalar(ENEMY.WALK_SPEED);
+    this.velocity.copy(direction);
+  }
+
   updateMovement(delta: number, state: string) {
     if (
       (state === 'dies') ||
@@ -274,9 +321,8 @@ export class EnemyBehavior implements Behavior {
       if (
         (state === 'followingPlayer') ||
         (state === 'attacking')
-      ){
+      ) {
         this.moveToPlayer();
-        this.randomStrafe();
       } else {
         this.randomMovement();
       }

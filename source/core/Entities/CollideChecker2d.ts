@@ -182,4 +182,12 @@ export class CollideChecker2d {
   getCellCoordinate(coordinate: number) {
     return Math.trunc(coordinate / this.cellSize);
   }
+
+  getCellOriginalCoordinate(coordinate: number) {
+    return coordinate * this.cellSize;
+  }
+
+  getMeshCoordinates(meshId: number) {
+    return this.mapMeshIdToMapCoordinates[meshId];
+  }
 }

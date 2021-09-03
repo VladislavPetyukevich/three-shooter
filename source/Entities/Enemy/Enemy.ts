@@ -39,7 +39,7 @@ export class Enemy extends Entity {
         container: props.container,
         velocity,
         actor,
-        audioListener: props.audioListener
+        audioListener: props.audioListener,
       })
     );
     this.hp = props.hp;
@@ -66,8 +66,8 @@ export class Enemy extends Entity {
     (<EnemyBehavior>this.behavior).onDeathCallback = callback;
   }
 
-  onCollide(entity: Entity) {
-    (<EnemyBehavior>this.behavior).onCollide(entity);
+  onCollide() {
+    (<EnemyBehavior>this.behavior).onCollide();
     return false;
   }
 }

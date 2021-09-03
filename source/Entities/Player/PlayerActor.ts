@@ -12,8 +12,8 @@ export class PlayerActor implements Actor {
   constructor(props: ActorProps) {
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
     const material = new MeshBasicMaterial();
+    material.visible = false;
     this.mesh = new Mesh(geometry, material);
-    this.mesh.visible = false;
     this.mesh.position.set(
       props.position.x,
       props.position.y,
@@ -21,5 +21,5 @@ export class PlayerActor implements Actor {
     );
   }
 
-  update(delta: number) { }
+  update() { }
 }
