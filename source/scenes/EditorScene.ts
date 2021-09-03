@@ -43,7 +43,6 @@ export class EditorScene extends TestScene {
     this.createMapElements();
     this.createEntitiesButtons();
     this.deleteTriggersFromScene();
-    this.loadFromLocalStorage();
     document.addEventListener('keypress', (event) => {
       const isEnableKey = event.key === this.enableKey;
       if (!isEnableKey) {
@@ -72,6 +71,7 @@ export class EditorScene extends TestScene {
   enableEditorMode() {
     this.isEditorMode = true;
     console.log('++++EDITOR MODE ENABLED++++');
+    this.loadFromLocalStorage();
     this.restoreEditorMap();
     document.exitPointerLock();
     setTimeout(() => {
