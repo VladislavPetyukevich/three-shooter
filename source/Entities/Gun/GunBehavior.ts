@@ -26,6 +26,7 @@ interface BehaviorProps {
 
 export class GunBehavior implements Behavior {
   playerCamera: Camera;
+  raycaster: Raycaster;
   container: EntitiesContainer;
   gunShootLight: PointLight;
   audioListener: AudioListener;
@@ -38,6 +39,7 @@ export class GunBehavior implements Behavior {
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
+    this.raycaster = new Raycaster();
     this.container = props.container;
     this.audioListener = props.audioListener;
     this.shootSound = new Audio(props.audioListener);
@@ -83,9 +85,8 @@ export class GunBehavior implements Behavior {
     raycasterDirection.x = raycasterDirection.x * c - raycasterDirection.z * s;
     raycasterDirection.z = raycasterDirection.x * s + raycasterDirection.z * c;
 
-    const raycaster = new Raycaster(this.playerCamera.position, raycasterDirection);
-
-    const intersects = raycaster.intersectObjects(this.container.entitiesMeshes);
+    this.raycaster.set(this.playerCamera.position, raycasterDirection);
+    const intersects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
 
     for (let i = 0; i < intersects.length; i++) {
       const intersect = intersects[i];
