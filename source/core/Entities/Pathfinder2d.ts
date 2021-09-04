@@ -41,12 +41,12 @@ export class Pathfinder2d {
   }
 
   getPathBetweenCells(start: CellPosition, end: CellPosition) {
-    const startCell = this.entitiesContainer.collideChecker.map[start.x][start.y].entities;
-    if (startCell.entries.length > 1) {
+    const startCell = this.entitiesContainer.collideChecker.getMapRecord(start);
+    if (startCell && startCell.entities.length > 1) {
       return;
     }
-    const endCell = this.entitiesContainer.collideChecker.map[end.x][end.y].entities;
-    if (endCell.entries.length > 1) {
+    const endCell = this.entitiesContainer.collideChecker.getMapRecord(end);
+    if (endCell && endCell.entities.length > 1) {
       return;
     }
     const open = new Set<CellNode>();
@@ -118,15 +118,11 @@ export class Pathfinder2d {
 
   checkIsCellWalkable(position: CellPosition) {
     const collideChecker = this.entitiesContainer.collideChecker;
-    const cellX = collideChecker.map[position.x];
-    if (!cellX) {
+    const collideCheckerMapRecord = collideChecker.getMapRecord(position);
+    if (!collideCheckerMapRecord) {
       return true;
     }
-    const cellXY = collideChecker.map[position.x][position.y];
-    if (!cellXY) {
-      return true;
-    }
-    return cellXY.entities.length === 0;
+    return collideCheckerMapRecord.entities.length === 0;
   }
 
   getNode(position: CellPosition) {

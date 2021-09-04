@@ -21,19 +21,22 @@ interface MapRecord {
   entities: EntityRecord[];
 }
 
-type Map = MapRecord[][];
-
 interface CollideCheckerProps {
   cellSize: number;
 }
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 export class CollideChecker2d {
-  map: Map;
+  map: Map<string, MapRecord>;
   cellSize: number;
-  mapMeshIdToMapCoordinates: { [meshId: number]: { x: number, y: number }[] };
+  mapMeshIdToMapCoordinates: { [meshId: number]: Position[] };
 
   constructor(props: CollideCheckerProps) {
-    this.map = [];
+    this.map = new Map();
     this.cellSize = props.cellSize;
     this.mapMeshIdToMapCoordinates = [];
   }
@@ -53,7 +56,10 @@ export class CollideChecker2d {
 
     for (let currCellX = minCellX; currCellX <= maxCellX; currCellX++) {
       for (let currCellY = minCellY; currCellY <= maxCellY; currCellY++) {
-        this.addEntityToMap(currCellX, currCellY, { entity, bounds });
+        this.addEntityToMap(
+          { x: currCellX, y: currCellY },
+          { entity, bounds }
+        );
       }
     }
 
@@ -79,11 +85,12 @@ export class CollideChecker2d {
     }
 
     entityMapCoordinates.forEach(coordinates => {
-      if (!(this.map[coordinates.x] && this.map[coordinates.x][coordinates.y])) {
+      const mapRecord = this.getMapRecord(coordinates);
+      if (!mapRecord) {
         return;
       }
 
-      this.map[coordinates.x][coordinates.y].entities.forEach(entityToCheck => {
+      mapRecord.entities.forEach(entityToCheck => {
         if (entityToCheck.entity.isCollideTransparent) {
           return;
         }
@@ -109,7 +116,7 @@ export class CollideChecker2d {
       return;
     }
     entityMapCoordinates.forEach(
-      coordinates => this.removeEntityFromMap(coordinates.x, coordinates.y, meshId)
+      coordinates => this.removeEntityFromMap(coordinates, meshId)
     );
     delete this.mapMeshIdToMapCoordinates[meshId];
   }
@@ -126,15 +133,15 @@ export class CollideChecker2d {
       return;
     }
     entityMapCoordinates.forEach(
-      coordinates => this.removeEntityFromMap(coordinates.x, coordinates.y, entity.actor.mesh.id)
+      coordinates => this.removeEntityFromMap(coordinates, entity.actor.mesh.id)
     );
     delete this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
 
     this.addEntity(entity);
   }
 
-  removeEntityFromMap(x: number, y: number, entityMeshId: number) {
-    const mapCell = this.map[x][y];
+  removeEntityFromMap(position: Position, entityMeshId: number) {
+    const mapCell = this.getMapRecord(position);
     if (!mapCell) {
       throw new Error('Entity not found');
     }
@@ -146,20 +153,19 @@ export class CollideChecker2d {
     }
   }
 
-  addEntityToMap(x: number, y: number, entityRecord: EntityRecord) {
-    if (!this.map[x]) {
-      this.map[x] = [];
-    }
-    if (this.map[x][y]) {
-      this.map[x][y].entities.push(entityRecord);
+  addEntityToMap(position: Position, entityRecord: EntityRecord) {
+    const positionHash = this.getPositionHash(position);
+    const mapRecord = this.map.get(positionHash);
+    if (mapRecord) {
+      mapRecord.entities.push(entityRecord);
     } else {
-      this.map[x][y] = { entities: [entityRecord] };
+      this.map.set(positionHash, { entities: [entityRecord] });
     }
 
     if (this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id]) {
-      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id].push({ x, y });
+      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id].push(position);
     } else {
-      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id] = [{ x, y }];
+      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id] = [position];
     }
   }
 
@@ -177,6 +183,17 @@ export class CollideChecker2d {
       };
     }
     throw new Error(`geometry type are not suported: ${entity.actor.mesh.geometry.type}`);
+  }
+
+  getMapRecord(position: Position) {
+    return this.map.get(this.getPositionHash(position));
+  }
+
+  getPositionHash(position: Position) {
+    return '' + position.x + position.y;
+  }
+
+  checkIsMapRecordExists() {
   }
 
   getCellCoordinate(coordinate: number) {
