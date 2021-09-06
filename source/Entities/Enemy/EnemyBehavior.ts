@@ -17,6 +17,14 @@ interface BehaviorProps {
   audioListener: AudioListener;
 }
 
+type TimeOuts =
+  Record<
+    'shoot' |
+    'hurt' |
+    'randomMovement' |
+    'strafe'
+  , number>;
+
 export class EnemyBehavior implements Behavior {
   player: Player;
   velocity: Vector3;
@@ -25,17 +33,16 @@ export class EnemyBehavior implements Behavior {
   followingPath: Vector2[];
   followingPoint?: Vector2;
   actor: EnemyActor;
-  randomMovementTimeOut: number;
   currentStrafeAngle: number;
   strafeAngle: number;
-  hurtTimeOut: number;
   bulletPositionOffset: number;
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
   shootSound: PositionalAudio;
-  shootTimeOut: number;
   stateMachine: StateMachine;
+  initialTimeOuts: TimeOuts;
+  currentTimeOuts: TimeOuts;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -49,11 +56,8 @@ export class EnemyBehavior implements Behavior {
     this.currentTitleDisplayTime = 0;
     this.bulletPositionOffset = 1.5;
     this.container = props.container;
-    this.randomMovementTimeOut = ENEMY.MOVEMENT_TIME_OUT;
     this.currentStrafeAngle = 0;
-    this.strafeAngle = 22.5;
-    this.hurtTimeOut = 0;
-    this.shootTimeOut = ENEMY.SHOOT_TIME_OUT;
+    this.strafeAngle = 22.5 // (90 / 2) - (90 / 4);
     this.shootSound = new PositionalAudio(props.audioListener);
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
@@ -70,6 +74,18 @@ export class EnemyBehavior implements Behavior {
         { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
       ]
     });
+    this.initialTimeOuts = {
+      shoot: ENEMY.SHOOT_TIME_OUT,
+      hurt: ENEMY.HURT_TIME_OUT,
+      randomMovement: ENEMY.MOVEMENT_TIME_OUT,
+      strafe: 1,
+    };
+    this.currentTimeOuts = {
+      shoot: this.initialTimeOuts.shoot,
+      hurt: this.initialTimeOuts.hurt,
+      randomMovement: this.initialTimeOuts.randomMovement,
+      strafe: this.initialTimeOuts.strafe,
+    };
   }
 
   shoot() {
@@ -186,6 +202,7 @@ export class EnemyBehavior implements Behavior {
     );
     if (playerIndex === 0) {
       this.velocityToPlayer();
+      this.randomStrafe();
     } else {
       this.findPathToPlayer();
     }
@@ -256,10 +273,9 @@ export class EnemyBehavior implements Behavior {
           this.stateMachine.doTransition('followPlayer');
           break;
         }
-        this.shootTimeOut += delta;
-        if (this.shootTimeOut > ENEMY.SHOOT_TIME_OUT) {
+        this.updateTimeOut('shoot', delta);
+        if (this.checkIsTimeOutExpired('shoot')) {
           this.shoot();
-          this.shootTimeOut = 0;
         }
         break;
       case 'hurting':
@@ -269,10 +285,9 @@ export class EnemyBehavior implements Behavior {
         this.stateMachine.doTransition('hurts');
         break;
       case 'hurted':
-        this.hurtTimeOut += delta;
-        if (this.hurtTimeOut > ENEMY.HURT_TIME_OUT) {
+        this.updateTimeOut('hurt', delta);
+        if (this.checkIsTimeOutExpired('hurt')) {
           this.velocity.copy(this.backupVelocity);
-          this.hurtTimeOut = 0;
           this.actor.spriteSheet.displaySprite(0);
           this.stateMachine.doTransition('attack');
         }
@@ -280,6 +295,7 @@ export class EnemyBehavior implements Behavior {
       default:
         break;
     }
+    this.updateExpiredTimeOuts();
   }
 
   updateFollowPoint() {
@@ -315,9 +331,8 @@ export class EnemyBehavior implements Behavior {
     ) {
       return;
     }
-    this.randomMovementTimeOut += delta;
-    if (this.randomMovementTimeOut > ENEMY.MOVEMENT_TIME_OUT) {
-      this.randomMovementTimeOut = 0;
+    this.updateTimeOut('randomMovement', delta);
+    if (this.checkIsTimeOutExpired('randomMovement')) {
       if (
         (state === 'followingPlayer') ||
         (state === 'attacking')
@@ -329,6 +344,26 @@ export class EnemyBehavior implements Behavior {
     } else {
       this.updateWalkSprite(delta);
     }
+  }
+
+  updateTimeOut(name: keyof TimeOuts, delta: number) {
+    this.currentTimeOuts[name] -= delta;
+  }
+
+  updateExpiredTimeOut(name: keyof TimeOuts) {
+    if (this.currentTimeOuts[name] <= 0) {
+      this.currentTimeOuts[name] = this.initialTimeOuts[name];
+    }
+  }
+
+  updateExpiredTimeOuts() {
+    for (let name in this.currentTimeOuts) {
+      this.updateExpiredTimeOut(name as keyof TimeOuts);
+    }
+  }
+
+  checkIsTimeOutExpired(name: keyof TimeOuts) {
+    return this.currentTimeOuts[name] <= 0;
   }
 }
 
