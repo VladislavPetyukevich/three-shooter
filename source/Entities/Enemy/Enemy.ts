@@ -6,6 +6,8 @@ import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
+export type EnemyMessages = 'in player gunpoint';
+
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
@@ -69,5 +71,15 @@ export class Enemy extends Entity {
   onCollide() {
     (<EnemyBehavior>this.behavior).onCollide();
     return false;
+  }
+
+  onMessage(message: EnemyMessages) {
+    switch (message) {
+      case 'in player gunpoint':
+        (<EnemyBehavior>this.behavior).onPlayerGunpoint();
+        break;
+      default:
+        break;
+    }
   }
 }

@@ -22,7 +22,8 @@ type TimeOuts =
     'shoot' |
     'hurt' |
     'randomMovement' |
-    'strafe'
+    'strafe' |
+    'gunpointStrafe'
   , number>;
 
 export class EnemyBehavior implements Behavior {
@@ -34,7 +35,8 @@ export class EnemyBehavior implements Behavior {
   followingPoint?: Vector2;
   actor: EnemyActor;
   currentStrafeAngle: number;
-  strafeAngle: number;
+  strafeAngleLow: number;
+  strafeAngleHigh: number;
   bulletPositionOffset: number;
   container: EntitiesContainer;
   currentWalkSprite: number;
@@ -43,6 +45,8 @@ export class EnemyBehavior implements Behavior {
   stateMachine: StateMachine;
   initialTimeOuts: TimeOuts;
   currentTimeOuts: TimeOuts;
+  isGunpointTriggered: boolean;
+  isOnGunpointCurrent: boolean;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -50,6 +54,7 @@ export class EnemyBehavior implements Behavior {
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
     this.raycaster = new Raycaster();
+    this.raycaster.far = 70;
     this.followingPath = [];
     this.actor = props.actor;
     this.currentWalkSprite = 0;
@@ -57,7 +62,8 @@ export class EnemyBehavior implements Behavior {
     this.bulletPositionOffset = 1.5;
     this.container = props.container;
     this.currentStrafeAngle = 0;
-    this.strafeAngle = 22.5 // (90 / 2) - (90 / 4);
+    this.strafeAngleLow = 22.5; // (90 / 2) - (90 / 4)
+    this.strafeAngleHigh = 88.8;
     this.shootSound = new PositionalAudio(props.audioListener);
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
@@ -74,17 +80,21 @@ export class EnemyBehavior implements Behavior {
         { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
       ]
     });
+    this.isGunpointTriggered = false;
+    this.isOnGunpointCurrent = false;
     this.initialTimeOuts = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
       randomMovement: ENEMY.MOVEMENT_TIME_OUT,
       strafe: 1,
+      gunpointStrafe: 0.5,
     };
     this.currentTimeOuts = {
       shoot: this.initialTimeOuts.shoot,
       hurt: this.initialTimeOuts.hurt,
       randomMovement: this.initialTimeOuts.randomMovement,
       strafe: this.initialTimeOuts.strafe,
+      gunpointStrafe: this.initialTimeOuts.gunpointStrafe,
     };
   }
 
@@ -133,8 +143,8 @@ export class EnemyBehavior implements Behavior {
     return (randomNumbers.getRandom() > 0.5) ? randomVal : -randomVal;
   }
 
-  randomStrafe() {
-    const strafeAngle = this.randomStrafeRotation() * PI_180;
+  randomStrafe(angleDegrees: number) {
+    const strafeAngle = this.randomStrafeRotation(angleDegrees) * PI_180;
     if (strafeAngle === this.currentStrafeAngle) {
       return;
     }
@@ -146,21 +156,27 @@ export class EnemyBehavior implements Behavior {
     );
   }
 
-  randomStrafeRotation() {
+  randomStrafeRotation(angleDegrees: number) {
     const randValue = randomNumbers.getRandom();
-    if (randValue < 0.33) {
-      return -this.strafeAngle;
+    if (randValue < 0.5) {
+      return -angleDegrees;
     }
-    if (randValue < 0.66) {
-      return this.strafeAngle;
-    }
-    return 0;
+    return angleDegrees;
   }
 
   onCollide() {
     this.followingPath = [];
     this.followingPoint = undefined;
     this.velocity.negate();
+  }
+
+  onPlayerGunpoint() {
+    if (this.isGunpointTriggered) {
+      this.isOnGunpointCurrent = true;
+    } else {
+      this.isGunpointTriggered = true;
+      this.isOnGunpointCurrent = false;
+    }
   }
 
   findPathToPlayer() {
@@ -202,7 +218,6 @@ export class EnemyBehavior implements Behavior {
     );
     if (playerIndex === 0) {
       this.velocityToPlayer();
-      this.randomStrafe();
     } else {
       this.findPathToPlayer();
     }
@@ -331,6 +346,7 @@ export class EnemyBehavior implements Behavior {
     ) {
       return;
     }
+    this.updateWalkSprite(delta);
     this.updateTimeOut('randomMovement', delta);
     if (this.checkIsTimeOutExpired('randomMovement')) {
       if (
@@ -341,9 +357,33 @@ export class EnemyBehavior implements Behavior {
       } else {
         this.randomMovement();
       }
-    } else {
-      this.updateWalkSprite(delta);
     }
+    this.updateTimeOut('strafe', delta);
+    if (this.checkIsTimeOutExpired('strafe')) {
+      if (
+        (state === 'followingPlayer') ||
+        (state === 'attacking')
+      ) {
+        this.randomStrafe(this.strafeAngleLow);
+      }
+    }
+    this.updateGunpointReaction(delta);
+  }
+
+  updateGunpointReaction(delta: number) {
+    if (!this.isGunpointTriggered) {
+      return;
+    }
+    this.updateTimeOut('gunpointStrafe', delta);
+    if (!this.checkIsTimeOutExpired('gunpointStrafe')) {
+      return;
+    }
+    this.isGunpointTriggered = false;
+    if (!this.isOnGunpointCurrent) {
+      return;
+    }
+    this.isOnGunpointCurrent = false;
+    this.randomStrafe(this.strafeAngleHigh);
   }
 
   updateTimeOut(name: keyof TimeOuts, delta: number) {

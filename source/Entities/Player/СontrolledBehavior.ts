@@ -1,9 +1,9 @@
-import { Camera, Vector2, Vector3, AudioListener } from 'three';
+import { Camera, Vector2, Vector3, AudioListener, Raycaster } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY, PLAYER, PI_180 } from '@/constants';
+import { PI_2, KEYBOARD_KEY, PLAYER, PI_180, ENTITY_TYPE } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 import { hud } from '@/HUD/HUD';
@@ -23,6 +23,7 @@ interface СontrolledBehaviorProps {
 export class СontrolledBehavior implements Behavior {
   actor: Actor;
   camera: Camera;
+  raycaster: Raycaster;
   isRunning: boolean;
   isKeyOnward: boolean;
   isKeyForward: boolean;
@@ -47,11 +48,15 @@ export class СontrolledBehavior implements Behavior {
   maxBobTimeout: number;
   cameraRecoil: number;
   isCameraRecoil: boolean;
+  checkGunPointTimeout: number;
+  checkGunPointTimeoutCurrent: number;
 
   constructor(props: СontrolledBehaviorProps) {
     this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
     this.sinTable = this.generateSinTable(1, 0.06);
     this.currentSinTableIndex = 0;
+    this.checkGunPointTimeout = 0.1;
+    this.checkGunPointTimeoutCurrent = this.checkGunPointTimeout;
     this.bobTimeout = 0;
     this.maxBobTimeout = 0.001;
     this.cameraRecoil= 0.035;
@@ -61,6 +66,8 @@ export class СontrolledBehavior implements Behavior {
     this.eyeY = props.eyeY;
     this.camera = props.camera;
     this.camera.position.y = this.eyeY;
+    this.raycaster = new Raycaster();
+    this.raycaster.far = 70;
     this.walkSpeed = props.walkSpeed;
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
@@ -167,6 +174,7 @@ export class СontrolledBehavior implements Behavior {
     if (this.isCanMove) {
       this.updateVelocity(delta);
       this.updatePlayerBob(delta);
+      this.updateCheckGunPoint(delta);
     } else {
       this.velocity.set(0, 0, 0);
     }
@@ -255,6 +263,30 @@ export class СontrolledBehavior implements Behavior {
       if (!isGunRecoil) {
         this.updateBob(delta);
       }
+    }
+  }
+
+  updateCheckGunPoint(delta: number) {
+    this.checkGunPointTimeoutCurrent -= delta;
+    if (this.checkGunPointTimeoutCurrent > 0) {
+      return;
+    }
+    this.checkGunPointTimeoutCurrent = this.checkGunPointTimeout;
+    const direction = new Vector3();
+    this.camera.getWorldDirection(direction);
+    this.raycaster.set(this.camera.position, direction);
+    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
+    const firstIntersection = intersectObjects[0];
+    if (!firstIntersection) {
+      return;
+    }
+    const intersectedEntity =
+      this.container.getEntityByMeshId(firstIntersection.object.id);
+    if (!intersectedEntity) {
+      return;
+    }
+    if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
+      intersectedEntity.onMessage('in player gunpoint');
     }
   }
 }
