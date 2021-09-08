@@ -27,6 +27,9 @@ export class Entity {
     return true;
   }
 
+  onMessage(message: string) {
+  }
+
   update(delta: number) {
     this.actor.update(delta);
     this.behavior.update(delta);
