@@ -8,6 +8,7 @@ export class EntitiesContainer {
   scene: Scene;
   entities: Entity[];
   entitiesMeshes: Mesh[];
+  meshIdToEntity: Map<number, Entity>;
   collideChecker: CollideChecker2d;
   collideCheckerRaycast: CollideCheckerRaycast;
   pathfinder: Pathfinder2d;
@@ -16,17 +17,19 @@ export class EntitiesContainer {
     this.scene = scene;
     this.entities = [];
     this.entitiesMeshes = [];
+    this.meshIdToEntity = new Map();
     this.collideChecker = new CollideChecker2d({ cellSize: 5 });
     this.collideCheckerRaycast = new CollideCheckerRaycast(this.scene);
     this.pathfinder = new Pathfinder2d({ entitiesContainer: this });
   }
 
-  add(entitiy: Entity) {
-    this.collideChecker.addEntity(entitiy);
-    this.entities.push(entitiy);
-    this.entitiesMeshes.push(entitiy.actor.mesh);
-    this.scene.add(entitiy.actor.mesh);
-    return entitiy;
+  add(entity: Entity) {
+    this.collideChecker.addEntity(entity);
+    this.entities.push(entity);
+    this.entitiesMeshes.push(entity.actor.mesh);
+    this.meshIdToEntity.set(entity.actor.mesh.id, entity);
+    this.scene.add(entity.actor.mesh);
+    return entity;
   }
 
   remove(mesh: Mesh) {
@@ -40,6 +43,10 @@ export class EntitiesContainer {
       }
     }
     this.scene.remove(mesh);
+  }
+
+  getEntityByMeshId(id: number) {
+    return this.meshIdToEntity.get(id);
   }
 
   update(delta: number) {
