@@ -74,10 +74,8 @@ export class CollideChecker2d {
     var bounds = {
       xMin: newPosition.x - entityGeometrySize.width / 2,
       xMax: newPosition.x + entityGeometrySize.width / 2,
-      yMin: newPosition.y - entityGeometrySize.height / 2,
-      yMax: newPosition.y + entityGeometrySize.height / 2,
-      zMin: newPosition.z - entityGeometrySize.width / 2,
-      zMax: newPosition.z + entityGeometrySize.width / 2,
+      zMin: newPosition.z - entityGeometrySize.height / 2,
+      zMax: newPosition.z + entityGeometrySize.height / 2,
     };
     const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
     if (!entityMapCoordinates) {
@@ -173,7 +171,7 @@ export class CollideChecker2d {
     if (entity.actor.mesh.geometry.type === 'BoxGeometry') {
       return {
         width: (<any>entity.actor.mesh.geometry).parameters.width,
-        height: (<any>entity.actor.mesh.geometry).parameters.height
+        height: (<any>entity.actor.mesh.geometry).parameters.depth
       };
     }
     if (entity.actor.mesh.geometry.type === 'SphereGeometry') {
@@ -193,11 +191,8 @@ export class CollideChecker2d {
     return '' + position.x + position.y;
   }
 
-  checkIsMapRecordExists() {
-  }
-
   getCellCoordinate(coordinate: number) {
-    return Math.trunc(coordinate / this.cellSize);
+    return Math.round(coordinate / this.cellSize);
   }
 
   getCellOriginalCoordinate(coordinate: number) {
