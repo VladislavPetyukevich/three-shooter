@@ -21,7 +21,7 @@ type TimeOuts =
   Record<
     'shoot' |
     'hurt' |
-    'randomMovement' |
+    'movement' |
     'strafe' |
     'gunpointStrafe'
   , number>;
@@ -69,13 +69,12 @@ export class EnemyBehavior implements Behavior {
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
     this.stateMachine = new StateMachine({
-      initialState: 'walkingAround',
+      initialState: 'followingPlayer',
       transitions: [
-        { name: 'walkAround', from: 'attacking', to: 'walkingAround' },
-        { name: 'attack', from: ['walkingAround', 'followingPlayer', 'hurted'], to: 'attacking' },
-        { name: 'hurt', from: ['walkingAround', 'followingPlayer', 'attacking'], to: 'hurting' },
+        { name: 'attack', from: ['followingPlayer', 'hurted'], to: 'attacking' },
+        { name: 'hurt', from: ['followingPlayer', 'attacking'], to: 'hurting' },
         { name: 'hurts', from: 'hurting', to: 'hurted' },
-        { name: 'death', from: ['walkingAround', 'attacking', 'hurting', 'hurted'], to: 'dies' },
+        { name: 'death', from: ['attacking', 'hurting', 'hurted'], to: 'dies' },
         { name: 'dead', from: 'dies', to: 'died' },
         { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
       ]
@@ -85,14 +84,14 @@ export class EnemyBehavior implements Behavior {
     this.initialTimeOuts = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
-      randomMovement: ENEMY.MOVEMENT_TIME_OUT,
+      movement: ENEMY.MOVEMENT_TIME_OUT,
       strafe: 1,
       gunpointStrafe: 0.5,
     };
     this.currentTimeOuts = {
       shoot: this.initialTimeOuts.shoot,
       hurt: this.initialTimeOuts.hurt,
-      randomMovement: this.initialTimeOuts.randomMovement,
+      movement: this.initialTimeOuts.movement,
       strafe: this.initialTimeOuts.strafe,
       gunpointStrafe: this.initialTimeOuts.gunpointStrafe,
     };
@@ -270,12 +269,6 @@ export class EnemyBehavior implements Behavior {
         );
         this.stateMachine.doTransition('dead');
         break;
-      case 'walkingAround':
-        if (this.checkIsPlayerInAttackDistance()) {
-          this.stateMachine.doTransition('attack');
-          break;
-        }
-        break;
       case 'followingPlayer':
         if (this.checkIsPlayerInAttackDistance()) {
           this.stateMachine.doTransition('attack');
@@ -347,15 +340,13 @@ export class EnemyBehavior implements Behavior {
       return;
     }
     this.updateWalkSprite(delta);
-    this.updateTimeOut('randomMovement', delta);
-    if (this.checkIsTimeOutExpired('randomMovement')) {
+    this.updateTimeOut('movement', delta);
+    if (this.checkIsTimeOutExpired('movement')) {
       if (
         (state === 'followingPlayer') ||
         (state === 'attacking')
       ) {
         this.moveToPlayer();
-      } else {
-        this.randomMovement();
       }
     }
     this.updateTimeOut('strafe', delta);
