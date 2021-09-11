@@ -10,6 +10,7 @@ export interface Props {
   container: EntitiesContainer;
   audioListener: AudioListener;
   shootOffsetAngle: number;
+  shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
   recoilTime: number;
 }
@@ -22,6 +23,7 @@ export class Gun extends Entity {
       playerCamera: props.playerCamera,
       audioListener: props.audioListener,
       shootOffsetAngle: props.shootOffsetAngle,
+      shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
       bulletsPerShoot: props.bulletsPerShoot,
       recoilTime: props.recoilTime,
     });
@@ -35,6 +37,10 @@ export class Gun extends Entity {
 
   checkIsRecoil() {
     return (<GunBehavior>this.behavior).isShoot;
+  }
+
+  setIsInMove(isInMove: boolean) {
+    (<GunBehavior>this.behavior).isInMove = isInMove;
   }
 
   update(delta: number) {

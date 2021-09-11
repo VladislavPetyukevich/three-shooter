@@ -87,7 +87,8 @@ export class СontrolledBehavior implements Behavior {
       container: props.container,
       playerCamera: props.camera,
       audioListener: props.audioListener,
-      shootOffsetAngle: 3,
+      shootOffsetAngle: 2.5,
+      shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 2,
       recoilTime: 0.2,
     });
@@ -204,6 +205,7 @@ export class СontrolledBehavior implements Behavior {
 
   updateVelocity(delta: number) {
     this.moveDirection.set(0, 0, 0);
+    this.gun.setIsInMove(this.isRunning);
     if (!this.isRunning) {
       this.targetVelocity.set(0, 0, 0);
     } else {

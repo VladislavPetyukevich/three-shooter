@@ -20,6 +20,7 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   shootOffsetAngle: number;
+  shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
   recoilTime: number;
 }
@@ -32,7 +33,9 @@ export class GunBehavior implements Behavior {
   audioListener: AudioListener;
   shootSound: Audio;
   isShoot: boolean;
+  isInMove: boolean;
   shootOffsetRadians: number;
+  shootOffsetInMoveRadians: number;
   bulletsPerShoot: number;
   recoilTime: number;
   currentRecoilTime: number;
@@ -44,7 +47,9 @@ export class GunBehavior implements Behavior {
     this.audioListener = props.audioListener;
     this.shootSound = new Audio(props.audioListener);
     this.isShoot = false;
+    this.isInMove = false;
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
+    this.shootOffsetInMoveRadians = props.shootOffsetInMoveAngle * PI_180;
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.recoilTime = props.recoilTime;
     this.currentRecoilTime = 0;
@@ -77,9 +82,7 @@ export class GunBehavior implements Behavior {
     const raycasterDirection = new Vector3();
     this.playerCamera.getWorldDirection(raycasterDirection);
 
-    const angleOffsetX2 = this.shootOffsetRadians * 2;
-    const angleOffset =
-      angleOffsetX2 * randomNumbers.getRandom() - this.shootOffsetRadians;
+    const angleOffset = this.getAngleOffset();
     const c = Math.cos(angleOffset);
     const s = Math.sin(angleOffset);
     raycasterDirection.x = raycasterDirection.x * c - raycasterDirection.z * s;
@@ -122,6 +125,16 @@ export class GunBehavior implements Behavior {
         break;
       }
     }
+  }
+
+  getAngleOffset() {
+    const offset = (this.isInMove) ?
+      this.shootOffsetInMoveRadians :
+      this.shootOffsetRadians;
+    const offsetX2 = offset * 2;
+    const angleOffset =
+      offsetX2 * randomNumbers.getRandom() - offset;
+    return angleOffset;
   }
 
   updateRecoil(delta: number) {
