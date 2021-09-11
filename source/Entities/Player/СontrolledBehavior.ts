@@ -221,8 +221,8 @@ export class СontrolledBehavior implements Behavior {
       }
       if (this.isKeyLeft) {
         this.isRunning = true;
-        this.moveDirection.x += Math.sin(this.camera.rotation.y - PI_2);
-        this.moveDirection.z += Math.cos(this.camera.rotation.y - PI_2);
+        this.moveDirection.x -= Math.sin(this.camera.rotation.y + PI_2);
+        this.moveDirection.z -= Math.cos(this.camera.rotation.y + PI_2);
       }
       if (this.isKeyRight) {
         this.isRunning = true;
