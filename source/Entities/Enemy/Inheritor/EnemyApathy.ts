@@ -18,6 +18,7 @@ export class EnemyApathy extends Enemy {
       textures: ENEMY_TEXTURES.Apathy,
       color: ENEMY_COLORS.Apathy,
       hp: 1,
+      bulletsPerShoot: { min: 1, max: 1 },
     });
   }
 }

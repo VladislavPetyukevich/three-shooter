@@ -2,9 +2,10 @@ import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'thr
 import { ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { Bullet } from '@/Entities/Bullet/Bullet';
+import { Gun } from '@/Entities/Gun/Gun';
 import { audioStore } from '@/core/loaders';
 import { StateMachine } from '@/StateMachine';
 import { randomNumbers } from '@/RandomNumbers';
@@ -15,6 +16,7 @@ interface BehaviorProps {
   actor: EnemyActor;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  bulletsPerShoot: { min: number; max: number; };
 }
 
 type TimeOuts =
@@ -23,13 +25,15 @@ type TimeOuts =
     'hurt' |
     'movement' |
     'strafe' |
-    'gunpointStrafe'
+    'gunpointStrafe' |
+    'shootDelay'
   , number>;
 
 export class EnemyBehavior implements Behavior {
   player: Player;
   velocity: Vector3;
   backupVelocity: Vector3;
+  gun: Gun;
   raycaster: Raycaster;
   followingPath: Vector2[];
   followingPoint?: Vector2;
@@ -41,6 +45,8 @@ export class EnemyBehavior implements Behavior {
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
+  bulletsPerShoot: { min: number; max: number; };
+  currentBulletsToShoot: number;
   shootSound: PositionalAudio;
   stateMachine: StateMachine;
   initialTimeOuts: TimeOuts;
@@ -53,6 +59,15 @@ export class EnemyBehavior implements Behavior {
     this.player = props.player;
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
+    this.gun = new Gun({
+      playerCamera: props.player.camera,
+      audioListener: props.audioListener,
+      container: props.container,
+      shootOffsetAngle: 5,
+      shootOffsetInMoveAngle: 5,
+      bulletsPerShoot: 1,
+      recoilTime: 0,
+    });
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.followingPath = [];
@@ -64,6 +79,8 @@ export class EnemyBehavior implements Behavior {
     this.currentStrafeAngle = 0;
     this.strafeAngleLow = 22.5; // (90 / 2) - (90 / 4)
     this.strafeAngleHigh = 88.8;
+    this.bulletsPerShoot = props.bulletsPerShoot;
+    this.currentBulletsToShoot = 0;
     this.shootSound = new PositionalAudio(props.audioListener);
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
@@ -87,6 +104,7 @@ export class EnemyBehavior implements Behavior {
       movement: ENEMY.MOVEMENT_TIME_OUT,
       strafe: 1,
       gunpointStrafe: 0.5,
+      shootDelay: 0.25,
     };
     this.currentTimeOuts = {
       shoot: this.initialTimeOuts.shoot,
@@ -94,15 +112,16 @@ export class EnemyBehavior implements Behavior {
       movement: this.initialTimeOuts.movement,
       strafe: this.initialTimeOuts.strafe,
       gunpointStrafe: this.initialTimeOuts.gunpointStrafe,
+      shootDelay: this.initialTimeOuts.shootDelay,
     };
   }
 
-  shoot() {
-    const bulletVelocity = new Vector3(
-      Math.sin(this.actor.mesh.rotation.y) * ENEMY.BULLET_SPEED,
+  createBullet() {
+    const bulletDirection = new Vector3(
+      Math.sin(this.actor.mesh.rotation.y),
       0,
-      Math.cos(this.actor.mesh.rotation.y) * ENEMY.BULLET_SPEED
-    );
+      Math.cos(this.actor.mesh.rotation.y)
+    ).normalize();
     const offsetX = this.bulletPositionOffset * Math.sin(this.actor.mesh.rotation.y);
     const offsetZ = this.bulletPositionOffset * Math.cos(this.actor.mesh.rotation.y);
     const bulletPosition = new Vector3(
@@ -110,14 +129,21 @@ export class EnemyBehavior implements Behavior {
       this.actor.mesh.position.y,
       this.actor.mesh.position.z + offsetZ
     );
+    this.gun.shootBullet(
+      Bullet,
+      {
+        position: bulletPosition,
+        direction: bulletDirection,
+        container: this.container,
+      }
+    );
+  }
 
-    const bullet = new Bullet({
-      position: bulletPosition,
-      velocity: bulletVelocity,
-      container: this.container
-    });
-    this.container.add(bullet);
-    this.shootSound.play();
+  shoot() {
+    this.currentBulletsToShoot = randomNumbers.getRandomInRange(
+      this.bulletsPerShoot.min,
+      this.bulletsPerShoot.max
+    );
   }
 
   hurt() {
@@ -247,11 +273,18 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
+    this.gun.update(delta);
     if (this.followingPath.length !== 0) {
       this.updateFollowPath();
     }
     const currentState = this.stateMachine.state();
-    this.updateMovement(delta, currentState);
+    if (
+      (currentState !== 'dies') &&
+      (currentState !== 'died')
+    ) {
+      this.updateMovement(delta, currentState);
+      this.updateShoot(delta);
+    }
     switch (currentState) {
       case 'died':
         break;
@@ -333,12 +366,6 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateMovement(delta: number, state: string) {
-    if (
-      (state === 'dies') ||
-      (state === 'died')
-    ) {
-      return;
-    }
     this.updateWalkSprite(delta);
     this.updateTimeOut('movement', delta);
     if (this.checkIsTimeOutExpired('movement')) {
@@ -359,6 +386,17 @@ export class EnemyBehavior implements Behavior {
       }
     }
     this.updateGunpointReaction(delta);
+  }
+
+  updateShoot(delta: number) {
+    if (this.currentBulletsToShoot === 0) {
+      return;
+    }
+    this.updateTimeOut('shootDelay', delta);
+    if (this.checkIsTimeOutExpired('shootDelay')) {
+      this.currentBulletsToShoot--;
+      this.createBullet();
+    }
   }
 
   updateGunpointReaction(delta: number) {

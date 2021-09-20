@@ -18,6 +18,7 @@ export class EnemySP extends Enemy {
       textures: ENEMY_TEXTURES.SP,
       color: ENEMY_COLORS.SP,
       hp: 1,
+      bulletsPerShoot: { min: 1, max: 3 },
     });
   }
 }

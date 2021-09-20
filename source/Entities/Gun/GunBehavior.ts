@@ -2,7 +2,6 @@ import {
   Camera,
   Vector3,
   Raycaster,
-  PointLight,
   AudioListener,
   Audio
 } from 'three';
@@ -10,7 +9,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
 import { ENTITY_TYPE, GAME_SOUND_NAME, PI_180 } from '@/constants';
-import { hud } from '@/HUD/HUD';
+import { Bullet, BulletProps } from '@/Entities/Bullet/Bullet';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
 import { ShootTrace } from '@/Entities/ShootTrace/ShootTrace';
 import { randomNumbers } from '@/RandomNumbers';
@@ -29,7 +28,6 @@ export class GunBehavior implements Behavior {
   playerCamera: Camera;
   raycaster: Raycaster;
   container: EntitiesContainer;
-  gunShootLight: PointLight;
   audioListener: AudioListener;
   shootSound: Audio;
   isShoot: boolean;
@@ -56,13 +54,6 @@ export class GunBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
-    this.gunShootLight = new PointLight('white', 20, 100);
-    this.gunShootLight.position.set(
-      0,
-      -50,
-      0
-    );
-    this.container.scene.add(this.gunShootLight);
   }
 
   handleShoot = () => {
@@ -71,59 +62,74 @@ export class GunBehavior implements Behavior {
     }
     this.isShoot = true;
     this.shootSound.play();
-
-    hud.gunFire();
-    for (let i = this.bulletsPerShoot; i--;) {
-      this.shootRaycast();
-    }
   };
 
-  shootRaycast() {
-    const raycasterDirection = new Vector3();
-    this.playerCamera.getWorldDirection(raycasterDirection);
+  shootRaycast(position: Vector3, direction: Vector3) {
+    if (this.isShoot) {
+      return;
+    }
+    this.handleShoot();
+    for (let i = this.bulletsPerShoot; i--;) {
+      const angleOffset = this.getAngleOffset();
+      this.setHorizontalRecoil(direction, angleOffset);
 
-    const angleOffset = this.getAngleOffset();
-    const c = Math.cos(angleOffset);
-    const s = Math.sin(angleOffset);
-    raycasterDirection.x = raycasterDirection.x * c - raycasterDirection.z * s;
-    raycasterDirection.z = raycasterDirection.x * s + raycasterDirection.z * c;
+      this.raycaster.set(position, direction);
+      const intersects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
 
-    this.raycaster.set(this.playerCamera.position, raycasterDirection);
-    const intersects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
-
-    for (let i = 0; i < intersects.length; i++) {
-      const intersect = intersects[i];
-      const intersectEntity = this.container.entities.find(
-        entity => entity.actor.mesh.id === intersect.object.id
-      );
-      if (!intersectEntity) {
-        continue;
-      }
-
-      if (intersectEntity.type === ENTITY_TYPE.WALL) {
-        const shootMark = new ShootMark({
-          playerCamera: this.playerCamera,
-          position: intersect.point,
-          container: this.container
-        });
-        const shootTraceStartPos = new Vector3(
-          this.playerCamera.position.x,
-          0,
-          this.playerCamera.position.z,
+      for (let i = 0; i < intersects.length; i++) {
+        const intersect = intersects[i];
+        const intersectEntity = this.container.entities.find(
+          entity => entity.actor.mesh.id === intersect.object.id
         );
-        const shootTrace = new ShootTrace({
-          startPos: shootTraceStartPos,
-          endPos: intersect.point,
-          container: this.container,
-        });
-        this.container.add(shootTrace);
-        this.container.add(shootMark);
-        break;
+        if (!intersectEntity) {
+          continue;
+        }
+
+        if (intersectEntity.type === ENTITY_TYPE.WALL) {
+          const shootMark = new ShootMark({
+            playerCamera: this.playerCamera,
+            position: intersect.point,
+            container: this.container
+          });
+          const shootTraceStartPos = new Vector3(
+            this.playerCamera.position.x,
+            0,
+            this.playerCamera.position.z,
+          );
+          const shootTrace = new ShootTrace({
+            startPos: shootTraceStartPos,
+            endPos: intersect.point,
+            container: this.container,
+          });
+          this.container.add(shootTrace);
+          this.container.add(shootMark);
+          break;
+        }
+        if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
+          intersectEntity.onHit(1);
+          break;
+        }
       }
-      if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
-        intersectEntity.onHit(1);
-        break;
-      }
+    }
+  }
+
+  shootBullet(
+    BulletClass: typeof Bullet,
+    props: BulletProps
+  ) {
+    if (this.isShoot) {
+      return;
+    }
+    this.handleShoot();
+    for (let i = this.bulletsPerShoot; i--;) {
+      const resultDirection = props.direction.clone();
+      const angleOffset = this.getAngleOffset();
+      this.setHorizontalRecoil(resultDirection, angleOffset);
+      const bullet = new BulletClass({
+        ...props,
+        direction: resultDirection,
+      });
+      this.container.add(bullet);
     }
   }
 
@@ -137,6 +143,13 @@ export class GunBehavior implements Behavior {
     return angleOffset;
   }
 
+  setHorizontalRecoil(direction: Vector3, angleOffset: number) {
+    const c = Math.cos(angleOffset);
+    const s = Math.sin(angleOffset);
+    direction.x = direction.x * c - direction.z * s;
+    direction.z = direction.x * s + direction.z * c;
+  }
+
   updateRecoil(delta: number) {
     if (this.currentRecoilTime < this.recoilTime) {
       this.currentRecoilTime += delta;
@@ -145,17 +158,10 @@ export class GunBehavior implements Behavior {
     this.currentRecoilTime = 0;
     this.shootSound.stop();
     this.isShoot = false;
-    hud.gunIdle();
-    this.gunShootLight.position.set(0, -50, 0);
   }
 
   update(delta: number) {
     if (this.isShoot) {
-      this.gunShootLight.position.set(
-        this.playerCamera.position.x,
-        this.playerCamera.position.y,
-        this.playerCamera.position.z
-      );
       this.updateRecoil(delta);
     }
   }

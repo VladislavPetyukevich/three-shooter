@@ -19,6 +19,10 @@ class RandomNumbers {
     }
     return this.values[this.i];
   }
+
+  getRandomInRange(min: number, max: number) {
+    return Math.floor(this.getRandom() * (max - min + 1)) + min;
+  }
 }
 
 export const randomNumbers = new RandomNumbers(RANDOM_NUMBERS_COUNT);

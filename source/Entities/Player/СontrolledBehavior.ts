@@ -1,11 +1,17 @@
-import { Camera, Vector2, Vector3, AudioListener, Raycaster } from 'three';
+import {
+  Camera,
+  Vector2,
+  Vector3,
+  AudioListener,
+  Raycaster,
+  PointLight
+} from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
 import { PI_2, KEYBOARD_KEY, PLAYER, PI_180, ENTITY_TYPE } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
-import { GunBehavior } from '@/Entities/Gun/GunBehavior';
 import { hud } from '@/HUD/HUD';
 import { globalSettings } from '@/GlobalSettings';
 
@@ -41,6 +47,7 @@ export class СontrolledBehavior implements Behavior {
   targetVelocity: Vector3;
   velocity: Vector3;
   gun: Gun;
+  gunShootLight: PointLight;
   mouseSensitivity: number;
   sinTable: number[];
   currentSinTableIndex: number;
@@ -92,6 +99,13 @@ export class СontrolledBehavior implements Behavior {
       bulletsPerShoot: 2,
       recoilTime: 0.2,
     });
+    this.gunShootLight = new PointLight('white', 20, 100);
+    this.gunShootLight.position.set(
+      0,
+      -50,
+      0
+    );
+    this.container.scene.add(this.gunShootLight);
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('click', this.handleShoot, false);
@@ -135,8 +149,14 @@ export class СontrolledBehavior implements Behavior {
   }
 
   handleShoot = () => {
-    (<GunBehavior>this.gun.behavior).handleShoot();
+    const direction = new Vector3();
+    this.camera.getWorldDirection(direction);
+    this.gun.shootRaycast(
+      this.camera.position,
+      direction
+    );
     this.cameraRecoilJump();
+    hud.gunFire();
   };
 
   cameraRecoilJump() {
@@ -174,6 +194,7 @@ export class СontrolledBehavior implements Behavior {
     this.updateKeysState();
     if (this.isCanMove) {
       this.updateVelocity(delta);
+      this.updateShootLight();
       this.updatePlayerBob(delta);
       this.updateCheckGunPoint(delta);
     } else {
@@ -265,6 +286,20 @@ export class СontrolledBehavior implements Behavior {
       if (!isGunRecoil) {
         this.updateBob(delta);
       }
+    }
+  }
+
+  updateShootLight() {
+    const isGunRecoil = this.gun.checkIsRecoil();
+    if (this.isCameraRecoil && !isGunRecoil) {
+      this.gunShootLight.position.set(0, -50, 0);
+      hud.gunIdle();
+    } else if (this.isCameraRecoil) {
+      this.gunShootLight.position.set(
+        this.camera.position.x,
+        this.camera.position.y,
+        this.camera.position.z
+      );
     }
   }
 

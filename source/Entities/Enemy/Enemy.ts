@@ -22,6 +22,7 @@ export interface EnemyProps {
   color: Color;
   textures: EnemyTextures;
   hp: number;
+  bulletsPerShoot: { min: number; max: number; };
 }
 
 export class Enemy extends Entity {
@@ -42,6 +43,7 @@ export class Enemy extends Entity {
         velocity,
         actor,
         audioListener: props.audioListener,
+        bulletsPerShoot: props.bulletsPerShoot,
       })
     );
     this.hp = props.hp;

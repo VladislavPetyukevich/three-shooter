@@ -13,6 +13,7 @@ export interface PlayerProps {
 }
 
 export class Player extends Entity {
+  camera: Camera;
   hp: number;
   isDead: boolean;
   onHitCallback?: Function;
@@ -39,6 +40,7 @@ export class Player extends Entity {
         audioListener: props.audioListener
       }),
     );
+    this.camera = props.camera;
     this.velocity = velocity;
     this.hp = PLAYER.HP;
     this.isDead = false;
