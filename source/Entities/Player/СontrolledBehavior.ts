@@ -200,7 +200,6 @@ export class СontrolledBehavior implements Behavior {
     } else {
       this.velocity.set(0, 0, 0);
     }
-    hud.onPlayerMove(this.actor.mesh.position);
   }
 
   updateCamera() {

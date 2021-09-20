@@ -1,9 +1,7 @@
-import { Scene, OrthographicCamera, SpriteMaterial, Sprite, Vector3, Euler } from 'three';
+import { Scene, OrthographicCamera, SpriteMaterial, Sprite  } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS, WALL } from '@/constants';
+import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
-import { GeneratorCell } from '@/dungeon/DungeonGenerator';
-import { HUDMap } from './HUDMap';
 import { HUDStats } from './HUDStats';
 
 const CAMERA_NEAR = -500;
@@ -15,7 +13,6 @@ export class HUD {
   visible: boolean;
   spriteSheet?: SpriteSheet;
   gun: Sprite;
-  hudMap: HUDMap;
   hudStats: HUDStats;
   sinTable: number[];
   currentSinTableIndex: number;
@@ -30,12 +27,6 @@ export class HUD {
     this.visible = false;
 
     this.gun = new Sprite();
-    this.hudMap = new HUDMap({
-      mapSize: HUD_CONSTANTS.MAP_SIZE,
-      renderDistance: HUD_CONSTANTS.MAP_RENDER_DISTANCE,
-      wallPixelSize: WALL.SIZE,
-      colors: HUD_CONSTANTS.COLORS
-    });
     this.hudStats = new HUDStats({
       size: HUD_CONSTANTS.STATS_SIZE,
       color: HUD_CONSTANTS.COLORS.stats,
@@ -63,14 +54,12 @@ export class HUD {
   hide() {
     this.visible = false;
     this.scene.remove(this.gun);
-    this.scene.remove(this.hudMap.sprite);
     this.scene.remove(this.hudStats.sprite);
   }
 
   show() {
     this.visible = true;
     this.scene.add(this.gun);
-    this.scene.add(this.hudMap.sprite);
     this.scene.add(this.hudStats.sprite);
     const gunMaterial = new SpriteMaterial();
     const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
@@ -108,27 +97,6 @@ export class HUD {
     return this.sinTable[this.currentSinTableIndex];
   }
 
-  updateMap(cells: GeneratorCell[][], roomsCount: number) {
-    this.hudMap.updateDungeon(cells);
-    this.hudStats.init(roomsCount);
-  }
-
-  onPlayerMove(meshPosition: Vector3) {
-    this.hudMap.updatePlayerPosition(meshPosition);
-  }
-
-  onPlayerRotation(cameraRotation: Euler) {
-    this.hudMap.updatePlayerRotation(cameraRotation);
-  }
-
-  onPlayerChangeRoom(roomIndex: number) {
-    this.hudMap.updatePlayerRoom(roomIndex);
-  }
-
-  onPlayerFreeRoom(roomIndex: number) {
-    this.hudMap.addFreeRoom(roomIndex);
-    this.hudStats.addFreeRoom();
-  }
 
   handleResize() {
     const width = window.innerWidth;
@@ -139,10 +107,6 @@ export class HUD {
     this.gun.position.set(0.5, -height + gunScale / 2, 1);
 
     const mapScale = gunScale / 2;
-    const mapX = -width + mapScale / 2;
-    const mapY = height - mapScale / 2;
-    this.hudMap.sprite.scale.set(mapScale, mapScale, 1);
-    this.hudMap.sprite.position.set(mapX, mapY, 1);
     const statsX = width - mapScale / 2;
     const statsY = -height + mapScale / 2;
     this.hudStats.sprite.scale.set(mapScale, mapScale, 1);
@@ -150,7 +114,6 @@ export class HUD {
   }
 
   update() {
-    this.hudMap.update();
     this.hudStats.update();
   }
 }
