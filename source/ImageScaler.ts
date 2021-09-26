@@ -8,6 +8,7 @@ export class ImageScaler {
   canvasContext: CanvasRenderingContext2D;
   canvasScaled: HTMLCanvasElement;
   canvasContextScaled: CanvasRenderingContext2D;
+  ignoreNames: string[];
 
   constructor(scaleFactor: number) {
     this.scaleFactor = scaleFactor;
@@ -20,6 +21,11 @@ export class ImageScaler {
     }
     this.canvasContext = context;
     this.canvasContextScaled = contextScaled;
+    this.ignoreNames = [];
+  }
+
+  addToIgnore(name: string) {
+    this.ignoreNames.push(name);
   }
 
   scaleImages(
@@ -41,7 +47,13 @@ export class ImageScaler {
     };
     const imagesEntries = Object.entries(imagesInfo);
     imagesEntries.forEach(
-      ([name, path]) => this.scaleImage(path, onDataUrlLoad(name))
+      ([name, path]) => {
+        if (this.ignoreNames.includes(name)) {
+          onDataUrlLoad(name)(path);
+        } else {
+          this.scaleImage(path, onDataUrlLoad(name));
+        }
+      }
     );
   }
 

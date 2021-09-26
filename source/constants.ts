@@ -21,6 +21,7 @@ import shootMark2 from './assets/shootMark2.png';
 import torch from './assets/torch.png';
 import torchFire1 from './assets/torch1.png';
 import torchFire2 from './assets/torch2.png';
+import damageEffect from './assets/damage-effect.png';
 
 export const PI_180 = Math.PI / 180;
 
@@ -152,7 +153,8 @@ export const gameTextures = {
   shootMark2,
   torch,
   torchFire1,
-  torchFire2
+  torchFire2,
+  damageEffect,
 };
 
 export const gameSounds = {
@@ -181,6 +183,7 @@ export const enum GAME_TEXTURE_NAME {
   torch = 'torch',
   torchFire1 = 'torchFire1',
   torchFire2 = 'torchFire2',
+  damageEffect = 'damageEffect',
 };
 
 export const ENEMY_TEXTURES = {
