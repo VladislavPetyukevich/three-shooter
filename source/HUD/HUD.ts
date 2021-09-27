@@ -1,8 +1,7 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite  } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME, HUD as HUD_CONSTANTS } from '@/constants';
+import { GAME_TEXTURE_NAME, PLAYER } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
-import { HUDStats } from './HUDStats';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -13,11 +12,13 @@ export class HUD {
   visible: boolean;
   spriteSheet?: SpriteSheet;
   gun: Sprite;
-  hudStats: HUDStats;
+  damageOverlay: Sprite;
   sinTable: number[];
   currentSinTableIndex: number;
   bobTimeout: number;
   maxBobTimeout: number;
+  maxHp: number;
+  maxDamageOverlayOpacity: number;
 
   constructor() {
     this.scene = new Scene();
@@ -27,16 +28,14 @@ export class HUD {
     this.visible = false;
 
     this.gun = new Sprite();
-    this.hudStats = new HUDStats({
-      size: HUD_CONSTANTS.STATS_SIZE,
-      color: HUD_CONSTANTS.COLORS.stats,
-      fontSize: HUD_CONSTANTS.STATS_FONT_SIZE
-    });
+    this.damageOverlay = new Sprite();
     this.handleResize();
     this.sinTable = this.generateSinTable(10, 1.8);
     this.currentSinTableIndex = 0;
     this.bobTimeout = 0;
     this.maxBobTimeout = 0.001;
+    this.maxHp = PLAYER.HP;
+    this.maxDamageOverlayOpacity = 0.6;
   }
 
   generateSinTable(step: number, amplitude: number) {
@@ -54,13 +53,10 @@ export class HUD {
   hide() {
     this.visible = false;
     this.scene.remove(this.gun);
-    this.scene.remove(this.hudStats.sprite);
+    this.scene.remove(this.damageOverlay);
   }
 
   show() {
-    this.visible = true;
-    this.scene.add(this.gun);
-    this.scene.add(this.hudStats.sprite);
     const gunMaterial = new SpriteMaterial();
     const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
     const gunFireTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunFireFile);
@@ -69,6 +65,14 @@ export class HUD {
       material: gunMaterial
     });
     this.gun.material = gunMaterial;
+    const damageOverlayMaterial = new SpriteMaterial({
+      map: texturesStore.getTexture(GAME_TEXTURE_NAME.damageEffect),
+      opacity: 0,
+    });
+    this.damageOverlay.material = damageOverlayMaterial;
+    this.visible = true;
+    this.scene.add(this.gun);
+    this.scene.add(this.damageOverlay);
   }
 
   gunFire() {
@@ -88,6 +92,17 @@ export class HUD {
     }
   }
 
+  updateHp(hp: number) {
+    const hpNormalized = hp / this.maxHp;
+    const damageOverlayOpacity =
+      this.lerp(this.maxDamageOverlayOpacity, 0, hpNormalized);
+    this.damageOverlay.material.opacity = damageOverlayOpacity;
+  }
+
+  lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
+  }
+
   getNextSinValue() {
     if (this.currentSinTableIndex === this.sinTable.length - 1) {
       this.currentSinTableIndex = 0;
@@ -105,16 +120,13 @@ export class HUD {
     const gunScale = height * 0.75;
     this.gun.scale.set(gunScale, gunScale, 1);
     this.gun.position.set(0.5, -height + gunScale / 2, 1);
-
-    const mapScale = gunScale / 2;
-    const statsX = width - mapScale / 2;
-    const statsY = -height + mapScale / 2;
-    this.hudStats.sprite.scale.set(mapScale, mapScale, 1);
-    this.hudStats.sprite.position.set(statsX, statsY, 1);
-  }
-
-  update() {
-    this.hudStats.update();
+    const damageOverlayWidth = width * 2;
+    const damageOverlayHeight = height * 2;
+    this.damageOverlay.scale.set(
+      damageOverlayWidth,
+      damageOverlayHeight,
+      1
+    );
   }
 }
 

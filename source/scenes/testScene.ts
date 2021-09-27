@@ -9,12 +9,10 @@ import {
   Fog,
   AmbientLight,
   RepeatWrapping,
-  Sprite,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { imageDisplayer } from '@/ImageDisplayer';
 import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { WallProps } from '@/Entities/Wall/Wall';
@@ -85,7 +83,6 @@ export class TestScene extends BasicScene {
   ambientLight: AmbientLight;
   ambientLightColor: number;
   ambientLightIntensity: number;
-  damageSprite: Sprite;
   player: Player;
   mapCellSize: number;
   currentRoom: Room;
@@ -114,12 +111,6 @@ export class TestScene extends BasicScene {
     this.maxMindStateValue = 0.3;
     this.onFinish = props.onFinish;
     this.camera.rotation.y = 225 * PI_180;
-    this.damageSprite = imageDisplayer.add(
-      texturesStore.getTexture('damageEffect'),
-      2, 2
-    );
-    this.damageSprite.visible = false;
-    this.damageSprite.material.opacity = 0.3;
     this.player = this.entitiesContainer.add(
       new Player({
         camera: this.camera,
@@ -133,11 +124,9 @@ export class TestScene extends BasicScene {
     this.player.setOnHitCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
       this.ambientLight.intensity = 2.3;
-      this.damageSprite.visible = true;
       setTimeout(() => {
         this.ambientLight.color.setHex(this.ambientLightColor);
         this.ambientLight.intensity = this.ambientLightIntensity;
-        this.damageSprite.visible = false;
       }, 100);
     });
     this.player.setOnDeathCallback(() => {

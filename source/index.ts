@@ -180,7 +180,6 @@ export default class ThreeShooter {
       const delta = (time - this.prevTime) / 1000;
       this.renderer.clear();
       this.currScene.update(delta);
-      hud.update();
       this.composer.render(delta);
       this.renderer.clearDepth();
       this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);

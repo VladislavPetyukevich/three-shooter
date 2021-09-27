@@ -4,6 +4,7 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './PlayerActor';
 import { СontrolledBehavior } from './СontrolledBehavior';
 import { PLAYER, ENTITY_TYPE } from '@/constants';
+import { hud } from '@/HUD/HUD';
 
 export interface PlayerProps {
   position: Vector3;
@@ -44,6 +45,7 @@ export class Player extends Entity {
     this.velocity = velocity;
     this.hp = PLAYER.HP;
     this.isDead = false;
+    hud.updateHp(this.hp);
   }
 
   onCollide(entity: Entity) {
@@ -66,6 +68,7 @@ export class Player extends Entity {
     if (this.onHitCallback) {
       this.onHitCallback();
     }
+    hud.updateHp(this.hp);
   }
 
   setOnHitCallback(callback: Function) {
