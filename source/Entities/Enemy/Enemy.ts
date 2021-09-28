@@ -4,6 +4,7 @@ import { ENTITY_TYPE } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 export type EnemyMessages = 'in player gunpoint';
@@ -17,6 +18,7 @@ export interface EnemyTextures {
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
+  bullet: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
   color: Color;
@@ -39,6 +41,7 @@ export class Enemy extends Entity {
       actor,
       new EnemyBehavior({
         player: props.player,
+        bullet: props.bullet,
         container: props.container,
         velocity,
         actor,

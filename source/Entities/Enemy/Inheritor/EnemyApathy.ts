@@ -1,5 +1,6 @@
 import { AudioListener } from 'three';
 import { Enemy } from '../Enemy';
+import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
@@ -18,6 +19,7 @@ export class EnemyApathy extends Enemy {
       textures: ENEMY_TEXTURES.Apathy,
       color: ENEMY_COLORS.Apathy,
       hp: 1,
+      bullet: BulletSlowMeidum,
       bulletsPerShoot: { min: 1, max: 1 },
     });
   }

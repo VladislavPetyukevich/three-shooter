@@ -3,7 +3,7 @@ import { BulletActor } from '@/Entities/Bullet/BulletActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { BulletBehavior } from './BulletBehavior';
 import { Vector3 } from 'three';
-import { ENTITY_TYPE, ENEMY } from '@/constants';
+import { ENTITY_TYPE } from '@/constants';
 
 export interface BulletProps {
   position: Vector3;
@@ -14,6 +14,7 @@ export interface BulletProps {
 export class Bullet extends Entity {
   direction: Vector3;
   container: EntitiesContainer;
+  damage?: number;
 
   constructor(props: BulletProps) {
     const actor = new BulletActor({
@@ -28,18 +29,23 @@ export class Bullet extends Entity {
     );
     this.direction = props.direction;
     this.container = props.container;
-    this.setSpeed(ENEMY.BULLET_SPEED);
   }
 
   setSpeed(speed: number) {
     this.velocity = this.direction.multiplyScalar(speed);
   }
 
+  setDamage(damage: number) {
+    this.damage = damage;
+  }
+
   onCollide(entity: Entity) {
     if (entity.type === ENTITY_TYPE.BULLET) {
       return true;
     }
-    entity.onHit(1);
+    if (this.damage) {
+      entity.onHit(this.damage);
+    }
     this.container.remove(this.actor.mesh);
     return false;
   }

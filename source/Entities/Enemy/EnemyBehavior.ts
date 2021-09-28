@@ -14,6 +14,7 @@ interface BehaviorProps {
   player: Player;
   velocity: Vector3;
   actor: EnemyActor;
+  bullet: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
   bulletsPerShoot: { min: number; max: number; };
@@ -34,6 +35,7 @@ export class EnemyBehavior implements Behavior {
   velocity: Vector3;
   backupVelocity: Vector3;
   gun: Gun;
+  bullet: typeof Bullet;
   raycaster: Raycaster;
   followingPath: Vector2[];
   followingPoint?: Vector2;
@@ -68,6 +70,7 @@ export class EnemyBehavior implements Behavior {
       bulletsPerShoot: 1,
       recoilTime: 0,
     });
+    this.bullet = props.bullet;
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.followingPath = [];
@@ -130,7 +133,7 @@ export class EnemyBehavior implements Behavior {
       this.actor.mesh.position.z + offsetZ
     );
     this.gun.shootBullet(
-      Bullet,
+      this.bullet,
       {
         position: bulletPosition,
         direction: bulletDirection,

@@ -1,5 +1,6 @@
 import { AudioListener } from 'three';
 import { Enemy } from '../Enemy';
+import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
@@ -18,6 +19,7 @@ export class EnemySP extends Enemy {
       textures: ENEMY_TEXTURES.SP,
       color: ENEMY_COLORS.SP,
       hp: 1,
+      bullet: BulletFastEasy,
       bulletsPerShoot: { min: 1, max: 3 },
     });
   }
