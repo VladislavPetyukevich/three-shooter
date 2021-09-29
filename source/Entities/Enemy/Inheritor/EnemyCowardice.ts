@@ -3,7 +3,7 @@ import { Enemy } from '../Enemy';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
+import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemyApathyProps {
   position: { x: number; y: number; z: number };
@@ -21,6 +21,10 @@ export class EnemyCowardice extends Enemy {
       hp: 1,
       bullet: BulletSlowMeidum,
       bulletsPerShoot: { min: 1, max: 1 },
+      delays: {
+        ...ENEMY.DELAYS,
+        gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
+      },
     });
   }
 }

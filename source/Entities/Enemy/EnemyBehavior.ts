@@ -18,6 +18,11 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   bulletsPerShoot: { min: number; max: number; };
+  delays: {
+    shoot: number;
+    gunpointStrafe: number,
+    strafe: number,
+  };
 }
 
 type TimeOuts =
@@ -105,9 +110,9 @@ export class EnemyBehavior implements Behavior {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
       movement: ENEMY.MOVEMENT_TIME_OUT,
-      strafe: 1,
-      gunpointStrafe: 0.5,
-      shootDelay: 0.25,
+      strafe: props.delays.strafe,
+      gunpointStrafe: props.delays.gunpointStrafe,
+      shootDelay: props.delays.shoot,
     };
     this.currentTimeOuts = {
       shoot: this.initialTimeOuts.shoot,

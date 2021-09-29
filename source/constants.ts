@@ -101,7 +101,12 @@ export const ENEMY = {
   MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.1,
   HURT_TIME_OUT: 0.1,
   SHOOT_TIME_OUT: ENEMY_GAME_SPEED * 0.05,
-  ATTACK_DISTANCE: BASE_DISTANCE
+  ATTACK_DISTANCE: BASE_DISTANCE,
+  DELAYS: {
+    shoot: 1,
+    gunpointStrafe: 0.7,
+    strafe: 1,
+  },
 };
 
 export const PLAYER = {

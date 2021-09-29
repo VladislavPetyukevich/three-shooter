@@ -3,7 +3,7 @@ import { Enemy } from '../Enemy';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
+import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemySPProps {
   position: { x: number; y: number; z: number };
@@ -21,6 +21,10 @@ export class EnemySP extends Enemy {
       hp: 1,
       bullet: BulletFastEasy,
       bulletsPerShoot: { min: 1, max: 3 },
+      delays: {
+        ...ENEMY.DELAYS,
+        strafe: ENEMY.DELAYS.strafe * 0.7,
+      },
     });
   }
 }
