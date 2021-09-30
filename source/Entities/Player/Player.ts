@@ -60,11 +60,13 @@ export class Player extends Entity {
     if (this.hp <= 0) {
       this.isDead = true;
       this.cantMove();
+      (<СontrolledBehavior>this.behavior).onDeath();
       if (this.onDeathCallback) {
         this.onDeathCallback();
       }
       return;
     }
+    (<СontrolledBehavior>this.behavior).onHit();
     if (this.onHitCallback) {
       this.onHitCallback();
     }

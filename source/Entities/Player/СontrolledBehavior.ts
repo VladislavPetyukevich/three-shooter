@@ -2,6 +2,7 @@ import {
   Camera,
   Vector2,
   Vector3,
+  Audio,
   AudioListener,
   Raycaster,
   PointLight
@@ -10,9 +11,17 @@ import { Actor } from '@/core/Entities/Actor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
-import { PI_2, KEYBOARD_KEY, PLAYER, PI_180, ENTITY_TYPE } from '@/constants';
+import {
+  PI_2,
+  KEYBOARD_KEY,
+  PLAYER,
+  PI_180,
+  ENTITY_TYPE,
+  GAME_SOUND_NAME
+} from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { hud } from '@/HUD/HUD';
+import { audioStore } from '@/core/loaders';
 import { globalSettings } from '@/GlobalSettings';
 
 interface СontrolledBehaviorProps {
@@ -46,6 +55,7 @@ export class СontrolledBehavior implements Behavior {
   moveDirection: Vector3;
   targetVelocity: Vector3;
   velocity: Vector3;
+  damageSound: Audio;
   gun: Gun;
   gunShootLight: PointLight;
   mouseSensitivity: number;
@@ -90,6 +100,11 @@ export class СontrolledBehavior implements Behavior {
     this.velocity = props.velocity;
     this.targetVelocity = new Vector3();
     this.moveDirection = new Vector3();
+    this.damageSound = new Audio(props.audioListener);
+    const damageSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.damage);
+    this.damageSound.setBuffer(damageSoundBuffer);
+    this.damageSound.isPlaying = false;
+    this.damageSound.setVolume(0.6);
     this.gun = new Gun({
       container: props.container,
       playerCamera: props.camera,
@@ -146,6 +161,17 @@ export class СontrolledBehavior implements Behavior {
       this.cameraRotationInput.x += movementX,
       this.cameraRotationInput.y += movementY,
     );
+  }
+
+  onHit() {
+    if (this.damageSound.isPlaying) {
+      this.damageSound.stop();
+    }
+    this.damageSound.play();
+  }
+
+  onDeath() {
+    this.damageSound.stop();
   }
 
   handleShoot = () => {
