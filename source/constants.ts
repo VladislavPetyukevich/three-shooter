@@ -17,6 +17,7 @@ import enemySPWalk2 from './assets/enemySPWalk2.png';
 import enemySPDeath from './assets/enemySPDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import damage from './assets/damage.mp3';
+import spawn from './assets/spawn.mp3';
 import shootMark1 from './assets/shootMark1.png';
 import shootMark2 from './assets/shootMark2.png';
 import torch from './assets/torch.png';
@@ -153,6 +154,7 @@ export const gameTextures = {
 export const gameSounds = {
   gunShoot,
   damage,
+  spawn,
 };
 
 export const enum GAME_TEXTURE_NAME {
@@ -201,4 +203,5 @@ export const ENEMY_TEXTURES = {
 export const enum GAME_SOUND_NAME {
   gunShoot = 'gunShoot',
   damage = 'damage',
+  spawn = 'spawn',
 };

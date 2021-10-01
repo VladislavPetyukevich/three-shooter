@@ -122,6 +122,15 @@ export class EnemyBehavior implements Behavior {
       gunpointStrafe: this.initialTimeOuts.gunpointStrafe,
       shootDelay: this.initialTimeOuts.shootDelay,
     };
+    this.spawnSound(props.audioListener);
+  }
+
+  spawnSound(audioListener: AudioListener) {
+    const spawnSound = new PositionalAudio(audioListener);
+    const spawnSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.spawn);
+    spawnSound.setBuffer(spawnSoundBuffer);
+    this.actor.mesh.add(spawnSound);
+    spawnSound.play();
   }
 
   createBullet() {
