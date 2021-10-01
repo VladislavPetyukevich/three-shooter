@@ -1,34 +1,30 @@
 type SettingName =
   'mouseSensitivity' |
-  'audioVolume';
+  'audioVolume' |
+  'fov';
+
+type Settings = Record<SettingName, number>;
 
 class GlobalSettings {
-  mouseSensitivity: number;
-  audioVolume: number;
+  settings: Settings;
   onUpdateCallbacks: Function[];
 
   constructor() {
+    this.settings = {
+      mouseSensitivity: 0.002,
+      audioVolume: 1,
+      fov: 95,
+    };
     this.onUpdateCallbacks = [];
-    this.mouseSensitivity = 0.002;
-    this.audioVolume = 1;
   }
 
   setSetting(name: SettingName, value: number) {
-    if (name === 'mouseSensitivity') {
-      this.mouseSensitivity = value;
-    } else if (name === 'audioVolume') {
-      this.audioVolume = value;
-    }
+    this.settings[name] = value;
     this.onUpdate();
   }
 
   getSetting(name: SettingName) {
-    if (name === 'mouseSensitivity') {
-      return this.mouseSensitivity;
-    } else if (name === 'audioVolume') {
-      return this.audioVolume;
-    }
-    return 0;
+    return this.settings[name] || 0;
   }
 
   addUpdateListener(callback: Function) {

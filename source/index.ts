@@ -174,6 +174,10 @@ export default class ThreeShooter {
     globalSettings.setSetting('audioVolume', value);
   };
 
+  updateFov = (value: number) => {
+    globalSettings.setSetting('fov', value);
+  };
+
   update = () => {
     if (this.enabled || !this.loaded) {
       const time = performance.now();

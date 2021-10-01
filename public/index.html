@@ -28,6 +28,10 @@
         <span>Audio volume:</span>
         <input id="audio-volume" type="range" min="0" max="10" value="10" step="1" >
         <span id="audio-volume-value"></span>
+        <br />
+        <span>FOV:</span>
+        <input id="fov" type="range" min="50" max="110" value="95" step="1" >
+        <span id="fov-value"></span>
       </div>
     </div>
   </div>
@@ -42,6 +46,8 @@
     var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
     var audioVolume = document.getElementById('audio-volume');
     var audioVolumeValue = document.getElementById('audio-volume-value');
+    var fov = document.getElementById('fov');
+    var fovValue = document.getElementById('fov-value');
 
     function updateMouseSensitivityValue(value) {
       var valueFormated = (value * 100).toFixed(3);
@@ -54,6 +60,12 @@
       var valueNode = document.createTextNode(value.toFixed(1));
       audioVolumeValue.innerHTML = '';
       audioVolumeValue.appendChild(valueNode);
+    }
+
+    function updateFovValue(value) {
+      var valueNode = document.createTextNode(value);
+      fovValue.innerHTML = '';
+      fovValue.appendChild(valueNode);
     }
 
     function onLoad() {
@@ -101,6 +113,17 @@
       saveSettings();
     }
 
+    fov.addEventListener('input', function(event) {
+      const value = +event.target.value;
+      updateFov(value);
+    });
+
+    function updateFov(value) {
+      threeShooter.updateFov(value);
+      updateFovValue(value);
+      saveSettings();
+    }
+
     var settingsKey = 'settings';
 
     function saveSettings() {
@@ -109,7 +132,8 @@
       }
       var settings = {
         mouseSensitivity: +mouseSensitivity.value,
-        audioVolume: +audioVolume.value
+        audioVolume: +audioVolume.value,
+        fov: +fov.value,
       };
       localStorage.setItem(settingsKey, JSON.stringify(settings));
     }
@@ -124,6 +148,8 @@
         updateMouseSensitivity(settings.mouseSensitivity);
         audioVolume.value = settings.audioVolume;
         updateAudioVolume(settings.audioVolume);
+        fov.value = settings.fov;
+        updateFov(settings.fov);
       } catch {
         console.error('Falied to load game settings');
       }

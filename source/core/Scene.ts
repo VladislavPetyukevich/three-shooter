@@ -19,7 +19,8 @@ export class BasicScene {
 
   constructor(props: BasicSceneProps) {
     this.scene = new Scene();
-    this.camera = new PerspectiveCamera(95, props.renderWidth / props.renderHeight, 0.1, 1000);
+    const fov = globalSettings.getSetting('fov') || 95;
+    this.camera = new PerspectiveCamera(fov, props.renderWidth / props.renderHeight, 0.1, 1000);
 
     this.audioListener = new AudioListener();
     this.setAudioVolume(globalSettings.getSetting('audioVolume'));
@@ -32,10 +33,16 @@ export class BasicScene {
 
   onUpdateGlobalSettings = () => {
     this.setAudioVolume(globalSettings.getSetting('audioVolume'));
+    this.setFov(globalSettings.getSetting('fov'));
   }
 
   setAudioVolume(value: number) {
     this.audioListener.setMasterVolume(value);
+  }
+
+  setFov(fov: number) {
+    this.camera.fov = fov;
+    this.camera.updateProjectionMatrix();
   }
 
   update(delta: number) {
