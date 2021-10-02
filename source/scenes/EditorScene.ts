@@ -177,9 +177,13 @@ export class EditorScene extends TestScene {
       }
       for (let cellY = 0; cellY < xRow.length; cellY++) {
         if (xRow[cellY]) {
+          const entityType = this.currentEditorEntities[cellX][cellY].type;
+          const entityTypeFormated =
+            entityType[0].toLocaleUpperCase() +
+            entityType.slice(1).toLocaleLowerCase();
           resultJson += '\n  {';
-          resultJson += ` position: { x: ${cellX}, y: ${cellY} },`;
-          resultJson += ` type: RoomCellType.${this.currentEditorEntities[cellX][cellY].type}`;
+          resultJson += ` position: new Vector2(${cellX}, ${cellY}),`;
+          resultJson += ` type: RoomCellType.${entityTypeFormated}`;
           resultJson += ' },';
         }
       }
