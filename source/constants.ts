@@ -98,16 +98,16 @@ export const FLYING_ENEMY = {
 };
 
 export const ENEMY = {
-  WALK_SPEED: ENEMY_GAME_SPEED * 0.5,
-  BULLET_SPEED: ENEMY_GAME_SPEED * 4,
+  WALK_SPEED: ENEMY_GAME_SPEED * 0.6,
+  BULLET_SPEED: ENEMY_GAME_SPEED * 3.5,
   MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.1,
   HURT_TIME_OUT: 0.1,
   SHOOT_TIME_OUT: ENEMY_GAME_SPEED * 0.05,
   ATTACK_DISTANCE: BASE_DISTANCE,
   DELAYS: {
-    shoot: 1,
-    gunpointStrafe: 0.7,
-    strafe: 1,
+    shoot: 0.7,
+    gunpointStrafe: 0.5,
+    strafe: 0.7,
   },
 };
 

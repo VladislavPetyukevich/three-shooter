@@ -108,7 +108,7 @@ export class TestScene extends BasicScene {
     this.playerFallInitialValue = 0.3;
     this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
-    this.maxMindStateValue = 0.3;
+    this.maxMindStateValue = 0.05;
     this.onFinish = props.onFinish;
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
