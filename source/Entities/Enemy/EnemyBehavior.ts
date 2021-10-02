@@ -130,6 +130,7 @@ export class EnemyBehavior implements Behavior {
     const spawnSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.spawn);
     spawnSound.setBuffer(spawnSoundBuffer);
     this.actor.mesh.add(spawnSound);
+    spawnSound.setRefDistance(2);
     spawnSound.play();
   }
 
