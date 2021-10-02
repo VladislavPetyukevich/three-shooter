@@ -657,6 +657,7 @@ export class TestScene extends BasicScene {
   }
 
   onRoomClear(room: Room) {
+    this.player.setHp(PLAYER.HP);
     this.increaseMindState(room);
     if (mindState.checkIsSomePropReachValue(this.maxMindStateValue)) {
       mindState.reset();

@@ -81,6 +81,11 @@ export class Player extends Entity {
     this.onDeathCallback = callback;
   }
 
+  setHp(hp: number) {
+    this.hp = hp;
+    hud.updateHp(this.hp);
+  }
+
   canMove() {
     (<СontrolledBehavior>this.behavior).isCanMove = true;
   }
