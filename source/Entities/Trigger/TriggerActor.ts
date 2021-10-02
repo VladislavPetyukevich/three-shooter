@@ -1,10 +1,11 @@
-import { Vector3 } from 'three';
+import { Vector3, Color } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Mesh, MeshPhongMaterial, BoxGeometry } from 'three';
 
 interface TriggerActorProps {
   size: Vector3;
   position: Vector3;
+  color: Color;
 }
 
 export class TriggerActor implements Actor {
@@ -12,7 +13,7 @@ export class TriggerActor implements Actor {
 
   constructor(props: TriggerActorProps) {
     const geometry = new BoxGeometry(props.size.x, props.size.y, props.size.z);
-    const material = new MeshPhongMaterial({ color: 'red' });
+    const material = new MeshPhongMaterial({ color: props.color });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.copy(props.position);
   }

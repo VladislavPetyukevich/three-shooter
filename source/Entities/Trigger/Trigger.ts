@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, Color } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { ENTITY_TYPE } from '@/constants';
@@ -8,6 +8,7 @@ import { TriggerBehavior } from './TriggerBehavior';
 interface TriggerProps {
   size: Vector3;
   position: Vector3;
+  color: Color;
   onTrigger: Function;
   entitiesContainer: EntitiesContainer;
 }
@@ -21,6 +22,7 @@ export class Trigger extends Entity {
     const actor = new TriggerActor({
       size: props.size,
       position: props.position,
+      color: props.color,
     });
     const behavior = new TriggerBehavior();
     super(ENTITY_TYPE.TRIGGER, actor, behavior);

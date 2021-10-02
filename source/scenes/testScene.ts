@@ -9,6 +9,7 @@ import {
   Fog,
   AmbientLight,
   RepeatWrapping,
+  Color,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
@@ -96,7 +97,6 @@ export class TestScene extends BasicScene {
   playerFallInitialValue: number;
   playerFallCurrenValue: number;
   playerFallMaxValue: number;
-  maxMindStateValue: number;
   onFinish: Function;
 
   constructor(props: TestSceneProps) {
@@ -108,7 +108,6 @@ export class TestScene extends BasicScene {
     this.playerFallInitialValue = 0.3;
     this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
-    this.maxMindStateValue = 0.05;
     this.onFinish = props.onFinish;
     this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
@@ -131,7 +130,7 @@ export class TestScene extends BasicScene {
     });
     this.player.setOnDeathCallback(() => {
       this.ambientLight.color.setHex(0xFF0000);
-      setTimeout(() => this.onFinish(), 400);
+      setTimeout(() => this.finish(), 400);
     });
     this.mapCellSize = 3;
     this.roomSize = new Vector2(20, 20);
@@ -179,6 +178,9 @@ export class TestScene extends BasicScene {
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
+
+    // MindState
+    mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
   }
 
   createNeighboringRooms(room: Room) {
@@ -343,6 +345,7 @@ export class TestScene extends BasicScene {
   }
 
   spawnRoomActivateTrigger(room: Room) {
+    const color = this.getTriggerColor(room);
     const size = new Vector2(this.mapCellSize, this.mapCellSize);
     const position = this.getCenterPosition(
       this.cellToWorldCoordinates(
@@ -365,6 +368,7 @@ export class TestScene extends BasicScene {
           this.mapCellSize,
           size.y,
         ),
+        color: new Color(color),
         entitiesContainer: this.entitiesContainer,
         onTrigger: () => this.handleRoomVisit(room),
       })
@@ -659,14 +663,13 @@ export class TestScene extends BasicScene {
   onRoomClear(room: Room) {
     this.player.setHp(PLAYER.HP);
     this.increaseMindState(room);
-    if (mindState.checkIsSomePropReachValue(this.maxMindStateValue)) {
-      mindState.reset();
-      this.onFinish();
-      return;
-    }
     this.deleteNeighboringRooms(room);
     this.createNeighboringRooms(room);
     this.openCloseDoors(room, false);
+  }
+
+  onMindStateLevelIncrease = () => {
+    this.finish();
   }
 
   increaseMindState(room: Room) {
@@ -682,6 +685,23 @@ export class TestScene extends BasicScene {
         break;
       default:
         break;
+    }
+  }
+
+  getTriggerColor(room: Room) {
+    return this.getMindeStateLevel(room) > 0 ? 0x333333 : 0xFF0000;
+  }
+
+  getMindeStateLevel(room: Room) {
+    switch(room.type) {
+      case RoomType.Apathy:
+        return mindState.getLevel().apathy;
+      case RoomType.Cowardice:
+        return mindState.getLevel().cowardice;
+      case RoomType.SexualPerversions:
+        return mindState.getLevel().sexualPerversions;
+      default:
+        return 0;
     }
   }
 
@@ -751,9 +771,14 @@ export class TestScene extends BasicScene {
     if (this.isPlayerFalling) {
       if (this.playerFallCurrenValue >= this.playerFallMaxValue) {
         this.isPlayerFalling = false;
-        this.onFinish();
+        this.finish();
       }
       return;
     }
+  }
+
+  finish() {
+    mindState.removeLevelIncreaseListener(this.onMindStateLevelIncrease);
+    this.onFinish();
   }
 }

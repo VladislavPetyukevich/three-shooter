@@ -1,29 +1,56 @@
-export interface MindStateProps {
-  apathy: number;
-  cowardice: number;
-  sexualPerversions: number;
-}
+type MindProperties = 'apathy' | 'cowardice' | 'sexualPerversions';
+
+export type MindStateProps = Record<MindProperties, number>;
+
+interface MindStateValue {
+  props: MindStateProps;
+  levels: MindStateProps;
+};
 
 export class MindState {
   initialValue: number;
   increaseAmount: number;
   onUpdateCallbacks: Function[];
+  onLevelIncreaseCallbacks: Function[];
   localStorageKey: string;
-  props: MindStateProps;
+  maxPropValue: number;
+  value: MindStateValue;
 
   constructor() {
     this.initialValue = 0;
     this.increaseAmount = 0.01;
     this.onUpdateCallbacks = [];
+    this.onLevelIncreaseCallbacks = [];
     this.localStorageKey = 'mindState';
-    this.props = this.getInitialProps();
+    this.value = {
+      props: this.getInitialProps(),
+      levels: this.getInitialProps(),
+    };
+    this.maxPropValue = 0.05;
     this.loadFromLocalStorage();
   }
 
-  increaseValue(prop: keyof MindStateProps) {
-    this.props[prop] += this.increaseAmount;
+  getProps() {
+    return this.value.props;
+  }
+
+  getLevel() {
+    return this.value.levels;
+  }
+
+  increaseValue(prop: MindProperties) {
+    this.value.props[prop] += this.increaseAmount;
+    if (this.checkIsPropReachMaxValue(prop)) {
+      this.updateLevel(prop);
+    }
     this.onUpdate();
     this.saveToLocalStorage();
+  }
+
+  updateLevel(prop: MindProperties) {
+    this.value.props[prop] = this.initialValue;
+    this.value.levels[prop]++;
+    this.onLevelIncrease();
   }
 
   saveToLocalStorage() {
@@ -31,39 +58,53 @@ export class MindState {
   }
 
   saveToLocalStorageCallback = (resolve: Function) => {
-    const stringified = JSON.stringify(this.props);
+    const stringified = JSON.stringify(this.value);
     localStorage.setItem(this.localStorageKey, stringified);
     resolve();
   }
 
   loadFromLocalStorage() {
     new Promise(this.loadFromLocalStorageCallback)
-      .then((props) => {
-        this.props = props;
+      .then((value) => {
+        this.value = value;
         this.onUpdate();
       })
       .catch(() => {});
   }
 
   loadFromLocalStorageCallback = (
-    resolve: (props: MindStateProps) => void,
+    resolve: (value: MindStateValue) => void,
     reject: () => void,
   ) => {
     try {
+      const checkIsValid = (value: Record<any, any>) => (
+        (typeof value.apathy === 'number') &&
+        (typeof value.cowardice === 'number') &&
+        (typeof value.sexualPerversions === 'number')
+      );
+
       const stringified = localStorage.getItem(this.localStorageKey);
       if (!stringified) {
         return;
       }
       const parsed = JSON.parse(stringified);
       if (
-        (typeof parsed.apathy === 'number') &&
-        (typeof parsed.cowardice === 'number') &&
-        (typeof parsed.sexualPerversions === 'number')
+        (parsed.props) &&
+        (checkIsValid(parsed.props)) &&
+        (parsed.levels) &&
+        (checkIsValid(parsed.levels))
       ) {
         resolve({
-          apathy: parsed.apathy,
-          cowardice: parsed.cowardice,
-          sexualPerversions: parsed.sexualPerversions,
+          props: {
+            apathy: parsed.props.apathy,
+            cowardice: parsed.props.cowardice,
+            sexualPerversions: parsed.props.sexualPerversions,
+          },
+          levels: {
+            apathy: parsed.levels.apathy,
+            cowardice: parsed.levels.cowardice,
+            sexualPerversions: parsed.levels.sexualPerversions,
+          },
         });
       }
     } catch (error) {
@@ -75,20 +116,25 @@ export class MindState {
     this.onUpdateCallbacks.push(callback);
   }
 
+  addLevelIncreaseListener(callback: Function) {
+    this.onLevelIncreaseCallbacks.push(callback);
+  }
+
+  removeLevelIncreaseListener(callback: Function) {
+    this.onLevelIncreaseCallbacks =
+      this.onLevelIncreaseCallbacks.filter(cb => cb !== callback);
+  }
+
   onUpdate() {
     this.onUpdateCallbacks.forEach(callback => callback());
   }
 
-  checkIsSomePropReachValue(value: number) {
-    return Object.values(this.props).some(
-      val => val >= value
-    );
+  onLevelIncrease() {
+    this.onLevelIncreaseCallbacks.forEach(callback => callback());
   }
 
-  reset() {
-    this.props = this.getInitialProps();
-    this.onUpdate();
-    this.saveToLocalStorage();
+  checkIsPropReachMaxValue(prop: MindProperties) {
+    return this.value.props[prop] >= this.maxPropValue;
   }
 
   getInitialProps() {

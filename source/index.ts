@@ -160,9 +160,9 @@ export default class ThreeShooter {
     }
     const uniforms = (<typeof ColorCorrectionShader['uniforms']>this.effectColorCorrection.uniforms);
     uniforms.addRGB.value.set(
-      mindState.props.sexualPerversions,
-      mindState.props.cowardice,
-      mindState.props.apathy,
+      mindState.getProps().sexualPerversions,
+      mindState.getProps().cowardice,
+      mindState.getProps().apathy,
     );
   }
 
