@@ -72,6 +72,9 @@ interface RoomTorches {
   apathy: RoomTorchesPool,
   cowardice: RoomTorchesPool,
   sexualPerversions: RoomTorchesPool,
+  apathyGray: RoomTorchesPool,
+  cowardiceGray: RoomTorchesPool,
+  sexualPerversionsGray: RoomTorchesPool,
 }
 
 export interface TestSceneProps extends BasicSceneProps {
@@ -383,25 +386,29 @@ export class TestScene extends BasicScene {
 
   getSceneTorches() {
     return {
-      apathy: this.createTorchesPool(),
-      cowardice: this.createTorchesPool(),
-      sexualPerversions: this.createTorchesPool()
+      apathy: this.createTorchesPool(new Color(0x600004)),
+      cowardice: this.createTorchesPool(new Color(0x600004)),
+      sexualPerversions: this.createTorchesPool(new Color(0x600004)),
+      apathyGray: this.createTorchesPool(new Color(0x333333)),
+      cowardiceGray: this.createTorchesPool(new Color(0x333333)),
+      sexualPerversionsGray: this.createTorchesPool(new Color(0x333333))
     };
   }
 
-  createTorchesPool(): RoomTorchesPool {
+  createTorchesPool(color: Color): RoomTorchesPool {
     return [
-      this.createTorch(),
-      this.createTorch(),
-      this.createTorch(),
-      this.createTorch(),
+      this.createTorch(color),
+      this.createTorch(color),
+      this.createTorch(color),
+      this.createTorch(color),
     ];
   }
 
-  createTorch() {
+  createTorch(color: Color) {
     return this.entitiesContainer.add(new Torch({
       position: new Vector3(0, -1000, 0),
-      player: this.player
+      color: color,
+      player: this.player,
     }));
   }
 
@@ -457,12 +464,22 @@ export class TestScene extends BasicScene {
   }
 
   getRoomTorches(roomType: RoomType) {
+    const roomMindStateLevel = this.getMindeStateLevel(roomType);
     switch (roomType) {
       case RoomType.Apathy:
+        if (roomMindStateLevel >= 1) {
+          return this.torches.apathyGray;
+        }
         return this.torches.apathy;
       case RoomType.Cowardice:
+        if (roomMindStateLevel >= 1) {
+          return this.torches.cowardiceGray;
+        }
         return this.torches.cowardice;
       case RoomType.SexualPerversions:
+        if (roomMindStateLevel >= 1) {
+          return this.torches.sexualPerversionsGray;
+        }
         return this.torches.sexualPerversions;
       default:
         throw new Error(`Cannot get room torches for room type ${roomType}`);
@@ -689,11 +706,11 @@ export class TestScene extends BasicScene {
   }
 
   getTriggerColor(room: Room) {
-    return this.getMindeStateLevel(room) > 0 ? 0x333333 : 0xFF0000;
+    return this.getMindeStateLevel(room.type) > 0 ? 0x333333 : 0xFF0000;
   }
 
-  getMindeStateLevel(room: Room) {
-    switch(room.type) {
+  getMindeStateLevel(roomType: RoomType) {
+    switch(roomType) {
       case RoomType.Apathy:
         return mindState.getLevel().apathy;
       case RoomType.Cowardice:
