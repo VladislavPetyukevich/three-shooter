@@ -11,12 +11,12 @@ export class BoomerangActor implements Actor {
   rotationSpeed: number;
 
   constructor(props: BoomerangActorProps) {
-    this.rotationSpeed = 12;
+    this.rotationSpeed = 10;
     const raius = 0.07;
     const geometry = new CylinderGeometry(
       raius,
       raius,
-      1,
+      4.5,
       5
     );
     const material = new MeshBasicMaterial({ color: 0xFF0000 });

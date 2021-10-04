@@ -122,8 +122,8 @@ export const PLAYER = {
 };
 
 export const BOOMERANG = {
-  SPEED: ENEMY.BULLET_SPEED * 0.2,
-  FIRST_PHASE_TIME: 2,
+  SPEED: ENEMY.BULLET_SPEED * 0.5,
+  FIRST_PHASE_TIME: 1.3,
 };
 
 export const enum ENTITY_MESSAGES {
