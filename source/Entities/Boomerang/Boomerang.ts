@@ -28,15 +28,21 @@ export class Boomerang extends Bullet {
   }
 
   onCollide(entity: Entity) {
-    if (entity.type === ENTITY_TYPE.PLAYER) {
-      if ((<BoomerangBehavior>this.behavior).currentPhase === 'flyBlackward') {
-        this.container.remove(this.actor.mesh);
-        entity.onMessage(ENTITY_MESSAGES.boomerangReturned);
-        return false;
+    if (entity.type === ENTITY_TYPE.ENEMY) {
+      if (this.damage) {
+        entity.onHit(this.damage);
       }
       return true;
     }
-    return super.onCollide(entity);
+    if (entity.type !== ENTITY_TYPE.PLAYER) {
+      return true;
+    }
+    if ((<BoomerangBehavior>this.behavior).currentPhase === 'flyBlackward') {
+      this.container.remove(this.actor.mesh);
+      entity.onMessage(ENTITY_MESSAGES.boomerangReturned);
+      return false;
+    }
+    return true;
   }
 }
 
