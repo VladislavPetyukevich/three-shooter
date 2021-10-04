@@ -17,6 +17,7 @@ import {
   PLAYER,
   PI_180,
   ENTITY_TYPE,
+  ENTITY_MESSAGES,
   GAME_SOUND_NAME
 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
@@ -123,7 +124,6 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
-      recoilTime: 0.2,
     });
     this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(
@@ -219,6 +219,7 @@ export class СontrolledBehavior implements Behavior {
       playerActor: this.actor,
     });
     this.gunBoomerang.shootBullet(boomerang);
+    this.gunBoomerang.setIsCanShoot(false);
   };
 
   cameraRecoilJump() {
@@ -385,7 +386,7 @@ export class СontrolledBehavior implements Behavior {
       return;
     }
     if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
-      intersectedEntity.onMessage('in player gunpoint');
+      intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
     }
   }
 }

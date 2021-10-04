@@ -21,7 +21,7 @@ interface BehaviorProps {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
-  recoilTime: number;
+  recoilTime?: number;
 }
 
 export class GunBehavior implements Behavior {
@@ -35,7 +35,7 @@ export class GunBehavior implements Behavior {
   shootOffsetRadians: number;
   shootOffsetInMoveRadians: number;
   bulletsPerShoot: number;
-  recoilTime: number;
+  recoilTime?: number;
   currentRecoilTime: number;
 
   constructor(props: BehaviorProps) {
@@ -145,6 +145,9 @@ export class GunBehavior implements Behavior {
   }
 
   updateRecoil(delta: number) {
+    if (this.recoilTime === undefined) {
+      return;
+    }
     if (this.currentRecoilTime < this.recoilTime) {
       this.currentRecoilTime += delta;
       return;

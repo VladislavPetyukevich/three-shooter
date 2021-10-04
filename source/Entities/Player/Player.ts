@@ -3,7 +3,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { PlayerActor } from './PlayerActor';
 import { СontrolledBehavior } from './СontrolledBehavior';
-import { PLAYER, ENTITY_TYPE } from '@/constants';
+import { PLAYER, ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
 import { hud } from '@/HUD/HUD';
 
 export interface PlayerProps {
@@ -71,6 +71,16 @@ export class Player extends Entity {
       this.onHitCallback();
     }
     hud.updateHp(this.hp);
+  }
+
+  onMessage(message: ENTITY_MESSAGES) {
+    switch(message) {
+      case ENTITY_MESSAGES.boomerangReturned:
+        (<СontrolledBehavior>this.behavior).gunBoomerang.setIsCanShoot(true);
+        break;
+      default:
+        break;
+    }
   }
 
   setOnHitCallback(callback: Function) {

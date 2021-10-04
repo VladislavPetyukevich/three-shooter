@@ -13,7 +13,7 @@ export interface Props {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
-  recoilTime: number;
+  recoilTime?: number;
 }
 
 export class Gun extends Entity {
@@ -38,6 +38,10 @@ export class Gun extends Entity {
 
   checkIsRecoil() {
     return (<GunBehavior>this.behavior).isShoot;
+  }
+
+  setIsCanShoot(isCanShoot: boolean) {
+    (<GunBehavior>this.behavior).isShoot = !isCanShoot;
   }
 
   setIsInMove(isInMove: boolean) {

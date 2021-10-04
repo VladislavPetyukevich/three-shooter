@@ -1,13 +1,11 @@
 import { Vector3, AudioListener, Color } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE } from '@/constants';
+import { ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-
-export type EnemyMessages = 'in player gunpoint';
 
 export interface EnemyTextures {
   walk1: string;
@@ -84,9 +82,9 @@ export class Enemy extends Entity {
     return false;
   }
 
-  onMessage(message: EnemyMessages) {
+  onMessage(message: ENTITY_MESSAGES) {
     switch (message) {
-      case 'in player gunpoint':
+      case ENTITY_MESSAGES.inPlayerGunpoint:
         (<EnemyBehavior>this.behavior).onPlayerGunpoint();
         break;
       default:

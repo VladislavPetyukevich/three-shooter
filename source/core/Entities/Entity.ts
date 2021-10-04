@@ -27,7 +27,7 @@ export class Entity {
     return true;
   }
 
-  onMessage(message: string) {
+  onMessage(message: string | number) {
   }
 
   update(delta: number) {

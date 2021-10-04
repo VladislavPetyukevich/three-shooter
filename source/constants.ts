@@ -126,9 +126,9 @@ export const BOOMERANG = {
   FIRST_PHASE_TIME: 2,
 };
 
-export const enum EVENT_TYPES {
-  DELETE_ENTITIY,
-  ENEMY_SHOOT
+export const enum ENTITY_MESSAGES {
+  inPlayerGunpoint,
+  boomerangReturned,
 };
 
 export const gameTextures = {
