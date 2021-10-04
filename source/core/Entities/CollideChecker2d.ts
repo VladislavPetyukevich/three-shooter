@@ -180,6 +180,12 @@ export class CollideChecker2d {
         height: (<any>entity.actor.mesh.geometry).parameters.radius * 2
       };
     }
+    if (entity.actor.mesh.geometry.type === 'CylinderGeometry') {
+      return {
+        width: (<any>entity.actor.mesh.geometry).parameters.height,
+        height: (<any>entity.actor.mesh.geometry).parameters.height
+      };
+    }
     throw new Error(`geometry type are not suported: ${entity.actor.mesh.geometry.type}`);
   }
 
