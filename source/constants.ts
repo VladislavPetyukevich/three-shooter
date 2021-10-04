@@ -121,6 +121,11 @@ export const PLAYER = {
   CAMERA_ROTATION_SPEED: Math.PI * 0.5
 };
 
+export const BOOMERANG = {
+  SPEED: ENEMY.BULLET_SPEED * 0.2,
+  FIRST_PHASE_TIME: 2,
+};
+
 export const enum EVENT_TYPES {
   DELETE_ENTITIY,
   ENEMY_SHOOT

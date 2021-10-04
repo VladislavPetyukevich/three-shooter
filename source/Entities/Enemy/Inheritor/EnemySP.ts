@@ -19,7 +19,7 @@ export class EnemySP extends Enemy {
       textures: ENEMY_TEXTURES.SP,
       color: ENEMY_COLORS.SP,
       hp: 1,
-      bullet: BulletFastEasy,
+      BulletClass: BulletFastEasy,
       bulletsPerShoot: { min: 1, max: 3 },
       delays: {
         ...ENEMY.DELAYS,

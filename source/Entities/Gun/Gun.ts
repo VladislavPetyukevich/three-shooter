@@ -1,6 +1,6 @@
 import { AudioListener, Camera, Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { Bullet, BulletProps } from '@/Entities/Bullet/Bullet';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 import { ENTITY_TYPE } from '@/constants';
 import { GunActor } from './GunActor';
 import { GunBehavior } from './GunBehavior';
@@ -48,13 +48,9 @@ export class Gun extends Entity {
     return (<GunBehavior>this.behavior).shootRaycast(position, direction);
   }
 
-  shootBullet(
-    BulletClass: typeof Bullet,
-    props: BulletProps
-  ) {
+  shootBullet(bullet: Bullet) {
     return (<GunBehavior>this.behavior).shootBullet(
-      BulletClass,
-      props
+      bullet
     );
   }
 

@@ -7,7 +7,7 @@ import {
   Raycaster,
   PointLight
 } from 'three';
-import { Actor } from '@/core/Entities/Actor';
+import { PlayerActor } from './PlayerActor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { keyboard } from '@/Keyboard';
@@ -20,12 +20,13 @@ import {
   GAME_SOUND_NAME
 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
+import { Boomerang } from '@/Entities/Boomerang/Boomerang';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
 import { globalSettings } from '@/GlobalSettings';
 
 interface СontrolledBehaviorProps {
-  actor: Actor;
+  actor: PlayerActor;
   camera: Camera;
   eyeY: number;
   walkSpeed: number;
@@ -36,7 +37,7 @@ interface СontrolledBehaviorProps {
 }
 
 export class СontrolledBehavior implements Behavior {
-  actor: Actor;
+  actor: PlayerActor;
   camera: Camera;
   raycaster: Raycaster;
   isRunning: boolean;
@@ -57,6 +58,7 @@ export class СontrolledBehavior implements Behavior {
   velocity: Vector3;
   damageSound: Audio;
   gun: Gun;
+  gunBoomerang: Gun;
   gunShootLight: PointLight;
   mouseSensitivity: number;
   sinTable: number[];
@@ -112,6 +114,15 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 2,
+      recoilTime: 0.2,
+    });
+    this.gunBoomerang = new Gun({
+      container: props.container,
+      playerCamera: props.camera,
+      audioListener: props.audioListener,
+      shootOffsetAngle: 2.5,
+      shootOffsetInMoveAngle: 4.5,
+      bulletsPerShoot: 1,
       recoilTime: 0.2,
     });
     this.gunShootLight = new PointLight('white', 20, 100);
@@ -174,7 +185,20 @@ export class СontrolledBehavior implements Behavior {
     this.damageSound.stop();
   }
 
-  handleShoot = () => {
+  handleShoot = (event: MouseEvent) => {
+    switch (event.button) {
+      case 0:
+        this.handleShootPrimary();
+        break;
+      case 2:
+        this.handleShootSecondary();
+        break;
+      default:
+        break;
+    }
+  };
+
+  handleShootPrimary = () => {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
     this.gun.shootRaycast(
@@ -183,6 +207,18 @@ export class СontrolledBehavior implements Behavior {
     );
     this.cameraRecoilJump();
     hud.gunFire();
+  };
+
+  handleShootSecondary = () => {
+    const direction = new Vector3();
+    this.camera.getWorldDirection(direction);
+    const boomerang = new Boomerang({
+      position: this.camera.position,
+      direction: direction,
+      container: this.container,
+      playerActor: this.actor,
+    });
+    this.gunBoomerang.shootBullet(boomerang);
   };
 
   cameraRecoilJump() {
@@ -216,6 +252,7 @@ export class СontrolledBehavior implements Behavior {
 
   update(delta: number) {
     this.gun.update(delta);
+    this.gunBoomerang.update(delta);
     this.updateCamera();
     this.updateKeysState();
     if (this.isCanMove) {

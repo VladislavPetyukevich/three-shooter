@@ -18,7 +18,7 @@ export interface EnemyTextures {
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
-  bullet: typeof Bullet;
+  BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
   color: Color;
@@ -46,7 +46,7 @@ export class Enemy extends Entity {
       actor,
       new EnemyBehavior({
         player: props.player,
-        bullet: props.bullet,
+        BulletClass: props.BulletClass,
         container: props.container,
         velocity,
         actor,

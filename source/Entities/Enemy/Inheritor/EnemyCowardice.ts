@@ -19,7 +19,7 @@ export class EnemyCowardice extends Enemy {
       textures: ENEMY_TEXTURES.Cowardice,
       color: ENEMY_COLORS.Cowardice,
       hp: 1,
-      bullet: BulletSlowMeidum,
+      BulletClass: BulletSlowMeidum,
       bulletsPerShoot: { min: 1, max: 1 },
       delays: {
         ...ENEMY.DELAYS,

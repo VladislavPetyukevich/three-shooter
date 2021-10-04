@@ -9,7 +9,7 @@ import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
 import { ENTITY_TYPE, GAME_SOUND_NAME, PI_180 } from '@/constants';
-import { Bullet, BulletProps } from '@/Entities/Bullet/Bullet';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 import { ShootMark } from '@/Entities/ShootMark/ShootMark';
 import { ShootTrace } from '@/Entities/ShootTrace/ShootTrace';
 import { randomNumbers } from '@/RandomNumbers';
@@ -113,22 +113,16 @@ export class GunBehavior implements Behavior {
     }
   }
 
-  shootBullet(
-    BulletClass: typeof Bullet,
-    props: BulletProps
-  ) {
+  shootBullet(bullet: Bullet) {
     if (this.isShoot) {
       return;
     }
     this.handleShoot();
     for (let i = this.bulletsPerShoot; i--;) {
-      const resultDirection = props.direction.clone();
+      const resultDirection = bullet.direction.clone();
       const angleOffset = this.getAngleOffset();
       this.setHorizontalRecoil(resultDirection, angleOffset);
-      const bullet = new BulletClass({
-        ...props,
-        direction: resultDirection,
-      });
+      bullet.setDirection(resultDirection);
       this.container.add(bullet);
     }
   }

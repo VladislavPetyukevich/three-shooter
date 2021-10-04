@@ -13,26 +13,32 @@ export interface BulletProps {
 
 export class Bullet extends Entity {
   direction: Vector3;
+  speed: number;
   container: EntitiesContainer;
   damage?: number;
 
   constructor(props: BulletProps) {
-    const actor = new BulletActor({
-      sphere: { radius: 0.2, widthSegments: 16, heightSegments: 16 },
-      position: props.position
-    });
-    const behavior = new BulletBehavior({});
     super(
       ENTITY_TYPE.BULLET,
-      actor,
-      behavior
+      new BulletActor({
+        sphere: { radius: 0.2, widthSegments: 16, heightSegments: 16 },
+        position: props.position
+      }),
+      new BulletBehavior(),
     );
     this.direction = props.direction;
+    this.speed = 0;
     this.container = props.container;
   }
 
+  setDirection = (direction: Vector3) => {
+    this.direction = direction;
+    this.updateVelocity();
+  }
+
   setSpeed(speed: number) {
-    this.velocity = this.direction.multiplyScalar(speed);
+    this.speed = speed;
+    this.updateVelocity();
   }
 
   setDamage(damage: number) {
@@ -48,5 +54,10 @@ export class Bullet extends Entity {
     }
     this.container.remove(this.actor.mesh);
     return false;
+  }
+
+  updateVelocity() {
+    const direction = this.direction.clone();
+    this.velocity = direction.multiplyScalar(this.speed);
   }
 }
