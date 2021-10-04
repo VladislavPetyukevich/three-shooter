@@ -19,7 +19,7 @@ export class BoomerangActor implements Actor {
       4.5,
       5
     );
-    const material = new MeshBasicMaterial({ color: 0xFF0000 });
+    const material = new MeshBasicMaterial({ color: 0xCC0000 });
     this.mesh = new Mesh(geometry, material);
     this.mesh.rotation.x = PI_2;
     this.mesh.position.set(
