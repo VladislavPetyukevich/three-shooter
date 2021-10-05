@@ -1,20 +1,12 @@
 import { Color } from 'three';
 import wallTextureFile from '@/assets/wall.png';
-import wallNormalFile from '@/assets/wall-normal.png';
 import doorTextureFile from '@/assets/door.png';
-import doorNormalFile from '@/assets/door-normal.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
 import enemyApathyWalk1 from './assets/enemyWalk1.png';
 import enemyApathyWalk2 from './assets/enemyWalk2.png';
 import enemyApathyDeath from './assets/enemyDeath.png';
-import enemyCowardiceWalk1 from './assets/enemyCowardiceWalk1.png';
-import enemyCowardiceWalk2 from './assets/enemyCowardiceWalk2.png';
-import enemyCowardiceDeath from './assets/enemyCowardiceDeath.png';
-import enemySPWalk1 from './assets/enemySPWalk1.png';
-import enemySPWalk2 from './assets/enemySPWalk2.png';
-import enemySPDeath from './assets/enemySPDeath.png';
 import gunShoot from './assets/shoot.mp3';
 import damage from './assets/damage.mp3';
 import spawn from './assets/spawn.mp3';
@@ -133,21 +125,13 @@ export const enum ENTITY_MESSAGES {
 
 export const gameTextures = {
   wallTextureFile,
-  wallNormalFile,
   doorTextureFile,
-  doorNormalFile,
   floorTextureFile,
   gunTextureFile,
   gunFireFile,
   enemyApathyWalk1,
   enemyApathyWalk2,
   enemyApathyDeath,
-  enemyCowardiceWalk1,
-  enemyCowardiceWalk2,
-  enemyCowardiceDeath,
-  enemySPWalk1,
-  enemySPWalk2,
-  enemySPDeath,
   shootMark1,
   shootMark2,
   torch,
@@ -164,21 +148,13 @@ export const gameSounds = {
 
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
-  wallNormalFile = 'wallNormalFile',
   doorTextureFile = 'doorTextureFile',
-  doorNormalFile = 'doorNormalFile',
   floorTextureFile = 'floorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
   enemyApathyWalk1 = 'enemyApathyWalk1',
   enemyApathyWalk2 = 'enemyApathyWalk2',
   enemyApathyDeath = 'enemyApathyDeath',
-  enemyCowardiceWalk1 = 'enemyCowardiceWalk1',
-  enemyCowardiceWalk2 = 'enemyCowardiceWalk2',
-  enemyCowardiceDeath = 'enemyCowardiceDeath',
-  enemySPWalk1 = 'enemySPWalk1',
-  enemySPWalk2 = 'enemySPWalk2',
-  enemySPDeath = 'enemySPDeath',
   shootMark1 = 'shootMark1',
   shootMark2 = 'shootMark2',
   torch = 'torch',
@@ -194,14 +170,14 @@ export const ENEMY_TEXTURES = {
     death: GAME_TEXTURE_NAME.enemyApathyDeath,
   },
   Cowardice: {
-    walk1: GAME_TEXTURE_NAME.enemyCowardiceWalk1,
-    walk2: GAME_TEXTURE_NAME.enemyCowardiceWalk2,
-    death: GAME_TEXTURE_NAME.enemyCowardiceDeath,
+    walk1: GAME_TEXTURE_NAME.enemyApathyWalk1,
+    walk2: GAME_TEXTURE_NAME.enemyApathyWalk2,
+    death: GAME_TEXTURE_NAME.enemyApathyDeath,
   },
   SP: {
-    walk1: GAME_TEXTURE_NAME.enemySPWalk1,
-    walk2: GAME_TEXTURE_NAME.enemySPWalk2,
-    death: GAME_TEXTURE_NAME.enemySPDeath,
+    walk1: GAME_TEXTURE_NAME.enemyApathyWalk1,
+    walk2: GAME_TEXTURE_NAME.enemyApathyWalk2,
+    death: GAME_TEXTURE_NAME.enemyApathyDeath,
   },
 };
 
