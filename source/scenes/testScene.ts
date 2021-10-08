@@ -3,7 +3,7 @@ import {
   Mesh,
   PointLight,
   Matrix4,
-  MeshPhongMaterial,
+  MeshBasicMaterial,
   Vector2,
   Vector3,
   Fog,
@@ -177,7 +177,7 @@ export class TestScene extends BasicScene {
     floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
     floorTexture.repeat.x = floorTexture.repeat.y = floorSize;
     floorTexture.needsUpdate = true;
-    const floormaterial = new MeshPhongMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
+    const floormaterial = new MeshBasicMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
     const floormesh = new Mesh(floorGeometry, floormaterial);
     floormesh.receiveShadow = true;
     this.scene.add(floormesh);
