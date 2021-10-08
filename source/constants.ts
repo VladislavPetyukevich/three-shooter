@@ -2,7 +2,6 @@ import { Color } from 'three';
 import wallTextureFile from '@/assets/wall.png';
 import wallNormalFile from '@/assets/wall-normal.png';
 import doorTextureFile from '@/assets/door.png';
-import doorNormalFile from '@/assets/door-normal.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
@@ -62,7 +61,7 @@ export const COLORS = {
   SexualPerversions: new Color(166, 15, 11),
 };
 
-const wallDarkerFactor = 0.9977;
+const wallDarkerFactor = 0.996;
 export const WALL_COLORS = {
   Neutral: darker(new Color(180, 180, 180), wallDarkerFactor),
   Apathy: darker(COLORS.Apathy, wallDarkerFactor),
@@ -135,7 +134,6 @@ export const gameTextures = {
   wallTextureFile,
   wallNormalFile,
   doorTextureFile,
-  doorNormalFile,
   floorTextureFile,
   gunTextureFile,
   gunFireFile,

@@ -21,7 +21,6 @@ export class Wall extends Entity {
       size: size,
       isHorizontalWall: props.isHorizontalWall,
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
-      normalTextureFileName: GAME_TEXTURE_NAME.wallNormalFile,
       textureSize: 3,
       color: props.color,
     });
