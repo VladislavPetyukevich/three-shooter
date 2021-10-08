@@ -25,6 +25,7 @@ export class EditorScene extends TestScene {
   padding: number;
   localStorageKey: string;
   frameTimeContainer?: HTMLSpanElement;
+  updateTimeContainer?: HTMLSpanElement;
 
   constructor(props: TestSceneProps) {
     super(props);
@@ -89,6 +90,16 @@ export class EditorScene extends TestScene {
     this.frameTimeContainer.style.backgroundColor = 'white';
     this.frameTimeContainer.innerHTML = 'FRAME TIME';
     document.body.appendChild(this.frameTimeContainer);
+    this.updateTimeContainer = document.createElement('span');
+    this.updateTimeContainer.style.position = 'absolute';
+    this.updateTimeContainer.style.top = '25px';
+    this.updateTimeContainer.style.left = '240px';
+    this.updateTimeContainer.style.backgroundColor = 'white';
+    this.updateTimeContainer.innerHTML = 'UPDATE TIME';
+    document.body.appendChild(this.updateTimeContainer);
+    (<any>window).updateInfo = (value: number) => {
+      this.updateUpdateTimeInfo(value);
+    };
   }
 
   createMapElements() {
@@ -366,12 +377,22 @@ export class EditorScene extends TestScene {
 
   update(delta: number) {
     this.updateFrameTimeInfo(delta);
+    const t0 = performance.now();
     if (this.isEditorMode) {
       this.entitiesContainer.update(0.0000001);
       this.moveCameraToSky();
     } else {
       super.update(delta);
     }
+    const t1 = performance.now();
+    this.updateUpdateTimeInfo(t1 - t0);
+  }
+
+  updateUpdateTimeInfo(timeMs: number) {
+    if (!this.updateTimeContainer) {
+      return;
+    }
+    this.updateTimeContainer.innerHTML = `Update time: ${timeMs.toFixed(5)}`;
   }
 
   updateFrameTimeInfo(delta: number) {

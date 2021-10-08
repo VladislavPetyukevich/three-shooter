@@ -4,7 +4,8 @@ import {
   BasicShadowMap
 } from 'three';
 import { BasicScene } from './core/Scene';
-import { TestScene } from './scenes/testScene';
+// import { TestScene } from './scenes/testScene';
+import { EditorScene } from './scenes/EditorScene';
 import { LoadingScene } from './scenes/loadingScene';
 import { ImageDisplayer, imageDisplayer } from './ImageDisplayer';
 import { hud } from './HUD/HUD';
@@ -93,7 +94,7 @@ export default class ThreeShooter {
         }
         document.removeEventListener('pointerlockchange', pointerlockHandler);
       };
-      this.loadScene(TestScene, gameProps);
+      this.loadScene(EditorScene, gameProps);
       document.addEventListener('pointerlockchange', pointerlockHandler);
       gameProps.onLoad();
     };
@@ -122,7 +123,7 @@ export default class ThreeShooter {
     setTimeout(
       () => {
         this.loadScene(
-          TestScene,
+          EditorScene,
           { ...this.gameProps, onFinish: this.onDungeonFinish },
           () => this.loadedScene && this.changeScene(this.loadedScene)
         );
@@ -189,6 +190,9 @@ export default class ThreeShooter {
       this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
       this.renderer.render(hud.scene, hud.camera);
       this.prevTime = time;
+      if ((<any>window).updateInfo) {
+        (<any>window).updateInfo(performance.now() - time);
+      }
     }
     requestAnimationFrame(this.update);
   }
