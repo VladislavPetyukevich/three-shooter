@@ -54,7 +54,7 @@ export const COLORS = {
   SexualPerversions: new Color(166, 15, 11),
 };
 
-const wallDarkerFactor = 0.9977;
+const wallDarkerFactor = 0.9995;
 export const WALL_COLORS = {
   Neutral: darker(new Color(180, 180, 180), wallDarkerFactor),
   Apathy: darker(COLORS.Apathy, wallDarkerFactor),
@@ -62,7 +62,7 @@ export const WALL_COLORS = {
   SexualPerversions: darker(COLORS.SexualPerversions, wallDarkerFactor),
 };
 
-const enemyDarkerFactor = 0.9;
+const enemyDarkerFactor = 0.0;
 export const ENEMY_COLORS = {
   Apathy: darker(new Color(2470578), enemyDarkerFactor),
   Cowardice: darker(new Color(6930959), enemyDarkerFactor),

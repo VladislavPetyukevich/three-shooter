@@ -3,7 +3,7 @@ import {
   Mesh,
   PointLight,
   Matrix4,
-  MeshPhongMaterial,
+  MeshLambertMaterial,
   Vector2,
   Vector3,
   Fog,
@@ -14,7 +14,7 @@ import {
 import { Entity } from '@/core/Entities/Entity';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
+import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180, PI_2 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
@@ -49,6 +49,7 @@ export const enum RoomType {
 export interface Room {
   type: RoomType;
   cellPosition: Vector2;
+  floor: Mesh;
   walls: Entity[];
   doors: {
     top: Door;
@@ -170,18 +171,6 @@ export class TestScene extends BasicScene {
 
     this.scene.fog = new Fog(0x000000, 1.15, 200);
 
-    const floorSize = 5000;
-    const floorGeometry = new PlaneGeometry(floorSize, floorSize);
-    floorGeometry.applyMatrix(new Matrix4().makeRotationX(- Math.PI / 2));
-    const floorTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile);
-    floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
-    floorTexture.repeat.x = floorTexture.repeat.y = floorSize;
-    floorTexture.needsUpdate = true;
-    const floormaterial = new MeshPhongMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
-    const floormesh = new Mesh(floorGeometry, floormaterial);
-    floormesh.receiveShadow = true;
-    this.scene.add(floormesh);
-
     // MindState
     mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
   }
@@ -234,6 +223,7 @@ export class TestScene extends BasicScene {
     const room: Room = {
       type: type,
       cellPosition: cellPosition,
+      floor: this.spawnRoomFloor(worldCoordinates, worldSize),
       walls: [
         ...this.spawnRoomWalls(worldCoordinates, worldSize, type)
       ],
@@ -260,6 +250,29 @@ export class TestScene extends BasicScene {
       this.moveTorchesToRoom(room);
     }
     return room;
+  }
+
+  spawnRoomFloor(worldCoordinates: Vector2, worldSize: Vector2) {
+    const floorGeometry = new PlaneGeometry(worldSize.x, worldSize.y);
+    floorGeometry.applyMatrix(new Matrix4().makeRotationX(-PI_2));
+    const floorTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile);
+    floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
+    floorTexture.repeat.x = worldSize.x;
+    floorTexture.repeat.y = worldSize.y;
+    floorTexture.needsUpdate = true;
+    const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
+    const floorMesh = new Mesh(floorGeometry, floorMaterial);
+    const floorPosition = this.getCenterPosition(
+      worldCoordinates, worldSize
+    );
+    floorMesh.position.set(
+      floorPosition.x,
+      0,
+      floorPosition.y
+    );
+    floorMesh.receiveShadow = true;
+    this.scene.add(floorMesh);
+    return floorMesh;
   }
 
   spawnRoomWalls(worldCoordinates: Vector2, worldSize: Vector2, roomType: RoomType): Entity[] {
@@ -494,6 +507,7 @@ export class TestScene extends BasicScene {
     if (!room) {
       return;
     }
+    this.scene.remove(room.floor);
     room.walls.forEach(wall =>
       this.entitiesContainer.remove(wall.actor.mesh)
     );

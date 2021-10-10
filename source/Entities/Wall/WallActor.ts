@@ -2,7 +2,7 @@ import { Actor } from '@/core/Entities/Actor';
 import {
   Mesh,
   BoxGeometry,
-  MeshPhongMaterial,
+  MeshLambertMaterial,
   Vector3,
   RepeatWrapping,
   Material,
@@ -15,7 +15,6 @@ interface WallActorProps {
   position: Vector3;
   textureSize: number;
   textureFileName: string;
-  normalTextureFileName?: string;
   isHorizontalWall?: boolean;
   color?: Color;
 }
@@ -33,17 +32,9 @@ export class WallActor implements Actor {
     textureX.repeat.x = textureXSize / props.textureSize;
     textureX.repeat.y = 1;
     textureX.needsUpdate = true;
-    let normalX;
-    if (props.normalTextureFileName) {
-      normalX = texturesStore.getTexture(props.normalTextureFileName);
-      normalX.wrapS = normalX.wrapT = RepeatWrapping;
-      normalX.repeat.x = textureX.repeat.x;
-      normalX.repeat.y = textureX.repeat.y;
-    }
-    const materialX = new MeshPhongMaterial({
+    const materialX = new MeshLambertMaterial({
       transparent: true,
       map: textureX,
-      ...(normalX && { normalMap: normalX }),
       ...(props.color && { color: props.color }),
     });
     const textureYSize = props.isHorizontalWall ?
@@ -54,17 +45,9 @@ export class WallActor implements Actor {
     textureY.repeat.x = textureYSize / props.textureSize;
     textureY.repeat.y = 1;
     textureY.needsUpdate = true;
-    let normalY;
-    if (props.normalTextureFileName) {
-      normalY = texturesStore.getTexture(props.normalTextureFileName);
-      normalY.wrapS = normalY.wrapT = RepeatWrapping;
-      normalY.repeat.x = textureY.repeat.x;
-      normalY.repeat.y = textureY.repeat.y;
-    }
-    const materialY = new MeshPhongMaterial({
+    const materialY = new MeshLambertMaterial({
       transparent: true,
       map: textureY,
-      ...(normalY && { normalMap: normalY }),
       ...(props.color && { color: props.color }),
     });
     const materials: Material[] = [];

@@ -1,4 +1,4 @@
-import { Mesh, BoxGeometry, MeshPhongMaterial, Camera } from 'three';
+import { Mesh, BoxGeometry, MeshLambertMaterial, Camera } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
@@ -21,7 +21,7 @@ export class ShootMarkActor implements Actor {
     const shootMarkFile2 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark2);
     const size = 0.19;
     const geometry = new BoxGeometry(size, size, size);
-    const material = new MeshPhongMaterial();
+    const material = new MeshLambertMaterial();
     material.transparent = true;
     this.spriteSheet = new SpriteSheet({
       textures: [shootMarkFile1, shootMarkFile2],

@@ -2,7 +2,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { Player } from '@/Entities/Player/Player';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { DoorBehavior } from './DoorBehavior';
-import { Vector3, MeshPhongMaterial } from 'three';
+import { Vector3, Material } from 'three';
 import { ENTITY_TYPE, GAME_TEXTURE_NAME } from '@/constants';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
@@ -47,11 +47,11 @@ export class Door extends Entity {
     behavior.onClose = () => this.onClose();
     this.container = props.container;
     if (props.isHorizontalWall) {
-      delete (this.actor.mesh.material as MeshPhongMaterial[])[0];
-      delete (this.actor.mesh.material as MeshPhongMaterial[])[1];
+      delete (this.actor.mesh.material as Material[])[0];
+      delete (this.actor.mesh.material as Material[])[1];
     } else {
-      delete (this.actor.mesh.material as MeshPhongMaterial[])[4];
-      delete (this.actor.mesh.material as MeshPhongMaterial[])[5];
+      delete (this.actor.mesh.material as Material[])[4];
+      delete (this.actor.mesh.material as Material[])[5];
     }
   }
 

@@ -24,6 +24,7 @@ export class EditorScene extends TestScene {
   cellColors: CellColors;
   padding: number;
   localStorageKey: string;
+  frameTimeContainer?: HTMLSpanElement;
 
   constructor(props: TestSceneProps) {
     super(props);
@@ -42,7 +43,6 @@ export class EditorScene extends TestScene {
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
     this.createEntitiesButtons();
-    this.deleteTriggersFromScene();
     document.addEventListener('keypress', (event) => {
       const isEnableKey = event.key === this.enableKey;
       if (!isEnableKey) {
@@ -54,6 +54,7 @@ export class EditorScene extends TestScene {
         this.enableEditorMode();
       }
     });
+    this.createInfoElements();
   }
 
   loadFromLocalStorage() {
@@ -78,6 +79,16 @@ export class EditorScene extends TestScene {
       this.disableBlockerInstructions();
       this.changeGameStatus(true);
     }, 100);
+  }
+
+  createInfoElements() {
+    this.frameTimeContainer = document.createElement('span');
+    this.frameTimeContainer.style.position = 'absolute';
+    this.frameTimeContainer.style.top = '0px';
+    this.frameTimeContainer.style.left = '240px';
+    this.frameTimeContainer.style.backgroundColor = 'white';
+    this.frameTimeContainer.innerHTML = 'FRAME TIME';
+    document.body.appendChild(this.frameTimeContainer);
   }
 
   createMapElements() {
@@ -220,14 +231,8 @@ export class EditorScene extends TestScene {
     }
   }
 
-  // openCloseDoors() {}
-
   fillRoomAfterVisit() {
     this.enableEditorMode();
-  }
-
-  deleteTriggersFromScene() {
-    // this.deleteEntitiesFromScene(ENTITY_TYPE.TRIGGER);
   }
 
   deleteEntitiesFromScene(entityType: ENTITY_TYPE) {
@@ -360,12 +365,21 @@ export class EditorScene extends TestScene {
   }
 
   update(delta: number) {
+    this.updateFrameTimeInfo(delta);
     if (this.isEditorMode) {
       this.entitiesContainer.update(0.0000001);
       this.moveCameraToSky();
     } else {
       super.update(delta);
     }
+  }
+
+  updateFrameTimeInfo(delta: number) {
+    if (!this.frameTimeContainer) {
+      return;
+    }
+    const deltaMs = delta * 1000;
+    this.frameTimeContainer.innerHTML = `Frame time: ${deltaMs.toFixed(1)}`;
   }
 }
 
