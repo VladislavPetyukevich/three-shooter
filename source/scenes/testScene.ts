@@ -3,7 +3,7 @@ import {
   Mesh,
   PointLight,
   Matrix4,
-  MeshBasicMaterial,
+  MeshLambertMaterial,
   Vector2,
   Vector3,
   Fog,
@@ -260,7 +260,7 @@ export class TestScene extends BasicScene {
     floorTexture.repeat.x = worldSize.x;
     floorTexture.repeat.y = worldSize.y;
     floorTexture.needsUpdate = true;
-    const floorMaterial = new MeshBasicMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
+    const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
     const floorMesh = new Mesh(floorGeometry, floorMaterial);
     const floorPosition = this.getCenterPosition(
       worldCoordinates, worldSize

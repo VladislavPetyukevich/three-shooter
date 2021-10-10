@@ -2,7 +2,7 @@ import { Actor } from '@/core/Entities/Actor';
 import {
   Mesh,
   BoxGeometry,
-  MeshBasicMaterial,
+  MeshLambertMaterial,
   Vector3,
   RepeatWrapping,
   Material,
@@ -32,7 +32,7 @@ export class WallActor implements Actor {
     textureX.repeat.x = textureXSize / props.textureSize;
     textureX.repeat.y = 1;
     textureX.needsUpdate = true;
-    const materialX = new MeshBasicMaterial({
+    const materialX = new MeshLambertMaterial({
       transparent: true,
       map: textureX,
       ...(props.color && { color: props.color }),
@@ -45,7 +45,7 @@ export class WallActor implements Actor {
     textureY.repeat.x = textureYSize / props.textureSize;
     textureY.repeat.y = 1;
     textureY.needsUpdate = true;
-    const materialY = new MeshBasicMaterial({
+    const materialY = new MeshLambertMaterial({
       transparent: true,
       map: textureY,
       ...(props.color && { color: props.color }),
