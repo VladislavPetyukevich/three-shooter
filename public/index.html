@@ -32,6 +32,15 @@
         <span>FOV:</span>
         <input id="fov" type="range" min="50" max="110" value="95" step="1" >
         <span id="fov-value"></span>
+        <br />
+        <span>Render scale:</span>
+        <select id="pixelRatio-value">
+          <option value="0.18">1981</option>
+          <option value="0.5">Half</option>
+          <option value="1" selected>Normal</option>
+          <option value="2">Next Gen</option>
+          <option value="2.5">Next Gen Pro</option>
+        </select>
       </div>
     </div>
   </div>
@@ -48,6 +57,7 @@
     var audioVolumeValue = document.getElementById('audio-volume-value');
     var fov = document.getElementById('fov');
     var fovValue = document.getElementById('fov-value');
+    var pixelRatioValue = document.getElementById('pixelRatio-value');
 
     function updateMouseSensitivityValue(value) {
       var valueFormated = (value * 100).toFixed(3);
@@ -118,6 +128,16 @@
       updateFov(value);
     });
 
+    function updatePixelRatio(value) {
+      pixelRatioValue.value = value;
+      threeShooter.renderer.setPixelRatio(+value);
+      saveSettings();
+    }
+
+    pixelRatioValue.addEventListener('change', function(event) {
+      updatePixelRatio(event.target.value);
+    });
+
     function updateFov(value) {
       threeShooter.updateFov(value);
       updateFovValue(value);
@@ -134,6 +154,7 @@
         mouseSensitivity: +mouseSensitivity.value,
         audioVolume: +audioVolume.value,
         fov: +fov.value,
+        pixelRatio: +pixelRatioValue.value,
       };
       localStorage.setItem(settingsKey, JSON.stringify(settings));
     }
@@ -150,6 +171,7 @@
         updateAudioVolume(settings.audioVolume);
         fov.value = settings.fov;
         updateFov(settings.fov);
+        updatePixelRatio(settings.pixelRatio);
       } catch {
         console.error('Falied to load game settings');
       }
