@@ -42,7 +42,9 @@ export default class ThreeShooter {
     this.loadTextures(props);
 
     this.pixelRatio = 1;
-    this.renderer = new WebGLRenderer();
+    this.renderer = new WebGLRenderer({
+      powerPreference: 'high-performance',
+    });
     this.renderer.setSize(props.renderWidth, props.renderHeight);
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.autoClear = false;
