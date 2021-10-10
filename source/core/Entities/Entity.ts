@@ -30,6 +30,10 @@ export class Entity {
   onMessage(message: string | number) {
   }
 
+  setIsNotMovingOptimizations(isEnabled: boolean) {
+    this.actor.mesh.matrixAutoUpdate = !isEnabled;
+  }
+
   update(delta: number) {
     this.actor.update(delta);
     this.behavior.update(delta);

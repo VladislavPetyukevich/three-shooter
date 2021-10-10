@@ -372,7 +372,7 @@ export class TestScene extends BasicScene {
       ),
       size
     );
-    return this.entitiesContainer.add(
+    const trigger = this.entitiesContainer.add(
       new Trigger({
         position: new Vector3(
           position.x,
@@ -389,6 +389,8 @@ export class TestScene extends BasicScene {
         onTrigger: () => this.handleRoomVisit(room),
       })
     ) as Trigger;
+    trigger.setIsNotMovingOptimizations(true);
+    return trigger;
   }
 
   handleRoomVisit(room: Room) {
@@ -652,21 +654,29 @@ export class TestScene extends BasicScene {
     };
     switch (roomType) {
       case RoomType.Apathy:
-        return this.entitiesContainer.add(
+        const wallApathy = this.entitiesContainer.add(
           new WallApathy(props)
         );
+        wallApathy.setIsNotMovingOptimizations(true);
+        return wallApathy;
       case RoomType.Cowardice:
-        return this.entitiesContainer.add(
+        const wallCowardice = this.entitiesContainer.add(
           new WallCowardice(props)
         );
+        wallCowardice.setIsNotMovingOptimizations(true);
+        return wallCowardice;
       case RoomType.SexualPerversions:
-        return this.entitiesContainer.add(
+        const wallSexualPerversions = this.entitiesContainer.add(
           new WallSexualPerversions(props)
         );
+        wallSexualPerversions.setIsNotMovingOptimizations(true);
+        return wallSexualPerversions;
       default:
-        return this.entitiesContainer.add(
+        const wallNeutral = this.entitiesContainer.add(
           new WallNeutral(props)
         );
+        wallNeutral.setIsNotMovingOptimizations(true);
+        return wallNeutral;
     }
   }
 
