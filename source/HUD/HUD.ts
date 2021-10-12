@@ -13,10 +13,12 @@ export class HUD {
   spriteSheet?: SpriteSheet;
   gun: Sprite;
   damageOverlay: Sprite;
-  sinTable: number[];
-  currentSinTableIndex: number;
-  bobTimeout: number;
-  maxBobTimeout: number;
+  bobState: {
+    sinTable: number[];
+    currentSinTableIndex: number;
+    currentTimeout: number;
+    maxTimeout: number;
+  };
   maxHp: number;
   maxDamageOverlayOpacity: number;
 
@@ -30,12 +32,18 @@ export class HUD {
     this.gun = new Sprite();
     this.damageOverlay = new Sprite();
     this.handleResize();
-    this.sinTable = this.generateSinTable(10, 1.8);
-    this.currentSinTableIndex = 0;
-    this.bobTimeout = 0;
-    this.maxBobTimeout = 0.001;
     this.maxHp = PLAYER.HP;
     this.maxDamageOverlayOpacity = 0.6;
+    this.bobState = this.getInitialBobState();
+  }
+
+  getInitialBobState() {
+    return {
+      sinTable: this.generateSinTable(10, 1.8),
+      currentSinTableIndex: 0,
+      currentTimeout: 0,
+      maxTimeout: 0.001,
+    };
   }
 
   generateSinTable(step: number, amplitude: number) {
@@ -84,9 +92,9 @@ export class HUD {
   }
 
   gunBob(delta: number) {
-    this.bobTimeout += delta;
-    if (this.bobTimeout >= this.maxBobTimeout) {
-      this.bobTimeout = 0;
+    this.bobState.currentTimeout += delta;
+    if (this.bobState.currentTimeout >= this.bobState.maxTimeout) {
+      this.bobState.currentTimeout = 0;
       const sinValue = this.getNextSinValue();
       this.gun.translateY(-sinValue);
     }
@@ -104,12 +112,12 @@ export class HUD {
   }
 
   getNextSinValue() {
-    if (this.currentSinTableIndex === this.sinTable.length - 1) {
-      this.currentSinTableIndex = 0;
+    if (this.bobState.currentSinTableIndex === this.bobState.sinTable.length - 1) {
+      this.bobState.currentSinTableIndex = 0;
     } else {
-      this.currentSinTableIndex++;
+      this.bobState.currentSinTableIndex++;
     }
-    return this.sinTable[this.currentSinTableIndex];
+    return this.bobState.sinTable[this.bobState.currentSinTableIndex];
   }
 
 
@@ -120,6 +128,7 @@ export class HUD {
     const gunScale = height * 0.75;
     this.gun.scale.set(gunScale, gunScale, 1);
     this.gun.position.set(0.5, -height + gunScale / 2, 1);
+    this.bobState = this.getInitialBobState();
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(
