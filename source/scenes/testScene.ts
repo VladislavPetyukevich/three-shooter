@@ -113,7 +113,6 @@ export class TestScene extends BasicScene {
     this.playerFallCurrenValue = this.playerFallInitialValue;
     this.playerFallMaxValue = 1.25;
     this.onFinish = props.onFinish;
-    this.camera.rotation.y = 225 * PI_180;
     this.player = this.entitiesContainer.add(
       new Player({
         camera: this.camera,
@@ -145,8 +144,10 @@ export class TestScene extends BasicScene {
     this.createNeighboringRooms(this.currentRoom);
     this.openCloseDoors(this.currentRoom, false);
 
-    this.player.actor.mesh.position.x = (this.currentRoom.cellPosition.x + 2) * this.mapCellSize;
-    this.player.actor.mesh.position.z = (this.currentRoom.cellPosition.y + 2) * this.mapCellSize;
+    const playerPosition = this.getInitialPlayerPositon();
+    this.player.actor.mesh.position.x = playerPosition.x;
+    this.player.actor.mesh.position.z = playerPosition.y;
+    this.camera.rotation.y = this.getInitialCameraRotation();
 
     // lights
     this.ambientLightColor = 0x404040;
@@ -173,6 +174,31 @@ export class TestScene extends BasicScene {
 
     // MindState
     mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
+  }
+
+  getInitialPlayerPositon() {
+    const roomCenterCell = this.getCenterPosition(this.currentRoom.cellPosition, this.roomSize);
+    const positionShift = 8;
+    return new Vector2(
+      roomCenterCell.x * this.mapCellSize,
+      (roomCenterCell.y + positionShift) * this.mapCellSize
+    );
+  }
+
+  getInitialCameraRotation() {
+    if (this.checkIsPlayerShouldLookAtRoom(RoomType.Cowardice)) {
+      // (90 / 2 + 4) * PI_180;
+      return 49 * PI_180;
+    }
+    if (this.checkIsPlayerShouldLookAtRoom(RoomType.SexualPerversions)) {
+      // (270 + 90 / 2 - 4) * PI_180;
+      return 311 * PI_180;
+    }
+    return 0;
+  }
+
+  checkIsPlayerShouldLookAtRoom(roomType: RoomType) {
+    return this.getMindeStateLevel(roomType) < 1;
   }
 
   createNeighboringRooms(room: Room) {
