@@ -53,17 +53,34 @@ export class MindState {
     this.onLevelIncrease();
   }
 
-  saveToLocalStorage() {
+  addUpdateListener(callback: Function) {
+    this.onUpdateCallbacks.push(callback);
+  }
+
+  addLevelIncreaseListener(callback: Function) {
+    this.onLevelIncreaseCallbacks.push(callback);
+  }
+
+  removeLevelIncreaseListener(callback: Function) {
+    this.onLevelIncreaseCallbacks =
+      this.onLevelIncreaseCallbacks.filter(cb => cb !== callback);
+  }
+
+  checkIsPropReachMaxValue(prop: MindProperties) {
+    return this.value.props[prop] >= this.maxPropValue;
+  }
+
+  private saveToLocalStorage() {
     new Promise(this.saveToLocalStorageCallback);
   }
 
-  saveToLocalStorageCallback = (resolve: Function) => {
+  private saveToLocalStorageCallback = (resolve: Function) => {
     const stringified = JSON.stringify(this.value);
     localStorage.setItem(this.localStorageKey, stringified);
     resolve();
   }
 
-  loadFromLocalStorage() {
+  private loadFromLocalStorage() {
     new Promise(this.loadFromLocalStorageCallback)
       .then((value) => {
         this.value = value;
@@ -72,7 +89,7 @@ export class MindState {
       .catch(() => {});
   }
 
-  loadFromLocalStorageCallback = (
+  private loadFromLocalStorageCallback = (
     resolve: (value: MindStateValue) => void,
     reject: () => void,
   ) => {
@@ -112,32 +129,16 @@ export class MindState {
     }
   }
 
-  addUpdateListener(callback: Function) {
-    this.onUpdateCallbacks.push(callback);
-  }
-
-  addLevelIncreaseListener(callback: Function) {
-    this.onLevelIncreaseCallbacks.push(callback);
-  }
-
-  removeLevelIncreaseListener(callback: Function) {
-    this.onLevelIncreaseCallbacks =
-      this.onLevelIncreaseCallbacks.filter(cb => cb !== callback);
-  }
-
-  onUpdate() {
+  private onUpdate() {
     this.onUpdateCallbacks.forEach(callback => callback());
   }
 
-  onLevelIncrease() {
+  private onLevelIncrease() {
     this.onLevelIncreaseCallbacks.forEach(callback => callback());
   }
 
-  checkIsPropReachMaxValue(prop: MindProperties) {
-    return this.value.props[prop] >= this.maxPropValue;
-  }
 
-  getInitialProps() {
+  private getInitialProps() {
     return {
       apathy: this.initialValue,
       cowardice: this.initialValue,
