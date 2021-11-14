@@ -5,7 +5,7 @@ import {
   Audio,
   AudioListener,
   Raycaster,
-  PointLight
+  PointLight,
 } from 'three';
 import { PlayerActor } from './PlayerActor';
 import { Behavior } from '@/core/Entities/Behavior';
@@ -116,6 +116,8 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 2,
       recoilTime: 0.2,
+      fireType: 'automatic',
+      holderGeometry: this.actor.mesh.geometry,
     });
     this.gunBoomerang = new Gun({
       container: props.container,
@@ -124,6 +126,8 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
+      fireType: 'single',
+      holderGeometry: this.actor.mesh.geometry,
     });
     this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(
@@ -134,7 +138,8 @@ export class СontrolledBehavior implements Behavior {
     this.container.scene.add(this.gunShootLight);
 
     document.addEventListener('mousemove', this.handleMouseMove, false);
-    document.addEventListener('click', this.handleShoot, false);
+    document.addEventListener('mousedown', this.handlePullTrigger, false);
+    document.addEventListener('mouseup', this.handleReleaseTrigger, false);
   }
 
   onUpdateGlobalSettings = () => {
@@ -185,7 +190,7 @@ export class СontrolledBehavior implements Behavior {
     this.damageSound.stop();
   }
 
-  handleShoot = (event: MouseEvent) => {
+  handlePullTrigger = (event: MouseEvent) => {
     switch (event.button) {
       case 0:
         this.handleShootPrimary();
@@ -198,13 +203,20 @@ export class СontrolledBehavior implements Behavior {
     }
   };
 
+  handleReleaseTrigger = (event: MouseEvent) => {
+    switch (event.button) {
+      case 0:
+        this.gun.releaseTrigger();
+        break;
+      default:
+        break;
+    }
+  };
+
   handleShootPrimary = () => {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
-    this.gun.shootRaycast(
-      this.camera.position,
-      direction
-    );
+    this.gun.shootRaycast();
     this.cameraRecoilJump();
     hud.gunFire();
   };
@@ -212,13 +224,10 @@ export class СontrolledBehavior implements Behavior {
   handleShootSecondary = () => {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
-    const boomerang = new Boomerang({
-      position: this.camera.position,
-      direction: direction,
-      container: this.container,
-      playerActor: this.actor,
-    });
-    this.gunBoomerang.shootBullet(boomerang);
+    this.gunBoomerang.shootBullet(
+      Boomerang,
+      { playerActor: this.actor }
+    );
     this.gunBoomerang.setIsCanShoot(false);
   };
 
@@ -252,7 +261,12 @@ export class СontrolledBehavior implements Behavior {
   }
 
   update(delta: number) {
+    const playerRotationY = this.camera.rotation.y + Math.PI;
+    this.gun.setRotationY(playerRotationY);
+    this.gun.setPosition(this.camera.position);
     this.gun.update(delta);
+    this.gunBoomerang.setRotationY(playerRotationY);
+    this.gunBoomerang.setPosition(this.camera.position);
     this.gunBoomerang.update(delta);
     this.updateCamera();
     this.updateKeysState();

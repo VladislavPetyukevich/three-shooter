@@ -48,7 +48,6 @@ export class EnemyBehavior implements Behavior {
   currentStrafeAngle: number;
   strafeAngleLow: number;
   strafeAngleHigh: number;
-  bulletPositionOffset: number;
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
@@ -66,6 +65,7 @@ export class EnemyBehavior implements Behavior {
     this.player = props.player;
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
+    this.actor = props.actor;
     this.gun = new Gun({
       playerCamera: props.player.camera,
       audioListener: props.audioListener,
@@ -74,15 +74,15 @@ export class EnemyBehavior implements Behavior {
       shootOffsetInMoveAngle: 5,
       bulletsPerShoot: 1,
       recoilTime: 0,
+      fireType: 'single',
+      holderGeometry: this.actor.mesh.geometry,
     });
     this.BulletClass = props.BulletClass;
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.followingPath = [];
-    this.actor = props.actor;
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
-    this.bulletPositionOffset = 1.5;
     this.container = props.container;
     this.currentStrafeAngle = 0;
     this.strafeAngleLow = 22.5; // (90 / 2) - (90 / 4)
@@ -135,24 +135,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   createBullet() {
-    const bulletDirection = new Vector3(
-      Math.sin(this.actor.mesh.rotation.y),
-      0,
-      Math.cos(this.actor.mesh.rotation.y)
-    ).normalize();
-    const offsetX = this.bulletPositionOffset * Math.sin(this.actor.mesh.rotation.y);
-    const offsetZ = this.bulletPositionOffset * Math.cos(this.actor.mesh.rotation.y);
-    const bulletPosition = new Vector3(
-      this.actor.mesh.position.x + offsetX,
-      this.actor.mesh.position.y,
-      this.actor.mesh.position.z + offsetZ
-    );
-    const bullet = new this.BulletClass({
-      position: bulletPosition,
-      direction: bulletDirection,
-      container: this.container,
-    });
-    this.gun.shootBullet(bullet);
+    this.gun.shootBullet(this.BulletClass);
   }
 
   shoot() {
@@ -289,6 +272,8 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
+    this.gun.setRotationY(this.actor.mesh.rotation.y);
+    this.gun.setPosition(this.actor.mesh.position);
     this.gun.update(delta);
     if (this.followingPath.length !== 0) {
       this.updateFollowPath();
