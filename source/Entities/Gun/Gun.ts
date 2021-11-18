@@ -1,4 +1,4 @@
-import { AudioListener, Camera, Vector3, Mesh } from 'three';
+import { AudioListener, Camera, Vector3, Mesh, Texture } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { ENTITY_TYPE } from '@/constants';
@@ -8,7 +8,12 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
 export type GunFireType = 'single' | 'automatic';
 
-export interface Props {
+export interface GunHudTextures {
+  idle: Texture;
+  fire: Texture;
+}
+
+export interface GunProps {
   playerCamera: Camera;
   container: EntitiesContainer;
   audioListener: AudioListener;
@@ -18,10 +23,13 @@ export interface Props {
   recoilTime?: number;
   fireType: GunFireType;
   holderGeometry: Mesh['geometry'];
+  hudTextures?: GunHudTextures;
 }
 
 export class Gun extends Entity {
-  constructor(props: Props) {
+  hudTextures?: GunHudTextures;
+
+  constructor(props: GunProps) {
     const actor = new GunActor();
     const behavior = new GunBehavior({
       container: props.container,
@@ -39,6 +47,7 @@ export class Gun extends Entity {
       actor,
       behavior
     );
+    this.hudTextures = props.hudTextures;
     (<GunBehavior>this.behavior).bulletPositionOffset = this.getBulletPosisionOffset(props.holderGeometry);
   }
 
@@ -74,6 +83,10 @@ export class Gun extends Entity {
 
   setPosition(position: Vector3) {
     (<GunBehavior>this.behavior).setPosition(position);
+  }
+
+  getHudTextures() {
+    return this.hudTextures;
   }
 
   private getBulletPosisionOffset(geometry: Mesh['geometry']) {

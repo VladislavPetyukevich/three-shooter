@@ -1,7 +1,8 @@
-import { Scene, OrthographicCamera, SpriteMaterial, Sprite  } from 'three';
+import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME, PLAYER } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
+import { GunHudTextures } from '@/Entities/Gun/Gun';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -12,6 +13,7 @@ export class HUD {
   visible: boolean;
   spriteSheet?: SpriteSheet;
   gun: Sprite;
+  gunHudTextures?: GunHudTextures;
   damageOverlay: Sprite;
   bobState: {
     sinTable: number[];
@@ -65,14 +67,7 @@ export class HUD {
   }
 
   show() {
-    const gunMaterial = new SpriteMaterial();
-    const gunTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile);
-    const gunFireTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.gunFireFile);
-    this.spriteSheet = new SpriteSheet({
-      textures: [gunTexture, gunFireTexture],
-      material: gunMaterial
-    });
-    this.gun.material = gunMaterial;
+    this.updateGunTextures();
     const damageOverlayMaterial = new SpriteMaterial({
       map: texturesStore.getTexture(GAME_TEXTURE_NAME.damageEffect),
       opacity: 0,
@@ -81,6 +76,21 @@ export class HUD {
     this.visible = true;
     this.scene.add(this.gun);
     this.scene.add(this.damageOverlay);
+  }
+
+  setGunTextures(textures: GunHudTextures) {
+    this.gunHudTextures = textures;
+  }
+
+  updateGunTextures() {
+    if (!this.gunHudTextures) {
+      return;
+    }
+    this.spriteSheet = new SpriteSheet({
+      textures: [this.gunHudTextures.idle, this.gunHudTextures.fire],
+      material: this.gun.material,
+    });
+    this.gun.material.needsUpdate = true;
   }
 
   gunFire() {

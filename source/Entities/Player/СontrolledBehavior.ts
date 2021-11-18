@@ -21,6 +21,7 @@ import {
   GAME_SOUND_NAME
 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
+import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import { Boomerang } from '@/Entities/Boomerang/Boomerang';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
@@ -108,17 +109,13 @@ export class СontrolledBehavior implements Behavior {
     this.damageSound.setBuffer(damageSoundBuffer);
     this.damageSound.isPlaying = false;
     this.damageSound.setVolume(0.6);
-    this.gun = new Gun({
+    this.gun = new Shotgun({
       container: props.container,
       playerCamera: props.camera,
       audioListener: props.audioListener,
-      shootOffsetAngle: 2.5,
-      shootOffsetInMoveAngle: 4.5,
-      bulletsPerShoot: 2,
-      recoilTime: 0.2,
-      fireType: 'automatic',
       holderGeometry: this.actor.mesh.geometry,
     });
+    this.updateHudGunTextures();
     this.gunBoomerang = new Gun({
       container: props.container,
       playerCamera: props.camera,
@@ -230,6 +227,13 @@ export class СontrolledBehavior implements Behavior {
     );
     this.gunBoomerang.setIsCanShoot(false);
   };
+
+  updateHudGunTextures() {
+    const gunHudTextures = this.gun.getHudTextures();
+    if (gunHudTextures) {
+      hud.setGunTextures(gunHudTextures);
+    }
+  }
 
   cameraRecoilJump() {
     if (this.isCameraRecoil) {
