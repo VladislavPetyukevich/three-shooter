@@ -5,6 +5,8 @@ import doorTextureFile from '@/assets/door.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
+import machinegunTextureFile from './assets/machinegun.png';
+import machinegunFireFile from './assets/machinegunFire.png';
 import enemyApathyWalk1 from './assets/enemyWalk1.png';
 import enemyApathyWalk2 from './assets/enemyWalk2.png';
 import enemyApathyDeath from './assets/enemyDeath.png';
@@ -137,6 +139,8 @@ export const gameTextures = {
   floorTextureFile,
   gunTextureFile,
   gunFireFile,
+  machinegunTextureFile,
+  machinegunFireFile,
   enemyApathyWalk1,
   enemyApathyWalk2,
   enemyApathyDeath,
@@ -168,6 +172,8 @@ export const enum GAME_TEXTURE_NAME {
   floorTextureFile = 'floorTextureFile',
   gunTextureFile = 'gunTextureFile',
   gunFireFile = 'gunFireFile',
+  machinegunTextureFile = 'machinegunTextureFile',
+  machinegunFireFile = 'machinegunFireFile',
   enemyApathyWalk1 = 'enemyApathyWalk1',
   enemyApathyWalk2 = 'enemyApathyWalk2',
   enemyApathyDeath = 'enemyApathyDeath',

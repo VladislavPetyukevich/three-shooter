@@ -22,6 +22,7 @@ import {
 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
+import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
 import { Boomerang } from '@/Entities/Boomerang/Boomerang';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
@@ -59,7 +60,8 @@ export class СontrolledBehavior implements Behavior {
   targetVelocity: Vector3;
   velocity: Vector3;
   damageSound: Audio;
-  gun: Gun;
+  currentGun: Gun;
+  guns: Gun[];
   gunBoomerang: Gun;
   gunShootLight: PointLight;
   mouseSensitivity: number;
@@ -109,12 +111,21 @@ export class СontrolledBehavior implements Behavior {
     this.damageSound.setBuffer(damageSoundBuffer);
     this.damageSound.isPlaying = false;
     this.damageSound.setVolume(0.6);
-    this.gun = new Shotgun({
-      container: props.container,
-      playerCamera: props.camera,
-      audioListener: props.audioListener,
-      holderGeometry: this.actor.mesh.geometry,
-    });
+    this.guns = [
+      new Shotgun({
+        container: props.container,
+        playerCamera: props.camera,
+        audioListener: props.audioListener,
+        holderGeometry: this.actor.mesh.geometry,
+      }),
+      new Machinegun({
+        container: props.container,
+        playerCamera: props.camera,
+        audioListener: props.audioListener,
+        holderGeometry: this.actor.mesh.geometry,
+      })
+    ];
+    this.currentGun = this.guns[0];
     this.updateHudGunTextures();
     this.gunBoomerang = new Gun({
       container: props.container,
@@ -137,6 +148,7 @@ export class СontrolledBehavior implements Behavior {
     document.addEventListener('mousemove', this.handleMouseMove, false);
     document.addEventListener('mousedown', this.handlePullTrigger, false);
     document.addEventListener('mouseup', this.handleReleaseTrigger, false);
+    document.addEventListener('keydown', this.handleKeydown, false);
   }
 
   onUpdateGlobalSettings = () => {
@@ -203,17 +215,33 @@ export class СontrolledBehavior implements Behavior {
   handleReleaseTrigger = (event: MouseEvent) => {
     switch (event.button) {
       case 0:
-        this.gun.releaseTrigger();
+        this.currentGun.releaseTrigger();
         break;
       default:
         break;
     }
   };
 
+  handleKeydown = (event: KeyboardEvent) => {
+    const intValue = parseInt(event.key);
+    if (!isNaN(intValue)) {
+      this.swtichGun(intValue);
+    }
+  };
+
+  swtichGun(gunIndex: number) {
+    const newGun = this.guns[gunIndex - 1];
+    if (!newGun) {
+      return;
+    }
+    this.currentGun = newGun;
+    this.updateHudGunTextures();
+  }
+
   handleShootPrimary = () => {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
-    this.gun.shootRaycast();
+    this.currentGun.shootRaycast();
     this.cameraRecoilJump();
     hud.gunFire();
   };
@@ -229,7 +257,7 @@ export class СontrolledBehavior implements Behavior {
   };
 
   updateHudGunTextures() {
-    const gunHudTextures = this.gun.getHudTextures();
+    const gunHudTextures = this.currentGun.getHudTextures();
     if (gunHudTextures) {
       hud.setGunTextures(gunHudTextures);
     }
@@ -266,9 +294,9 @@ export class СontrolledBehavior implements Behavior {
 
   update(delta: number) {
     const playerRotationY = this.camera.rotation.y + Math.PI;
-    this.gun.setRotationY(playerRotationY);
-    this.gun.setPosition(this.camera.position);
-    this.gun.update(delta);
+    this.currentGun.setRotationY(playerRotationY);
+    this.currentGun.setPosition(this.camera.position);
+    this.currentGun.update(delta);
     this.gunBoomerang.setRotationY(playerRotationY);
     this.gunBoomerang.setPosition(this.camera.position);
     this.gunBoomerang.update(delta);
@@ -307,7 +335,7 @@ export class СontrolledBehavior implements Behavior {
 
   updateVelocity(delta: number) {
     this.moveDirection.set(0, 0, 0);
-    this.gun.setIsInMove(this.isRunning);
+    this.currentGun.setIsInMove(this.isRunning);
     if (!this.isRunning) {
       this.targetVelocity.set(0, 0, 0);
     } else {
@@ -339,7 +367,7 @@ export class СontrolledBehavior implements Behavior {
   }
 
   updatePlayerBob(delta: number) {
-    const isGunRecoil = this.gun.checkIsRecoil();
+    const isGunRecoil = this.currentGun.checkIsRecoil();
     if (this.isCameraRecoil && !isGunRecoil) {
       this.camera.position.y -= this.cameraRecoil;
       this.isCameraRecoil = false;
@@ -371,7 +399,7 @@ export class СontrolledBehavior implements Behavior {
   }
 
   updateShootLight() {
-    const isGunRecoil = this.gun.checkIsRecoil();
+    const isGunRecoil = this.currentGun.checkIsRecoil();
     if (this.isCameraRecoil && !isGunRecoil) {
       this.gunShootLight.position.set(0, -50, 0);
       hud.gunIdle();

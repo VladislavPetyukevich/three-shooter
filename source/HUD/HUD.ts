@@ -80,6 +80,7 @@ export class HUD {
 
   setGunTextures(textures: GunHudTextures) {
     this.gunHudTextures = textures;
+    this.updateGunTextures();
   }
 
   updateGunTextures() {
