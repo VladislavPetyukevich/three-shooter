@@ -9,6 +9,7 @@ import { Gun } from '@/Entities/Gun/Gun';
 import { audioStore } from '@/core/loaders';
 import { StateMachine } from '@/StateMachine';
 import { randomNumbers } from '@/RandomNumbers';
+import { TimeoutsManager } from '@/TimeoutsManager';
 
 interface BehaviorProps {
   player: Player;
@@ -25,15 +26,13 @@ interface BehaviorProps {
   };
 }
 
-type TimeOuts =
-  Record<
-    'shoot' |
-    'hurt' |
-    'movement' |
-    'strafe' |
-    'gunpointStrafe' |
-    'shootDelay'
-  , number>;
+type TimeoutNames =
+  'shoot' |
+  'hurt' |
+  'movement' |
+  'strafe' |
+  'gunpointStrafe' |
+  'shootDelay';
 
 export class EnemyBehavior implements Behavior {
   player: Player;
@@ -55,8 +54,7 @@ export class EnemyBehavior implements Behavior {
   currentBulletsToShoot: number;
   shootSound: PositionalAudio;
   stateMachine: StateMachine;
-  initialTimeOuts: TimeOuts;
-  currentTimeOuts: TimeOuts;
+  timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   onDeathCallback?: Function;
@@ -106,7 +104,7 @@ export class EnemyBehavior implements Behavior {
     });
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
-    this.initialTimeOuts = {
+    const timeoutValues = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
       movement: ENEMY.MOVEMENT_TIME_OUT,
@@ -114,14 +112,7 @@ export class EnemyBehavior implements Behavior {
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,
     };
-    this.currentTimeOuts = {
-      shoot: this.initialTimeOuts.shoot,
-      hurt: this.initialTimeOuts.hurt,
-      movement: this.initialTimeOuts.movement,
-      strafe: this.initialTimeOuts.strafe,
-      gunpointStrafe: this.initialTimeOuts.gunpointStrafe,
-      shootDelay: this.initialTimeOuts.shootDelay,
-    };
+    this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
   }
 
@@ -315,8 +306,8 @@ export class EnemyBehavior implements Behavior {
           this.stateMachine.doTransition('followPlayer');
           break;
         }
-        this.updateTimeOut('shoot', delta);
-        if (this.checkIsTimeOutExpired('shoot')) {
+        this.timeoutsManager.updateTimeOut('shoot', delta);
+        if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
           this.shoot();
         }
         break;
@@ -327,8 +318,8 @@ export class EnemyBehavior implements Behavior {
         this.stateMachine.doTransition('hurts');
         break;
       case 'hurted':
-        this.updateTimeOut('hurt', delta);
-        if (this.checkIsTimeOutExpired('hurt')) {
+        this.timeoutsManager.updateTimeOut('hurt', delta);
+        if (this.timeoutsManager.checkIsTimeOutExpired('hurt')) {
           this.velocity.copy(this.backupVelocity);
           this.actor.spriteSheet.displaySprite(0);
           this.stateMachine.doTransition('attack');
@@ -337,7 +328,7 @@ export class EnemyBehavior implements Behavior {
       default:
         break;
     }
-    this.updateExpiredTimeOuts();
+    this.timeoutsManager.updateExpiredTimeOuts();
   }
 
   updateFollowPoint() {
@@ -368,8 +359,8 @@ export class EnemyBehavior implements Behavior {
 
   updateMovement(delta: number, state: string) {
     this.updateWalkSprite(delta);
-    this.updateTimeOut('movement', delta);
-    if (this.checkIsTimeOutExpired('movement')) {
+    this.timeoutsManager.updateTimeOut('movement', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('movement')) {
       if (
         (state === 'followingPlayer') ||
         (state === 'attacking')
@@ -377,8 +368,8 @@ export class EnemyBehavior implements Behavior {
         this.moveToPlayer();
       }
     }
-    this.updateTimeOut('strafe', delta);
-    if (this.checkIsTimeOutExpired('strafe')) {
+    this.timeoutsManager.updateTimeOut('strafe', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('strafe')) {
       if (
         (state === 'followingPlayer') ||
         (state === 'attacking')
@@ -393,8 +384,8 @@ export class EnemyBehavior implements Behavior {
     if (this.currentBulletsToShoot === 0) {
       return;
     }
-    this.updateTimeOut('shootDelay', delta);
-    if (this.checkIsTimeOutExpired('shootDelay')) {
+    this.timeoutsManager.updateTimeOut('shootDelay', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('shootDelay')) {
       this.currentBulletsToShoot--;
       this.createBullet();
     }
@@ -404,8 +395,8 @@ export class EnemyBehavior implements Behavior {
     if (!this.isGunpointTriggered) {
       return;
     }
-    this.updateTimeOut('gunpointStrafe', delta);
-    if (!this.checkIsTimeOutExpired('gunpointStrafe')) {
+    this.timeoutsManager.updateTimeOut('gunpointStrafe', delta);
+    if (!this.timeoutsManager.checkIsTimeOutExpired('gunpointStrafe')) {
       return;
     }
     this.isGunpointTriggered = false;
@@ -414,26 +405,6 @@ export class EnemyBehavior implements Behavior {
     }
     this.isOnGunpointCurrent = false;
     this.randomStrafe(this.strafeAngleHigh);
-  }
-
-  updateTimeOut(name: keyof TimeOuts, delta: number) {
-    this.currentTimeOuts[name] -= delta;
-  }
-
-  updateExpiredTimeOut(name: keyof TimeOuts) {
-    if (this.currentTimeOuts[name] <= 0) {
-      this.currentTimeOuts[name] = this.initialTimeOuts[name];
-    }
-  }
-
-  updateExpiredTimeOuts() {
-    for (let name in this.currentTimeOuts) {
-      this.updateExpiredTimeOut(name as keyof TimeOuts);
-    }
-  }
-
-  checkIsTimeOutExpired(name: keyof TimeOuts) {
-    return this.currentTimeOuts[name] <= 0;
   }
 }
 

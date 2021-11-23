@@ -3,6 +3,7 @@ import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME, PLAYER } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 import { GunHudTextures } from '@/Entities/Gun/Gun';
+import { TimeoutsManager } from '@/TimeoutsManager';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -18,8 +19,7 @@ export class HUD {
   bobState: {
     sinTable: number[];
     currentSinTableIndex: number;
-    currentTimeout: number;
-    maxTimeout: number;
+    timeoutsManager: TimeoutsManager<'bob'>;
   };
   maxHp: number;
   maxDamageOverlayOpacity: number;
@@ -43,8 +43,7 @@ export class HUD {
     return {
       sinTable: this.generateSinTable(10, 1.8),
       currentSinTableIndex: 0,
-      currentTimeout: 0,
-      maxTimeout: 0.001,
+      timeoutsManager: new TimeoutsManager({ bob: 0.001 }),
     };
   }
 
@@ -103,9 +102,9 @@ export class HUD {
   }
 
   gunBob(delta: number) {
-    this.bobState.currentTimeout += delta;
-    if (this.bobState.currentTimeout >= this.bobState.maxTimeout) {
-      this.bobState.currentTimeout = 0;
+    this.bobState.timeoutsManager.updateTimeOut('bob', delta);
+    if (this.bobState.timeoutsManager.checkIsTimeOutExpired('bob')) {
+      this.bobState.timeoutsManager.updateExpiredTimeOuts();
       const sinValue = this.getNextSinValue();
       this.gun.translateY(-sinValue);
     }
