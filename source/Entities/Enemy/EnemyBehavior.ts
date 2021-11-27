@@ -10,6 +10,7 @@ import { audioStore } from '@/core/loaders';
 import { StateMachine } from '@/StateMachine';
 import { randomNumbers } from '@/RandomNumbers';
 import { TimeoutsManager } from '@/TimeoutsManager';
+import { EaseProgress, easeBounceSin } from '@/EaseProgress';
 
 interface BehaviorProps {
   player: Player;
@@ -57,6 +58,7 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
+  deadAnimationProgress: EaseProgress;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -113,6 +115,12 @@ export class EnemyBehavior implements Behavior {
       shootDelay: props.delays.shoot,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
+    this.deadAnimationProgress = new EaseProgress({
+      minValue: this.actor.mesh.position.y,
+      maxValue: this.actor.mesh.position.y + 0.7,
+      progressSpeed: 2.5,
+      transitionFunction: easeBounceSin,
+    });
     this.spawnSound(props.audioListener);
   }
 
@@ -279,6 +287,8 @@ export class EnemyBehavior implements Behavior {
     }
     switch (currentState) {
       case 'died':
+        this.actor.mesh.position.y = this.deadAnimationProgress.getCurrentProgress();
+        this.deadAnimationProgress.updateProgress(delta);
         break;
       case 'dies':
         this.velocity.set(0, 0, 0);
