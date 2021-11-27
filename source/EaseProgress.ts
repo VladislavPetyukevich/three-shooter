@@ -64,3 +64,7 @@ export const easeBounceSin = (x: number) => {
   return Math.sin(c * x);
 };
 
+export const easeInSine = (x: number) => {
+  return 1 - Math.cos((x * Math.PI) / 2);
+}
+

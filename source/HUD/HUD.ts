@@ -4,6 +4,7 @@ import { GAME_TEXTURE_NAME, PLAYER } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 import { GunHudTextures } from '@/Entities/Gun/Gun';
 import { TimeoutsManager } from '@/TimeoutsManager';
+import { EaseProgress, easeInSine } from '@/EaseProgress';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -15,6 +16,11 @@ export class HUD {
   spriteSheet?: SpriteSheet;
   gun: Sprite;
   gunHudTextures?: GunHudTextures;
+  nextGunHudTextures?: GunHudTextures;
+  gunSpriteHeight: number;
+  swithGunAnimationProgress?: EaseProgress;
+  swithGunAnimationStage: 'goingDown' | 'goingUp';
+  isGunSwitchAnimationStarted: boolean;
   damageOverlay: Sprite;
   bobState: {
     sinTable: number[];
@@ -32,11 +38,14 @@ export class HUD {
     this.visible = false;
 
     this.gun = new Sprite();
+    this.gunSpriteHeight = 0;
     this.damageOverlay = new Sprite();
     this.handleResize();
     this.maxHp = PLAYER.HP;
     this.maxDamageOverlayOpacity = 0.6;
     this.bobState = this.getInitialBobState();
+    this.isGunSwitchAnimationStarted = false;
+    this.swithGunAnimationStage = 'goingDown';
   }
 
   getInitialBobState() {
@@ -78,16 +87,24 @@ export class HUD {
   }
 
   setGunTextures(textures: GunHudTextures) {
-    this.gunHudTextures = textures;
-    this.updateGunTextures();
+    if (!this.gunHudTextures) {
+      this.gunHudTextures = textures;
+      this.updateGunTextures();
+      return;
+    }
+    this.swithGunAnimationStage = 'goingDown';
+    this.initGunSwithAnimationProgress();
+    this.isGunSwitchAnimationStarted = true;
+    this.nextGunHudTextures = textures;
   }
 
   updateGunTextures() {
-    if (!this.gunHudTextures) {
+    const gunHudTextures = this.nextGunHudTextures || this.gunHudTextures;
+    if (!gunHudTextures) {
       return;
     }
     this.spriteSheet = new SpriteSheet({
-      textures: [this.gunHudTextures.idle, this.gunHudTextures.fire],
+      textures: [gunHudTextures.idle, gunHudTextures.fire],
       material: this.gun.material,
     });
     this.gun.material.needsUpdate = true;
@@ -130,14 +147,14 @@ export class HUD {
     return this.bobState.sinTable[this.bobState.currentSinTableIndex];
   }
 
-
   handleResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
     const gunScale = height * 0.75;
+    this.gunSpriteHeight = -height + gunScale / 2;
     this.gun.scale.set(gunScale, gunScale, 1);
-    this.gun.position.set(0.5, -height + gunScale / 2, 1);
+    this.gun.position.set(0.5, this.gunSpriteHeight, 1);
     this.bobState = this.getInitialBobState();
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
@@ -146,6 +163,46 @@ export class HUD {
       damageOverlayHeight,
       1
     );
+    this.initGunSwithAnimationProgress();
+  }
+
+  initGunSwithAnimationProgress() {
+    const topValue = this.gunSpriteHeight;
+    const bottomValue = this.gunSpriteHeight * 2.2;
+    this.swithGunAnimationProgress = new EaseProgress({
+      minValue: (this.swithGunAnimationStage === 'goingDown') ? topValue : bottomValue,
+      maxValue: (this.swithGunAnimationStage === 'goingDown') ? bottomValue : topValue,
+      progressSpeed: 2.5,
+      transitionFunction: easeInSine,
+    });
+  }
+
+  update(delta: number) {
+    if (this.isGunSwitchAnimationStarted) {
+      this.updateGunSwithAnimation(delta);
+    }
+  }
+
+  updateGunSwithAnimation(delta: number) {
+    if (this.swithGunAnimationProgress?.checkIsProgressCompelete()) {
+      this.updateCompleteGunSwitchAnimation();
+      return;
+    }
+    if (!this.swithGunAnimationProgress) {
+      return;
+    }
+    this.gun.position.y = this.swithGunAnimationProgress.getCurrentProgress();
+    this.swithGunAnimationProgress.updateProgress(delta);
+  }
+
+  updateCompleteGunSwitchAnimation() {
+    if (this.swithGunAnimationStage === 'goingUp') {
+      this.isGunSwitchAnimationStarted = false;
+      return;
+    }
+    this.swithGunAnimationStage = 'goingUp';
+    this.updateGunTextures();
+    this.initGunSwithAnimationProgress();
   }
 }
 

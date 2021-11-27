@@ -190,6 +190,7 @@ export default class ThreeShooter {
       this.renderer.clearDepth();
       this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
       this.renderer.render(hud.scene, hud.camera);
+      hud.update(delta);
       this.prevTime = time;
     }
     requestAnimationFrame(this.update);
