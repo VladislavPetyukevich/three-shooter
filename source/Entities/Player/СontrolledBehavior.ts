@@ -372,8 +372,8 @@ export class СontrolledBehavior implements Behavior {
       this.camera.position.y -= this.cameraRecoil;
       this.isCameraRecoil = false;
     }
+    hud.setIsRunning(this.isRunning);
     if (this.isRunning) {
-      hud.gunBob(delta);
       if (this.isKeyLeft != this.isKeyRight) {
         this.lerpCameraRotationZ(
           this.isKeyLeft ? this.strafeCameraRotation : -this.strafeCameraRotation,

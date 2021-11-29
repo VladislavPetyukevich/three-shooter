@@ -13,6 +13,7 @@ export class HUD {
   scene: Scene;
   camera: OrthographicCamera;
   visible: boolean;
+  isRunning: boolean;
   spriteSheet?: SpriteSheet;
   gun: Sprite;
   gunHudTextures?: GunHudTextures;
@@ -40,23 +41,36 @@ export class HUD {
     this.gun = new Sprite();
     this.gunSpriteHeight = 0;
     this.damageOverlay = new Sprite();
-    this.handleResize();
     this.maxHp = PLAYER.HP;
     this.maxDamageOverlayOpacity = 0.6;
     this.bobState = this.getInitialBobState();
     this.isGunSwitchAnimationStarted = false;
     this.swithGunAnimationStage = 'goingDown';
+    this.isRunning = false;
+    this.handleResize();
+  }
+
+  setIsRunning(isRunning: boolean) {
+    this.isRunning = isRunning;
   }
 
   getInitialBobState() {
+    const sinTable = this.generateSinTable({
+      step: 10,
+      amplitude: 20,
+    });
+    const sinTableMinValue = Math.min.apply(undefined, sinTable);
+    const sinTableNormalized = sinTable.map(val => val - sinTableMinValue);
     return {
-      sinTable: this.generateSinTable(10, 1.8),
+      sinTable: sinTableNormalized,
       currentSinTableIndex: 0,
       timeoutsManager: new TimeoutsManager({ bob: 0.001 }),
     };
   }
 
-  generateSinTable(step: number, amplitude: number) {
+  generateSinTable(
+    { step, amplitude }: { step: number; amplitude: number; }
+  ) {
     const toRadians = (degrees:number) => {
       return degrees * (Math.PI / 180);
     }
@@ -81,9 +95,9 @@ export class HUD {
       opacity: 0,
     });
     this.damageOverlay.material = damageOverlayMaterial;
-    this.visible = true;
     this.scene.add(this.gun);
     this.scene.add(this.damageOverlay);
+    this.visible = true;
   }
 
   setGunTextures(textures: GunHudTextures) {
@@ -118,15 +132,6 @@ export class HUD {
     this.spriteSheet && this.spriteSheet.displaySprite(0);
   }
 
-  gunBob(delta: number) {
-    this.bobState.timeoutsManager.updateTimeOut('bob', delta);
-    if (this.bobState.timeoutsManager.checkIsTimeOutExpired('bob')) {
-      this.bobState.timeoutsManager.updateExpiredTimeOuts();
-      const sinValue = this.getNextSinValue();
-      this.gun.translateY(-sinValue);
-    }
-  }
-
   updateHp(hp: number) {
     const hpNormalized = hp / this.maxHp;
     const damageOverlayOpacity =
@@ -138,12 +143,7 @@ export class HUD {
     return a + (b - a) * t;
   }
 
-  getNextSinValue() {
-    if (this.bobState.currentSinTableIndex === this.bobState.sinTable.length - 1) {
-      this.bobState.currentSinTableIndex = 0;
-    } else {
-      this.bobState.currentSinTableIndex++;
-    }
+  getCurrentSinValue() {
     return this.bobState.sinTable[this.bobState.currentSinTableIndex];
   }
 
@@ -154,7 +154,7 @@ export class HUD {
     const gunScale = height * 0.75;
     this.gunSpriteHeight = -height + gunScale / 2;
     this.gun.scale.set(gunScale, gunScale, 1);
-    this.gun.position.set(0.5, this.gunSpriteHeight, 1);
+    this.gun.position.set(0.5, this.gunSpriteHeight - this.getCurrentSinValue(), 1);
     this.bobState = this.getInitialBobState();
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
@@ -167,8 +167,8 @@ export class HUD {
   }
 
   initGunSwithAnimationProgress() {
-    const topValue = this.gunSpriteHeight;
-    const bottomValue = this.gunSpriteHeight * 2.2;
+    const topValue = 0;
+    const bottomValue = this.gunSpriteHeight * 1.3;
     this.swithGunAnimationProgress = new EaseProgress({
       minValue: (this.swithGunAnimationStage === 'goingDown') ? topValue : bottomValue,
       maxValue: (this.swithGunAnimationStage === 'goingDown') ? bottomValue : topValue,
@@ -177,10 +177,20 @@ export class HUD {
     });
   }
 
+  setGunTranslateY(translateY: number) {
+    this.gun.position.y = this.gunSpriteHeight + translateY;
+  }
+
   update(delta: number) {
+    let currentGunTranslateY = -this.getCurrentSinValue();
     if (this.isGunSwitchAnimationStarted) {
+      currentGunTranslateY += this.swithGunAnimationProgress?.getCurrentProgress() || 0;
       this.updateGunSwithAnimation(delta);
     }
+    if (this.isRunning) {
+      this.updateGunBob(delta);
+    }
+    this.setGunTranslateY(currentGunTranslateY);
   }
 
   updateGunSwithAnimation(delta: number) {
@@ -191,7 +201,6 @@ export class HUD {
     if (!this.swithGunAnimationProgress) {
       return;
     }
-    this.gun.position.y = this.swithGunAnimationProgress.getCurrentProgress();
     this.swithGunAnimationProgress.updateProgress(delta);
   }
 
@@ -203,6 +212,18 @@ export class HUD {
     this.swithGunAnimationStage = 'goingUp';
     this.updateGunTextures();
     this.initGunSwithAnimationProgress();
+  }
+
+  updateGunBob(delta: number) {
+    this.bobState.timeoutsManager.updateTimeOut('bob', delta);
+    if (this.bobState.timeoutsManager.checkIsTimeOutExpired('bob')) {
+      this.bobState.timeoutsManager.updateExpiredTimeOuts();
+      if (this.bobState.currentSinTableIndex === this.bobState.sinTable.length - 1) {
+        this.bobState.currentSinTableIndex = 0;
+      } else {
+        this.bobState.currentSinTableIndex++;
+      }
+    }
   }
 }
 
