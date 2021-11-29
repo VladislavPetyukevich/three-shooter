@@ -225,13 +225,16 @@ export class СontrolledBehavior implements Behavior {
   handleKeydown = (event: KeyboardEvent) => {
     const intValue = parseInt(event.key);
     if (!isNaN(intValue)) {
-      this.swtichGun(intValue);
+      this.switchGun(intValue);
     }
   };
 
-  swtichGun(gunIndex: number) {
+  switchGun(gunIndex: number) {
     const newGun = this.guns[gunIndex - 1];
     if (!newGun) {
+      return;
+    }
+    if (this.currentGun === newGun) {
       return;
     }
     this.currentGun = newGun;
