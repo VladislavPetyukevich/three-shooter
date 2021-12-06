@@ -27,6 +27,8 @@ import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
 import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
+import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
+import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import {
   RoomCellType,
   RoomCell,
@@ -148,6 +150,24 @@ export class TestScene extends BasicScene {
     this.player.actor.mesh.position.x = playerPosition.x;
     this.player.actor.mesh.position.z = playerPosition.y;
     this.camera.rotation.y = this.getInitialCameraRotation();
+
+    this.entitiesContainer.add(
+      new GunPickUp({
+        position: new Vector3(
+          this.player.actor.mesh.position.x,
+          this.player.actor.mesh.position.y - 1,
+          this.player.actor.mesh.position.z - this.mapCellSize * 3,
+        ),
+        size: new Vector3(1, 0.5, 1),
+        gun: new Shotgun({
+          container: this.entitiesContainer,
+          playerCamera: this.player.camera,
+          audioListener: this.audioListener,
+          holderGeometry: this.player.actor.mesh.geometry,
+        }),
+        gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
+      })
+    );
 
     // lights
     this.ambientLightColor = 0x404040;

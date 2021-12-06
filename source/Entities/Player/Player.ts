@@ -1,6 +1,7 @@
 import { Vector3, Camera, AudioListener } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { PlayerActor } from './PlayerActor';
 import { СontrolledBehavior } from './СontrolledBehavior';
 import { PLAYER, ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
@@ -15,6 +16,7 @@ export interface PlayerProps {
 
 export class Player extends Entity {
   camera: Camera;
+  container: EntitiesContainer;
   hp: number;
   isDead: boolean;
   onHitCallback?: Function;
@@ -42,6 +44,7 @@ export class Player extends Entity {
       }),
     );
     this.camera = props.camera;
+    this.container = props.container;
     this.velocity = velocity;
     this.hp = PLAYER.HP;
     this.isDead = false;
@@ -49,6 +52,11 @@ export class Player extends Entity {
   }
 
   onCollide(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.GUN_PICK_UP) {
+      this.container.remove(entity.actor.mesh);
+      const pickedGun = (<GunPickUp>entity).getGun();
+      (<СontrolledBehavior>this.behavior).addGun(pickedGun);
+    }
     return entity.type !== ENTITY_TYPE.WALL;
   }
 

@@ -89,6 +89,10 @@ export class HUD {
   }
 
   show() {
+    const gunHudTextures = this.nextGunHudTextures || this.gunHudTextures;
+    if (!gunHudTextures) {
+      return;
+    }
     this.updateGunTextures();
     const damageOverlayMaterial = new SpriteMaterial({
       map: texturesStore.getTexture(GAME_TEXTURE_NAME.damageEffect),
@@ -101,15 +105,18 @@ export class HUD {
   }
 
   setGunTextures(textures: GunHudTextures) {
-    if (!this.gunHudTextures) {
+    const isFirstTimeUpdate = !this.gunHudTextures;
+    if (isFirstTimeUpdate) {
+      this.gun.position.y = this.gunSpriteHeight * 1.3;
       this.gunHudTextures = textures;
       this.updateGunTextures();
-      return;
+      this.scene.add(this.gun);
+    } else {
+      this.nextGunHudTextures = textures;
     }
-    this.swithGunAnimationStage = 'goingDown';
+    this.swithGunAnimationStage = isFirstTimeUpdate ? 'goingUp' : 'goingDown';
     this.initGunSwithAnimationProgress();
     this.isGunSwitchAnimationStarted = true;
-    this.nextGunHudTextures = textures;
   }
 
   updateGunTextures() {
