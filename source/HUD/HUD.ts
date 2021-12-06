@@ -5,6 +5,7 @@ import { SpriteSheet } from '@/SpriteSheet';
 import { GunHudTextures } from '@/Entities/Gun/Gun';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { EaseProgress, easeInSine } from '@/EaseProgress';
+import { SinTable } from '@/SinTable';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -24,8 +25,8 @@ export class HUD {
   isGunSwitchAnimationStarted: boolean;
   damageOverlay: Sprite;
   bobState: {
-    sinTable: number[];
-    currentSinTableIndex: number;
+    sinTable: SinTable;
+    currentSinValue: number;
     timeoutsManager: TimeoutsManager<'bob'>;
   };
   maxHp: number;
@@ -55,31 +56,18 @@ export class HUD {
   }
 
   getInitialBobState() {
-    const sinTable = this.generateSinTable({
+    const sinTable = new SinTable({
       step: 10,
       amplitude: 20,
     });
-    const sinTableMinValue = Math.min.apply(undefined, sinTable);
-    const sinTableNormalized = sinTable.map(val => val - sinTableMinValue);
+    const sinTableMinValue = Math.min.apply(undefined, sinTable.values);
+    const sinTableNormalizer = (val: number) => val - sinTableMinValue;
+    sinTable.mapValues(sinTableNormalizer);
     return {
-      sinTable: sinTableNormalized,
-      currentSinTableIndex: 0,
+      sinTable: sinTable,
+      currentSinValue: sinTable.getNextSinValue(),
       timeoutsManager: new TimeoutsManager({ bob: 0.001 }),
     };
-  }
-
-  generateSinTable(
-    { step, amplitude }: { step: number; amplitude: number; }
-  ) {
-    const toRadians = (degrees:number) => {
-      return degrees * (Math.PI / 180);
-    }
-    const sinTable = [];
-    for (let i = 0; i < 360; i+=step) {
-      const sinValue = Math.sin(toRadians(i));
-      sinTable.push(amplitude * sinValue);
-    }
-    return sinTable;
   }
 
   hide() {
@@ -150,19 +138,15 @@ export class HUD {
     return a + (b - a) * t;
   }
 
-  getCurrentSinValue() {
-    return this.bobState.sinTable[this.bobState.currentSinTableIndex];
-  }
-
   handleResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
+    this.bobState = this.getInitialBobState();
     const gunScale = height * 0.75;
     this.gunSpriteHeight = -height + gunScale / 2;
     this.gun.scale.set(gunScale, gunScale, 1);
-    this.gun.position.set(0.5, this.gunSpriteHeight - this.getCurrentSinValue(), 1);
-    this.bobState = this.getInitialBobState();
+    this.gun.position.set(0.5, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(
@@ -189,7 +173,7 @@ export class HUD {
   }
 
   update(delta: number) {
-    let currentGunTranslateY = -this.getCurrentSinValue();
+    let currentGunTranslateY = -this.bobState.currentSinValue;
     if (this.isGunSwitchAnimationStarted) {
       currentGunTranslateY += this.swithGunAnimationProgress?.getCurrentProgress() || 0;
       this.updateGunSwithAnimation(delta);
@@ -225,11 +209,7 @@ export class HUD {
     this.bobState.timeoutsManager.updateTimeOut('bob', delta);
     if (this.bobState.timeoutsManager.checkIsTimeOutExpired('bob')) {
       this.bobState.timeoutsManager.updateExpiredTimeOuts();
-      if (this.bobState.currentSinTableIndex === this.bobState.sinTable.length - 1) {
-        this.bobState.currentSinTableIndex = 0;
-      } else {
-        this.bobState.currentSinTableIndex++;
-      }
+      this.bobState.currentSinValue = this.bobState.sinTable.getNextSinValue();
     }
   }
 }

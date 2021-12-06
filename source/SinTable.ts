@@ -21,6 +21,10 @@ export class SinTable {
     return this.values[this.currentIndex];
   }
 
+  mapValues(callback: (value: number) => number) {
+    this.values = this.values.map(callback);
+  }
+
   generateSinTable(step: number, amplitude: number) {
     const sinTable = [];
     for (let i = 0; i < 360; i+=step) {
