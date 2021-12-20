@@ -25,8 +25,10 @@ import { Door } from '@/Entities/Door/Door';
 import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
 import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
 import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
+import { EnemyWithSpawner } from '@/Entities/Enemy/Inheritor/EnemyWithSpawner';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
+import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import {
@@ -36,6 +38,7 @@ import {
   getRandomRoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { mindState } from '@/MindState';
+import { randomNumbers } from '@/RandomNumbers';
 
 const enum Direction {
   Top, Bottom, Left, Right
@@ -739,6 +742,21 @@ export class TestScene extends BasicScene {
     return door;
   }
 
+  onEnemyWithSpawnerDeath = (roomType: RoomType) => (enemy: Entity) => {
+    const enemiesFromSpawnerCount = 2;
+    this.entitiesContainer.add(
+      new EnemySpawner({
+        container: this.entitiesContainer,
+        positionPadding: this.mapCellSize,
+        position: enemy.actor.mesh.position.clone(),
+        spawnsCount: enemiesFromSpawnerCount,
+        onTrigger: this.spawnEnemyFromSpawner(roomType),
+        onDestroy: this.onEnemyDeath,
+      })
+    );
+  }
+
+
   onEnemyDeath = () => {
     this.currentRoomEnimiesCount--;
     if (this.currentRoomEnimiesCount !== 0) {
@@ -792,19 +810,48 @@ export class TestScene extends BasicScene {
     }
   }
 
+  spawnEnemyFromSpawner = (roomType: RoomType) => (position: Vector3) => {
+    const enemy = this.getEnemy(
+      new Vector2(position.x, position.z),
+      roomType
+    );
+    const collisions =
+      this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.actor.mesh.position);
+    if (collisions.entities.length !== 0) {
+      return false;
+    }
+    enemy.onDeath(this.onEnemyDeath);
+    this.entitiesContainer.add(enemy);
+    this.currentRoomEnimiesCount++;
+    return true;
+  }
+
   spawnEnemy(coordinates: Vector2, roomType: RoomType) {
+    const isSpawnEnemyWithSpawner = (
+      (this.getMindeStateLevel(roomType) >= 1) &&
+      (randomNumbers.getRandom() >= 0.5)
+    );
+    if (isSpawnEnemyWithSpawner) {
+      const enemy = this.getEnemyWithSpawner(coordinates);
+      enemy.onDeath(this.onEnemyWithSpawnerDeath(roomType));
+      return this.entitiesContainer.add(enemy);
+    }
     const enemy = this.getEnemy(coordinates, roomType);
     enemy.onDeath(this.onEnemyDeath);
     return this.entitiesContainer.add(enemy);
   }
 
-  getEnemy(coordinates: Vector2, roomType: RoomType) {
-    const props = {
+  getEnemyProps(coordinates: Vector2) {
+    return {
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
       player: this.player,
       container: this.entitiesContainer,
       audioListener: this.audioListener
     };
+  }
+
+  getEnemy(coordinates: Vector2, roomType: RoomType) {
+    const props = this.getEnemyProps(coordinates);
     switch (roomType) {
       case RoomType.Apathy:
         return new EnemyApathy(props);
@@ -815,6 +862,10 @@ export class TestScene extends BasicScene {
       default:
         throw new Error(`Cannot get enemy for room type:${roomType}`);
     }
+  }
+  getEnemyWithSpawner(coordinates: Vector2) {
+    const props = this.getEnemyProps(coordinates);
+    return new EnemyWithSpawner(props);
   }
 
   update(delta: number) {

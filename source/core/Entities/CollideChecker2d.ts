@@ -77,10 +77,7 @@ export class CollideChecker2d {
       zMin: newPosition.z - entityGeometrySize.height / 2,
       zMax: newPosition.z + entityGeometrySize.height / 2,
     };
-    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
-    if (!entityMapCoordinates) {
-      return collisionsResult;
-    }
+    const entityMapCoordinates = this.getEntityMapCoordinates(entity);
 
     entityMapCoordinates.forEach(coordinates => {
       const mapRecord = this.getMapRecord(coordinates);
@@ -165,6 +162,31 @@ export class CollideChecker2d {
     } else {
       this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id] = [position];
     }
+  }
+
+  getEntityMapCoordinates(entity: Entity) {
+    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
+    if (entityMapCoordinates) {
+      return entityMapCoordinates;
+    }
+    const mapCoordinates: Position[] = [];
+    const bbox = new Box3().setFromObject(entity.actor.mesh);
+    const bounds: EntityBounds = {
+      xMin: bbox.min.x,
+      xMax: bbox.max.x,
+      zMin: bbox.min.z,
+      zMax: bbox.max.z,
+    };
+    const minCellX = this.getCellCoordinate(bounds.xMin);
+    const maxCellX = this.getCellCoordinate(bounds.xMax);
+    const minCellY = this.getCellCoordinate(bounds.zMin);
+    const maxCellY = this.getCellCoordinate(bounds.zMax);
+    for (let currCellX = minCellX; currCellX <= maxCellX; currCellX++) {
+      for (let currCellY = minCellY; currCellY <= maxCellY; currCellY++) {
+        mapCoordinates.push({ x: currCellX, y: currCellY });
+      }
+    }
+    return mapCoordinates;
   }
 
   getSize(entity: Entity): { width: number; height: number } {

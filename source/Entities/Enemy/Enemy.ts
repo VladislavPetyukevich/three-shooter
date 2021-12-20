@@ -73,8 +73,12 @@ export class Enemy extends Entity {
     }
   }
 
-  onDeath(callback?: Function) {
-    (<EnemyBehavior>this.behavior).onDeathCallback = callback;
+  onDeath(callback?: (enemy: Entity) => void) {
+    (<EnemyBehavior>this.behavior).onDeathCallback = () => {
+      if (callback) {
+        callback(this);
+      }
+    };
   }
 
   onCollide() {

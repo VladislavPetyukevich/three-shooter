@@ -49,6 +49,7 @@ export const enum ENTITY_TYPE {
   SHOOT_MARK = 'SHOOT_MARK',
   TRIGGER = 'TRIGGER',
   GUN_PICK_UP = 'GUN_PICK_UP',
+  ENEMY_SPAWNER = 'ENEMY_SPAWNER',
 };
 
 const DarkColor = new Color(0);
