@@ -27,8 +27,9 @@ export class Entity {
     return true;
   }
 
-  onMessage(message: string | number) {
-  }
+  onMessage(message: string | number) { }
+
+  onDestroy() { }
 
   setIsNotMovingOptimizations(isEnabled: boolean) {
     this.actor.mesh.matrixAutoUpdate = !isEnabled;

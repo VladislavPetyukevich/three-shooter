@@ -76,6 +76,13 @@ export class HUD {
     this.scene.remove(this.damageOverlay);
   }
 
+  reset() {
+    this.hide();
+    this.gunHudTextures = undefined;
+    this.nextGunHudTextures = undefined;
+    this.show();
+  }
+
   show() {
     const gunHudTextures = this.nextGunHudTextures || this.gunHudTextures;
     if (!gunHudTextures) {

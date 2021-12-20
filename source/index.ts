@@ -143,7 +143,8 @@ export default class ThreeShooter {
   }
 
   changeScene(scene: BasicScene) {
-    hud.show();
+    hud.reset();
+    this.currScene.entitiesContainer.onDestroy();
     this.currScene = scene;
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.currScene.scene, this.currScene.camera));

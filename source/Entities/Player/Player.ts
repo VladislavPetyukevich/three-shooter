@@ -111,4 +111,13 @@ export class Player extends Entity {
   cantMove() {
     (<СontrolledBehavior>this.behavior).isCanMove = false;
   }
+
+  getGuns() {
+    return (<СontrolledBehavior>this.behavior).guns;
+  }
+
+  onDestroy() {
+    console.log('player onDestroy');
+    (<СontrolledBehavior>this.behavior).onDestroy();
+  }
 }

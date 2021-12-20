@@ -448,4 +448,12 @@ export class СontrolledBehavior implements Behavior {
       intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
     }
   }
+
+  onDestroy() {
+    document.removeEventListener('mousemove', this.handleMouseMove, false);
+    document.removeEventListener('mousedown', this.handlePullTrigger, false);
+    document.removeEventListener('wheel', this.handleWheel, false);
+    document.removeEventListener('mouseup', this.handleReleaseTrigger, false);
+    document.removeEventListener('keydown', this.handleKeydown, false);
+  }
 }

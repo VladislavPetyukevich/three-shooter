@@ -49,6 +49,12 @@ export class EntitiesContainer {
     return this.meshIdToEntity.get(id);
   }
 
+  onDestroy() {
+    this.entities.forEach(entity => {
+      entity.onDestroy();
+    });
+  }
+
   update(delta: number) {
     this.entities.forEach(entity => {
       if (!entity.velocity) {

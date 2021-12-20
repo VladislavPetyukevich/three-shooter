@@ -16,6 +16,7 @@ import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180, PI_2 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
+import { СontrolledBehavior } from '@/Entities/Player/СontrolledBehavior';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
 import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
@@ -154,23 +155,25 @@ export class TestScene extends BasicScene {
     this.player.actor.mesh.position.z = playerPosition.y;
     this.camera.rotation.y = this.getInitialCameraRotation();
 
-    this.entitiesContainer.add(
-      new GunPickUp({
-        position: new Vector3(
-          this.player.actor.mesh.position.x,
-          this.player.actor.mesh.position.y - 1,
-          this.player.actor.mesh.position.z - this.mapCellSize * 3,
-        ),
-        size: new Vector3(1, 0.5, 1),
-        gun: new Shotgun({
-          container: this.entitiesContainer,
-          playerCamera: this.player.camera,
-          audioListener: this.audioListener,
-          holderGeometry: this.player.actor.mesh.geometry,
-        }),
-        gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
-      })
-    );
+    if (this.player.getGuns().length === 0) {
+      this.entitiesContainer.add(
+        new GunPickUp({
+          position: new Vector3(
+            this.player.actor.mesh.position.x,
+            this.player.actor.mesh.position.y - 1,
+            this.player.actor.mesh.position.z - this.mapCellSize * 3,
+          ),
+          size: new Vector3(1, 0.5, 1),
+          gun: new Shotgun({
+            container: this.entitiesContainer,
+            playerCamera: this.player.camera,
+            audioListener: this.audioListener,
+            holderGeometry: this.player.actor.mesh.geometry,
+          }),
+          gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
+        })
+      );
+    }
 
     // lights
     this.ambientLightColor = 0x404040;
