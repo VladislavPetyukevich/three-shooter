@@ -142,7 +142,10 @@ export class GunBehavior implements Behavior {
           this.container.add(shootMark);
           break;
         }
-        if (intersectEntity.type === ENTITY_TYPE.ENEMY) {
+        if (
+          (intersectEntity.type === ENTITY_TYPE.ENEMY) ||
+          (intersectEntity.type === ENTITY_TYPE.ENEMY_SPAWNER)
+        ) {
           intersectEntity.onHit(1);
           break;
         }
