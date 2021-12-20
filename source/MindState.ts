@@ -70,6 +70,12 @@ export class MindState {
     return this.value.props[prop] >= this.maxPropValue;
   }
 
+  checkIsAnyPropReachLevel(value: number) {
+    return (Object.keys(this.value.levels) as MindProperties[]).find(
+      propKey => this.value.levels[propKey] >= value
+    );
+  }
+
   private saveToLocalStorage() {
     new Promise(this.saveToLocalStorageCallback);
   }

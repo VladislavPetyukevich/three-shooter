@@ -16,7 +16,6 @@ import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { PLAYER, WALL, GAME_TEXTURE_NAME, PI_180, PI_2 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
-import { СontrolledBehavior } from '@/Entities/Player/СontrolledBehavior';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
 import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
@@ -32,6 +31,7 @@ import { Torch } from '@/Entities/Torch/Torch';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
+import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
 import {
   RoomCellType,
   RoomCell,
@@ -155,25 +155,7 @@ export class TestScene extends BasicScene {
     this.player.actor.mesh.position.z = playerPosition.y;
     this.camera.rotation.y = this.getInitialCameraRotation();
 
-    if (this.player.getGuns().length === 0) {
-      this.entitiesContainer.add(
-        new GunPickUp({
-          position: new Vector3(
-            this.player.actor.mesh.position.x,
-            this.player.actor.mesh.position.y - 1,
-            this.player.actor.mesh.position.z - this.mapCellSize * 3,
-          ),
-          size: new Vector3(1, 0.5, 1),
-          gun: new Shotgun({
-            container: this.entitiesContainer,
-            playerCamera: this.player.camera,
-            audioListener: this.audioListener,
-            holderGeometry: this.player.actor.mesh.geometry,
-          }),
-          gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
-        })
-      );
-    }
+    this.spawnGuns();
 
     // lights
     this.ambientLightColor = 0x404040;
@@ -208,6 +190,46 @@ export class TestScene extends BasicScene {
     return new Vector2(
       roomCenterCell.x * this.mapCellSize,
       (roomCenterCell.y + positionShift) * this.mapCellSize
+    );
+  }
+
+  spawnGuns() {
+    this.entitiesContainer.add(
+      new GunPickUp({
+        position: new Vector3(
+          this.player.actor.mesh.position.x,
+          this.player.actor.mesh.position.y - 1,
+          this.player.actor.mesh.position.z - this.mapCellSize * 3,
+        ),
+        size: new Vector3(1, 0.5, 1),
+        gun: new Shotgun({
+          container: this.entitiesContainer,
+          playerCamera: this.player.camera,
+          audioListener: this.audioListener,
+          holderGeometry: this.player.actor.mesh.geometry,
+        }),
+        gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
+      })
+    );
+    if (!mindState.checkIsAnyPropReachLevel(1)) {
+      return;
+    }
+    this.entitiesContainer.add(
+      new GunPickUp({
+        position: new Vector3(
+          this.player.actor.mesh.position.x,
+          this.player.actor.mesh.position.y - 1,
+          this.player.actor.mesh.position.z - this.mapCellSize * 5,
+        ),
+        size: new Vector3(1, 0.5, 1),
+        gun: new Machinegun({
+          container: this.entitiesContainer,
+          playerCamera: this.player.camera,
+          audioListener: this.audioListener,
+          holderGeometry: this.player.actor.mesh.geometry,
+        }),
+        gunTextureName: GAME_TEXTURE_NAME.machinegunTextureFile,
+      })
     );
   }
 
