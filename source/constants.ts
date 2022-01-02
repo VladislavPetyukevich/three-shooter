@@ -1,6 +1,5 @@
 import { Color } from 'three';
 import wallTextureFile from '@/assets/wall.png';
-import wallNormalFile from '@/assets/wall-normal.png';
 import doorTextureFile from '@/assets/door.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
@@ -65,7 +64,7 @@ export const COLORS = {
   SexualPerversions: new Color(166, 15, 11),
 };
 
-const wallDarkerFactor = 0.9995;
+const wallDarkerFactor = 0.991;
 export const WALL_COLORS = {
   Neutral: darker(new Color(180, 180, 180), wallDarkerFactor),
   Apathy: darker(COLORS.Apathy, wallDarkerFactor),
@@ -136,7 +135,6 @@ export const enum ENTITY_MESSAGES {
 
 export const gameTextures = {
   wallTextureFile,
-  wallNormalFile,
   doorTextureFile,
   floorTextureFile,
   gunTextureFile,
