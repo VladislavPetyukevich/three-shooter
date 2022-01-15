@@ -1,6 +1,5 @@
 import {
   Camera,
-  Vector2,
   Vector3,
   Audio,
   AudioListener,
@@ -10,10 +9,9 @@ import {
 import { PlayerActor } from './PlayerActor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { keyboard } from '@/Keyboard';
+import { playerActions, PlayerAction } from '@/PlayerActions';
 import {
   PI_2,
-  KEYBOARD_KEY,
   PLAYER,
   PI_180,
   ENTITY_TYPE,
@@ -25,7 +23,11 @@ import { Boomerang } from '@/Entities/Boomerang/Boomerang';
 import { SinTable } from '@/SinTable';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
-import { globalSettings } from '@/GlobalSettings';
+
+const enum GunOrderType {
+  primary,
+  secondary
+}
 
 interface СontrolledBehaviorProps {
   actor: PlayerActor;
@@ -43,14 +45,13 @@ export class СontrolledBehavior implements Behavior {
   camera: Camera;
   raycaster: Raycaster;
   isRunning: boolean;
-  isKeyOnward: boolean;
   isKeyForward: boolean;
+  isKeyBackward: boolean;
   isKeyLeft: boolean;
   isKeyRight: boolean;
   isCanMove: boolean;
   strafeCameraRotation: number;
   strafeCameraSpeed: number;
-  cameraRotationInput: Vector2;
   eyeY: number;
   walkSpeed: number;
   cameraSpeed: number;
@@ -63,7 +64,6 @@ export class СontrolledBehavior implements Behavior {
   guns: Gun[];
   gunBoomerang: Gun;
   gunShootLight: PointLight;
-  mouseSensitivity: number;
   sinTable: SinTable;
   bobTimeout: number;
   maxBobTimeout: number;
@@ -73,7 +73,6 @@ export class СontrolledBehavior implements Behavior {
   checkGunPointTimeoutCurrent: number;
 
   constructor(props: СontrolledBehaviorProps) {
-    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
     this.sinTable = new SinTable({
       step: 1,
       amplitude: 0.06,
@@ -84,7 +83,6 @@ export class СontrolledBehavior implements Behavior {
     this.maxBobTimeout = 0.001;
     this.cameraRecoil= 0.035;
     this.isCameraRecoil= false;
-    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.actor = props.actor;
     this.eyeY = props.eyeY;
     this.camera = props.camera;
@@ -94,14 +92,13 @@ export class СontrolledBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.cameraSpeed = props.cameraSpeed;
     this.isRunning = false;
-    this.isKeyOnward = false;
     this.isKeyForward = false;
+    this.isKeyBackward = false;
     this.isKeyLeft = false;
     this.isKeyRight = false;
     this.isCanMove = true;
     this.strafeCameraRotation = 1.3 * PI_180;
     this.strafeCameraSpeed = 10;
-    this.cameraRotationInput = new Vector2();
     this.container = props.container;
     this.velocity = props.velocity;
     this.targetVelocity = new Vector3();
@@ -132,27 +129,100 @@ export class СontrolledBehavior implements Behavior {
     );
     this.container.scene.add(this.gunShootLight);
 
-    document.addEventListener('mousemove', this.handleMouseMove, false);
-    document.addEventListener('mousedown', this.handlePullTrigger, false);
-    document.addEventListener('wheel', this.handleWheel, false);
-    document.addEventListener('mouseup', this.handleReleaseTrigger, false);
-    document.addEventListener('keydown', this.handleKeydown, false);
-  }
-
-  onUpdateGlobalSettings = () => {
-    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
-  }
-
-  handleMouseMove = (event: MouseEvent) => {
-    // if (this.enabled === false) return;
-
-    var movementX = event.movementX * this.mouseSensitivity;
-    var movementY = event.movementY * this.mouseSensitivity;
-
-    this.cameraRotationInput.set(
-      this.cameraRotationInput.x += movementX,
-      this.cameraRotationInput.y += movementY,
+    playerActions.addActionListener(
+      'walkForward', this.handleWalkForward
     );
+    playerActions.addActionListener(
+      'walkBackward', this.handleWalkBackward
+    );
+    playerActions.addActionListener(
+      'walkLeft', this.handleWalkLeft
+    );
+    playerActions.addActionListener(
+      'walkRight', this.handleWalkRight
+    );
+    playerActions.addActionListener(
+      'weapon1', this.handleWeapon1
+    );
+    playerActions.addActionListener(
+      'weapon2', this.handleWeapon2
+    );
+    playerActions.addActionListener(
+      'nextWeapon', this.handleWeaponNext
+    );
+    playerActions.addActionListener(
+      'prevWeapon', this.handleWeaponPrev
+    );
+    playerActions.addActionListener(
+      'firePrimary', this.handleFirePrimary
+    );
+    playerActions.addActionListener(
+      'fireSecondary', this.handleFireSecondary
+    );
+  }
+
+  handleWalkForward = (action: PlayerAction) => {
+    this.isKeyForward = !action.isEnded;
+  }
+
+  handleWalkBackward = (action: PlayerAction) => {
+    this.isKeyBackward = !action.isEnded;
+  }
+
+  handleWalkLeft = (action: PlayerAction) => {
+    this.isKeyLeft = !action.isEnded;
+  }
+
+  handleWalkRight = (action: PlayerAction) => {
+    this.isKeyRight = !action.isEnded;
+  }
+
+  handleWeapon1 = (action: PlayerAction) => {
+    if (action.isEnded) {
+      return;
+    }
+    this.switchGun(0);
+  }
+
+  handleWeapon2 = (action: PlayerAction) => {
+    if (action.isEnded) {
+      return;
+    }
+    this.switchGun(1);
+  }
+
+  handleWeaponNext = (action: PlayerAction) => {
+    if (action.isEnded) {
+      return;
+    }
+    this.switchGun(
+      this.circleClampGunIndex(this.currentGunIndex + 1)
+    );
+  }
+
+  handleWeaponPrev = (action: PlayerAction) => {
+    if (action.isEnded) {
+      return;
+    }
+    this.switchGun(
+      this.circleClampGunIndex(this.currentGunIndex - 1)
+    );
+  }
+
+  handleFirePrimary = (action: PlayerAction) => {
+    if (action.isEnded) {
+      this.handleReleaseTrigger(GunOrderType.primary);
+    } else {
+      this.handlePullTrigger(GunOrderType.primary);
+    }
+  }
+
+  handleFireSecondary = (action: PlayerAction) => {
+    if (action.isEnded) {
+      this.handleReleaseTrigger(GunOrderType.secondary);
+    } else {
+      this.handlePullTrigger(GunOrderType.secondary);
+    }
   }
 
   onHit() {
@@ -166,12 +236,12 @@ export class СontrolledBehavior implements Behavior {
     this.damageSound.stop();
   }
 
-  handlePullTrigger = (event: MouseEvent) => {
-    switch (event.button) {
-      case 0:
+  handlePullTrigger = (gunOrderType: GunOrderType) => {
+    switch (gunOrderType) {
+      case GunOrderType.primary:
         this.handleShootPrimary();
         break;
-      case 2:
+      case GunOrderType.secondary:
         this.handleShootSecondary();
         break;
       default:
@@ -179,42 +249,25 @@ export class СontrolledBehavior implements Behavior {
     }
   };
 
-  handleReleaseTrigger = (event: MouseEvent) => {
-    switch (event.button) {
-      case 0:
-        const currentGun = this.getCurrentGun();
-        if (currentGun) {
-          currentGun.releaseTrigger();
-        }
-        break;
-      default:
-        break;
+  handleReleaseTrigger = (gunOrderType: GunOrderType) => {
+    if (gunOrderType !== GunOrderType.primary) {
+      return;
+    }
+    const currentGun = this.getCurrentGun();
+    if (currentGun) {
+      currentGun.releaseTrigger();
     }
   };
 
-  handleKeydown = (event: KeyboardEvent) => {
-    const intValue = parseInt(event.key);
-    if (!isNaN(intValue)) {
-      this.switchGun(intValue - 1);
+  circleClampGunIndex(gunIndex: number) {
+    if (gunIndex < 0) {
+      return this.guns.length - 1;
     }
-  };
-
-  handleWheel = (event: WheelEvent) => {
-    const isWheelDown = event.deltaY > 0;
-    const isWheelUp = event.deltaY < 0;
-    let newGunIndex = this.currentGunIndex;
-    if (isWheelDown) {
-      newGunIndex--;
-    } else if (isWheelUp) {
-      newGunIndex++;
+    if (gunIndex > this.guns.length - 1) {
+      return 0;
     }
-    if (newGunIndex < 0) {
-      newGunIndex = this.guns.length - 1;
-    } else if (newGunIndex > this.guns.length - 1) {
-      newGunIndex = 0;
-    }
-    this.switchGun(newGunIndex);
-  };
+    return gunIndex;
+  }
 
   switchGun(gunIndex: number) {
     if (this.currentGunIndex === gunIndex) {
@@ -309,7 +362,7 @@ export class СontrolledBehavior implements Behavior {
     this.gunBoomerang.setPosition(this.camera.position);
     this.gunBoomerang.update(delta);
     this.updateCamera();
-    this.updateKeysState();
+    this.updateIsRunning();
     if (this.isCanMove) {
       this.updateVelocity(delta);
       this.updateShootLight();
@@ -321,22 +374,19 @@ export class СontrolledBehavior implements Behavior {
   }
 
   updateCamera() {
-    if (this.cameraRotationInput.x) {
-      this.camera.rotation.y -= this.cameraRotationInput.x;
+    const cameraMovement = playerActions.getCameraMovement();
+    if (cameraMovement) {
+      this.camera.rotation.y -= cameraMovement;
     }
-    this.cameraRotationInput.set(0, 0);
+    playerActions.resetCameraMovement();
     this.camera.position.x = this.actor.mesh.position.x;
     this.camera.position.z = this.actor.mesh.position.z;
   }
 
-  updateKeysState() {
-    this.isKeyOnward = keyboard.key[KEYBOARD_KEY.W];
-    this.isKeyForward = keyboard.key[KEYBOARD_KEY.S];
-    this.isKeyLeft = keyboard.key[KEYBOARD_KEY.A];
-    this.isKeyRight = keyboard.key[KEYBOARD_KEY.D];
+  updateIsRunning() {
     this.isRunning =
-      this.isKeyOnward ||
       this.isKeyForward ||
+      this.isKeyBackward ||
       this.isKeyLeft ||
       this.isKeyRight;
   }
@@ -350,12 +400,12 @@ export class СontrolledBehavior implements Behavior {
     if (!this.isRunning) {
       this.targetVelocity.set(0, 0, 0);
     } else {
-      if (this.isKeyOnward) {
+      if (this.isKeyForward) {
         this.isRunning = true;
         this.moveDirection.x -= Math.sin(this.camera.rotation.y);
         this.moveDirection.z -= Math.cos(this.camera.rotation.y);
       }
-      if (this.isKeyForward) {
+      if (this.isKeyBackward) {
         this.isRunning = true;
         this.moveDirection.x += Math.sin(this.camera.rotation.y);
         this.moveDirection.z += Math.cos(this.camera.rotation.y);
@@ -450,10 +500,35 @@ export class СontrolledBehavior implements Behavior {
   }
 
   onDestroy() {
-    document.removeEventListener('mousemove', this.handleMouseMove, false);
-    document.removeEventListener('mousedown', this.handlePullTrigger, false);
-    document.removeEventListener('wheel', this.handleWheel, false);
-    document.removeEventListener('mouseup', this.handleReleaseTrigger, false);
-    document.removeEventListener('keydown', this.handleKeydown, false);
+    playerActions.removeActionListener(
+      'walkForward', this.handleWalkForward
+    );
+    playerActions.removeActionListener(
+      'walkBackward', this.handleWalkBackward
+    );
+    playerActions.removeActionListener(
+      'walkLeft', this.handleWalkLeft
+    );
+    playerActions.removeActionListener(
+      'walkRight', this.handleWalkRight
+    );
+    playerActions.removeActionListener(
+      'weapon1', this.handleWeapon1
+    );
+    playerActions.removeActionListener(
+      'weapon2', this.handleWeapon2
+    );
+    playerActions.removeActionListener(
+      'nextWeapon', this.handleWeaponNext
+    );
+    playerActions.removeActionListener(
+      'prevWeapon', this.handleWeaponPrev
+    );
+    playerActions.removeActionListener(
+      'firePrimary', this.handleFirePrimary
+    );
+    playerActions.removeActionListener(
+      'fireSecondary', this.handleFireSecondary
+    );
   }
 }

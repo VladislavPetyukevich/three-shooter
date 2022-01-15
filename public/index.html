@@ -89,6 +89,80 @@
       onLoad: onLoad
     });
 
+    var keyBindings = {
+      49: 'weapon1',
+      50: 'weapon2',
+      87: 'walkForward',
+      83: 'walkBackward',
+      65: 'walkLeft',
+      68: 'walkRight',
+    };
+
+    var mouseBindings = {
+      0: 'firePrimary',
+      2: 'fireSecondary'
+    };
+
+    var actionPhases = {
+      start: 'start',
+      end: 'end'
+    };
+
+    function handlePlayerAction(bindings, code, actionPhase) {
+      var binding = bindings[code];
+      if (!binding) {
+        return;
+      }
+      switch (actionPhase) {
+        case 'start':
+          threeShooter.onPlayerActionStart(binding);
+          break;
+        case 'end':
+          threeShooter.onPlayerActionEnd(binding);
+          break;
+      }
+    }
+
+    function handlePlayerKeyboardAction(keyCode, actionPhase) {
+      handlePlayerAction(keyBindings, keyCode, actionPhase);
+    }
+
+    document.addEventListener('keydown', function(event) {
+      handlePlayerKeyboardAction(event.keyCode, actionPhases.start);
+    });
+
+    document.addEventListener('keyup', function(event) {
+      handlePlayerKeyboardAction(event.keyCode, actionPhases.end);
+    });
+
+    function handlePlayerMouseAction(keyCode, actionPhase) {
+      handlePlayerAction(mouseBindings, keyCode, actionPhase);
+    }
+
+    document.addEventListener('mousedown', function(event) {
+      handlePlayerMouseAction(event.button, actionPhases.start);
+    });
+
+    document.addEventListener('mouseup', function(event) {
+      handlePlayerMouseAction(event.button, actionPhases.end);
+    });
+
+    document.addEventListener('mousemove', function(event) {
+      var movementX = event.movementX;
+      threeShooter.onPlayerCameraMove(movementX);
+    });
+
+    document.addEventListener('wheel', function(event) {
+      var isWheelDown = event.deltaY > 0;
+      var isWheelUp = event.deltaY < 0;
+      if (isWheelDown) {
+        threeShooter.onPlayerActionStart('prevWeapon');
+      }
+      if (isWheelUp) {
+        threeShooter.onPlayerActionStart('nextWeapon');
+      }
+    });
+
     instructions.addEventListener('click', function (event) {
       instructions.style.display = 'none';
       blocker.style.display = 'none';

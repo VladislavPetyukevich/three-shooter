@@ -16,6 +16,7 @@ import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionS
 import { texturesStore, audioStore } from '@/core/loaders';
 import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, GAME_TEXTURE_NAME, gameSounds } from './constants';
+import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { mindState } from '@/MindState';
 
@@ -23,6 +24,7 @@ export default class ThreeShooter {
   gameProps: any;
   currScene: BasicScene;
   loadedScene?: BasicScene;
+  mouseSensitivity: number;
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
@@ -35,6 +37,8 @@ export default class ThreeShooter {
   constructor(props: any) {
     this.gameProps = props;
     this.currScene = new LoadingScene(props);
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
+    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
     this.enabled = false;
@@ -73,6 +77,24 @@ export default class ThreeShooter {
       this.composer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
     });
     mindState.addUpdateListener(this.onUpdateMindState);
+  }
+
+  onUpdateGlobalSettings = () => {
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
+  }
+
+  onPlayerActionStart(actionName: PlayerActionName) {
+    playerActions.startAction(actionName);
+  }
+
+  onPlayerActionEnd(actionName: PlayerActionName) {
+    playerActions.endAction(actionName);
+  }
+
+  onPlayerCameraMove(movementX: number) {
+    playerActions.addCameraMovement(
+      movementX * this.mouseSensitivity
+    );
   }
 
   loadTextures(gameProps: any) {

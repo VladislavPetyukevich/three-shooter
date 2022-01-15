@@ -32,13 +32,6 @@ export const PI_2 = Math.PI / 2;
 
 export const RANDOM_NUMBERS_COUNT = 100;
 
-export const enum KEYBOARD_KEY {
-  W = 87,
-  A = 65,
-  S = 83,
-  D = 68
-};
-
 export const enum ENTITY_TYPE {
   PLAYER = 'PLAYER',
   BULLET = 'BULLET',
