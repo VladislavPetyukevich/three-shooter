@@ -84,18 +84,17 @@ export class HUD {
   }
 
   show() {
-    const gunHudTextures = this.nextGunHudTextures || this.gunHudTextures;
-    if (!gunHudTextures) {
-      return;
-    }
-    this.updateGunTextures();
     const damageOverlayMaterial = new SpriteMaterial({
       map: texturesStore.getTexture(GAME_TEXTURE_NAME.damageEffect),
       opacity: 0,
     });
     this.damageOverlay.material = damageOverlayMaterial;
-    this.scene.add(this.gun);
     this.scene.add(this.damageOverlay);
+    const gunHudTextures = this.nextGunHudTextures || this.gunHudTextures;
+    if (gunHudTextures) {
+      this.updateGunTextures();
+      this.scene.add(this.gun);
+    }
     this.visible = true;
   }
 
