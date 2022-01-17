@@ -852,14 +852,11 @@ export class TestScene extends BasicScene {
   }
 
   spawnEnemy(coordinates: Vector2, roomType: RoomType) {
-    const isSpawnEnemyWithSpawner = (
-      (this.getMindeStateLevel(roomType) >= 1) &&
-      (randomNumbers.getRandom() >= 0.5)
-    );
-    if (isSpawnEnemyWithSpawner) {
-      const enemy = this.getEnemyWithSpawner(coordinates);
-      enemy.onDeath(this.onEnemyWithSpawnerDeath(roomType));
-      return this.entitiesContainer.add(enemy);
+    const isReachedLevel1 =
+      (this.getMindeStateLevel(roomType) >= 1);
+    const isSpawnSpecialEnemy = randomNumbers.getRandom() >= 0.5;
+    if (isReachedLevel1 && isSpawnSpecialEnemy) {
+      return this.spawnSpecialEnemy(coordinates, roomType);
     }
     const enemy = this.getEnemy(coordinates, roomType);
     enemy.onDeath(this.onEnemyDeath);
@@ -875,8 +872,16 @@ export class TestScene extends BasicScene {
     };
   }
 
-  getEnemy(coordinates: Vector2, roomType: RoomType) {
-    const props = this.getEnemyProps(coordinates);
+  getEnemy(
+    coordinates: Vector2,
+    roomType: RoomType,
+    modifiers?: { isKamikaze?: boolean },
+  ) {
+    const isKamikaze = modifiers && modifiers.isKamikaze;
+    const props = {
+      ...this.getEnemyProps(coordinates),
+      ...(isKamikaze && { isKamikaze })
+    };
     switch (roomType) {
       case RoomType.Apathy:
         return new EnemyApathy(props);
@@ -888,9 +893,29 @@ export class TestScene extends BasicScene {
         throw new Error(`Cannot get enemy for room type:${roomType}`);
     }
   }
+
   getEnemyWithSpawner(coordinates: Vector2) {
     const props = this.getEnemyProps(coordinates);
     return new EnemyWithSpawner(props);
+  }
+
+  getEnemyKamikaze(coordinates: Vector2, roomType: RoomType) {
+    return this.getEnemy(
+      coordinates,
+      roomType,
+      { isKamikaze: true}
+    );
+  }
+
+  spawnSpecialEnemy(coordinates: Vector2, roomType: RoomType) {
+    if (randomNumbers.getRandom() >= 0.5) {
+      const enemy = this.getEnemyWithSpawner(coordinates);
+      enemy.onDeath(this.onEnemyWithSpawnerDeath(roomType));
+      return this.entitiesContainer.add(enemy);
+    } else {
+      const enemy = this.getEnemyKamikaze(coordinates, roomType);
+      return this.entitiesContainer.add(enemy);
+    }
   }
 
   update(delta: number) {
