@@ -1,5 +1,6 @@
 import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'three';
-import { ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { ENTITY_TYPE, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -19,6 +20,7 @@ interface BehaviorProps {
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  isKamikaze?: boolean;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
     shoot: number;
@@ -58,6 +60,7 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
+  isKamikaze: boolean;
   deadAnimationProgress: EaseProgress;
   onDeathCallback?: Function;
 
@@ -99,17 +102,18 @@ export class EnemyBehavior implements Behavior {
         { name: 'attack', from: ['followingPlayer', 'hurted'], to: 'attacking' },
         { name: 'hurt', from: ['followingPlayer', 'attacking'], to: 'hurting' },
         { name: 'hurts', from: 'hurting', to: 'hurted' },
-        { name: 'death', from: ['attacking', 'hurting', 'hurted'], to: 'dies' },
+        { name: 'death', from: ['followingPlayer', 'attacking', 'hurting', 'hurted'], to: 'dies' },
         { name: 'dead', from: 'dies', to: 'died' },
         { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
       ]
     });
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
+    this.isKamikaze = !!props.isKamikaze;
     const timeoutValues = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
-      movement: ENEMY.MOVEMENT_TIME_OUT,
+      movement: this.isKamikaze ? ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT : ENEMY.MOVEMENT_TIME_OUT,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,
@@ -187,10 +191,29 @@ export class EnemyBehavior implements Behavior {
     return angleDegrees;
   }
 
-  onCollide() {
+  onCollide(entity: Entity) {
+    if (this.isKamikaze) {
+      this.onCollideKamikaze(entity);
+      return;
+    }
     this.followingPath = [];
     this.followingPoint = undefined;
     this.velocity.negate();
+  }
+
+  onCollideKamikaze(entity: Entity) {
+    if (entity.type !== ENTITY_TYPE.PLAYER) {
+      return;
+    }
+    const currentState = this.stateMachine.state();
+    if (
+      (currentState === 'dies') ||
+      (currentState === 'died')
+    ) {
+      return;
+    }
+    entity.onHit(1);
+    this.stateMachine.doTransition('death');
   }
 
   onPlayerGunpoint() {
@@ -311,6 +334,10 @@ export class EnemyBehavior implements Behavior {
         }
         break;
       case 'attacking':
+        if (this.isKamikaze) {
+          this.stateMachine.doTransition('followPlayer');
+          break;
+        }
         if (!this.checkIsPlayerInAttackDistance()) {
           this.actor.spriteSheet.displaySprite(1);
           this.stateMachine.doTransition('followPlayer');
@@ -377,6 +404,9 @@ export class EnemyBehavior implements Behavior {
       ) {
         this.moveToPlayer();
       }
+    }
+    if (this.isKamikaze) {
+      return;
     }
     this.timeoutsManager.updateTimeOut('strafe', delta);
     if (this.timeoutsManager.checkIsTimeOutExpired('strafe')) {

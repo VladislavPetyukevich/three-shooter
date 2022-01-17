@@ -10,6 +10,7 @@ interface EnemySPProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  isKamikaze?: boolean;
 }
 
 export class EnemySP extends Enemy {
@@ -25,6 +26,7 @@ export class EnemySP extends Enemy {
         ...ENEMY.DELAYS,
         strafe: ENEMY.DELAYS.strafe * 0.7,
       },
+      isKamikaze: props.isKamikaze,
     });
   }
 }

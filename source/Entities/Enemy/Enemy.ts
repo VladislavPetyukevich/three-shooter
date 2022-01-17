@@ -28,6 +28,7 @@ export interface EnemyProps {
     gunpointStrafe: number;
     strafe: number;
   };
+  isKamikaze?: boolean;
 }
 
 export class Enemy extends Entity {
@@ -49,6 +50,7 @@ export class Enemy extends Entity {
         velocity,
         actor,
         audioListener: props.audioListener,
+        isKamikaze: props.isKamikaze,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
       })
@@ -81,8 +83,8 @@ export class Enemy extends Entity {
     };
   }
 
-  onCollide() {
-    (<EnemyBehavior>this.behavior).onCollide();
+  onCollide(entity: Entity) {
+    (<EnemyBehavior>this.behavior).onCollide(entity);
     return false;
   }
 

@@ -10,6 +10,7 @@ interface EnemyApathyProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  isKamikaze?: boolean;
 }
 
 export class EnemyApathy extends Enemy {
