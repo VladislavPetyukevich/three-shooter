@@ -43,7 +43,7 @@ export class HUD {
     this.gunSpriteHeight = 0;
     this.damageOverlay = new Sprite();
     this.maxHp = PLAYER.HP;
-    this.maxDamageOverlayOpacity = 0.6;
+    this.maxDamageOverlayOpacity = 0.8;
     this.bobState = this.getInitialBobState();
     this.isGunSwitchAnimationStarted = false;
     this.swithGunAnimationStage = 'goingDown';
