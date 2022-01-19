@@ -20,6 +20,7 @@ export class EnemyWithSpawner extends Enemy {
       color: ENEMY_COLORS.Apathy,
       hp: 1,
       BulletClass: BulletSlowMeidum,
+      walkSpeed: ENEMY.WALK_SPEED,
       bulletsPerShoot: { min: 0, max: 1 },
       delays: {
         ...ENEMY.DELAYS,

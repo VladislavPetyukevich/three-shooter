@@ -21,6 +21,7 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   isKamikaze?: boolean;
+  walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
     shoot: number;
@@ -53,6 +54,7 @@ export class EnemyBehavior implements Behavior {
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
+  walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   currentBulletsToShoot: number;
   shootSound: PositionalAudio;
@@ -90,6 +92,7 @@ export class EnemyBehavior implements Behavior {
     this.currentStrafeAngle = 0;
     this.strafeAngleLow = 22.5; // (90 / 2) - (90 / 4)
     this.strafeAngleHigh = 88.8;
+    this.walkSpeed = props.walkSpeed;
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.currentBulletsToShoot = 0;
     this.shootSound = new PositionalAudio(props.audioListener);
@@ -161,7 +164,7 @@ export class EnemyBehavior implements Behavior {
     const velocityZ = this.randomVelocityValue();
     const direction = new Vector3(velocityX, 0, velocityZ);
     this.velocity.copy(
-      direction.normalize().multiplyScalar(ENEMY.WALK_SPEED)
+      direction.normalize().multiplyScalar(this.walkSpeed)
     );
   }
 
@@ -245,9 +248,9 @@ export class EnemyBehavior implements Behavior {
 
   velocityToPlayer() {
     this.velocity.set(
-      Math.sin(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED,
+      Math.sin(this.actor.mesh.rotation.y) * this.walkSpeed,
       0,
-      Math.cos(this.actor.mesh.rotation.y) * ENEMY.WALK_SPEED
+      Math.cos(this.actor.mesh.rotation.y) * this.walkSpeed
     );
   }
 

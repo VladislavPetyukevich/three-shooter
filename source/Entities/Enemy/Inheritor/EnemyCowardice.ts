@@ -15,17 +15,22 @@ interface EnemyApathyProps {
 
 export class EnemyCowardice extends Enemy {
   constructor(props: EnemyApathyProps) {
+    const walkSpeed = props.isKamikaze ?
+      ENEMY.WALK_SPEED_KAMIKAZE :
+      ENEMY.WALK_SPEED;
     super({
       ...props,
       textures: ENEMY_TEXTURES.Cowardice,
       color: ENEMY_COLORS.Cowardice,
       hp: 1,
       BulletClass: BulletSlowMeidum,
+      walkSpeed,
       bulletsPerShoot: { min: 1, max: 1 },
       delays: {
         ...ENEMY.DELAYS,
         gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
       },
+      isKamikaze: props.isKamikaze,
     });
   }
 }

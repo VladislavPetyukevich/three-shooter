@@ -15,12 +15,16 @@ interface EnemySPProps {
 
 export class EnemySP extends Enemy {
   constructor(props: EnemySPProps) {
+    const walkSpeed = props.isKamikaze ?
+      ENEMY.WALK_SPEED_KAMIKAZE :
+      ENEMY.WALK_SPEED;
     super({
       ...props,
       textures: ENEMY_TEXTURES.SP,
       color: ENEMY_COLORS.SP,
       hp: 1,
       BulletClass: BulletFastEasy,
+      walkSpeed,
       bulletsPerShoot: { min: 1, max: 3 },
       delays: {
         ...ENEMY.DELAYS,

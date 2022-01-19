@@ -22,6 +22,7 @@ export interface EnemyProps {
   color: Color;
   textures: EnemyTextures;
   hp: number;
+  walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
     shoot: number;
@@ -51,6 +52,7 @@ export class Enemy extends Entity {
         actor,
         audioListener: props.audioListener,
         isKamikaze: props.isKamikaze,
+        walkSpeed: props.walkSpeed,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
       })
