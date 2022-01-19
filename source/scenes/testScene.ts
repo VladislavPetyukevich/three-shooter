@@ -914,6 +914,7 @@ export class TestScene extends BasicScene {
       return this.entitiesContainer.add(enemy);
     } else {
       const enemy = this.getEnemyKamikaze(coordinates, roomType);
+      enemy.onDeath(this.onEnemyDeath);
       return this.entitiesContainer.add(enemy);
     }
   }
