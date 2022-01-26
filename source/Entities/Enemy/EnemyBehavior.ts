@@ -1,5 +1,5 @@
 import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'three';
-import { ENTITY_TYPE, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
@@ -21,6 +21,7 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   isKamikaze?: boolean;
+  isParasite?: boolean;
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
@@ -47,6 +48,7 @@ export class EnemyBehavior implements Behavior {
   raycaster: Raycaster;
   followingPath: Vector2[];
   followingPoint?: Vector2;
+  followingEnemy?: Entity;
   actor: EnemyActor;
   currentStrafeAngle: number;
   strafeAngleLow: number;
@@ -63,6 +65,7 @@ export class EnemyBehavior implements Behavior {
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   isKamikaze: boolean;
+  isParasite: boolean;
   deadAnimationProgress: EaseProgress;
   onDeathCallback?: Function;
 
@@ -99,24 +102,29 @@ export class EnemyBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
+    this.isKamikaze = !!props.isKamikaze;
+    this.isParasite = !!props.isParasite;
     this.stateMachine = new StateMachine({
-      initialState: 'followingPlayer',
+      initialState: this.isParasite ?
+        'searchingEnemy' :
+        'followingPlayer',
       transitions: [
         { name: 'attack', from: ['followingPlayer', 'hurted'], to: 'attacking' },
         { name: 'hurt', from: ['followingPlayer', 'attacking'], to: 'hurting' },
         { name: 'hurts', from: 'hurting', to: 'hurted' },
-        { name: 'death', from: ['followingPlayer', 'attacking', 'hurting', 'hurted'], to: 'dies' },
+        { name: 'death', from: ['followingPlayer', 'attacking', 'hurting', 'hurted', 'followingEnemy', 'searchingEnemy'], to: 'dies' },
         { name: 'dead', from: 'dies', to: 'died' },
-        { name: 'followPlayer', from: 'attacking', to: 'followingPlayer' }
+        { name: 'followPlayer', from: ['attacking', 'followingEnemy', 'searchingEnemy'], to: 'followingPlayer' },
+        { name: 'searchEnemy', from: 'followingEnemy', to: 'searchingEnemy' },
+        { name: 'followEnemy', from: 'searchingEnemy', to: 'followingEnemy' }
       ]
     });
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
-    this.isKamikaze = !!props.isKamikaze;
     const timeoutValues = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
-      movement: this.isKamikaze ? ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT : ENEMY.MOVEMENT_TIME_OUT,
+      movement: (this.isKamikaze || this.isParasite) ? ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT : ENEMY.MOVEMENT_TIME_OUT,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,
@@ -195,8 +203,20 @@ export class EnemyBehavior implements Behavior {
   }
 
   onCollide(entity: Entity) {
-    if (this.isKamikaze) {
+    const isCollideWithPlayer = entity.type === ENTITY_TYPE.PLAYER;
+    if (
+      isCollideWithPlayer &&
+      (this.isKamikaze || this.isParasite)
+    ) {
       this.onCollideKamikaze(entity);
+      return;
+    }
+    const isCollideWithEnemy = entity.type === ENTITY_TYPE.ENEMY;
+    if (
+      isCollideWithEnemy &&
+      (this.isKamikaze || this.isParasite)
+    ) {
+      this.onCollideEnemyParasite(entity);
       return;
     }
     this.followingPath = [];
@@ -205,9 +225,6 @@ export class EnemyBehavior implements Behavior {
   }
 
   onCollideKamikaze(entity: Entity) {
-    if (entity.type !== ENTITY_TYPE.PLAYER) {
-      return;
-    }
     const currentState = this.stateMachine.state();
     if (
       (currentState === 'dies') ||
@@ -216,7 +233,12 @@ export class EnemyBehavior implements Behavior {
       return;
     }
     entity.onHit(1);
-    this.stateMachine.doTransition('death');
+    this.death();
+  }
+
+  onCollideEnemyParasite(entity: Entity) {
+    this.death();
+    entity.onMessage(ENTITY_MESSAGES.infestedByParasite);
   }
 
   onPlayerGunpoint() {
@@ -228,17 +250,17 @@ export class EnemyBehavior implements Behavior {
     }
   }
 
-  findPathToPlayer() {
+  findPathToEntity(entity: Entity) {
     if (this.followingPath.length) {
       return;
     }
     this.velocity.set(0, 0, 0);
-    const pathToPlayer = this.container.pathfinder.getPathBetweenEntities(
+    const pathToEntity = this.container.pathfinder.getPathBetweenEntities(
       this.actor.mesh.id,
-      this.player.actor.mesh.id
+      entity.actor.mesh.id
     );
-    if (pathToPlayer) {
-      this.followingPath = pathToPlayer;
+    if (pathToEntity) {
+      this.followingPath = pathToEntity;
     } else {
       this.followingPath = [];
       this.followingPoint = undefined;
@@ -246,30 +268,71 @@ export class EnemyBehavior implements Behavior {
     }
   }
 
-  velocityToPlayer() {
-    this.velocity.set(
-      Math.sin(this.actor.mesh.rotation.y) * this.walkSpeed,
-      0,
-      Math.cos(this.actor.mesh.rotation.y) * this.walkSpeed
-    );
+  velocityToEntity(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.PLAYER) {
+      this.velocity.set(
+        Math.sin(this.actor.mesh.rotation.y) * this.walkSpeed,
+        0,
+        Math.cos(this.actor.mesh.rotation.y) * this.walkSpeed
+      );
+    } else {
+      this.velocityToPoint(
+        new Vector2(
+          entity.actor.mesh.position.x,
+          entity.actor.mesh.position.z
+        )
+      );
+    }
   }
 
-  moveToPlayer() {
-    const directionToPlayer = new Vector3();
-    this.actor.mesh.getWorldDirection(directionToPlayer);
-    this.raycaster.set(
-      this.actor.mesh.position,
-      directionToPlayer
-    );
-    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
-    const playerIndex = intersectObjects.findIndex(
-      intersect => intersect.object.uuid === this.player.actor.mesh.uuid
-    );
-    if (playerIndex === 0) {
-      this.velocityToPlayer();
+  moveToEntity(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.PLAYER) {
+      const directionToPlayer = new Vector3();
+      this.actor.mesh.getWorldDirection(directionToPlayer);
+      this.raycaster.set(
+        this.actor.mesh.position,
+        directionToPlayer
+      );
     } else {
-      this.findPathToPlayer();
+      const directionToEntity =
+        this.directionToPoint(
+          new Vector2(
+            entity.actor.mesh.position.x,
+            entity.actor.mesh.position.z
+          )
+        );
+      this.raycaster.set(
+        this.actor.mesh.position,
+        directionToEntity
+      );
     }
+    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
+    const entityIndex = intersectObjects.findIndex(
+      intersect => intersect.object.uuid === entity.actor.mesh.uuid
+    );
+    if (entityIndex === 0) {
+      this.velocityToEntity(entity);
+    } else {
+      this.findPathToEntity(entity);
+    }
+  }
+
+  findEnemy() {
+    const entitiesInCantainer = this.container.entities;
+    const enemies = entitiesInCantainer.filter(entity =>
+      (entity.type === ENTITY_TYPE.ENEMY) &&
+      (!(<EnemyBehavior>entity.behavior).isParasite)
+    );
+    if (enemies.length === 0) {
+      this.stateMachine.doTransition('followPlayer');
+      return;
+    }
+    const enemyIndex = randomNumbers.getRandomInRange(0, enemies.length - 1);
+    const enemyTarget = enemies[enemyIndex];
+    if (!enemyTarget) {
+      return;
+    }
+    return enemyTarget;
   }
 
   updateWalkSprite(delta: number) {
@@ -285,15 +348,20 @@ export class EnemyBehavior implements Behavior {
     this.currentTitleDisplayTime = 0;
   }
 
-  getDistanceToPlayer() {
-    const diffX = this.actor.mesh.position.x - this.player.actor.mesh.position.x;
-    const diffZ = this.actor.mesh.position.z - this.player.actor.mesh.position.z;
+  getDistanceToEntity(entity: Entity) {
+    const diffX = this.actor.mesh.position.x - entity.actor.mesh.position.x;
+    const diffZ = this.actor.mesh.position.z - entity.actor.mesh.position.z;
     return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
 
   checkIsPlayerInAttackDistance() {
-    const distanceToPlayer = this.getDistanceToPlayer();
+    const distanceToPlayer = this.getDistanceToEntity(this.player);
     return distanceToPlayer <= ENEMY.ATTACK_DISTANCE;
+  }
+
+  checkIsEnemyInParasiteAttackDistance(enemy: Entity) {
+    const distanceToEnemy = this.getDistanceToEntity(enemy);
+    return distanceToEnemy <= ENEMY.ATTACK_DISTANCE_PARASITE;
   }
 
   update(delta: number) {
@@ -330,7 +398,30 @@ export class EnemyBehavior implements Behavior {
         );
         this.stateMachine.doTransition('dead');
         break;
+      case 'followingEnemy':
+        if (
+          !this.followingEnemy ||
+          !this.followingEnemy.hp
+        ) {
+          this.stateMachine.doTransition('searchEnemy');
+          break;
+        }
+        if (this.checkIsEnemyInParasiteAttackDistance(this.followingEnemy)) {
+          this.onCollide(this.followingEnemy);
+        }
+        break;
+      case 'searchingEnemy':
+        const enemyTarget = this.findEnemy();
+        if (!enemyTarget) {
+          break;
+        }
+        this.followingEnemy = enemyTarget;
+        this.stateMachine.doTransition('followEnemy');
+        break;
       case 'followingPlayer':
+        if (this.isParasite || this.isKamikaze) {
+          break;
+        }
         if (this.checkIsPlayerInAttackDistance()) {
           this.stateMachine.doTransition('attack');
           break;
@@ -389,12 +480,21 @@ export class EnemyBehavior implements Behavior {
       this.updateFollowPoint();
       return;
     }
+    this.velocityToPoint(this.followingPoint);
+  }
+
+  velocityToPoint(point: Vector2) {
+    const direction = this.directionToPoint(point);
+    this.velocity.copy(direction.multiplyScalar(this.walkSpeed));
+  }
+
+  directionToPoint(point: Vector2) {
     const direction = new Vector3(
-      this.followingPoint.x - this.actor.mesh.position.x,
+      point.x - this.actor.mesh.position.x,
       0,
-      this.followingPoint.y - this.actor.mesh.position.z,
-    ).normalize().multiplyScalar(ENEMY.WALK_SPEED);
-    this.velocity.copy(direction);
+      point.y - this.actor.mesh.position.z,
+    ).normalize();
+    return direction;
   }
 
   updateMovement(delta: number, state: string) {
@@ -405,10 +505,16 @@ export class EnemyBehavior implements Behavior {
         (state === 'followingPlayer') ||
         (state === 'attacking')
       ) {
-        this.moveToPlayer();
+        this.moveToEntity(this.player);
+      }
+      if (
+        (state === 'followingEnemy') &&
+        (this.followingEnemy)
+      ) {
+        this.moveToEntity(this.followingEnemy);
       }
     }
-    if (this.isKamikaze) {
+    if (this.isKamikaze || this.isParasite) {
       return;
     }
     this.timeoutsManager.updateTimeOut('strafe', delta);

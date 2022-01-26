@@ -19,7 +19,7 @@ export class Torch extends Entity {
       player: props.player
     });
     super(
-      ENTITY_TYPE.ENEMY,
+      ENTITY_TYPE.TORCH,
       actor,
       new TorchBehavior({ actor: actor })
     );

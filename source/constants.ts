@@ -40,16 +40,26 @@ export const enum ENTITY_TYPE {
   ENEMY = 'ENEMY',
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK',
+  TORCH = 'TORCH',
   TRIGGER = 'TRIGGER',
   GUN_PICK_UP = 'GUN_PICK_UP',
   ENEMY_SPAWNER = 'ENEMY_SPAWNER',
 };
 
 const DarkColor = new Color(0);
+const WhiteColor = new Color(255);
 
-const darker = (color: Color, factor: number) => {
-  const newColor = color.clone();
-  return newColor.lerp(DarkColor, factor);
+const lerpColor = (colorOriginal: Color, color: Color, factor: number) => {
+  const newColor = colorOriginal.clone();
+  return newColor.lerp(color, factor);
+};
+
+export const darker = (color: Color, factor: number) => {
+  return lerpColor(color, DarkColor, factor);
+};
+
+export const lighter = (color: Color, factor: number) => {
+  return lerpColor(color, WhiteColor, factor);
 };
 
 export const COLORS = {
@@ -71,6 +81,7 @@ export const ENEMY_COLORS = {
   Apathy: darker(new Color(2470578), enemyDarkerFactor),
   Cowardice: darker(new Color(6930959), enemyDarkerFactor),
   SP: darker(new Color(11646155), enemyDarkerFactor),
+  PARASITE_LIGHTER_FACTOR: 0.9,
 };
 
 const GAME_SPEED = 1100;
@@ -96,12 +107,16 @@ export const FLYING_ENEMY = {
 export const ENEMY = {
   WALK_SPEED: ENEMY_GAME_SPEED * 0.6,
   WALK_SPEED_KAMIKAZE: ENEMY_GAME_SPEED * 1.0,
+  WALK_SPEED_PARASITE: ENEMY_GAME_SPEED * 1.1,
   BULLET_SPEED: ENEMY_GAME_SPEED * 3.5,
   MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.1,
   KAMIKAZE_MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.04,
   HURT_TIME_OUT: 0.1,
   SHOOT_TIME_OUT: ENEMY_GAME_SPEED * 0.05,
   ATTACK_DISTANCE: BASE_DISTANCE,
+  ATTACK_DISTANCE_PARASITE: 2.5,
+  PARASITE_HP_BOOST_MIN: 1,
+  PARASITE_HP_BOOST_FACTOR: 0.5,
   DELAYS: {
     shoot: 0.7,
     gunpointStrafe: 0.5,
@@ -127,6 +142,7 @@ export const BOOMERANG = {
 export const enum ENTITY_MESSAGES {
   inPlayerGunpoint,
   boomerangReturned,
+  infestedByParasite,
 };
 
 export const gameTextures = {

@@ -11,12 +11,16 @@ interface EnemyApathyProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   isKamikaze?: boolean;
+  isParasite?: boolean;
 }
 
 export class EnemyApathy extends Enemy {
   constructor(props: EnemyApathyProps) {
-    const walkSpeed = props.isKamikaze ?
+    const walkSpeed =
+      props.isKamikaze ?
       ENEMY.WALK_SPEED_KAMIKAZE :
+      props.isParasite ?
+      ENEMY.WALK_SPEED_PARASITE :
       ENEMY.WALK_SPEED;
     super({
       ...props,

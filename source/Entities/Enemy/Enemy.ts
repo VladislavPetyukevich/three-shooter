@@ -1,6 +1,6 @@
 import { Vector3, AudioListener, Color } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
+import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
@@ -29,10 +29,13 @@ export interface EnemyProps {
     gunpointStrafe: number;
     strafe: number;
   };
+  isParasite?: boolean;
   isKamikaze?: boolean;
 }
 
 export class Enemy extends Entity {
+  hp: number;
+
   constructor(props: EnemyProps) {
     const velocity = new Vector3();
     const actor = new EnemyActor({
@@ -52,6 +55,7 @@ export class Enemy extends Entity {
         actor,
         audioListener: props.audioListener,
         isKamikaze: props.isKamikaze,
+        isParasite: props.isParasite,
         walkSpeed: props.walkSpeed,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
@@ -94,6 +98,13 @@ export class Enemy extends Entity {
     switch (message) {
       case ENTITY_MESSAGES.inPlayerGunpoint:
         (<EnemyBehavior>this.behavior).onPlayerGunpoint();
+        break;
+      case ENTITY_MESSAGES.infestedByParasite:
+        const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
+        this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
+        (<EnemyActor>this.actor).lerpColorLighter(
+          ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
+        );
         break;
       default:
         break;

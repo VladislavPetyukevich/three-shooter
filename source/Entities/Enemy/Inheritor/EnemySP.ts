@@ -11,12 +11,16 @@ interface EnemySPProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   isKamikaze?: boolean;
+  isParasite?: boolean;
 }
 
 export class EnemySP extends Enemy {
   constructor(props: EnemySPProps) {
-    const walkSpeed = props.isKamikaze ?
+    const walkSpeed =
+      props.isKamikaze ?
       ENEMY.WALK_SPEED_KAMIKAZE :
+      props.isParasite ?
+      ENEMY.WALK_SPEED_PARASITE :
       ENEMY.WALK_SPEED;
     super({
       ...props,
