@@ -1,11 +1,12 @@
 import { Vector3, AudioListener, Color } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS } from '@/constants';
+import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS, lighter } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 
 export interface EnemyTextures {
   walk1: string;
@@ -102,9 +103,15 @@ export class Enemy extends Entity {
       case ENTITY_MESSAGES.infestedByParasite:
         const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
         this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
-        (<EnemyActor>this.actor).lerpColorLighter(
+        const targetColor = lighter(
+          (<EnemyActor>this.actor).material.color,
           ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
         );
+        this.addAnimation(new SmoothColorChange({
+          actor: this.actor,
+          targetColor,
+          durationSeconds: 2,
+        }));
         break;
       default:
         break;

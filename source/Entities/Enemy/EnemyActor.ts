@@ -6,7 +6,6 @@ import { texturesStore } from '@/core/loaders/TextureLoader';
 import { SpriteSheet } from '@/SpriteSheet';
 import { easeInSine } from '@/EaseProgress';
 import { EaseColor } from '@/EaseColor';
-import { lighter } from '@/constants';
 
 interface ActorProps {
   position: { x: number; y: number; z: number };
@@ -51,13 +50,6 @@ export class EnemyActor implements Actor {
       transitionFunction: easeInSine,
     });
     this.isColorEaseActive = false;
-  }
-
-  lerpColorLighter(factor: number) {
-    const targetColor = lighter(this.material.color, factor);
-    this.easeColor.currentColor = this.material.color;
-    this.easeColor.targetColor = targetColor;
-    this.isColorEaseActive = true;
   }
 
   update(delta: number) {
