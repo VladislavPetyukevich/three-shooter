@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 const PATHS = {
   source: path.join(__dirname, 'source'),
@@ -10,27 +10,30 @@ const PATHS = {
 const developmentConfig = {
   mode: 'development',
   devServer: {
-    contentBase: PATHS.build,
+    static: {
+      directory: PATHS.build,
+    },
     port: 8080,
     hot: true
   },
+  optimization: {
+    moduleIds: 'named',
+  },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
 };
 
 const productionConfig = {
   mode: 'production',
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
-    }),
-    new UglifyJSPlugin(),
-  ]
+   optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        ecma: 5,
+      },
+    })],
+  },
 }
 
 const common = {
@@ -40,8 +43,10 @@ const common = {
   output: {
     path: PATHS.build,
     filename: 'bundle.js',
-    libraryTarget: 'umd',
-    library: 'ThreeShooter'
+    library: {
+      type: 'umd',
+      name: 'ThreeShooter',
+    },
   },
   resolve: {
     alias: {
@@ -49,15 +54,14 @@ const common = {
     },
     extensions: ['.js', '.ts'],
   },
+  devtool: 'source-map',
   module: {
     rules: [
-      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
+      { enforce: "pre", test: /\.js$/, use: ["source-map-loader"] },
       {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'awesome-typescript-loader'
-        },
+        use: 'ts-loader'
       },
       {
         test: /\.(gif|png|jpe?g|svg|mp3)$/i,
@@ -92,15 +96,14 @@ const common = {
 };
 
 module.exports = function (env) {
-  console.log('env: ', env);
-  if (env === 'development') {
+  if (env.development) {
     return Object.assign(
       {},
       common,
       developmentConfig
     );
   }
-  if (env === 'production') {
+  if (!env.development) {
     return Object.assign(
       {},
       common,
