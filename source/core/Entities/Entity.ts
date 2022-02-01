@@ -1,5 +1,6 @@
 import { Actor } from './Actor';
 import { Behavior } from './Behavior';
+import { ActorAnimator } from './ActorAnimator';
 import { Vector3 } from 'three';
 
 export class Entity {
@@ -9,12 +10,14 @@ export class Entity {
   hp?: number;
   velocity?: Vector3;
   isCollideTransparent: boolean;
+  animations: ActorAnimator[];
 
   constructor(type: string, actor: Actor, behavior: Behavior) {
     this.type = type;
     this.actor = actor;
     this.behavior = behavior;
     this.isCollideTransparent = false;
+    this.animations = [];
   }
 
   onHit(damage: number) {
@@ -35,8 +38,26 @@ export class Entity {
     this.actor.mesh.matrixAutoUpdate = !isEnabled;
   }
 
+  addAnimation(animation: ActorAnimator) {
+    this.animations.push(animation);
+  }
+
   update(delta: number) {
     this.actor.update(delta);
     this.behavior.update(delta);
+    if (this.animations.length !== 0) {
+      this.updateAnimations(delta);
+    }
+  }
+
+  updateAnimations(delta: number) {
+    const currentAnimation = this.animations[0];
+    if (!currentAnimation) {
+      return;
+    }
+    const isAnimationEnded = !currentAnimation.update(delta);
+    if (isAnimationEnded) {
+      this.animations.shift();
+    }
   }
 };
