@@ -14,7 +14,7 @@ interface DoorProps {
   size: { width: number; height: number; depth: number };
 }
 
-export class Door extends Entity {
+export class Door extends Entity<WallActor, DoorBehavior> {
   container: EntitiesContainer;
 
   constructor(props: DoorProps) {
@@ -56,11 +56,11 @@ export class Door extends Entity {
   }
 
   open() {
-    (<DoorBehavior>this.behavior).open();
+    this.behavior.open();
   }
 
   close() {
-    (<DoorBehavior>this.behavior).close();
+    this.behavior.close();
   }
 
   onOpen() {

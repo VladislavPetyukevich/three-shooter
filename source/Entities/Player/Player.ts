@@ -14,7 +14,7 @@ export interface PlayerProps {
   audioListener: AudioListener;
 }
 
-export class Player extends Entity {
+export class Player extends Entity<PlayerActor, СontrolledBehavior> {
   camera: Camera;
   container: EntitiesContainer;
   hp: number;
@@ -55,7 +55,7 @@ export class Player extends Entity {
     if (entity.type === ENTITY_TYPE.GUN_PICK_UP) {
       this.container.remove(entity.actor.mesh);
       const pickedGun = (<GunPickUp>entity).getGun();
-      (<СontrolledBehavior>this.behavior).addGun(pickedGun);
+      this.behavior.addGun(pickedGun);
     }
     return entity.type !== ENTITY_TYPE.WALL;
   }
@@ -68,13 +68,13 @@ export class Player extends Entity {
     if (this.hp <= 0) {
       this.isDead = true;
       this.cantMove();
-      (<СontrolledBehavior>this.behavior).onDeath();
+      this.behavior.onDeath();
       if (this.onDeathCallback) {
         this.onDeathCallback();
       }
       return;
     }
-    (<СontrolledBehavior>this.behavior).onHit();
+    this.behavior.onHit();
     if (this.onHitCallback) {
       this.onHitCallback();
     }
@@ -84,7 +84,7 @@ export class Player extends Entity {
   onMessage(message: ENTITY_MESSAGES) {
     switch(message) {
       case ENTITY_MESSAGES.boomerangReturned:
-        (<СontrolledBehavior>this.behavior).gunBoomerang.setIsCanShoot(true);
+        this.behavior.gunBoomerang.setIsCanShoot(true);
         break;
       default:
         break;
@@ -105,19 +105,18 @@ export class Player extends Entity {
   }
 
   canMove() {
-    (<СontrolledBehavior>this.behavior).isCanMove = true;
+    this.behavior.isCanMove = true;
   }
 
   cantMove() {
-    (<СontrolledBehavior>this.behavior).isCanMove = false;
+    this.behavior.isCanMove = false;
   }
 
   getGuns() {
-    return (<СontrolledBehavior>this.behavior).guns;
+    return this.behavior.guns;
   }
 
   onDestroy() {
-    console.log('player onDestroy');
-    (<СontrolledBehavior>this.behavior).onDestroy();
+    this.behavior.onDestroy();
   }
 }

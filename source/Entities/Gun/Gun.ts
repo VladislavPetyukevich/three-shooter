@@ -26,7 +26,7 @@ export interface GunProps {
   hudTextures?: GunHudTextures;
 }
 
-export class Gun extends Entity {
+export class Gun extends Entity<GunActor, GunBehavior> {
   hudTextures?: GunHudTextures;
 
   constructor(props: GunProps) {
@@ -48,41 +48,41 @@ export class Gun extends Entity {
       behavior
     );
     this.hudTextures = props.hudTextures;
-    (<GunBehavior>this.behavior).bulletPositionOffset = this.getBulletPosisionOffset(props.holderGeometry);
+    this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderGeometry);
   }
 
   checkIsRecoil() {
-    return (<GunBehavior>this.behavior).isShoot;
+    return this.behavior.isShoot;
   }
 
   setIsCanShoot(isCanShoot: boolean) {
-    (<GunBehavior>this.behavior).isShoot = !isCanShoot;
+    this.behavior.isShoot = !isCanShoot;
   }
 
   setIsInMove(isInMove: boolean) {
-    (<GunBehavior>this.behavior).isInMove = isInMove;
+    this.behavior.isInMove = isInMove;
   }
 
   shootRaycast() {
-    return (<GunBehavior>this.behavior).shootRaycast();
+    return this.behavior.shootRaycast();
   }
 
   shootBullet(bullet: typeof Bullet, additionalProps?: Record<string, any>) {
-    return (<GunBehavior>this.behavior).shootBullet(
+    return this.behavior.shootBullet(
       bullet, additionalProps
     );
   }
 
   releaseTrigger() {
-    (<GunBehavior>this.behavior).handleReleaseTrigger();
+    this.behavior.handleReleaseTrigger();
   }
 
   setRotationY(rotation: number) {
-    (<GunBehavior>this.behavior).setRotationY(rotation);
+    this.behavior.setRotationY(rotation);
   }
 
   setPosition(position: Vector3) {
-    (<GunBehavior>this.behavior).setPosition(position);
+    this.behavior.setPosition(position);
   }
 
   getHudTextures() {

@@ -34,7 +34,7 @@ export interface EnemyProps {
   isKamikaze?: boolean;
 }
 
-export class Enemy extends Entity {
+export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   hp: number;
 
   constructor(props: EnemyProps) {
@@ -72,18 +72,18 @@ export class Enemy extends Entity {
     }
     super.onHit(damage);
     if (this.hp > 0) {
-      if ((<EnemyBehavior>this.behavior).stateMachine.not('hurted')) {
-        (<EnemyBehavior>this.behavior).hurt();
+      if (this.behavior.stateMachine.not('hurted')) {
+        this.behavior.hurt();
       }
     } else {
-      if ((<EnemyBehavior>this.behavior).stateMachine.not('dead')) {
-        (<EnemyBehavior>this.behavior).death();
+      if (this.behavior.stateMachine.not('dead')) {
+        this.behavior.death();
       }
     }
   }
 
   onDeath(callback?: (enemy: Entity) => void) {
-    (<EnemyBehavior>this.behavior).onDeathCallback = () => {
+    this.behavior.onDeathCallback = () => {
       if (callback) {
         callback(this);
       }
@@ -91,20 +91,20 @@ export class Enemy extends Entity {
   }
 
   onCollide(entity: Entity) {
-    (<EnemyBehavior>this.behavior).onCollide(entity);
+    this.behavior.onCollide(entity);
     return false;
   }
 
   onMessage(message: ENTITY_MESSAGES) {
     switch (message) {
       case ENTITY_MESSAGES.inPlayerGunpoint:
-        (<EnemyBehavior>this.behavior).onPlayerGunpoint();
+        this.behavior.onPlayerGunpoint();
         break;
       case ENTITY_MESSAGES.infestedByParasite:
         const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
         this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
         const targetColor = lighter(
-          (<EnemyActor>this.actor).material.color,
+          this.actor.material.color,
           ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
         );
         this.addAnimation(new SmoothColorChange({

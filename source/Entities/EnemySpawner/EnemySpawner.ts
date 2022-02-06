@@ -14,7 +14,7 @@ interface EnemySpawnerProps {
   onDestroy: () => void;
 }
 
-export class EnemySpawner extends Entity {
+export class EnemySpawner extends Entity<EnemySpawnerActor, EnemySpawnerBehavior> {
   container: EntitiesContainer;
   onDestroyCallback: () => void;
 
@@ -37,7 +37,7 @@ export class EnemySpawner extends Entity {
     this.hp = 1;
     this.container = props.container;
     this.onDestroyCallback = props.onDestroy;
-    (<EnemySpawnerBehavior>this.behavior).onDestroy = this.onDestroy;
+    this.behavior.onDestroy = this.onDestroy;
   }
 
   onHit(damage: number) {
@@ -46,7 +46,7 @@ export class EnemySpawner extends Entity {
   }
 
   getNewSpawnPosition() {
-    return (<EnemySpawnerBehavior>this.behavior).getRandomNearPosition();
+    return this.behavior.getRandomNearPosition();
   }
 
   onDestroy = () => {

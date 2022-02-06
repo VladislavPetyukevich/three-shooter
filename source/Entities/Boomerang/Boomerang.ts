@@ -11,6 +11,9 @@ export interface BoomerangProps extends BulletProps {
 }
 
 export class Boomerang extends Bullet {
+  actor: BoomerangActor;
+  behavior: BoomerangBehavior;
+
   constructor(props: BoomerangProps) {
     super(props);
     this.velocity = new Vector3();
@@ -37,7 +40,7 @@ export class Boomerang extends Bullet {
     if (entity.type !== ENTITY_TYPE.PLAYER) {
       return true;
     }
-    if ((<BoomerangBehavior>this.behavior).currentPhase === 'flyBlackward') {
+    if (this.behavior.currentPhase === 'flyBlackward') {
       this.container.remove(this.actor.mesh);
       entity.onMessage(ENTITY_MESSAGES.boomerangReturned);
       return false;
