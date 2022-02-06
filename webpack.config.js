@@ -1,17 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const PATHS = {
   source: path.join(__dirname, 'source'),
-  build: path.join(__dirname, 'public')
+  public: path.join(__dirname, 'public'),
+  build: path.join(__dirname, 'build'),
 };
 
 const developmentConfig = {
   mode: 'development',
   devServer: {
     static: {
-      directory: PATHS.build,
+      directory: PATHS.public,
     },
     port: 8080,
     hot: true
@@ -26,7 +28,7 @@ const developmentConfig = {
 
 const productionConfig = {
   mode: 'production',
-   optimization: {
+  optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({
       terserOptions: {
@@ -34,6 +36,13 @@ const productionConfig = {
       },
     })],
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: PATHS.public, to: PATHS.build },
+      ],
+    }),
+  ],
 }
 
 const common = {

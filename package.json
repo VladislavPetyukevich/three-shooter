@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
+    "copy-webpack-plugin": "^10.2.4",
     "file-loader": "^6.2.0",
     "image-webpack-loader": "^8.1.0",
     "raw-loader": "^4.0.2",
