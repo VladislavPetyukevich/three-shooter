@@ -1,9 +1,8 @@
 import { Color, Material, MeshLambertMaterial } from 'three';
 import {
-  ActorAnimatorDurationBased
-} from '@/core/Entities/ActorAnimatorDurationBased';
+  ActorAnimatorEaseBased
+} from '@/Animations/ActorAnimatorEaseBased';
 import { Actor } from '@/core/Entities/Actor';
-import { EaseProgress } from '@/EaseProgress';
 
 export interface SmoothColorChangeProps {
   actor: Actor;
@@ -12,25 +11,22 @@ export interface SmoothColorChangeProps {
   transitionFunction?: (x: number) => number;
 }
 
-export class SmoothColorChange extends ActorAnimatorDurationBased {
+export class SmoothColorChange extends ActorAnimatorEaseBased {
   targetColor: SmoothColorChangeProps['targetColor'];
   materialColor: Color;
   originalColor: Color;
   currentColor: Color;
-  easeProgress: EaseProgress;
 
   constructor(props: SmoothColorChangeProps) {
-    super(props.actor, props.durationSeconds);
+    super({
+      actor: props.actor,
+      durationSeconds: props.durationSeconds,
+      transitionFunction: props.transitionFunction,
+    });
     this.targetColor = props.targetColor;
     this.materialColor = this.getMaterialColor(this.getActorMaterial());
     this.originalColor = this.materialColor.clone();
     this.currentColor = this.materialColor;
-    this.easeProgress = new EaseProgress({
-      minValue: 0,
-      maxValue: 1,
-      progressSpeed: 1 / this.durationSeconds,
-      transitionFunction: props.transitionFunction,
-    });
   }
 
   getActorMaterial() {
@@ -60,7 +56,6 @@ export class SmoothColorChange extends ActorAnimatorDurationBased {
   }
 
   update(delta: number) {
-    this.easeProgress.updateProgress(delta);
     this.materialColor = this.getColor();
     return super.update(delta);
   }
