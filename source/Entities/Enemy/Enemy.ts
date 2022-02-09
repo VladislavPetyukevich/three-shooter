@@ -7,6 +7,7 @@ import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
+import { JumpAnimation } from '@/Animations/JumpAnimation';
 
 export interface EnemyTextures {
   walk1: string;
@@ -35,7 +36,10 @@ export interface EnemyProps {
 }
 
 export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
+  container: EntitiesContainer;
   hp: number;
+  isDead: boolean;
+  onDeathCallback?: (entity: Enemy) => void;
 
   constructor(props: EnemyProps) {
     const velocity = new Vector3();
@@ -62,8 +66,13 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         delays: props.delays,
       })
     );
+    this.container = props.container;
     this.hp = props.hp;
     this.velocity = velocity;
+    this.isDead = false;
+    this.behavior.onDeathCallback = () => {
+      this.handleDeath();
+    };
   }
 
   onHit(damage: number) {
@@ -82,12 +91,18 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     }
   }
 
-  onDeath(callback?: (enemy: Entity) => void) {
-    this.behavior.onDeathCallback = () => {
-      if (callback) {
-        callback(this);
-      }
-    };
+  onDeath(callback: Enemy['onDeathCallback']) {
+    this.onDeathCallback = callback;
+  }
+
+  handleDeath() {
+    this.isDead = true;
+    this.animations = [];
+    this.addAnimation(new JumpAnimation({
+      actor: this.actor,
+      jumpHeight: 0.7,
+      durationSeconds: 0.43,
+    }));
   }
 
   onCollide(entity: Entity) {
@@ -115,6 +130,13 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         break;
       default:
         break;
+    }
+  }
+
+  update(delta: number) {
+    super.update(delta);
+    if (this.isDead && this.animations.length === 0) {
+      this.container.remove(this.actor.mesh);
     }
   }
 }
