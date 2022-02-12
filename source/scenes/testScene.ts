@@ -22,6 +22,7 @@ import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
 import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
+import { EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
 import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
 import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
 import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
@@ -875,12 +876,11 @@ export class TestScene extends BasicScene {
   getEnemy(
     coordinates: Vector2,
     roomType: RoomType,
-    modifiers?: { isKamikaze?: boolean },
+    behaviorModifier?: EnemyBehaviorModifier,
   ) {
-    const isKamikaze = modifiers && modifiers.isKamikaze;
     const props = {
       ...this.getEnemyProps(coordinates),
-      ...(isKamikaze && { isKamikaze })
+      behaviorModifier,
     };
     switch (roomType) {
       case RoomType.Apathy:
@@ -903,7 +903,7 @@ export class TestScene extends BasicScene {
     return this.getEnemy(
       coordinates,
       roomType,
-      { isKamikaze: true}
+      EnemyBehaviorModifier.kamikaze,
     );
   }
 

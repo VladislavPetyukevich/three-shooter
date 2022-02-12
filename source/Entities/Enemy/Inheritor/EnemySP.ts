@@ -1,4 +1,5 @@
 import { AudioListener } from 'three';
+import { EnemyBehaviorModifier } from '../Enemy';
 import { EnemyWithModifiers } from './EnemyWithModifiers';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { Player } from '@/Entities/Player/Player';
@@ -10,8 +11,7 @@ interface EnemySPProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  isKamikaze?: boolean;
-  isParasite?: boolean;
+  behaviorModifier?: EnemyBehaviorModifier;
 }
 
 export class EnemySP extends EnemyWithModifiers {
@@ -32,7 +32,6 @@ export class EnemySP extends EnemyWithModifiers {
         ...ENEMY.DELAYS,
         strafe: ENEMY.DELAYS.strafe * 0.7,
       },
-      isKamikaze: props.isKamikaze,
     });
   }
 }

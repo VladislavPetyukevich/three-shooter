@@ -1,4 +1,4 @@
-import { Enemy, EnemyProps } from '../Enemy';
+import { Enemy, EnemyProps, EnemyBehaviorModifier } from '../Enemy';
 
 export interface EnemyWithModifiersProps extends EnemyProps {
   walkSpeedFactors: {
@@ -10,9 +10,9 @@ export interface EnemyWithModifiersProps extends EnemyProps {
 export class EnemyWithModifiers extends Enemy {
   constructor(props: EnemyWithModifiersProps) {
     const walkSpeedFactor =
-      props.isKamikaze ?
+      props.behaviorModifier === EnemyBehaviorModifier.kamikaze ?
       props.walkSpeedFactors.kamikaze:
-      props.isParasite ?
+      props.behaviorModifier === EnemyBehaviorModifier.parasite ?
       props.walkSpeedFactors.parasite:
       1;
     super({

@@ -1,4 +1,5 @@
 import { AudioListener } from 'three';
+import { EnemyBehaviorModifier } from '../Enemy';
 import { EnemyWithModifiers } from './EnemyWithModifiers';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
@@ -10,8 +11,7 @@ interface EnemyApathyProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  isKamikaze?: boolean;
-  isParasite?: boolean;
+  behaviorModifier?: EnemyBehaviorModifier;
 }
 
 export class EnemyCowardice extends EnemyWithModifiers {
@@ -32,7 +32,6 @@ export class EnemyCowardice extends EnemyWithModifiers {
         ...ENEMY.DELAYS,
         gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
       },
-      isKamikaze: props.isKamikaze,
     });
   }
 }

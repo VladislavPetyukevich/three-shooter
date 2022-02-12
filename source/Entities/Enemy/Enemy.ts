@@ -15,6 +15,11 @@ export interface EnemyTextures {
   death: string;
 }
 
+export const enum EnemyBehaviorModifier {
+  kamikaze,
+  parasite,
+}
+
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
@@ -31,8 +36,7 @@ export interface EnemyProps {
     gunpointStrafe: number;
     strafe: number;
   };
-  isParasite?: boolean;
-  isKamikaze?: boolean;
+  behaviorModifier?: EnemyBehaviorModifier;
 }
 
 export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
@@ -59,8 +63,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         velocity,
         actor,
         audioListener: props.audioListener,
-        isKamikaze: props.isKamikaze,
-        isParasite: props.isParasite,
+        behaviorModifier: props.behaviorModifier,
         walkSpeed: props.walkSpeed,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,

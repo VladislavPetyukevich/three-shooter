@@ -4,6 +4,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
+import { EnemyBehaviorModifier } from './Enemy';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Gun } from '@/Entities/Gun/Gun';
@@ -19,8 +20,7 @@ interface BehaviorProps {
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  isKamikaze?: boolean;
-  isParasite?: boolean;
+  behaviorModifier?: EnemyBehaviorModifier;
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
@@ -100,8 +100,8 @@ export class EnemyBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
-    this.isKamikaze = !!props.isKamikaze;
-    this.isParasite = !!props.isParasite;
+    this.isKamikaze = props.behaviorModifier === EnemyBehaviorModifier.kamikaze;
+    this.isParasite = props.behaviorModifier === EnemyBehaviorModifier.parasite;
     this.stateMachine = new StateMachine({
       initialState: this.isParasite ?
         'searchingEnemy' :
