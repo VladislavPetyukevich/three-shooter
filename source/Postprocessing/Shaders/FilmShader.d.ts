@@ -10,6 +10,7 @@ export const FilmShader: {
     sIntensity: Uniform;
     sCount: Uniform;
     grayscale: Uniform;
+    cThreshold: Uniform;
   };
   vertexShader: string;
   fragmentShader: string;

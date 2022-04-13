@@ -9,7 +9,7 @@ import {
 import { Pass } from "./Pass";
 import { FilmShader } from "./Shaders/FilmShader";
 
-var FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale ) {
+var FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale, colorThreshold ) {
 
 	Pass.call( this );
 
@@ -32,6 +32,7 @@ var FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, gr
 	if ( noiseIntensity !== undefined ) this.uniforms.nIntensity.value = noiseIntensity;
 	if ( scanlinesIntensity !== undefined ) this.uniforms.sIntensity.value = scanlinesIntensity;
 	if ( scanlinesCount !== undefined ) this.uniforms.sCount.value = scanlinesCount;
+  if ( colorThreshold !== undefined ) this.uniforms.cThreshold.value = colorThreshold;
 
 	this.fsQuad = new Pass.FullScreenQuad( this.material );
 

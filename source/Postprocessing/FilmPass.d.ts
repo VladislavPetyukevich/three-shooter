@@ -6,7 +6,7 @@ import {
 import { Pass } from './Pass';
 
 export class FilmPass extends Pass {
-  constructor(noiseIntensity?: number, scanlinesIntensity?: number, scanlinesCount?: number, grayscale?: number);
+  constructor(noiseIntensity?: number, scanlinesIntensity?: number, scanlinesCount?: number, grayscale?: number, colorThreshold?: number);
   uniforms: object;
   material: ShaderMaterial;
   fsQuad: object;

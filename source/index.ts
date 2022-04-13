@@ -175,7 +175,7 @@ export default class ThreeShooter {
     this.composer.addPass(this.effectColorCorrection);
     this.onUpdateMindState();
 
-    const effectFilm = new FilmPass(0.15, 0.015, 648, 0);
+    const effectFilm = new FilmPass(0.15, 0.015, 648, 0, 0.08);
     this.composer.addPass(effectFilm);
   }
 

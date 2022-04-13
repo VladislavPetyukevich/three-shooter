@@ -31,7 +31,8 @@ var FilmShader = {
 		"nIntensity": { value: 0.5 },
 		"sIntensity": { value: 0.05 },
 		"sCount": { value: 4096 },
-		"grayscale": { value: 1 }
+		"grayscale": { value: 1 },
+		"cThreshold": { value: 0.0 },
 
 	},
 
@@ -66,6 +67,8 @@ var FilmShader = {
 		// scanlines effect count value (0 = no effect, 4096 = full effect)
 		"uniform float sCount;",
 
+		"uniform float cThreshold;",
+
 		"uniform sampler2D tDiffuse;",
 
 		"varying vec2 vUv;",
@@ -89,6 +92,11 @@ var FilmShader = {
 
 			// interpolate between source and result by intensity
 			"cResult = cTextureScreen.rgb + clamp( nIntensity, 0.0,1.0 ) * ( cResult - cTextureScreen.rgb );",
+
+      "vec3 threshold = vec3(cThreshold, cThreshold, cThreshold);",
+			"if (all(lessThan(cResult, threshold))) {",
+        "cResult = vec3(0.0, 0.0, 0.0);",
+      "}",
 
 			// convert to grayscale if desired
 			"if( grayscale ) {",
