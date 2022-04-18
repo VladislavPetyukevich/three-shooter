@@ -74,7 +74,7 @@ export class HUD {
     return {
       sinTable: sinTable,
       currentSinValue: sinTable.getNextSinValue(),
-      timeoutsManager: new TimeoutsManager({ bob: 0.001 }),
+      timeoutsManager: new TimeoutsManager({ bob: 0.021 }),
     };
   }
 
