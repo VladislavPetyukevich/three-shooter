@@ -67,7 +67,7 @@ class PlayerActions {
   }
 
   getCameraMovement() {
-    return this.cameraMovementX;
+    return Number(this.cameraMovementX);
   }
 
   resetCameraMovement() {
