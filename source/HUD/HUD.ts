@@ -17,6 +17,10 @@ export class HUD {
   isRunning: boolean;
   spriteSheet?: SpriteSheet;
   gun: Sprite;
+  gunTargetX: number;
+  gunCurrX: number;
+  gunShiftAmplitude: number;
+  gunShiftSpeed: number;
   gunHudTextures?: GunHudTextures;
   nextGunHudTextures?: GunHudTextures;
   gunSpriteHeight: number;
@@ -40,6 +44,10 @@ export class HUD {
     this.visible = false;
 
     this.gun = new Sprite();
+    this.gunTargetX = 0;
+    this.gunCurrX = 0;
+    this.gunShiftAmplitude = 600;
+    this.gunShiftSpeed = 10;
     this.gunSpriteHeight = 0;
     this.damageOverlay = new Sprite();
     this.maxHp = PLAYER.HP;
@@ -152,7 +160,7 @@ export class HUD {
     const gunScale = height * 0.75;
     this.gunSpriteHeight = -height + gunScale / 2;
     this.gun.scale.set(gunScale, gunScale, 1);
-    this.gun.position.set(0.5, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
+    this.gun.position.set(0, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(
@@ -178,19 +186,36 @@ export class HUD {
     this.gun.position.y = this.gunSpriteHeight + translateY;
   }
 
+  addGunShiftX(shiftX: number) {
+    this.gunTargetX -= shiftX * this.gunShiftAmplitude;
+  }
+
   update(delta: number) {
     let currentGunTranslateY = -this.bobState.currentSinValue;
     if (this.isGunSwitchAnimationStarted) {
       currentGunTranslateY += this.swithGunAnimationProgress?.getCurrentProgress() || 0;
-      this.updateGunSwithAnimation(delta);
+      this.updateGunSwitchAnimation(delta);
     }
     if (this.isRunning) {
       this.updateGunBob(delta);
     }
     this.setGunTranslateY(currentGunTranslateY);
+
+    const gunTargetX = Number(this.gunTargetX);
+    this.gunTargetX = this.lerp(
+      gunTargetX,
+      0,
+      delta * this.gunShiftSpeed
+    );
+    const currShiftX = this.lerp(
+      this.gunCurrX,
+      gunTargetX,
+      delta * this.gunShiftSpeed
+    );
+    this.gun.position.x = currShiftX;
   }
 
-  updateGunSwithAnimation(delta: number) {
+  updateGunSwitchAnimation(delta: number) {
     if (this.swithGunAnimationProgress?.checkIsProgressCompelete()) {
       this.updateCompleteGunSwitchAnimation();
       return;

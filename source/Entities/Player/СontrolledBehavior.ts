@@ -376,9 +376,10 @@ export class СontrolledBehavior implements Behavior {
   updateCamera() {
     const cameraMovement = playerActions.getCameraMovement();
     if (cameraMovement) {
+      hud.addGunShiftX(cameraMovement);
       this.camera.rotation.y -= cameraMovement;
+      playerActions.resetCameraMovement();
     }
-    playerActions.resetCameraMovement();
     this.camera.position.x = this.actor.mesh.position.x;
     this.camera.position.z = this.actor.mesh.position.z;
   }
