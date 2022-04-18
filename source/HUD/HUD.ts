@@ -18,6 +18,7 @@ export class HUD {
   spriteSheet?: SpriteSheet;
   gun: Sprite;
   gunTargetX: number;
+  gunXMax: number;
   gunCurrX: number;
   gunShiftAmplitude: number;
   gunShiftSpeed: number;
@@ -48,6 +49,7 @@ export class HUD {
     this.gunCurrX = 0;
     this.gunShiftAmplitude = 600;
     this.gunShiftSpeed = 10;
+    this.gunXMax = 1300;
     this.gunSpriteHeight = 0;
     this.damageOverlay = new Sprite();
     this.maxHp = PLAYER.HP;
@@ -190,6 +192,16 @@ export class HUD {
     this.gunTargetX -= shiftX * this.gunShiftAmplitude;
   }
 
+  getGunTargetX() {
+    const gunTargetX = Number(this.gunTargetX);
+    if (gunTargetX > this.gunXMax) {
+      return this.gunXMax;
+    } else if (gunTargetX < -this.gunXMax) {
+      return -this.gunXMax;
+    }
+    return gunTargetX;
+  }
+
   update(delta: number) {
     let currentGunTranslateY = -this.bobState.currentSinValue;
     if (this.isGunSwitchAnimationStarted) {
@@ -201,7 +213,7 @@ export class HUD {
     }
     this.setGunTranslateY(currentGunTranslateY);
 
-    const gunTargetX = Number(this.gunTargetX);
+    const gunTargetX = this.getGunTargetX();
     this.gunTargetX = this.lerp(
       gunTargetX,
       0,
