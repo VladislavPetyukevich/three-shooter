@@ -43,7 +43,7 @@ var FilmShader = {
 		"void main() {",
 
 			"vUv = uv;",
-			"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+			"gl_Position = projectionMatrix * vec4(0.7, 1.0, 1.0, 0.9) * modelViewMatrix * vec4( position, 1.0 );",
 
 		"}"
 
