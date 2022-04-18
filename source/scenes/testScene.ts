@@ -167,8 +167,8 @@ export class TestScene extends BasicScene {
     );
     this.scene.add(this.ambientLight);
     const pointLightColor = 0xFFFFFF;
-    const pointLightIntensity = 30;
-    const pointLightDistance = 100;
+    const pointLightIntensity = 110;
+    const pointLightDistance = 130;
     this.pointLight = new PointLight(
       pointLightColor,
       pointLightIntensity,
