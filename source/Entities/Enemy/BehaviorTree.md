@@ -7,4 +7,6 @@ flowchart TD
     A --False--> followPlayer
 
     B --> Strafe
+
+    B --> C[Gunpoint strafe]
 ```

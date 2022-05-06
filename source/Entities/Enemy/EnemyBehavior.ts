@@ -141,8 +141,9 @@ export class EnemyBehavior implements Behavior {
       nodeFalse: (delta: number) => this.followPlayer(delta),
     };
     const strafe = (delta: number) => this.strafe(delta);
+    const gunpointStrafe = (delta: number) => this.updateGunpointReaction(delta);
     const mainSeq = {
-      sequence: [hurtNode, attackCond, strafe]
+      sequence: [hurtNode, attackCond, strafe, gunpointStrafe]
     };
     this.behaviorTree = new BehaviorTree(mainSeq);
   }
@@ -588,18 +589,19 @@ export class EnemyBehavior implements Behavior {
 
   updateGunpointReaction(delta: number) {
     if (!this.isGunpointTriggered) {
-      return;
+      return true;
     }
     this.timeoutsManager.updateTimeOut('gunpointStrafe', delta);
     if (!this.timeoutsManager.checkIsTimeOutExpired('gunpointStrafe')) {
-      return;
+      return true;
     }
     this.isGunpointTriggered = false;
     if (!this.isOnGunpointCurrent) {
-      return;
+      return true;
     }
     this.isOnGunpointCurrent = false;
     this.randomStrafe(this.strafeAngleHigh);
+    return true;
   }
 
   updateHurt() {
