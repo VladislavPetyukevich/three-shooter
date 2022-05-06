@@ -138,7 +138,7 @@ export class EnemyBehavior implements Behavior {
     const attackCond = {
       condition: () => this.checkIsPlayerInAttackDistance(),
       nodeTrue: (delta: number) => this.attackPlayer(delta),
-      nodeFalse: () => this.followPlayer(),
+      nodeFalse: (delta: number) => this.followPlayer(delta),
     };
     const strafe = (delta: number) => this.strafe(delta);
     const mainSeq = {
@@ -523,7 +523,11 @@ export class EnemyBehavior implements Behavior {
     return direction;
   }
 
-  followPlayer() {
+  followPlayer(delta: number) {
+    this.timeoutsManager.updateTimeOut('movement', delta);
+    if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
+      return true;
+    }
     this.moveToEntity(this.player);
     return true;
   }
