@@ -8,14 +8,21 @@ interface SpriteSheetProps {
 export class SpriteSheet {
   textures: Texture[];
   material: MeshPhongMaterial | MeshBasicMaterial | SpriteMaterial;
+  currentIndex: number;
 
   constructor(props: SpriteSheetProps) {
     this.textures = props.textures;
     this.material = props.material;
-    this.material.map = this.textures[0];
+    this.currentIndex = 0;
+    this.displayCurrentSprite();
   }
 
   displaySprite(spriteNumber: number) {
-    this.material.map = this.textures[spriteNumber];
+    this.currentIndex = spriteNumber;
+    this.displayCurrentSprite();
+  }
+
+  displayCurrentSprite() {
+    this.material.map = this.textures[this.currentIndex];
   }
 }

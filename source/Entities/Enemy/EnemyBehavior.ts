@@ -2,6 +2,7 @@ import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'thr
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
+import { BehaviorTree } from './BehaviorTree';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EnemyBehaviorModifier } from './Enemy';
@@ -60,11 +61,13 @@ export class EnemyBehavior implements Behavior {
   currentBulletsToShoot: number;
   shootSound: PositionalAudio;
   stateMachine: StateMachine;
+  isHurt: boolean;
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   isKamikaze: boolean;
   isParasite: boolean;
+  behaviorTree: BehaviorTree;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -117,6 +120,7 @@ export class EnemyBehavior implements Behavior {
         { name: 'followEnemy', from: 'searchingEnemy', to: 'followingEnemy' }
       ]
     });
+    this.isHurt = false;
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
     const timeoutValues = {
@@ -129,6 +133,18 @@ export class EnemyBehavior implements Behavior {
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
+
+    const hurtNode = () => this.updateHurt();
+    const attackCond = {
+      condition: () => this.checkIsPlayerInAttackDistance(),
+      nodeTrue: (delta: number) => this.attackPlayer(delta),
+      nodeFalse: () => this.followPlayer(),
+    };
+    const strafe = (delta: number) => this.strafe(delta);
+    const mainSeq = {
+      sequence: [hurtNode, attackCond, strafe]
+    };
+    this.behaviorTree = new BehaviorTree(mainSeq);
   }
 
   spawnSound(audioListener: AudioListener) {
@@ -157,6 +173,17 @@ export class EnemyBehavior implements Behavior {
 
   death() {
     this.stateMachine.doTransition('death');
+  }
+
+  onHit() {
+    this.isHurt = true;
+    this.backupVelocity.copy(this.velocity);
+    this.velocity.set(0, 0, 0);
+  }
+
+  onHurtEnd() {
+    this.isHurt = false;
+    this.velocity.copy(this.backupVelocity);
   }
 
   randomMovement() {
@@ -328,6 +355,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateWalkSprite(delta: number) {
+    if (this.isHurt) {
+      return;
+    }
     if (this.stateMachine.is('dies')) {
       return;
     }
@@ -356,94 +386,106 @@ export class EnemyBehavior implements Behavior {
     return distanceToEnemy <= ENEMY.ATTACK_DISTANCE_PARASITE;
   }
 
+  attackPlayer(delta: number) {
+    this.timeoutsManager.updateTimeOut('shoot', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
+      this.shoot();
+    }
+    return true;
+  }
+
   update(delta: number) {
     this.gun.setRotationY(this.actor.mesh.rotation.y);
     this.gun.setPosition(this.actor.mesh.position);
     this.gun.update(delta);
-    if (this.followingPath.length !== 0) {
-      this.updateFollowPath();
-    }
-    const currentState = this.stateMachine.state();
-    if (
-      (currentState !== 'dies') &&
-      (currentState !== 'died')
-    ) {
-      this.updateMovement(delta, currentState);
-      this.updateShoot(delta);
-    }
-    switch (currentState) {
-      case 'died':
-        break;
-      case 'dies':
-        this.velocity.set(0, 0, 0);
-        this.actor.spriteSheet.displaySprite(2);
-        if (this.onDeathCallback) {
-          this.onDeathCallback();
-        }
-        this.stateMachine.doTransition('dead');
-        break;
-      case 'followingEnemy':
-        if (
-          !this.followingEnemy ||
-          !this.followingEnemy.hp
-        ) {
-          this.stateMachine.doTransition('searchEnemy');
-          break;
-        }
-        if (this.checkIsEnemyInParasiteAttackDistance(this.followingEnemy)) {
-          this.onCollide(this.followingEnemy);
-        }
-        break;
-      case 'searchingEnemy':
-        const enemyTarget = this.findEnemy();
-        if (!enemyTarget) {
-          break;
-        }
-        this.followingEnemy = enemyTarget;
-        this.stateMachine.doTransition('followEnemy');
-        break;
-      case 'followingPlayer':
-        if (this.isParasite || this.isKamikaze) {
-          break;
-        }
-        if (this.checkIsPlayerInAttackDistance()) {
-          this.stateMachine.doTransition('attack');
-          break;
-        }
-        break;
-      case 'attacking':
-        if (this.isKamikaze) {
-          this.stateMachine.doTransition('followPlayer');
-          break;
-        }
-        if (!this.checkIsPlayerInAttackDistance()) {
-          this.actor.spriteSheet.displaySprite(1);
-          this.stateMachine.doTransition('followPlayer');
-          break;
-        }
-        this.timeoutsManager.updateTimeOut('shoot', delta);
-        if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
-          this.shoot();
-        }
-        break;
-      case 'hurting':
-        this.backupVelocity.copy(this.velocity);
-        this.velocity.set(0, 0, 0);
-        this.actor.spriteSheet.displaySprite(2);
-        this.stateMachine.doTransition('hurts');
-        break;
-      case 'hurted':
-        this.timeoutsManager.updateTimeOut('hurt', delta);
-        if (this.timeoutsManager.checkIsTimeOutExpired('hurt')) {
-          this.velocity.copy(this.backupVelocity);
-          this.actor.spriteSheet.displaySprite(0);
-          this.stateMachine.doTransition('attack');
-        }
-        break;
-      default:
-        break;
-    }
+    this.behaviorTree.update(delta);
+    this.updateWalkSprite(delta);
+    this.updateShoot(delta);
     this.timeoutsManager.updateExpiredTimeOuts();
+    // if (this.followingPath.length !== 0) {
+    //   this.updateFollowPath();
+    // }
+    // const currentState = this.stateMachine.state();
+    // if (
+    //   (currentState !== 'dies') &&
+    //   (currentState !== 'died')
+    // ) {
+    //   this.updateMovement(delta, currentState);
+    //   this.updateShoot(delta);
+    // }
+    // switch (currentState) {
+    //   case 'died':
+    //     break;
+    //   case 'dies':
+    //     this.velocity.set(0, 0, 0);
+    //     this.actor.spriteSheet.displaySprite(2);
+    //     if (this.onDeathCallback) {
+    //       this.onDeathCallback();
+    //     }
+    //     this.stateMachine.doTransition('dead');
+    //     break;
+    //   case 'followingEnemy':
+    //     if (
+    //       !this.followingEnemy ||
+    //       !this.followingEnemy.hp
+    //     ) {
+    //       this.stateMachine.doTransition('searchEnemy');
+    //       break;
+    //     }
+    //     if (this.checkIsEnemyInParasiteAttackDistance(this.followingEnemy)) {
+    //       this.onCollide(this.followingEnemy);
+    //     }
+    //     break;
+    //   case 'searchingEnemy':
+    //     const enemyTarget = this.findEnemy();
+    //     if (!enemyTarget) {
+    //       break;
+    //     }
+    //     this.followingEnemy = enemyTarget;
+    //     this.stateMachine.doTransition('followEnemy');
+    //     break;
+    //   case 'followingPlayer':
+    //     if (this.isParasite || this.isKamikaze) {
+    //       break;
+    //     }
+    //     if (this.checkIsPlayerInAttackDistance()) {
+    //       this.stateMachine.doTransition('attack');
+    //       break;
+    //     }
+    //     break;
+    //   case 'attacking':
+    //     if (this.isKamikaze) {
+    //       this.stateMachine.doTransition('followPlayer');
+    //       break;
+    //     }
+    //     if (!this.checkIsPlayerInAttackDistance()) {
+    //       this.actor.spriteSheet.displaySprite(1);
+    //       this.stateMachine.doTransition('followPlayer');
+    //       break;
+    //     }
+    //     this.timeoutsManager.updateTimeOut('shoot', delta);
+    //     if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
+    //       this.shoot();
+    //     }
+    //     break;
+    //   case 'hurting':
+    //     this.backupVelocity.copy(this.velocity);
+    //     this.velocity.set(0, 0, 0);
+    //     this.actor.spriteSheet.displaySprite(2);
+    //     this.stateMachine.doTransition('hurts');
+    //     break;
+    //   case 'hurted':
+    //     this.timeoutsManager.updateTimeOut('hurt', delta);
+    //     if (this.timeoutsManager.checkIsTimeOutExpired('hurt')) {
+    //       this.velocity.copy(this.backupVelocity);
+    //       this.actor.spriteSheet.displaySprite(0);
+    //       this.stateMachine.doTransition('attack');
+    //     }
+    //     break;
+    //   default:
+    //     break;
+    // }
+    // this.timeoutsManager.updateExpiredTimeOuts();
   }
 
   updateFollowPoint() {
@@ -481,6 +523,19 @@ export class EnemyBehavior implements Behavior {
     return direction;
   }
 
+  followPlayer() {
+    this.moveToEntity(this.player);
+    return true;
+  }
+
+  strafe(delta: number) {
+    this.timeoutsManager.updateTimeOut('strafe', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('strafe')) {
+      this.randomStrafe(this.strafeAngleLow);
+    }
+    return true;
+  }
+
   updateMovement(delta: number, state: string) {
     this.updateWalkSprite(delta);
     this.timeoutsManager.updateTimeOut('movement', delta);
@@ -514,6 +569,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateShoot(delta: number) {
+    if (this.isHurt) {
+      return;
+    }
     if (this.currentBulletsToShoot === 0) {
       return;
     }
@@ -538,6 +596,13 @@ export class EnemyBehavior implements Behavior {
     }
     this.isOnGunpointCurrent = false;
     this.randomStrafe(this.strafeAngleHigh);
+  }
+
+  updateHurt() {
+    if (!this.isHurt) {
+      return true;
+    }
+    return false;
   }
 }
 

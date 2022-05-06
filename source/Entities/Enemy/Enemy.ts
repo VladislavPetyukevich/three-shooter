@@ -8,6 +8,7 @@ import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { JumpAnimation } from '@/Animations/JumpAnimation';
+import { HurtAnimation } from '@/Animations/HurtAnimation';
 
 export interface EnemyTextures {
   walk1: string;
@@ -79,20 +80,27 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   }
 
   onHit(damage: number) {
-    if (typeof this.hp !== 'number') {
+    if (this.isDead) {
       return;
     }
     super.onHit(damage);
-    if (this.hp > 0) {
-      if (this.behavior.stateMachine.not('hurted')) {
-        this.behavior.hurt();
-      }
-    } else {
-      if (this.behavior.stateMachine.not('dead')) {
-        this.behavior.death();
-      }
+    this.behavior.onHit();
+    if (this.hp <= 0) {
+      this.handleDeath();
+    } else if (!this.behavior.isHurt) {
+      this.animations = [];
+      this.addAnimation(new HurtAnimation({
+        actor: this.actor,
+        durationSeconds: ENEMY.HURT_TIME_OUT,
+        hurtSpriteIndex: 2,
+        onEnd: () => this.onHurtEnd(),
+      }));
     }
   }
+
+  onHurtEnd() {
+    this.behavior.onHurtEnd();
+  };
 
   onDeath(callback: Enemy['onDeathCallback']) {
     this.onDeathCallback = callback;
