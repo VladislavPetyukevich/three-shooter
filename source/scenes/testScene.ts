@@ -22,6 +22,7 @@ import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
 import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
+import { basicEnemySeq, kamikazeEnemySeq } from '@/Entities/Enemy/Inheritor/BasicEnemyBehaviorTree';
 import { EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
 import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
 import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
@@ -878,8 +879,15 @@ export class TestScene extends BasicScene {
     roomType: RoomType,
     behaviorModifier?: EnemyBehaviorModifier,
   ) {
+    const isKamikaze =
+      behaviorModifier === EnemyBehaviorModifier.kamikaze;
+
+    const behaviorTreeRoot = isKamikaze ? kamikazeEnemySeq : basicEnemySeq;
+    const onHitDamage = isKamikaze ? 1 : 0;
     const props = {
       ...this.getEnemyProps(coordinates),
+      onHitDamage,
+      behaviorTreeRoot,
       behaviorModifier,
     };
     switch (roomType) {

@@ -4,7 +4,7 @@ import { EnemyWithModifiers } from './EnemyWithModifiers';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { basicEnemySeq } from './BasicEnemyBehaviorTree';
+import { BehaviorTreeNode } from '@/Entities/Enemy/BehaviorTree';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemyApathyProps {
@@ -12,6 +12,8 @@ interface EnemyApathyProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  behaviorTreeRoot: BehaviorTreeNode;
+  onHitDamage: number;
   behaviorModifier?: EnemyBehaviorModifier;
 }
 
@@ -33,7 +35,6 @@ export class EnemyApathy extends EnemyWithModifiers {
         ...ENEMY.DELAYS,
         shoot: ENEMY.DELAYS.shoot * 0.7
       },
-      behaviorTreeRoot: basicEnemySeq,
     });
   }
 }

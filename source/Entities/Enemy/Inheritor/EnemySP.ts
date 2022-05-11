@@ -4,7 +4,7 @@ import { EnemyWithModifiers } from './EnemyWithModifiers';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { basicEnemySeq } from './BasicEnemyBehaviorTree';
+import { BehaviorTreeNode } from '@/Entities/Enemy/BehaviorTree';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemySPProps {
@@ -12,6 +12,8 @@ interface EnemySPProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  behaviorTreeRoot: BehaviorTreeNode;
+  onHitDamage: number;
   behaviorModifier?: EnemyBehaviorModifier;
 }
 
@@ -33,7 +35,6 @@ export class EnemySP extends EnemyWithModifiers {
         ...ENEMY.DELAYS,
         strafe: ENEMY.DELAYS.strafe * 0.7,
       },
-      behaviorTreeRoot: basicEnemySeq,
     });
   }
 }

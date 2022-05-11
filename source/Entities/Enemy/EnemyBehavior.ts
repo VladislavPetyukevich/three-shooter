@@ -23,6 +23,7 @@ interface BehaviorProps {
   behaviorModifier?: EnemyBehaviorModifier;
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
+  onHitDamage: number;
   delays: {
     shoot: number;
     gunpointStrafe: number,
@@ -66,6 +67,7 @@ export class EnemyBehavior implements Behavior {
   isOnGunpointCurrent: boolean;
   isKamikaze: boolean;
   isParasite: boolean;
+  onHitDamage: number;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -131,6 +133,7 @@ export class EnemyBehavior implements Behavior {
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
+    this.onHitDamage = props.onHitDamage;
   }
 
   spawnSound(audioListener: AudioListener) {
@@ -208,22 +211,22 @@ export class EnemyBehavior implements Behavior {
   }
 
   onCollide(entity: Entity) {
-    const isCollideWithPlayer = entity.type === ENTITY_TYPE.PLAYER;
-    if (
-      isCollideWithPlayer &&
-      (this.isKamikaze || this.isParasite)
-    ) {
-      this.onCollideKamikaze(entity);
-      return;
-    }
-    const isCollideWithEnemy = entity.type === ENTITY_TYPE.ENEMY;
-    if (
-      isCollideWithEnemy &&
-      (this.isKamikaze || this.isParasite)
-    ) {
-      this.onCollideEnemyParasite(entity);
-      return;
-    }
+    entity.onHit(this.onHitDamage);
+    // if (
+    //   isCollideWithPlayer &&
+    //   (this.isKamikaze || this.isParasite)
+    // ) {
+    //   this.onCollideKamikaze(entity);
+    //   return;
+    // }
+    // const isCollideWithEnemy = entity.type === ENTITY_TYPE.ENEMY;
+    // if (
+    //   isCollideWithEnemy &&
+    //   (this.isKamikaze || this.isParasite)
+    // ) {
+    //   this.onCollideEnemyParasite(entity);
+    //   return;
+    // }
     this.followingPath = [];
     this.followingPoint = undefined;
     this.velocity.negate();

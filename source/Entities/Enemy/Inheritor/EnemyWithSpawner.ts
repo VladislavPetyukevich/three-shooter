@@ -28,6 +28,7 @@ export class EnemyWithSpawner extends Enemy {
         shoot: ENEMY.DELAYS.shoot * 1.7
       },
       behaviorTreeRoot: basicEnemySeq,
+      onHitDamage: 0,
     });
   }
 }

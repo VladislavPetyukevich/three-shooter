@@ -33,6 +33,7 @@ export interface EnemyProps {
   textures: EnemyTextures;
   hp: number;
   walkSpeed: number;
+  onHitDamage: number;
   bulletsPerShoot: { min: number; max: number; };
   delays: {
     shoot: number;
@@ -71,6 +72,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         walkSpeed: props.walkSpeed,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
+        onHitDamage: props.onHitDamage,
       })
     );
     this.container = props.container;
