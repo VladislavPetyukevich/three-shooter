@@ -1,4 +1,7 @@
-export type FunctionNode = (delta: number) => boolean;
+import { EnemyBehavior } from './EnemyBehavior';
+
+export type FunctionNode =
+  (behavior: EnemyBehavior, delta: number) => boolean;
 
 export interface ControlFlowNode {
   condition: FunctionNode;
@@ -16,14 +19,17 @@ export type BehaviorTreeNode =
   FunctionNode;
 
 export class BehaviorTree {
-  constructor(private root: BehaviorTreeNode) { }
+  constructor(
+    private root: BehaviorTreeNode,
+    private enemyBehavior: EnemyBehavior,
+  ) { }
 
   updateFunctionNode(node: FunctionNode, delta: number) {
-    return node(delta);
+    return node(this.enemyBehavior, delta);
   }
 
   updateControlFlowNode(node: ControlFlowNode, delta: number): boolean {
-    const condition = node.condition(delta);
+    const condition = this.updateFunctionNode(node.condition, delta);
     const nodeToUpdate = condition ? node.nodeTrue : node.nodeFalse;
     return this.updateNode(nodeToUpdate, delta);
   }

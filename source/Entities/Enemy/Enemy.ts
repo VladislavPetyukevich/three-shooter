@@ -2,6 +2,7 @@ import { Vector3, AudioListener, Color } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS, lighter } from '@/constants';
 import { EnemyActor } from './EnemyActor';
+import { BehaviorTree, BehaviorTreeNode } from './BehaviorTree';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -27,6 +28,7 @@ export interface EnemyProps {
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  behaviorTreeRoot: BehaviorTreeNode;
   color: Color;
   textures: EnemyTextures;
   hp: number;
@@ -42,6 +44,7 @@ export interface EnemyProps {
 
 export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   container: EntitiesContainer;
+  behaviorTree: BehaviorTree;
   hp: number;
   isDead: boolean;
   onDeathCallback?: (entity: Enemy) => void;
@@ -77,6 +80,11 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
+
+    this.behaviorTree = new BehaviorTree(
+      props.behaviorTreeRoot,
+      this.behavior
+    );
   }
 
   onHit(damage: number) {
@@ -146,6 +154,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
   update(delta: number) {
     super.update(delta);
+    this.behaviorTree.update(delta);
     if (this.isDead && this.animations.length === 0) {
       this.container.remove(this.actor.mesh);
     }

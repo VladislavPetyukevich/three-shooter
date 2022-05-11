@@ -4,6 +4,7 @@ import { EnemyWithModifiers } from './EnemyWithModifiers';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { basicEnemySeq } from './BasicEnemyBehaviorTree';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemyApathyProps {
@@ -32,6 +33,7 @@ export class EnemyCowardice extends EnemyWithModifiers {
         ...ENEMY.DELAYS,
         gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
       },
+      behaviorTreeRoot: basicEnemySeq,
     });
   }
 }

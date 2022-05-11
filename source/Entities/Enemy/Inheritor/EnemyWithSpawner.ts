@@ -3,6 +3,7 @@ import { Enemy } from '../Enemy';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { Player } from '@/Entities/Player/Player';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { basicEnemySeq } from './BasicEnemyBehaviorTree';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 interface EnemyWithSpawnerProps {
@@ -25,7 +26,8 @@ export class EnemyWithSpawner extends Enemy {
       delays: {
         ...ENEMY.DELAYS,
         shoot: ENEMY.DELAYS.shoot * 1.7
-      }
+      },
+      behaviorTreeRoot: basicEnemySeq,
     });
   }
 }

@@ -2,7 +2,6 @@ import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'thr
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
-import { BehaviorTree } from './BehaviorTree';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EnemyBehaviorModifier } from './Enemy';
@@ -67,7 +66,6 @@ export class EnemyBehavior implements Behavior {
   isOnGunpointCurrent: boolean;
   isKamikaze: boolean;
   isParasite: boolean;
-  behaviorTree: BehaviorTree;
   onDeathCallback?: Function;
 
   constructor(props: BehaviorProps) {
@@ -133,19 +131,6 @@ export class EnemyBehavior implements Behavior {
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
-
-    const hurtNode = () => this.updateHurt();
-    const attackCond = {
-      condition: () => this.checkIsPlayerInAttackDistance(),
-      nodeTrue: (delta: number) => this.attackPlayer(delta),
-      nodeFalse: (delta: number) => this.followPlayer(delta),
-    };
-    const strafe = (delta: number) => this.strafe(delta);
-    const gunpointStrafe = (delta: number) => this.updateGunpointReaction(delta);
-    const mainSeq = {
-      sequence: [hurtNode, attackCond, strafe, gunpointStrafe]
-    };
-    this.behaviorTree = new BehaviorTree(mainSeq);
   }
 
   spawnSound(audioListener: AudioListener) {
@@ -399,7 +384,6 @@ export class EnemyBehavior implements Behavior {
     this.gun.setRotationY(this.actor.mesh.rotation.y);
     this.gun.setPosition(this.actor.mesh.position);
     this.gun.update(delta);
-    this.behaviorTree.update(delta);
     this.updateWalkSprite(delta);
     this.updateShoot(delta);
     this.timeoutsManager.updateExpiredTimeOuts();
