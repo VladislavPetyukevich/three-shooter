@@ -118,6 +118,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
   handleDeath() {
     this.isDead = true;
+    this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
     this.addAnimation(new JumpAnimation({
       actor: this.actor,
@@ -156,9 +157,10 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
   update(delta: number) {
     super.update(delta);
-    this.behaviorTree.update(delta);
-    this.behavior.updateColidedEntity(undefined);
-    if (this.isDead && this.animations.length === 0) {
+    if (!this.isDead) {
+      this.behaviorTree.update(delta);
+      this.behavior.updateColidedEntity(undefined);
+    } else if (this.animations.length === 0) {
       this.container.remove(this.actor.mesh);
     }
   }

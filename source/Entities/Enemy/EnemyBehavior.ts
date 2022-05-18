@@ -162,7 +162,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   death() {
-    this.stateMachine.doTransition('death');
+    if (this.onDeathCallback) {
+      this.onDeathCallback();
+    }
   }
 
   onHit() {

@@ -25,3 +25,13 @@ flowchart TD
 
     B --> C[Gunpoint strafe]
 ```
+
+Parasite
+```mermaid
+flowchart TD
+    B[Seq]
+    B --> Hurt
+    B --> U[Infect collisions]
+    B --> F[Find target]
+    B --> F1[Follow target]
+```
