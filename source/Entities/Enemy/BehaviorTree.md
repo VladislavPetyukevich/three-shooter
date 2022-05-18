@@ -3,6 +3,7 @@ Basic enemy
 flowchart TD
     B[Seq]
     B --> Hurt
+    B --> U[Update collisions]
     B --> A[Ctrl player in attack distance]
     A --True--> Attack
     A --False--> followPlayer
@@ -17,6 +18,7 @@ Kamikaze
 flowchart TD
     B[Seq]
     B --> Hurt
+    B --> U[Update collisions]
     B --> followPlayer
 
     B --> Strafe

@@ -13,6 +13,18 @@ const attackCond = {
   nodeFalse: followPlayerNode,
 };
 
+const updateCollisions = (behavior: EnemyBehavior) => {
+  const collidedEntity = behavior.collidedEntity;
+  if (!collidedEntity) {
+    return true;
+  }
+  collidedEntity.onHit(behavior.onHitDamage);
+  behavior.followingPath = [];
+  behavior.followingPoint = undefined;
+  behavior.velocity.negate();
+  return true;
+};
+
 const strafe = (behavior: EnemyBehavior, delta: number) =>
   behavior.strafe(delta);
 
@@ -20,10 +32,10 @@ const gunpointStrafe = (behavior: EnemyBehavior, delta: number) =>
   behavior.updateGunpointReaction(delta);
 
 export const basicEnemySeq = {
-  sequence: [hurtNode, attackCond, strafe, gunpointStrafe]
+  sequence: [hurtNode, updateCollisions, attackCond, strafe, gunpointStrafe]
 };
 
 export const kamikazeEnemySeq = {
-  sequence: [hurtNode, followPlayerNode, strafe, gunpointStrafe]
+  sequence: [hurtNode, updateCollisions, followPlayerNode, strafe, gunpointStrafe]
 };
 

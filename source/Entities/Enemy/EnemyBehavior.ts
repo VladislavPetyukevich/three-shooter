@@ -49,6 +49,7 @@ export class EnemyBehavior implements Behavior {
   followingPath: Vector2[];
   followingPoint?: Vector2;
   followingEnemy?: Entity;
+  collidedEntity?: Entity;
   actor: EnemyActor;
   currentStrafeAngle: number;
   strafeAngleLow: number;
@@ -210,26 +211,8 @@ export class EnemyBehavior implements Behavior {
     return angleDegrees;
   }
 
-  onCollide(entity: Entity) {
-    entity.onHit(this.onHitDamage);
-    // if (
-    //   isCollideWithPlayer &&
-    //   (this.isKamikaze || this.isParasite)
-    // ) {
-    //   this.onCollideKamikaze(entity);
-    //   return;
-    // }
-    // const isCollideWithEnemy = entity.type === ENTITY_TYPE.ENEMY;
-    // if (
-    //   isCollideWithEnemy &&
-    //   (this.isKamikaze || this.isParasite)
-    // ) {
-    //   this.onCollideEnemyParasite(entity);
-    //   return;
-    // }
-    this.followingPath = [];
-    this.followingPoint = undefined;
-    this.velocity.negate();
+  updateColidedEntity(entity?: Entity) {
+    this.collidedEntity = entity;
   }
 
   onCollideKamikaze(entity: Entity) {

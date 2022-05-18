@@ -127,7 +127,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   }
 
   onCollide(entity: Entity) {
-    this.behavior.onCollide(entity);
+    this.behavior.updateColidedEntity(entity);
     return false;
   }
 
@@ -157,6 +157,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   update(delta: number) {
     super.update(delta);
     this.behaviorTree.update(delta);
+    this.behavior.updateColidedEntity(undefined);
     if (this.isDead && this.animations.length === 0) {
       this.container.remove(this.actor.mesh);
     }
