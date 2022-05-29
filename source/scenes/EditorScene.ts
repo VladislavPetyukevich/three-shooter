@@ -97,8 +97,8 @@ export class EditorScene extends TestScene {
     mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
-    for (let cellX = this.padding; cellX < this.roomSize.width - this.padding; cellX++) {
-      for (let cellY = this.padding; cellY < this.roomSize.height - this.padding; cellY++) {
+    for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
+      for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
         const mapCellEl = document.createElement('div');
         mapCellEl.style.display = 'inline-block';
         mapCellEl.style.width = '12px';
@@ -323,16 +323,16 @@ export class EditorScene extends TestScene {
 
   spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
     const cell = new Vector2(cellX, cellY);
-    const roomCoordinates = this.cellToWorldCoordinates(this.currentRoom.cellPosition);
+    const roomCoordinates = this.cellCoordinates.toWorldCoordinates(this.currentRoom.cellPosition);
     const cellCoordinates =
-        this.cellToWorldCoordinates(cell).add(roomCoordinates);
+        this.cellCoordinates.toWorldCoordinates(cell).add(roomCoordinates);
     switch (entityType) {
       case ENTITY_TYPE.ENEMY:
         return this.spawnEnemy(cellCoordinates, this.currentRoom.type);
       case ENTITY_TYPE.WALL:
-        return this.spawnWall(
-          this.getCenterPosition(cellCoordinates, new Vector2(this.mapCellSize, this.mapCellSize)),
-          new Vector2(this.mapCellSize, this.mapCellSize),
+        return this.roomSpawner.spawnWall(
+          this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
+          new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
           this.currentRoom.type,
         );
       default:
