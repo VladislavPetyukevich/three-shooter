@@ -22,12 +22,9 @@ import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
 import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
-import { basicEnemySeq, kamikazeEnemySeq } from '@/Entities/Enemy/Inheritor/BasicEnemyBehaviorTree';
+import { RoomType } from '@/Entities/Enemy/EnemyFactory';
 import { EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
-import { EnemyApathy } from '@/Entities/Enemy/Inheritor/EnemyApathy';
-import { EnemyCowardice } from '@/Entities/Enemy/Inheritor/EnemyCowardice';
-import { EnemySP } from '@/Entities/Enemy/Inheritor/EnemySP';
-import { EnemyWithSpawner } from '@/Entities/Enemy/Inheritor/EnemyWithSpawner';
+import { EnemyFactory } from '@/Entities/Enemy/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
@@ -45,13 +42,6 @@ import { randomNumbers } from '@/RandomNumbers';
 
 const enum Direction {
   Top, Bottom, Left, Right
-}
-
-export const enum RoomType {
-  Neutral,
-  Apathy,
-  Cowardice,
-  SexualPerversions,
 }
 
 export interface Room {
@@ -101,6 +91,7 @@ export class TestScene extends BasicScene {
   currentRoom: Room;
   roomSize: Vector2;
   doorWidthHalf: number;
+  enemyFactory: EnemyFactory;
   currentRoomEnimiesCount: number;
   torches: RoomTorches;
   initialCameraY: number;
@@ -147,6 +138,7 @@ export class TestScene extends BasicScene {
     this.roomSize = new Vector2(20, 20);
     this.doorWidthHalf = 1;
     this.torches = this.getSceneTorches();
+    this.enemyFactory = new EnemyFactory();
     this.currentRoomEnimiesCount = 0;
     this.currentRoom = this.createRoom(new Vector2(0, 0), RoomType.Neutral);
     this.createNeighboringRooms(this.currentRoom);
@@ -838,7 +830,7 @@ export class TestScene extends BasicScene {
   }
 
   spawnEnemyFromSpawner = (roomType: RoomType) => (position: Vector3) => {
-    const enemy = this.getEnemy(
+    const enemy = this.createEnemy(
       new Vector2(position.x, position.z),
       roomType
     );
@@ -855,76 +847,65 @@ export class TestScene extends BasicScene {
 
   spawnEnemy(coordinates: Vector2, roomType: RoomType) {
     const isReachedLevel1 =
-      (this.getMindeStateLevel(roomType) >= 1);
+      this.getMindeStateLevel(roomType) >= 1;
     const isSpawnSpecialEnemy = randomNumbers.getRandom() >= 0.5;
     if (isReachedLevel1 && isSpawnSpecialEnemy) {
-      return this.spawnSpecialEnemy(coordinates, roomType);
+      return this.spawnSpecialEnemy(
+        coordinates,
+        roomType,
+        this.getRandomEnemyBehaviorModifier()
+      );
     }
-    const enemy = this.getEnemy(coordinates, roomType);
+    return this.spawnBasicEnemy(coordinates, roomType);
+  }
+
+  getRandomEnemyBehaviorModifier() {
+    if (randomNumbers.getRandom() >= 0.5) {
+      return EnemyBehaviorModifier.withSpawner;
+    } else if (randomNumbers.getRandom() >= 0.5) {
+      return EnemyBehaviorModifier.kamikaze;
+    } else {
+      return EnemyBehaviorModifier.parasite;
+    }
+  }
+
+  spawnBasicEnemy(coordinates: Vector2, roomType: RoomType) {
+    const enemy = this.createEnemy(coordinates, roomType);
     enemy.onDeath(this.onEnemyDeath);
     return this.entitiesContainer.add(enemy);
   }
 
-  getEnemyProps(coordinates: Vector2) {
-    return {
-      position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
-      player: this.player,
-      container: this.entitiesContainer,
-      audioListener: this.audioListener
-    };
+  spawnSpecialEnemy(
+    coordinates: Vector2,
+    roomType: RoomType,
+    behaviorModifier: EnemyBehaviorModifier
+  ) {
+    const enemy = this.createEnemy(
+      coordinates,
+      roomType,
+      behaviorModifier
+    );
+    const onDeath =
+      (behaviorModifier === EnemyBehaviorModifier.withSpawner) ?
+      this.onEnemyWithSpawnerDeath(roomType) :
+      this.onEnemyDeath;
+    enemy.onDeath(onDeath);
+    return this.entitiesContainer.add(enemy);
   }
 
-  getEnemy(
+  createEnemy(
     coordinates: Vector2,
     roomType: RoomType,
     behaviorModifier?: EnemyBehaviorModifier,
   ) {
-    const isKamikaze =
-      behaviorModifier === EnemyBehaviorModifier.kamikaze;
-
-    const behaviorTreeRoot = isKamikaze ? kamikazeEnemySeq : basicEnemySeq;
-    const onHitDamage = isKamikaze ? 1 : 0;
-    const props = {
-      ...this.getEnemyProps(coordinates),
-      onHitDamage,
-      behaviorTreeRoot,
-      behaviorModifier,
-    };
-    switch (roomType) {
-      case RoomType.Apathy:
-        return new EnemyApathy(props);
-      case RoomType.Cowardice:
-        return new EnemyCowardice(props);
-      case RoomType.SexualPerversions:
-        return new EnemySP(props);
-      default:
-        throw new Error(`Cannot get enemy for room type:${roomType}`);
-    }
-  }
-
-  getEnemyWithSpawner(coordinates: Vector2) {
-    const props = this.getEnemyProps(coordinates);
-    return new EnemyWithSpawner(props);
-  }
-
-  getEnemyKamikaze(coordinates: Vector2, roomType: RoomType) {
-    return this.getEnemy(
-      coordinates,
+    return this.enemyFactory.createEnemy({
+      position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
+      player: this.player,
+      container: this.entitiesContainer,
+      audioListener: this.audioListener,
       roomType,
-      EnemyBehaviorModifier.kamikaze,
-    );
-  }
-
-  spawnSpecialEnemy(coordinates: Vector2, roomType: RoomType) {
-    if (randomNumbers.getRandom() >= 0.5) {
-      const enemy = this.getEnemyWithSpawner(coordinates);
-      enemy.onDeath(this.onEnemyWithSpawnerDeath(roomType));
-      return this.entitiesContainer.add(enemy);
-    } else {
-      const enemy = this.getEnemyKamikaze(coordinates, roomType);
-      enemy.onDeath(this.onEnemyDeath);
-      return this.entitiesContainer.add(enemy);
-    }
+      behaviorModifier,
+    });
   }
 
   update(delta: number) {
