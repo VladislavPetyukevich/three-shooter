@@ -6,7 +6,7 @@ import {
   basicEnemySeq,
   kamikazeEnemySeq,
   parasiteEnemySeq,
-} from '@/Entities/Enemy/Inheritor/BasicEnemyBehaviorTree';
+} from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
