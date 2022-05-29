@@ -20,6 +20,7 @@ export interface EnemyTextures {
 export const enum EnemyBehaviorModifier {
   kamikaze,
   parasite,
+  withSpawner,
 }
 
 export interface EnemyProps {
@@ -125,6 +126,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       jumpHeight: 0.7,
       durationSeconds: 0.43,
     }));
+    if (this.onDeathCallback) {
+      this.onDeathCallback(this);
+    }
   }
 
   onCollide(entity: Entity) {
