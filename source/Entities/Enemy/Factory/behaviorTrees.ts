@@ -65,7 +65,7 @@ export const followTarget = (behavior: EnemyBehavior) => {
   if (!followingEnemy) {
     return true;
   }
-  behavior.moveToEntity(followingEnemy);
+  behavior.setFollowingEnemy(followingEnemy);
   return true;
 };
 
