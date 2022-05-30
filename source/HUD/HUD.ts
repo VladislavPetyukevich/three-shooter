@@ -47,7 +47,7 @@ export class HUD {
     this.gun = new Sprite();
     this.gunTargetX = 0;
     this.gunCurrX = 0;
-    this.gunShiftAmplitude = 600;
+    this.gunShiftAmplitude = 100;
     this.gunShiftSpeed = 10;
     this.gunXMax = 1300;
     this.gunSpriteHeight = 0;
@@ -219,12 +219,7 @@ export class HUD {
       0,
       delta * this.gunShiftSpeed
     );
-    const currShiftX = this.lerp(
-      this.gunCurrX,
-      gunTargetX,
-      delta * this.gunShiftSpeed
-    );
-    this.gun.position.x = currShiftX;
+    this.gun.position.setX(gunTargetX - this.gunCurrX);
   }
 
   updateGunSwitchAnimation(delta: number) {
