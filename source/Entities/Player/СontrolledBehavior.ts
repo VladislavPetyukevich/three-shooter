@@ -423,7 +423,7 @@ export class СontrolledBehavior implements Behavior {
       }
     }
     this.targetVelocity.copy(
-      this.moveDirection.normalize().multiplyScalar(this.walkSpeed * delta)
+      this.moveDirection.normalize().multiplyScalar(this.walkSpeed)
     );
     this.velocity.lerp(this.targetVelocity, delta * PLAYER.WALK_INERTIA);
   }
