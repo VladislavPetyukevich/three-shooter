@@ -23,6 +23,7 @@ interface BehaviorProps {
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   onHitDamage: number;
+  hurtChance: number;
   delays: {
     shoot: number;
     gunpointStrafe: number,
@@ -61,6 +62,7 @@ export class EnemyBehavior implements Behavior {
   currentBulletsToShoot: number;
   shootSound: PositionalAudio;
   isHurt: boolean;
+  hurtChance: number;
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
@@ -106,6 +108,7 @@ export class EnemyBehavior implements Behavior {
     this.isKamikaze = props.behaviorModifier === EnemyBehaviorModifier.kamikaze;
     this.isParasite = props.behaviorModifier === EnemyBehaviorModifier.parasite;
     this.isHurt = false;
+    this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
     const timeoutValues = {
@@ -148,6 +151,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   onHit() {
+    if (randomNumbers.getRandom() > this.hurtChance) {
+      return;
+    }
     this.isHurt = true;
     this.backupVelocity.copy(this.velocity);
     this.velocity.set(0, 0, 0);

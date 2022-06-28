@@ -36,6 +36,7 @@ export interface EnemyProps {
   walkSpeed: number;
   onHitDamage: number;
   bulletsPerShoot: { min: number; max: number; };
+  hurtChance: number;
   delays: {
     shoot: number;
     gunpointStrafe: number;
@@ -74,6 +75,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
         onHitDamage: props.onHitDamage,
+        hurtChance: props.hurtChance,
       })
     );
     this.container = props.container;
@@ -103,14 +105,21 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       this.handleDeath();
     } else if (!this.behavior.isHurt) {
       this.behavior.onHit();
-      this.animations = [];
-      this.addAnimation(new HurtAnimation({
-        actor: this.actor,
-        durationSeconds: ENEMY.HURT_TIME_OUT,
-        hurtSpriteIndex: 2,
-        onEnd: () => this.onHurtEnd(),
-      }));
+      this.handleHurtAnimation();
     }
+  }
+
+  handleHurtAnimation() {
+    if (!this.behavior.isHurt) {
+      return;
+    }
+    this.animations = [];
+    this.addAnimation(new HurtAnimation({
+      actor: this.actor,
+      durationSeconds: ENEMY.HURT_TIME_OUT,
+      hurtSpriteIndex: 2,
+      onEnd: () => this.onHurtEnd(),
+    }));
   }
 
   onHurtEnd() {

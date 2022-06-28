@@ -42,6 +42,7 @@ export class EnemyFactory {
       delays: this.getEnemyDelays(props),
       behaviorTreeRoot: this.getEnemyBehaviorTree(props),
       onHitDamage: this.getEnemyOnHitDamage(props),
+      hurtChance: this.getEnemyHurtChance(props),
     });
   }
 
@@ -182,6 +183,13 @@ export class EnemyFactory {
     switch (behaviorModifier) {
       case EnemyBehaviorModifier.kamikaze: return 1;
       default: return 0;
+    }
+  }
+
+  getEnemyHurtChance(props: CreateEnemyProps) {
+    switch (props.roomType) {
+      case RoomType.SexualPerversions: return 0.4;
+      default: return 0.7;
     }
   }
 }
