@@ -343,6 +343,9 @@ export class СontrolledBehavior implements Behavior {
   }
 
   lerpCameraRotationZ(targetRotation: number, speed: number) {
+    if (speed >= 1) {
+      return targetRotation;
+    }
     this.camera.rotation.z = this.lerp(
       this.camera.rotation.z,
       targetRotation,
