@@ -4,15 +4,15 @@ import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
 
 const hurtNode = (behavior: EnemyBehavior) => behavior.updateHurt();
 
-const followPlayerNode = (behavior: EnemyBehavior, delta: number) =>
-  behavior.followPlayer(delta);
+const followNode = (behavior: EnemyBehavior, delta: number) =>
+  behavior.followFollowingEnemy(delta);
 
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
-    behavior.checkIsPlayerInAttackDistance(),
+    behavior.checkIsFollowingEnemyInAttackDistance(),
   nodeTrue: (behavior: EnemyBehavior, delta: number) =>
-    behavior.attackPlayer(delta),
-  nodeFalse: followPlayerNode,
+    behavior.attackFollowingEnemy(delta),
+  nodeFalse: followNode,
 };
 
 const updateCollisions = (behavior: EnemyBehavior) => {
@@ -41,7 +41,27 @@ const infectCollisions = (behavior: EnemyBehavior) => {
   return false;
 };
 
+const updateFollowingEnemy = (behavior: EnemyBehavior) => {
+  if (!behavior.followingEnemy) {
+    return true;
+  }
+  if (
+    (typeof behavior.followingEnemy.hp === 'number') &&
+    (behavior.followingEnemy.hp <= 0)
+  ) {
+    behavior.followingEnemy = behavior.player;
+  }
+  return true;
+};
+
 const findParasiteTarget = (behavior: EnemyBehavior) => {
+  if (
+    behavior.followingEnemy &&
+    (typeof behavior.followingEnemy.hp === 'number') &&
+    (behavior.followingEnemy.hp > 0)
+  ) {
+    return true;
+  }
   const entitiesInCantainer = behavior.container.entities;
   const enemies = entitiesInCantainer.filter(entity =>
     (entity.type === ENTITY_TYPE.ENEMY) &&
@@ -76,11 +96,11 @@ const gunpointStrafe = (behavior: EnemyBehavior, delta: number) =>
   behavior.updateGunpointReaction(delta);
 
 export const basicEnemySeq = {
-  sequence: [hurtNode, updateCollisions, attackCond, strafe, gunpointStrafe]
+  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
 export const kamikazeEnemySeq = {
-  sequence: [hurtNode, updateCollisions, followPlayerNode, strafe, gunpointStrafe]
+  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, followNode, strafe, gunpointStrafe]
 };
 
 export const parasiteEnemySeq = {

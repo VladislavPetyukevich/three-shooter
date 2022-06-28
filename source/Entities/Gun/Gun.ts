@@ -63,6 +63,10 @@ export class Gun extends Entity<GunActor, GunBehavior> {
     this.behavior.isInMove = isInMove;
   }
 
+  setBulletAuthor(entity: Entity) {
+    this.behavior.bulletAuthor = entity;
+  }
+
   shootRaycast() {
     return this.behavior.shootRaycast();
   }

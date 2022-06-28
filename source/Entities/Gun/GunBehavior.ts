@@ -5,6 +5,7 @@ import {
   AudioListener,
   Audio,
 } from 'three';
+import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
@@ -28,6 +29,7 @@ interface BehaviorProps {
 
 export class GunBehavior implements Behavior {
   playerCamera: Camera;
+  bulletAuthor?: Entity;
   raycaster: Raycaster;
   container: EntitiesContainer;
   audioListener: AudioListener;
@@ -146,7 +148,7 @@ export class GunBehavior implements Behavior {
           (intersectEntity.type === ENTITY_TYPE.ENEMY) ||
           (intersectEntity.type === ENTITY_TYPE.ENEMY_SPAWNER)
         ) {
-          intersectEntity.onHit(1);
+          intersectEntity.onHit(1, this.bulletAuthor);
           break;
         }
       }
@@ -179,6 +181,7 @@ export class GunBehavior implements Behavior {
         position: bulletPosition,
         direction: bulletDirectionWithOffset,
         container: this.container,
+        author: this.bulletAuthor,
         ...additionalProps,
       });
       this.container.add(bullet);

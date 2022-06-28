@@ -9,12 +9,14 @@ export interface BulletProps {
   position: Vector3;
   direction: Vector3;
   container: EntitiesContainer;
+  author?: Entity;
 }
 
 export class Bullet extends Entity {
   direction: Vector3;
   speed: number;
   container: EntitiesContainer;
+  author?: Entity;
   damage?: number;
 
   constructor(props: BulletProps) {
@@ -29,6 +31,7 @@ export class Bullet extends Entity {
     this.direction = props.direction;
     this.speed = 0;
     this.container = props.container;
+    this.author = props.author;
   }
 
   setDirection = (direction: Vector3) => {
@@ -50,7 +53,7 @@ export class Bullet extends Entity {
       return true;
     }
     if (this.damage) {
-      entity.onHit(this.damage);
+      entity.onHit(this.damage, this.author);
     }
     this.container.remove(this.actor.mesh);
     return false;

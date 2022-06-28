@@ -71,6 +71,7 @@ export class EnemyBehavior implements Behavior {
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
+    this.setFollowingEnemy(this.player);
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
     this.actor = props.actor;
@@ -282,8 +283,11 @@ export class EnemyBehavior implements Behavior {
     return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
 
-  checkIsPlayerInAttackDistance() {
-    const distanceToPlayer = this.getDistanceToEntity(this.player);
+  checkIsFollowingEnemyInAttackDistance() {
+    if (!this.followingEnemy) {
+      return false;
+    }
+    const distanceToPlayer = this.getDistanceToEntity(this.followingEnemy);
     return distanceToPlayer <= ENEMY.ATTACK_DISTANCE;
   }
 
@@ -292,7 +296,7 @@ export class EnemyBehavior implements Behavior {
     return distanceToEnemy <= ENEMY.ATTACK_DISTANCE_PARASITE;
   }
 
-  attackPlayer(delta: number) {
+  attackFollowingEnemy(delta: number) {
     this.timeoutsManager.updateTimeOut('shoot', delta);
     if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
       this.shoot();
@@ -301,8 +305,6 @@ export class EnemyBehavior implements Behavior {
   }
 
   update(delta: number) {
-    this.gun.setRotationY(this.actor.mesh.rotation.y);
-    this.gun.setPosition(this.actor.mesh.position);
     this.gun.update(delta);
     this.updateWalkSprite(delta);
     this.updateMovement(delta);
@@ -390,12 +392,15 @@ export class EnemyBehavior implements Behavior {
     return direction;
   }
 
-  followPlayer(delta: number) {
+  followFollowingEnemy(delta: number) {
+    if (!this.followingEnemy) {
+      return true;
+    }
     this.timeoutsManager.updateTimeOut('movement', delta);
     if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
       return true;
     }
-    this.setFollowingEnemy(this.player);
+    this.setFollowingEnemy(this.followingEnemy);
     return true;
   }
 
@@ -417,8 +422,27 @@ export class EnemyBehavior implements Behavior {
     this.timeoutsManager.updateTimeOut('shootDelay', delta);
     if (this.timeoutsManager.checkIsTimeOutExpired('shootDelay')) {
       this.currentBulletsToShoot--;
+      this.updateGun();
       this.createBullet();
     }
+  }
+
+  updateGun() {
+    if (!this.followingEnemy) {
+      return;
+    }
+    const followingEnemyMesh = this.followingEnemy.actor.mesh;
+    if (this.followingEnemy.type === ENTITY_TYPE.PLAYER) {
+      this.gun.setRotationY(this.actor.mesh.rotation.y);
+    } else {
+      this.gun.setRotationY(
+        Math.atan2(
+          (followingEnemyMesh.position.x - this.actor.mesh.position.x),
+          (followingEnemyMesh.position.z - this.actor.mesh.position.z)
+        )
+      );
+    }
+    this.gun.setPosition(this.actor.mesh.position);
   }
 
   updateGunpointReaction(delta: number) {

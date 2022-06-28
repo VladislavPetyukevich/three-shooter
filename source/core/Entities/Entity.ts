@@ -20,7 +20,7 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
     this.animations = [];
   }
 
-  onHit(damage: number) {
+  onHit(damage: number, entity?: Entity) {
     if (this.hp) {
       this.hp -= damage;
     }

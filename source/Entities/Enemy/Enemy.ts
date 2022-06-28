@@ -80,6 +80,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.hp = props.hp;
     this.velocity = velocity;
     this.isDead = false;
+    this.behavior.gun.setBulletAuthor(this);
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
@@ -90,15 +91,18 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     );
   }
 
-  onHit(damage: number) {
+  onHit(damage: number, entity?: Entity) {
+    if (entity?.type === ENTITY_TYPE.ENEMY) {
+      this.behavior.setFollowingEnemy(entity);
+    }
     if (this.isDead) {
       return;
     }
     super.onHit(damage);
-    this.behavior.onHit();
     if (this.hp <= 0) {
       this.handleDeath();
     } else if (!this.behavior.isHurt) {
+      this.behavior.onHit();
       this.animations = [];
       this.addAnimation(new HurtAnimation({
         actor: this.actor,
