@@ -2,17 +2,16 @@ import { ENTITY_MESSAGES, ENTITY_TYPE } from '@/constants';
 import { randomNumbers } from '@/RandomNumbers';
 import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
 
-const hurtNode = (behavior: EnemyBehavior) => behavior.updateHurt();
+const noop = () => true;
 
-const followNode = (behavior: EnemyBehavior, delta: number) =>
-  behavior.followFollowingEnemy(delta);
+const hurtNode = (behavior: EnemyBehavior) => behavior.updateHurt();
 
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
     behavior.checkIsFollowingEnemyInAttackDistance(),
   nodeTrue: (behavior: EnemyBehavior, delta: number) =>
     behavior.attackFollowingEnemy(delta),
-  nodeFalse: followNode,
+  nodeFalse: noop,
 };
 
 const updateCollisions = (behavior: EnemyBehavior) => {
@@ -100,7 +99,7 @@ export const basicEnemySeq = {
 };
 
 export const kamikazeEnemySeq = {
-  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, followNode, strafe, gunpointStrafe]
+  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, strafe, gunpointStrafe]
 };
 
 export const parasiteEnemySeq = {
