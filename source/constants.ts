@@ -46,8 +46,12 @@ export const enum ENTITY_TYPE {
   ENEMY_SPAWNER = 'ENEMY_SPAWNER',
 };
 
-const DarkColor = new Color(0);
-const WhiteColor = new Color(255);
+const createColor = (r: number, g: number, b: number) => {
+  return new Color(r / 255, g / 255, b / 255);
+};
+
+const DarkColor = createColor(0, 0, 0);
+const WhiteColor = createColor(1, 1, 1);
 
 const lerpColor = (colorOriginal: Color, color: Color, factor: number) => {
   const newColor = colorOriginal.clone();
@@ -63,14 +67,14 @@ export const lighter = (color: Color, factor: number) => {
 };
 
 export const COLORS = {
-  Apathy: new Color(42, 140, 186),
-  Cowardice: new Color(104, 142, 11),
-  SexualPerversions: new Color(166, 15, 11),
+  Apathy: createColor(42, 140, 186),
+  Cowardice: createColor(104, 142, 11),
+  SexualPerversions: createColor(166, 15, 11),
 };
 
-const wallDarkerFactor = 0.99969;
+const wallDarkerFactor = 0.8;
 export const WALL_COLORS = {
-  Neutral: darker(new Color(180, 180, 180), wallDarkerFactor),
+  Neutral: darker(createColor(180, 180, 180), wallDarkerFactor),
   Apathy: darker(COLORS.Apathy, wallDarkerFactor),
   Cowardice: darker(COLORS.Cowardice, wallDarkerFactor),
   SexualPerversions: darker(COLORS.SexualPerversions, wallDarkerFactor),
@@ -78,9 +82,9 @@ export const WALL_COLORS = {
 
 const enemyDarkerFactor = 0.0;
 export const ENEMY_COLORS = {
-  Apathy: darker(new Color(2470578), enemyDarkerFactor),
-  Cowardice: darker(new Color(6930959), enemyDarkerFactor),
-  SP: darker(new Color(11646155), enemyDarkerFactor),
+  Apathy: darker(createColor(37, 178, 178), enemyDarkerFactor),
+  Cowardice: darker(createColor(105, 194, 15), enemyDarkerFactor),
+  SP: darker(createColor(177, 180, 203), enemyDarkerFactor),
   PARASITE_LIGHTER_FACTOR: 0.9,
 };
 
