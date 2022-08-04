@@ -1,7 +1,7 @@
 import { Box3, Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 
-interface CollisionsResult {
+export interface CollisionsResult {
   entities: Entity[];
 }
 
@@ -65,8 +65,8 @@ export class CollideChecker2d {
 
   }
 
-  detectCollisions(entity: Entity, newPosition: Vector3): CollisionsResult {
-    const collisionsResult: CollisionsResult = { entities: [] };
+  detectCollisions(entity: Entity, newPosition: Vector3): Entity[] {
+    const collisionsResult: Entity[] = [];
     if (entity.isCollideTransparent) {
       return collisionsResult;
     }
@@ -96,7 +96,7 @@ export class CollideChecker2d {
           (bounds.xMin <= entityToCheck.bounds.xMax && bounds.xMax >= entityToCheck.bounds.xMin) &&
           (bounds.zMin <= entityToCheck.bounds.zMax && bounds.zMax >= entityToCheck.bounds.zMin)
         ) {
-          collisionsResult.entities.push(entityToCheck.entity);
+          collisionsResult.push(entityToCheck.entity);
         }
       });
 
