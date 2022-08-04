@@ -119,6 +119,7 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
       fireType: 'single',
+      recoilTime: 0,
       holderGeometry: this.actor.mesh.geometry,
     });
     this.gunShootLight = new PointLight('white', 20, 100);
@@ -360,6 +361,7 @@ export class СontrolledBehavior implements Behavior {
       currentGun.setRotationY(playerRotationY);
       currentGun.setPosition(this.camera.position);
       currentGun.update(delta);
+      this.updateGunHeatLevel(delta);
     }
     this.gunBoomerang.setRotationY(playerRotationY);
     this.gunBoomerang.setPosition(this.camera.position);
@@ -501,6 +503,16 @@ export class СontrolledBehavior implements Behavior {
     if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
       intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
     }
+  }
+
+  updateGunHeatLevel(delta: number) {
+    const currentGun = this.getCurrentGun();
+    if (!currentGun) {
+      return;
+    }
+    currentGun.behavior.updateHeatLevel(delta);
+    const heatLevel = currentGun.behavior.heatLevel;
+    hud.updateGunHeatLevel(heatLevel);
   }
 
   onDestroy() {

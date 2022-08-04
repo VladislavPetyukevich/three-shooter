@@ -24,6 +24,7 @@ export class HUD {
   gunShiftSpeed: number;
   gunHudTextures?: GunHudTextures;
   nextGunHudTextures?: GunHudTextures;
+  gunOriginalRedColor: number;
   gunSpriteHeight: number;
   swithGunAnimationProgress?: EaseProgress;
   swithGunAnimationStage: 'goingDown' | 'goingUp';
@@ -51,6 +52,7 @@ export class HUD {
     this.gunShiftSpeed = 10;
     this.gunXMax = 666;
     this.gunSpriteHeight = 0;
+    this.gunOriginalRedColor = 0;
     this.damageOverlay = new Sprite();
     this.maxHp = PLAYER.HP;
     this.maxDamageOverlayOpacity = 0.8;
@@ -133,6 +135,12 @@ export class HUD {
       material: this.gun.material,
     });
     this.gun.material.needsUpdate = true;
+    this.gunOriginalRedColor = this.gun.material.color.r;
+  }
+
+  updateGunHeatLevel(heatLevel: number) {
+    const newRedColor = this.gunOriginalRedColor + heatLevel * 8;
+    this.gun.material.color.r = newRedColor;
   }
 
   gunFire() {

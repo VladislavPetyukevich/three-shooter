@@ -20,7 +20,7 @@ export interface GunProps {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
-  recoilTime?: number;
+  recoilTime: number;
   fireType: GunFireType;
   holderGeometry: Mesh['geometry'];
   hudTextures?: GunHudTextures;

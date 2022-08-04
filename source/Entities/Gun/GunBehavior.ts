@@ -23,7 +23,7 @@ interface BehaviorProps {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
-  recoilTime?: number;
+  recoilTime: number;
   fireType: GunFireType;
 }
 
@@ -39,8 +39,10 @@ export class GunBehavior implements Behavior {
   shootOffsetRadians: number;
   shootOffsetInMoveRadians: number;
   bulletsPerShoot: number;
-  recoilTime?: number;
+  recoilTime: number;
   currentRecoilTime: number;
+  secToMaxHeatLevel: number;
+  heatLevel: number;
   fireType: GunFireType;
   isTriggerPulled: boolean;
   rotationY: number;
@@ -65,6 +67,10 @@ export class GunBehavior implements Behavior {
     this.rotationY = 0;
     this.position = new Vector3();
     this.currentRecoilTime = 0;
+    const shootsPerSec = 1 / (this.recoilTime || 0.16);
+    const shootsToMaxHeat = 100;
+    this.secToMaxHeatLevel = shootsToMaxHeat / shootsPerSec;
+    this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
@@ -72,6 +78,9 @@ export class GunBehavior implements Behavior {
   }
 
   handlePullTrigger = () => {
+    if (this.isTriggerPulled) {
+      return;
+    }
     this.isTriggerPulled = true;
   };
 
@@ -240,5 +249,21 @@ export class GunBehavior implements Behavior {
     } else {
       this.shootRaycast();
     }
+  }
+
+  updateHeatLevel(delta: number) {
+    if (this.fireType !== 'automatic') {
+      return;
+    }
+    if (!this.isTriggerPulled) {
+      if (this.heatLevel !== 0) {
+        this.heatLevel = Math.max(this.heatLevel - delta, 0);
+      }
+      return;
+    }
+    this.heatLevel = Math.min(
+      this.heatLevel + (delta / this.secToMaxHeatLevel),
+      1
+    );
   }
 }
