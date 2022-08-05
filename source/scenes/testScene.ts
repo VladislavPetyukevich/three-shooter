@@ -311,7 +311,7 @@ export class TestScene extends BasicScene {
     );
     const collisions =
       this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.actor.mesh.position);
-    if (collisions.entities.length !== 0) {
+    if (collisions.length !== 0) {
       return false;
     }
     enemy.onDeath(this.onEnemyDeath);
