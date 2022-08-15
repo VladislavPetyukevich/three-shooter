@@ -82,12 +82,13 @@ export class TestScene extends BasicScene {
     });
     this.enemyFactory = new EnemyFactory();
     this.currentRoomEnimiesCount = 0;
+    const roomSizeScale = 2;
     this.roomSpawner = new RoomSpawner({
       scene: this.scene,
       player: this.player,
       entitiesContainer: this.entitiesContainer,
       cellCoordinates: this.cellCoordinates,
-      roomSize: new Vector2(20, 20),
+      roomSize: new Vector2(10 * roomSizeScale, 10 * roomSizeScale),
       doorWidthHalf: 1,
       onRoomVisit: this.handleRoomVisit,
       onSpawnEnemy: this.spawnEnemy,
