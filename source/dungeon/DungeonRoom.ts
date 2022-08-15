@@ -137,10 +137,13 @@ const beforeConstructors = [
 const afterConstructors = [
   (size: Vector2) => {
     const cells: RoomCell[] = [];
-    const step = Math.round(size.x / 4);
-    for (let x = 2; x < size.x - 2; x += step) {
+    const step = 2;
+    for (let y = 2; y < size.y / 2; y += step) {
       cells.push(
-        { position: new Vector2(x, size.y - 2), type: RoomCellType.Enemy },
+        { position: new Vector2(2, y), type: RoomCellType.Enemy },
+      );
+      cells.push(
+        { position: new Vector2(size.x - 2, y), type: RoomCellType.Enemy },
       );
     }
     return cells;
