@@ -90,6 +90,10 @@ export class HUD {
 
   reset() {
     this.hide();
+    const isFirstTimeReset = !this.gunHudTextures;
+    if (!isFirstTimeReset) {
+      this.updateGunHeatLevel(0);
+    }
     this.gunHudTextures = undefined;
     this.nextGunHudTextures = undefined;
     this.show();
