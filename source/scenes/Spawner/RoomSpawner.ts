@@ -183,17 +183,18 @@ export class RoomSpawner {
     if (room.type === RoomType.Neutral) {
       return;
     }
+
     const torches = this.getRoomTorches(room.type);
-    const posO = this.cellCoordinates.toWorldCoordinates(
+    const pos = this.cellCoordinates.toWorldCoordinates(
       new Vector2(
-        room.cellPosition.x + this.roomSize.x / 2 - 0.5,
+        room.cellPosition.x + this.roomSize.x / 2,
         room.cellPosition.y + this.roomSize.y / 2 + 0.5
       )
     );
     torches[0].actor.mesh.position.set(
-      posO.x,
+      pos.x,
       0,
-      posO.y
+      pos.y
     );
     const pos1 = this.cellCoordinates.toWorldCoordinates(
       new Vector2(
@@ -310,15 +311,16 @@ export class RoomSpawner {
   spawnRoomActivateTrigger(room: Room) {
     const color = this.getTriggerColor(room);
     const size = new Vector2(this.cellCoordinates.size, this.cellCoordinates.size);
-    const position = this.getCenterPosition(
+    const position =
       this.cellCoordinates.toWorldCoordinates(
-        new Vector2(
-          room.cellPosition.x + this.roomSize.x / 2,
-          room.cellPosition.y + this.roomSize.y / 2
+        this.rotatePositionForRoom(
+          new Vector2(
+            room.cellPosition.x + this.roomSize.x / 2,
+            room.cellPosition.y + this.roomSize.y - 4
+          ),
+          room
         )
-      ),
-      size
-    );
+      );
     const trigger = this.entitiesContainer.add(
       new Trigger({
         position: new Vector3(
@@ -437,9 +439,11 @@ export class RoomSpawner {
 
   fillRoomCells(room: Room, cells: RoomCell[]) {
     cells.forEach(cell => {
-      const roomCoordinates = this.cellCoordinates.toWorldCoordinates(room.cellPosition);
+      const cellPosition = cell.position.add(room.cellPosition);
       const cellCoordinates =
-        this.cellCoordinates.toWorldCoordinates(cell.position).add(roomCoordinates);
+        this.cellCoordinates.toWorldCoordinates(
+          this.rotatePositionForRoom(cellPosition, room),
+        );
       switch (cell.type) {
         case RoomCellType.Wall:
           room.entities.push(
@@ -457,6 +461,29 @@ export class RoomSpawner {
           break;
       }
     });
+  }
+
+  rotatePositionForRoom(position: Vector2, room: Room) {
+    position.rotateAround(
+      this.getCenterPosition(room.cellPosition, this.roomSize),
+      this.getRotationAngleForRoomType(room.type),
+    );
+    return position;
+  }
+
+  getRotationAngleForRoomType(roomType: RoomType) {
+    switch (roomType) {
+      case RoomType.Apathy:
+        return 0;
+      case RoomType.SexualPerversions:
+        return 1.5707963267948966; // 90 degress in radians
+      case RoomType.Cowardice:
+        return -1.5707963267948966; // -90 degress in radians
+      case RoomType.Neutral:
+        return 0;
+      default:
+        throw new Error(`Unknown room type: ${roomType}`);
+    }
   }
 
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType) {
