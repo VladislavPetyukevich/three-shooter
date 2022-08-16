@@ -21,35 +21,23 @@ interface WallActorProps {
 
 export class WallActor implements Actor {
   mesh: Mesh;
+  textureFileName: string;
+  textureSize: number;
+  color?: Color;
 
   constructor(props: WallActorProps) {
+    this.textureFileName = props.textureFileName;
+    this.textureSize = props.textureSize;
+    this.color = props.color;
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
     const textureXSize = props.isHorizontalWall ?
       props.size.width :
       props.size.depth;
-    const textureX = this.getSizeSpecificTexture(props.textureFileName, `X${textureXSize}`);
-    textureX.wrapS = textureX.wrapT = RepeatWrapping;
-    textureX.repeat.x = textureXSize / props.textureSize;
-    textureX.repeat.y = 1;
-    textureX.needsUpdate = true;
-    const materialX = new MeshLambertMaterial({
-      transparent: true,
-      map: textureX,
-      ...(props.color && { color: props.color }),
-    });
+    const materialX = this.createMaterial(textureXSize);
     const textureYSize = props.isHorizontalWall ?
       props.size.depth :
       props.size.width;
-    const textureY = this.getSizeSpecificTexture(props.textureFileName, `Y${textureYSize}`);
-    textureY.wrapS = textureY.wrapT = RepeatWrapping;
-    textureY.repeat.x = textureYSize / props.textureSize;
-    textureY.repeat.y = 1;
-    textureY.needsUpdate = true;
-    const materialY = new MeshLambertMaterial({
-      transparent: true,
-      map: textureY,
-      ...(props.color && { color: props.color }),
-    });
+    const materialY = this.createMaterial(textureYSize);
     const materials: Material[] = [];
     const horizontalMaterial = props.isHorizontalWall ? materialX : materialY;
     const vertivalMaterial = props.isHorizontalWall ? materialY : materialX;
@@ -64,6 +52,20 @@ export class WallActor implements Actor {
       props.position.y,
       props.position.z
     );
+  }
+
+  createMaterial(textureSize: number) {
+    const texture = this.getSizeSpecificTexture(this.textureFileName, `X${textureSize}`);
+    texture.wrapS = texture.wrapT = RepeatWrapping;
+    texture.repeat.x = textureSize / this.textureSize;
+    texture.repeat.y = 1;
+    texture.needsUpdate = true;
+    const material = new MeshLambertMaterial({
+      transparent: true,
+      map: texture,
+      ...(this.color && { color: this.color }),
+    });
+    return material;
   }
 
   getSizeSpecificTexture(textureName: string, sizeId: string) {
