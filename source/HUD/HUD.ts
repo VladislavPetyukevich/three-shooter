@@ -173,7 +173,7 @@ export class HUD {
     this.bobState = this.getInitialBobState();
     const gunScale = height * 0.75;
     this.gunSpriteHeight = -height + gunScale / 2;
-    this.gun.scale.set(gunScale, gunScale, 1);
+    this.gun.scale.set(gunScale * 2, gunScale, 1);
     this.gun.position.set(0, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
