@@ -20,6 +20,10 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
     this.animations = [];
   }
 
+  get mesh() {
+    return this.actor.mesh;
+  }
+
   onHit(damage: number, entity?: Entity) {
     if (this.hp) {
       this.hp -= damage;
@@ -35,7 +39,7 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
   onDestroy() { }
 
   setScaticPositionOptimizations(isEnabled: boolean) {
-    this.actor.mesh.matrixAutoUpdate = !isEnabled;
+    this.mesh.matrixAutoUpdate = !isEnabled;
   }
 
   addAnimation(animation: ActorAnimator) {

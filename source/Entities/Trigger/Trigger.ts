@@ -38,7 +38,7 @@ export class Trigger extends Entity {
     if (entity.type === ENTITY_TYPE.PLAYER) {
       this.isEnabled = false;
       this.onTrigger();
-      this.entitiesContainer.remove(this.actor.mesh);
+      this.entitiesContainer.remove(this.mesh);
     }
     return true;
   }

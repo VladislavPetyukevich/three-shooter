@@ -36,7 +36,7 @@ export class ShootMark extends Entity {
     this.lifeTime += delta;
 
     if (this.lifeTime >= 0.2) {
-      this.container.remove(this.actor.mesh);
+      this.container.remove(this.mesh);
     }
   }
 }

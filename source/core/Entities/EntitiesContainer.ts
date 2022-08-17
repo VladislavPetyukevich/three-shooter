@@ -26,9 +26,9 @@ export class EntitiesContainer {
   add(entity: Entity) {
     this.collideChecker.addEntity(entity);
     this.entities.push(entity);
-    this.entitiesMeshes.push(entity.actor.mesh);
-    this.meshIdToEntity.set(entity.actor.mesh.id, entity);
-    this.scene.add(entity.actor.mesh);
+    this.entitiesMeshes.push(entity.mesh);
+    this.meshIdToEntity.set(entity.mesh.id, entity);
+    this.scene.add(entity.mesh);
     return entity;
   }
 
@@ -36,7 +36,7 @@ export class EntitiesContainer {
     const meshId = mesh.id;
     this.collideChecker.removeEntity(meshId);
     for (let i = this.entities.length; i--;) {
-      if (this.entities[i].actor.mesh.id === meshId) {
+      if (this.entities[i].mesh.id === meshId) {
         this.entities.splice(i, 1);
         this.entitiesMeshes.splice(i, 1);
         break;
@@ -62,26 +62,26 @@ export class EntitiesContainer {
         return;
       }
 
-      entity.actor.mesh.position.set(
-        entity.actor.mesh.position.x,
-        entity.actor.mesh.position.y + entity.velocity.y * delta,
-        entity.actor.mesh.position.z
+      entity.mesh.position.set(
+        entity.mesh.position.x,
+        entity.mesh.position.y + entity.velocity.y * delta,
+        entity.mesh.position.z
       );
-      const newPositionX = entity.actor.mesh.position.x + entity.velocity.x * delta;
-      const newPositionZ = entity.actor.mesh.position.z + entity.velocity.z * delta;
+      const newPositionX = entity.mesh.position.x + entity.velocity.x * delta;
+      const newPositionZ = entity.mesh.position.z + entity.velocity.z * delta;
       this.updateEntityPosition(
         entity,
         new Vector3(
           newPositionX,
-          entity.actor.mesh.position.y,
-          entity.actor.mesh.position.z
+          entity.mesh.position.y,
+          entity.mesh.position.z
         )
       );
       this.updateEntityPosition(
         entity,
         new Vector3(
-          entity.actor.mesh.position.x,
-          entity.actor.mesh.position.y,
+          entity.mesh.position.x,
+          entity.mesh.position.y,
           newPositionZ
         )
       );
@@ -98,7 +98,7 @@ export class EntitiesContainer {
     collisionsResultRaycast.forEach(collisionRaycast => {
       const meshId = collisionRaycast.object.id;
       const isDetectedPreviously = collisionsResult.some(
-        collision => collision.actor.mesh.id === meshId
+        collision => collision.mesh.id === meshId
       );
       if (isDetectedPreviously) {
         return;

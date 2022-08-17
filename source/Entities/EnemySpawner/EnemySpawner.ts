@@ -50,7 +50,7 @@ export class EnemySpawner extends Entity<EnemySpawnerActor, EnemySpawnerBehavior
   }
 
   onDestroy = () => {
-    this.container.remove(this.actor.mesh);
+    this.container.remove(this.mesh);
     this.onDestroyCallback();
   };
 }

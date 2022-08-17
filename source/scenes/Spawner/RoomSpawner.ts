@@ -191,7 +191,7 @@ export class RoomSpawner {
         room.cellPosition.y + this.roomSize.y / 2 + 0.5
       )
     );
-    torches[0].actor.mesh.position.set(
+    torches[0].mesh.position.set(
       pos.x,
       0,
       pos.y
@@ -202,7 +202,7 @@ export class RoomSpawner {
         room.cellPosition.y + this.roomSize.y / 2 - 0.5
       )
     );
-    torches[1].actor.mesh.position.set(
+    torches[1].mesh.position.set(
       pos1.x,
       0,
       pos1.y
@@ -213,7 +213,7 @@ export class RoomSpawner {
         room.cellPosition.y + this.roomSize.y / 2 + 0.5
       )
     );
-    torches[2].actor.mesh.position.set(
+    torches[2].mesh.position.set(
       pos2.x,
       0,
       pos2.y
@@ -224,7 +224,7 @@ export class RoomSpawner {
         room.cellPosition.y + this.roomSize.y / 2 + 1.5
       )
     );
-    torches[3].actor.mesh.position.set(
+    torches[3].mesh.position.set(
       pos3.x,
       0,
       pos3.y
@@ -264,10 +264,10 @@ export class RoomSpawner {
     }
     this.scene.remove(room.floor);
     room.walls.forEach(wall =>
-      this.entitiesContainer.remove(wall.actor.mesh)
+      this.entitiesContainer.remove(wall.mesh)
     );
     room.entities.forEach(entity =>
-      this.entitiesContainer.remove(entity.actor.mesh)
+      this.entitiesContainer.remove(entity.mesh)
     );
     const doors = room.doors;
     this.removeEntity(doors.top);
@@ -281,7 +281,7 @@ export class RoomSpawner {
     if (!entity) {
       return;
     }
-    this.entitiesContainer.remove(entity.actor.mesh);
+    this.entitiesContainer.remove(entity.mesh);
   }
 
   deleteRoomRelations(room: Room) {

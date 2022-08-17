@@ -98,8 +98,8 @@ export class TestScene extends BasicScene {
     this.openCloseDoors(this.currentRoom, false);
 
     const playerPosition = this.getInitialPlayerPositon();
-    this.player.actor.mesh.position.x = playerPosition.x;
-    this.player.actor.mesh.position.z = playerPosition.y;
+    this.player.mesh.position.x = playerPosition.x;
+    this.player.mesh.position.z = playerPosition.y;
     this.camera.rotation.y = this.getInitialCameraRotation();
 
     this.spawnGuns();
@@ -144,16 +144,16 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
-          this.player.actor.mesh.position.x,
-          this.player.actor.mesh.position.y - 1,
-          this.player.actor.mesh.position.z - this.cellCoordinates.size * 3,
+          this.player.mesh.position.x,
+          this.player.mesh.position.y - 1,
+          this.player.mesh.position.z - this.cellCoordinates.size * 3,
         ),
         size: new Vector3(1, 0.5, 1),
         gun: new Shotgun({
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
-          holderGeometry: this.player.actor.mesh.geometry,
+          holderGeometry: this.player.mesh.geometry,
         }),
         gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
       })
@@ -164,16 +164,16 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
-          this.player.actor.mesh.position.x,
-          this.player.actor.mesh.position.y - 1,
-          this.player.actor.mesh.position.z - this.cellCoordinates.size * 5,
+          this.player.mesh.position.x,
+          this.player.mesh.position.y - 1,
+          this.player.mesh.position.z - this.cellCoordinates.size * 5,
         ),
         size: new Vector3(1, 0.5, 1),
         gun: new Machinegun({
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
-          holderGeometry: this.player.actor.mesh.geometry,
+          holderGeometry: this.player.mesh.geometry,
         }),
         gunTextureName: GAME_TEXTURE_NAME.machinegunTextureFile,
       })
@@ -247,7 +247,7 @@ export class TestScene extends BasicScene {
       new EnemySpawner({
         container: this.entitiesContainer,
         positionPadding: this.cellCoordinates.size,
-        position: enemy.actor.mesh.position.clone(),
+        position: enemy.mesh.position.clone(),
         spawnsCount: enemiesFromSpawnerCount,
         onTrigger: this.spawnEnemyFromSpawner(roomType),
         onDestroy: this.onEnemyDeath,
@@ -311,7 +311,7 @@ export class TestScene extends BasicScene {
       roomType
     );
     const collisions =
-      this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.actor.mesh.position);
+      this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.mesh.position);
     if (collisions.length !== 0) {
       return false;
     }
@@ -389,7 +389,7 @@ export class TestScene extends BasicScene {
     super.update(delta);
     this.updateDeathCamera(delta);
     this.updateFalling(delta);
-    this.pointLight.position.copy(this.player.actor.mesh.position);
+    this.pointLight.position.copy(this.player.mesh.position);
   }
 
   updateDeathCamera(delta: number) {

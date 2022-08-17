@@ -127,7 +127,7 @@ export class GunBehavior implements Behavior {
       for (let i = 0; i < intersects.length; i++) {
         const intersect = intersects[i];
         const intersectEntity = this.container.entities.find(
-          entity => entity.actor.mesh.id === intersect.object.id
+          entity => entity.mesh.id === intersect.object.id
         );
         if (!intersectEntity) {
           continue;

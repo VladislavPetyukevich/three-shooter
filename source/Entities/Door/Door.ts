@@ -42,16 +42,16 @@ export class Door extends Entity<WallActor, DoorBehavior> {
       actor,
       behavior
     );
-    this.actor.mesh.renderOrder = 1;
+    this.mesh.renderOrder = 1;
     behavior.onOpen = () => this.onOpen();
     behavior.onClose = () => this.onClose();
     this.container = props.container;
     if (props.isHorizontalWall) {
-      delete (this.actor.mesh.material as Material[])[0];
-      delete (this.actor.mesh.material as Material[])[1];
+      delete (this.mesh.material as Material[])[0];
+      delete (this.mesh.material as Material[])[1];
     } else {
-      delete (this.actor.mesh.material as Material[])[4];
-      delete (this.actor.mesh.material as Material[])[5];
+      delete (this.mesh.material as Material[])[4];
+      delete (this.mesh.material as Material[])[5];
     }
   }
 

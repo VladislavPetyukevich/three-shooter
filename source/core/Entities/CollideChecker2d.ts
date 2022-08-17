@@ -42,7 +42,7 @@ export class CollideChecker2d {
   }
 
   addEntity(entity: Entity) {
-    const bbox = new Box3().setFromObject(entity.actor.mesh);
+    const bbox = new Box3().setFromObject(entity.mesh);
     const bounds: EntityBounds = {
       xMin: bbox.min.x,
       xMax: bbox.max.x,
@@ -89,7 +89,7 @@ export class CollideChecker2d {
         if (entityToCheck.entity.isCollideTransparent) {
           return;
         }
-        if (entityToCheck.entity.actor.mesh.id === entity.actor.mesh.id) {
+        if (entityToCheck.entity.mesh.id === entity.mesh.id) {
           return;
         }
         if (
@@ -117,20 +117,20 @@ export class CollideChecker2d {
   }
 
   updateEntityPosition(entity: Entity, newPosition: Vector3) {
-    entity.actor.mesh.position.set(
+    entity.mesh.position.set(
       newPosition.x,
       newPosition.y,
       newPosition.z
     );
 
-    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
+    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.mesh.id];
     if (!entityMapCoordinates) {
       return;
     }
     entityMapCoordinates.forEach(
-      coordinates => this.removeEntityFromMap(coordinates, entity.actor.mesh.id)
+      coordinates => this.removeEntityFromMap(coordinates, entity.mesh.id)
     );
-    delete this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
+    delete this.mapMeshIdToMapCoordinates[entity.mesh.id];
 
     this.addEntity(entity);
   }
@@ -141,7 +141,7 @@ export class CollideChecker2d {
       throw new Error('Entity not found');
     }
     for (let i = mapCell.entities.length; i--;) {
-      if (mapCell.entities[i].entity.actor.mesh.id === entityMeshId) {
+      if (mapCell.entities[i].entity.mesh.id === entityMeshId) {
         mapCell.entities.splice(i, 1);
         break;
       }
@@ -157,20 +157,20 @@ export class CollideChecker2d {
       this.map.set(positionHash, { entities: [entityRecord] });
     }
 
-    if (this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id]) {
-      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id].push(position);
+    if (this.mapMeshIdToMapCoordinates[entityRecord.entity.mesh.id]) {
+      this.mapMeshIdToMapCoordinates[entityRecord.entity.mesh.id].push(position);
     } else {
-      this.mapMeshIdToMapCoordinates[entityRecord.entity.actor.mesh.id] = [position];
+      this.mapMeshIdToMapCoordinates[entityRecord.entity.mesh.id] = [position];
     }
   }
 
   getEntityMapCoordinates(entity: Entity) {
-    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.actor.mesh.id];
+    const entityMapCoordinates = this.mapMeshIdToMapCoordinates[entity.mesh.id];
     if (entityMapCoordinates) {
       return entityMapCoordinates;
     }
     const mapCoordinates: Position[] = [];
-    const bbox = new Box3().setFromObject(entity.actor.mesh);
+    const bbox = new Box3().setFromObject(entity.mesh);
     const bounds: EntityBounds = {
       xMin: bbox.min.x,
       xMax: bbox.max.x,
@@ -190,25 +190,25 @@ export class CollideChecker2d {
   }
 
   getSize(entity: Entity): { width: number; height: number } {
-    if (entity.actor.mesh.geometry.type === 'BoxGeometry') {
+    if (entity.mesh.geometry.type === 'BoxGeometry') {
       return {
-        width: (<any>entity.actor.mesh.geometry).parameters.width,
-        height: (<any>entity.actor.mesh.geometry).parameters.depth
+        width: (<any>entity.mesh.geometry).parameters.width,
+        height: (<any>entity.mesh.geometry).parameters.depth
       };
     }
-    if (entity.actor.mesh.geometry.type === 'SphereGeometry') {
+    if (entity.mesh.geometry.type === 'SphereGeometry') {
       return {
-        width: (<any>entity.actor.mesh.geometry).parameters.radius * 2,
-        height: (<any>entity.actor.mesh.geometry).parameters.radius * 2
+        width: (<any>entity.mesh.geometry).parameters.radius * 2,
+        height: (<any>entity.mesh.geometry).parameters.radius * 2
       };
     }
-    if (entity.actor.mesh.geometry.type === 'CylinderGeometry') {
+    if (entity.mesh.geometry.type === 'CylinderGeometry') {
       return {
-        width: (<any>entity.actor.mesh.geometry).parameters.height,
-        height: (<any>entity.actor.mesh.geometry).parameters.height
+        width: (<any>entity.mesh.geometry).parameters.height,
+        height: (<any>entity.mesh.geometry).parameters.height
       };
     }
-    throw new Error(`geometry type are not suported: ${entity.actor.mesh.geometry.type}`);
+    throw new Error(`geometry type are not suported: ${entity.mesh.geometry.type}`);
   }
 
   getMapRecord(position: Position) {

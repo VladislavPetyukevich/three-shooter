@@ -246,7 +246,7 @@ export class EditorScene extends TestScene {
       entity => entity.type === entityType
     );
     entities.forEach(
-      entity => this.entitiesContainer.remove(entity.actor.mesh)
+      entity => this.entitiesContainer.remove(entity.mesh)
     );
   }
 
@@ -262,7 +262,7 @@ export class EditorScene extends TestScene {
       return;
     }
     const entity = this.currentEditorEntities[cellX][cellY];
-    this.entitiesContainer.remove(entity.actor.mesh);
+    this.entitiesContainer.remove(entity.mesh);
     delete this.currentEditorEntities[cellX][cellY];
   }
 
@@ -297,7 +297,7 @@ export class EditorScene extends TestScene {
       for (let cellY = 0; cellY < xRow.length; cellY++) {
         if (xRow[cellY]) {
           const entity = this.currentEditorEntities[cellX][cellY];
-          this.entitiesContainer.remove(entity.actor.mesh);
+          this.entitiesContainer.remove(entity.mesh);
           const newEntity = this.spawnEntityInRoom(cellX, cellY, entity.type as ENTITY_TYPE);
           this.currentEditorEntities[cellX][cellY] = newEntity;
         }

@@ -53,7 +53,7 @@ export class EnemyActor implements Actor {
   }
 
   update(delta: number) {
-    const playerMesh = this.player.actor.mesh;
+    const playerMesh = this.player.mesh;
     this.mesh.rotation.y = Math.atan2(
       (playerMesh.position.x - this.mesh.position.x), (playerMesh.position.z - this.mesh.position.z)
     );

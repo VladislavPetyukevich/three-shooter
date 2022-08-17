@@ -41,7 +41,7 @@ export class Boomerang extends Bullet {
       return true;
     }
     if (this.behavior.currentPhase === 'flyBlackward') {
-      this.container.remove(this.actor.mesh);
+      this.container.remove(this.mesh);
       entity.onMessage(ENTITY_MESSAGES.boomerangReturned);
       return false;
     }

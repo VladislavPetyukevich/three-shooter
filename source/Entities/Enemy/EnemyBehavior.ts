@@ -219,7 +219,7 @@ export class EnemyBehavior implements Behavior {
     this.velocity.set(0, 0, 0);
     const pathToEntity = this.container.pathfinder.getPathBetweenEntities(
       this.actor.mesh.id,
-      entity.actor.mesh.id
+      entity.mesh.id
     );
     if (pathToEntity) {
       this.followingPath = pathToEntity;
@@ -240,8 +240,8 @@ export class EnemyBehavior implements Behavior {
     } else {
       this.velocityToPoint(
         new Vector2(
-          entity.actor.mesh.position.x,
-          entity.actor.mesh.position.z
+          entity.mesh.position.x,
+          entity.mesh.position.z
         )
       );
     }
@@ -284,8 +284,8 @@ export class EnemyBehavior implements Behavior {
   }
 
   getDistanceToEntity(entity: Entity) {
-    const diffX = this.actor.mesh.position.x - entity.actor.mesh.position.x;
-    const diffZ = this.actor.mesh.position.z - entity.actor.mesh.position.z;
+    const diffX = this.actor.mesh.position.x - entity.mesh.position.x;
+    const diffZ = this.actor.mesh.position.z - entity.mesh.position.z;
     return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
 
@@ -354,7 +354,7 @@ export class EnemyBehavior implements Behavior {
     const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
     const entityIndex = intersectObjects.findIndex(intersect => 
       this.followingEnemy &&
-      intersect.object.uuid === this.followingEnemy.actor.mesh.uuid
+      intersect.object.uuid === this.followingEnemy.mesh.uuid
     );
     if (entityIndex === 0) {
       this.velocityToEntity(this.followingEnemy);

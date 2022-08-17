@@ -53,7 +53,7 @@ export class Player extends Entity<PlayerActor, СontrolledBehavior> {
 
   onCollide(entity: Entity) {
     if (entity.type === ENTITY_TYPE.GUN_PICK_UP) {
-      this.container.remove(entity.actor.mesh);
+      this.container.remove(entity.mesh);
       const pickedGun = (<GunPickUp>entity).getGun();
       this.behavior.addGun(pickedGun);
     }
