@@ -338,7 +338,7 @@ export class RoomSpawner {
         onTrigger: () => this.onRoomVisit(room),
       })
     ) as Trigger;
-    trigger.setIsNotMovingOptimizations(true);
+    trigger.setScaticPositionOptimizations(true);
     return trigger;
   }
 
@@ -498,25 +498,25 @@ export class RoomSpawner {
         const wallApathy = this.entitiesContainer.add(
           new WallApathy(props)
         );
-        wallApathy.setIsNotMovingOptimizations(true);
+        wallApathy.setScaticPositionOptimizations(true);
         return wallApathy;
       case RoomType.Cowardice:
         const wallCowardice = this.entitiesContainer.add(
           new WallCowardice(props)
         );
-        wallCowardice.setIsNotMovingOptimizations(true);
+        wallCowardice.setScaticPositionOptimizations(true);
         return wallCowardice;
       case RoomType.SexualPerversions:
         const wallSexualPerversions = this.entitiesContainer.add(
           new WallSexualPerversions(props)
         );
-        wallSexualPerversions.setIsNotMovingOptimizations(true);
+        wallSexualPerversions.setScaticPositionOptimizations(true);
         return wallSexualPerversions;
       default:
         const wallNeutral = this.entitiesContainer.add(
           new WallNeutral(props)
         );
-        wallNeutral.setIsNotMovingOptimizations(true);
+        wallNeutral.setScaticPositionOptimizations(true);
         return wallNeutral;
     }
   }
