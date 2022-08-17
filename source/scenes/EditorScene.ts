@@ -98,8 +98,8 @@ export class EditorScene extends TestScene {
     mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
-    for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
-      for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
+    for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
+      for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
         const mapCellEl = document.createElement('div');
         mapCellEl.style.display = 'inline-block';
         mapCellEl.style.width = '12px';
