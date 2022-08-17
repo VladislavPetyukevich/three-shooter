@@ -20,6 +20,8 @@ import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { mindState } from '@/MindState';
 
+const SceneClass = TestScene;
+
 export default class ThreeShooter {
   gameProps: any;
   currScene: BasicScene;
@@ -117,7 +119,7 @@ export default class ThreeShooter {
         }
         document.removeEventListener('pointerlockchange', pointerlockHandler);
       };
-      this.loadScene(TestScene, gameProps);
+      this.loadScene(SceneClass, gameProps);
       document.addEventListener('pointerlockchange', pointerlockHandler);
       gameProps.onLoad();
     };
@@ -146,7 +148,7 @@ export default class ThreeShooter {
     setTimeout(
       () => {
         this.loadScene(
-          TestScene,
+          SceneClass,
           { ...this.gameProps, onFinish: this.onDungeonFinish },
           () => this.loadedScene && this.changeScene(this.loadedScene)
         );
