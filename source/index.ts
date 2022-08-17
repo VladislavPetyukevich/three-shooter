@@ -207,13 +207,17 @@ export default class ThreeShooter {
     if (this.enabled || !this.loaded) {
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
-      this.renderer.clear();
-      this.currScene.update(delta);
-      this.composer.render(delta);
-      this.renderer.clearDepth();
-      this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
-      this.renderer.render(hud.scene, hud.camera);
-      hud.update(delta);
+      if (delta < 1) {
+        this.renderer.clear();
+        this.currScene.update(delta);
+        this.composer.render(delta);
+        this.renderer.clearDepth();
+        this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
+        this.renderer.render(hud.scene, hud.camera);
+        hud.update(delta);
+      } else {
+        console.warn('Performance issues. Skip frame');
+      }
       this.prevTime = time;
     }
     requestAnimationFrame(this.update);
