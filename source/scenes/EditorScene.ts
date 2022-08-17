@@ -94,6 +94,7 @@ export class EditorScene extends TestScene {
   createMapElements() {
     const blockerEl = this.getBlockerElement();
     const mapContainer = document.createElement('div');
+    mapContainer.id = 'mapContainer';
     mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
@@ -137,10 +138,15 @@ export class EditorScene extends TestScene {
   }
 
   createEntitiesButtons() {
+    const mapContainer = document.getElementById('mapContainer');
+    if (!mapContainer) {
+      throw new Error('Map container not found');
+    }
+    const mapContainerBoundingClientRect = mapContainer.getBoundingClientRect();
     const blockerEl = this.getBlockerElement();
     const enemyButton = document.createElement('button');
     enemyButton.style.position = 'absolute';
-    enemyButton.style.top = '230px';
+    enemyButton.style.top = `${mapContainerBoundingClientRect.height}px`;
     enemyButton.style.left = '60px';
     enemyButton.style.background = this.cellColors.enemy;
     enemyButton.innerHTML = 'Enemy';
@@ -148,7 +154,7 @@ export class EditorScene extends TestScene {
     blockerEl.appendChild(enemyButton);
     const wallButton = document.createElement('button');
     wallButton.style.position = 'absolute';
-    wallButton.style.top = '230px';
+    wallButton.style.top = `${mapContainerBoundingClientRect.height}px`;
     wallButton.style.left = '120px';
     wallButton.style.background = this.cellColors.wall;
     wallButton.innerHTML = 'Wall';
@@ -156,7 +162,7 @@ export class EditorScene extends TestScene {
     blockerEl.appendChild(wallButton);
     const clearButton = document.createElement('button');
     clearButton.style.position = 'absolute';
-    clearButton.style.top = '230px';
+    clearButton.style.top = `${mapContainerBoundingClientRect.height}px`;
     clearButton.style.background = this.cellColors.empty;
     clearButton.style.color = this.cellColors.border;
     clearButton.innerHTML = 'Clear';
@@ -167,13 +173,13 @@ export class EditorScene extends TestScene {
     blockerEl.appendChild(clearButton);
     const exportButton = document.createElement('button');
     exportButton.style.position = 'absolute';
-    exportButton.style.top = '260px';
+    exportButton.style.top = `${mapContainerBoundingClientRect.height + 20}px`;
     exportButton.innerHTML = 'Log to console';
     exportButton.onclick = () => this.logDungeonToConsole();
     blockerEl.appendChild(exportButton);
     const saveButton = document.createElement('button');
     saveButton.style.position = 'absolute';
-    saveButton.style.top = '285px';
+    saveButton.style.top = `${mapContainerBoundingClientRect.height + 40}px`;
     saveButton.innerHTML = 'Save to local storage';
     saveButton.onclick = () => this.saveDungeonToLocalStorage();
     blockerEl.appendChild(saveButton);
