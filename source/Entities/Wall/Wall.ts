@@ -21,7 +21,7 @@ export class Wall extends Entity {
       size: size,
       isHorizontalWall: props.isHorizontalWall,
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
-      textureSize: 3,
+      textureRepeat: 3,
       color: props.color,
     });
     const behavior = new WallBehavior({});

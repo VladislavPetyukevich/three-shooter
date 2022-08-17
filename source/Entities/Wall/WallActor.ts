@@ -13,7 +13,7 @@ import { texturesStore } from '@/core/loaders/TextureLoader';
 interface WallActorProps {
   size: { width: number; height: number, depth: number };
   position: Vector3;
-  textureSize: number;
+  textureRepeat: number;
   textureFileName: string;
   isHorizontalWall?: boolean;
   color?: Color;
@@ -22,12 +22,12 @@ interface WallActorProps {
 export class WallActor implements Actor {
   mesh: Mesh;
   textureFileName: string;
-  textureSize: number;
+  textureRepeat: number;
   color?: Color;
 
   constructor(props: WallActorProps) {
     this.textureFileName = props.textureFileName;
-    this.textureSize = props.textureSize;
+    this.textureRepeat = props.textureRepeat;
     this.color = props.color;
     const geometry = new BoxGeometry(props.size.width, props.size.height, props.size.depth);
     const textureXSize = props.isHorizontalWall ?
@@ -57,7 +57,7 @@ export class WallActor implements Actor {
   createMaterial(textureSize: number) {
     const texture = this.getSizeSpecificTexture(this.textureFileName, `X${textureSize}`);
     texture.wrapS = texture.wrapT = RepeatWrapping;
-    texture.repeat.x = textureSize / this.textureSize;
+    texture.repeat.x = textureSize / this.textureRepeat;
     texture.repeat.y = 1;
     texture.needsUpdate = true;
     const material = new MeshLambertMaterial({
