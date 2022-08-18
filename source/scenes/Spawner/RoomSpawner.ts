@@ -559,7 +559,6 @@ export class RoomSpawner {
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
       container: this.entitiesContainer,
       size: { width: size.width, height: WALL.SIZE, depth: size.height },
-      player: this.player,
       isHorizontalWall: isHorizontalWall
     });
     this.entitiesContainer.add(door);

@@ -1,13 +1,12 @@
 import { Entity } from '@/core/Entities/Entity';
-import { Player } from '@/Entities/Player/Player';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { DoorBehavior } from './DoorBehavior';
 import { Vector3, Material } from 'three';
-import { ENTITY_TYPE, GAME_TEXTURE_NAME } from '@/constants';
+import { ENTITY_TYPE, GAME_TEXTURE_NAME, DOOR } from '@/constants';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { SlideAnimation } from '@/Animations/SlideAnimation';
 
 interface DoorProps {
-  player: Player;
   position: Vector3;
   container: EntitiesContainer;
   isHorizontalWall?: boolean;
@@ -30,12 +29,18 @@ export class Door extends Entity<WallActor, DoorBehavior> {
       isHorizontalWall: props.isHorizontalWall,
       textureRepeat: 3 * 4
     });
+    const absoluteWidth = props.isHorizontalWall ? props.size.width : props.size.depth;
+    const position = props.isHorizontalWall ? props.position.x : props.position.z;
     const behavior = new DoorBehavior({
-      player: props.player,
-      actor: actor,
-      isHorizontalWall: props.isHorizontalWall,
-      position: props.position,
-      size: props.size
+      animation: new SlideAnimation({
+        actor: actor,
+        axis: props.isHorizontalWall ? 'x' : 'z',
+        speed: DOOR.OPEN_SPEED,
+        startPosition: props.isHorizontalWall ?
+          actor.mesh.position.x :
+          actor.mesh.position.z,
+        endPosition: absoluteWidth + position,
+      }),
     });
     super(
       ENTITY_TYPE.WALL,
