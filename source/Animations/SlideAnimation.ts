@@ -25,7 +25,7 @@ export class SlideAnimation implements ActorAnimator {
   }
 
   update(delta: number) {
-    this.actor.mesh.position[this.axis] += delta * this.startPosition;
+    this.actor.mesh.position[this.axis] += delta * this.speed;
     const meshPosition = this.actor.mesh.position[this.axis];
     if (meshPosition > this.endPosition) {
       return false;
