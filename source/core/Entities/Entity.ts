@@ -26,7 +26,7 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
   }
 
   onHit(damage: number, entity?: Entity) {
-    if (this.hp) {
+    if (typeof this.hp === 'number') {
       this.hp -= damage;
     }
   }
