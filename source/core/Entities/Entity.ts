@@ -7,6 +7,7 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
   type: string;
   actor: A;
   behavior: B;
+  tag?: string;
   hp?: number;
   velocity?: Vector3;
   isCollideTransparent: boolean;
