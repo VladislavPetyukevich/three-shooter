@@ -11,7 +11,7 @@ import {
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { WALL, GAME_TEXTURE_NAME, PI_2 } from '@/constants';
+import { WALL, GAME_TEXTURE_NAME, PI_2, ENTITY_TYPE } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
@@ -19,6 +19,7 @@ import { WallCowardice } from '@/Entities/Wall/Inheritor/WallCowardice';
 import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerversions';
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
+import { DoorWall } from '@/Entities/DoorWall/DoorWall';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
@@ -27,10 +28,12 @@ import {
   RoomCell,
   RoomConstructors,
   getRandomRoomConstructor,
+  RoomCellEventType,
 } from '@/dungeon/DungeonRoom';
 import { mindState } from '@/MindState';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { TestScene } from '../testScene';
 
 const enum Direction {
   Top, Bottom, Left, Right
@@ -76,7 +79,7 @@ export interface RoomSpawnerProps {
   roomSize: Vector2;
   doorWidthHalf: number;
   onRoomVisit: (room: Room) => void;
-  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType) => void;
+  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: (scene: TestScene) => void) => Entity;
 }
 
 export class RoomSpawner {
@@ -446,16 +449,52 @@ export class RoomSpawner {
         );
       switch (cell.type) {
         case RoomCellType.Wall:
-          room.entities.push(
+          const wall =
             this.spawnWall(
               this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
               new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
               room.type,
             )
-          );
+          wall.tag = cell.tag;
+          room.entities.push(wall);
+          break;
+        case RoomCellType.DoorWall:
+          const doorWall =
+            this.spawnDoorWall(
+              this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
+              new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)
+            );
+          doorWall.tag = cell.tag;
+          room.entities.push(doorWall);
           break;
         case RoomCellType.Enemy:
-          this.onSpawnEnemy(cellCoordinates, room.type);
+          const onDeathCallback = cell.event ?
+            (scene: TestScene) => {
+              switch (cell.event?.type) {
+                case RoomCellEventType.OpenDoorIfNoEntitiesWithTag:
+                  const isHasEntityWithTag = scene.currentRoom.entities.some(
+                    entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
+                  );
+                  if (isHasEntityWithTag) {
+                    return;
+                  }
+                  scene.currentRoom.entities.forEach(entity => {
+                    if (
+                      (entity.tag === cell.event?.targetEntityTag) &&
+                      (entity.type === ENTITY_TYPE.WALL)
+                    ) {
+                      (entity as Door).open();
+                    }
+                  });
+                  break;
+                default:
+                  break;
+              }
+            } :
+            undefined;
+          const enemy = this.onSpawnEnemy(cellCoordinates, room.type, onDeathCallback);
+          enemy.tag = cell.tag;
+          room.entities.push(enemy);
           break;
         default:
           break;
@@ -563,6 +602,18 @@ export class RoomSpawner {
     });
     this.entitiesContainer.add(door);
     return door;
+  }
+
+  spawnDoorWall(coordinates: Vector2, size: Vector2) {
+    const isHorizontalWall = size.width > size.height;
+    const doorWall = new DoorWall({
+      position: new Vector3(coordinates.x, 1.5, coordinates.y),
+      container: this.entitiesContainer,
+      size: { width: size.width, height: WALL.SIZE, depth: size.height },
+      isHorizontalWall: isHorizontalWall
+    });
+    this.entitiesContainer.add(doorWall);
+    return doorWall;
   }
 
   getSceneTorches() {
