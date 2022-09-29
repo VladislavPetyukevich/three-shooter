@@ -24,12 +24,31 @@ export class SlideAnimation implements ActorAnimator {
     this.endPosition = props.endPosition;
   }
 
+  clamp(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   update(delta: number) {
-    this.actor.mesh.position[this.axis] += delta * this.speed;
+    const absolutePositions = this.startPosition < this.endPosition ?
+      [this.startPosition, this.endPosition] :
+      [this.endPosition, this.startPosition];
+
+    if (this.startPosition < this.endPosition) {
+      this.actor.mesh.position[this.axis] += delta * this.speed;
+    } else {
+      this.actor.mesh.position[this.axis] -= delta * this.speed;
+    }
+
+    this.actor.mesh.position[this.axis] =
+      this.clamp(
+        this.actor.mesh.position[this.axis],
+        absolutePositions[0],
+        absolutePositions[1],
+      );
     const meshPosition = this.actor.mesh.position[this.axis];
-    if (meshPosition > this.endPosition) {
+    if (meshPosition >= absolutePositions[1]) {
       return false;
-    } else if (meshPosition < this.startPosition) {
+    } else if (meshPosition <= absolutePositions[0]) {
       return false;
     }
     return true;
