@@ -60,7 +60,6 @@ export class HUD {
     this.isGunSwitchAnimationStarted = false;
     this.swithGunAnimationStage = 'goingDown';
     this.isRunning = false;
-    this.handleResize();
   }
 
   setIsRunning(isRunning: boolean) {
@@ -166,9 +165,7 @@ export class HUD {
     return a + (b - a) * t;
   }
 
-  handleResize() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+  handleResize(width: number, height: number) {
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
     this.bobState = this.getInitialBobState();
     const gunScale = height * 0.75;

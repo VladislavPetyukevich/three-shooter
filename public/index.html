@@ -82,10 +82,19 @@
       console.log('game loaded');
     }
 
+    function getRendererSize() {
+      return {
+        width: ~~Math.min(renderContainer.offsetHeight * (4/3), renderContainer.offsetWidth),
+        height: ~~renderContainer.offsetHeight
+      };
+    }
+
+    var rendererSize = getRendererSize();
+
     var threeShooter = new ThreeShooter.default({
       renderContainer: renderContainer,
-      renderWidth: renderContainer.offsetWidth,
-      renderHeight: renderContainer.offsetHeight,
+      renderWidth: rendererSize.width,
+      renderHeight: rendererSize.height,
       onLoad: onLoad
     });
 
@@ -161,6 +170,14 @@
       if (isWheelUp) {
         threeShooter.onPlayerActionStart('nextWeapon');
       }
+    });
+
+    window.addEventListener('resize', () => {
+      var newRendererSize = getRendererSize();
+      threeShooter.handleResize(
+        newRendererSize.width,
+        newRendererSize.height
+      );
     });
 
     instructions.addEventListener('click', function (event) {

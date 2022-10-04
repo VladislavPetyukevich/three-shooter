@@ -1,7 +1,8 @@
 import {
   ReinhardToneMapping,
   WebGLRenderer,
-  BasicShadowMap
+  BasicShadowMap,
+  Color,
 } from 'three';
 import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
@@ -51,7 +52,6 @@ export default class ThreeShooter {
     this.renderer = new WebGLRenderer({
       powerPreference: 'high-performance',
     });
-    this.renderer.setSize(props.renderWidth, props.renderHeight);
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.autoClear = false;
     this.renderer.shadowMap.enabled = true;
@@ -71,15 +71,17 @@ export default class ThreeShooter {
       this.enabled = document.pointerLockElement === props.renderContainer;
       this.prevTime = performance.now();
     });
-    window.addEventListener('resize', () => {
-      hud.handleResize();
-      this.currScene.camera.aspect = window.innerWidth / window.innerHeight;
-      this.currScene.camera.updateProjectionMatrix();
-      this.renderer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
-      this.composer.setSize(props.renderContainer.offsetWidth, props.renderContainer.offsetHeight);
-    });
+    this.handleResize(props.renderWidth, props.renderHeight);
     mindState.addUpdateListener(this.onUpdateMindState);
   }
+
+  handleResize = (width: number, height: number) => {
+    hud.handleResize(width, height);
+    this.currScene.camera.aspect = width / height;
+    this.currScene.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+    this.composer.setSize(width, height);
+  };
 
   onUpdateGlobalSettings = () => {
     this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
@@ -191,6 +193,11 @@ export default class ThreeShooter {
       mindState.getProps().cowardice,
       mindState.getProps().apathy,
     );
+    this.renderer.setClearColor(new Color(
+      mindState.getProps().sexualPerversions,
+      mindState.getProps().cowardice,
+      mindState.getProps().apathy,
+    ));
   }
 
   updateMouseSensitivity = (value: number) => {
