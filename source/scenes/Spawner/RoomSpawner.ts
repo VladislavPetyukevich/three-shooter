@@ -188,49 +188,26 @@ export class RoomSpawner {
     }
 
     const torches = this.getRoomTorches(room.type);
-    const pos = this.cellCoordinates.toWorldCoordinates(
-      new Vector2(
-        room.cellPosition.x + this.roomSize.x / 2,
-        room.cellPosition.y + this.roomSize.y / 2 + 0.5
-      )
-    );
+    const centerPos = this.getRoomActivateTriggerPostition(room);
     torches[0].mesh.position.set(
-      pos.x,
+      centerPos.x + this.cellCoordinates.size,
       0,
-      pos.y
-    );
-    const pos1 = this.cellCoordinates.toWorldCoordinates(
-      new Vector2(
-        room.cellPosition.x + this.roomSize.x / 2 + 0.5,
-        room.cellPosition.y + this.roomSize.y / 2 - 0.5
-      )
+      centerPos.y
     );
     torches[1].mesh.position.set(
-      pos1.x,
+      centerPos.x,
       0,
-      pos1.y
-    );
-    const pos2 = this.cellCoordinates.toWorldCoordinates(
-      new Vector2(
-        room.cellPosition.x + this.roomSize.x / 2 + 1.5,
-        room.cellPosition.y + this.roomSize.y / 2 + 0.5
-      )
+      centerPos.y + this.cellCoordinates.size
     );
     torches[2].mesh.position.set(
-      pos2.x,
+      centerPos.x - this.cellCoordinates.size,
       0,
-      pos2.y
-    );
-    const pos3 = this.cellCoordinates.toWorldCoordinates(
-      new Vector2(
-        room.cellPosition.x + this.roomSize.x / 2 + 0.5,
-        room.cellPosition.y + this.roomSize.y / 2 + 1.5
-      )
+      centerPos.y
     );
     torches[3].mesh.position.set(
-      pos3.x,
+      centerPos.x,
       0,
-      pos3.y
+      centerPos.y - this.cellCoordinates.size
     );
   }
 
@@ -314,16 +291,7 @@ export class RoomSpawner {
   spawnRoomActivateTrigger(room: Room) {
     const color = this.getTriggerColor(room);
     const size = new Vector2(this.cellCoordinates.size, this.cellCoordinates.size);
-    const position =
-      this.cellCoordinates.toWorldCoordinates(
-        this.rotatePositionForRoom(
-          new Vector2(
-            room.cellPosition.x + this.roomSize.x / 2,
-            room.cellPosition.y + this.roomSize.y - 4
-          ),
-          room
-        )
-      );
+    const position = this.getRoomActivateTriggerPostition(room);
     const trigger = this.entitiesContainer.add(
       new Trigger({
         position: new Vector3(
@@ -343,6 +311,18 @@ export class RoomSpawner {
     ) as Trigger;
     trigger.setScaticPositionOptimizations(true);
     return trigger;
+  }
+
+  getRoomActivateTriggerPostition(room: Room) {
+    return this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2,
+          room.cellPosition.y + this.roomSize.y - 4
+        ),
+        room
+      )
+    );
   }
 
   getTriggerColor(room: Room) {
