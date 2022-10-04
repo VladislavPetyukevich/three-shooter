@@ -31,11 +31,12 @@ const infectCollisions = (behavior: EnemyBehavior) => {
   if (!collidedEntity) {
     return true;
   }
-  behavior.death();
   if (collidedEntity.type === ENTITY_TYPE.PLAYER) {
     collidedEntity.onHit(1);
-  } else {
+    behavior.death();
+  } else if (collidedEntity.type === ENTITY_TYPE.ENEMY) {
     collidedEntity.onMessage(ENTITY_MESSAGES.infestedByParasite);
+    behavior.death();
   }
   return false;
 };
