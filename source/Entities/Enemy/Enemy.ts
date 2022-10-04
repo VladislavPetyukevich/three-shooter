@@ -9,7 +9,7 @@ import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
-import { JumpAnimation } from '@/Animations/JumpAnimation';
+import { VaporizationAnimation } from '@/Animations/Vaporization';
 import { HurtAnimation } from '@/Animations/HurtAnimation';
 
 export interface EnemyTextures {
@@ -142,10 +142,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.isDead = true;
     this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
-    this.addAnimation(new JumpAnimation({
+    this.addAnimation(new VaporizationAnimation({
       actor: this.actor,
-      jumpHeight: 0.7,
-      durationSeconds: 0.43,
+      durationSeconds: 0.3,
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
   }
