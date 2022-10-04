@@ -10,7 +10,7 @@ import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { PLAYER, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
-import { Enemy, EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
+import { Enemy, EnemyBehaviorModifier, OnDeathCallback } from '@/Entities/Enemy/Enemy';
 import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
@@ -84,7 +84,7 @@ export class TestScene extends BasicScene {
     this.currentRoomEnimiesCount = 0;
     const roomSizeScale = 2;
     this.roomSpawner = new RoomSpawner({
-      scene: this.scene,
+      scene: this,
       player: this.player,
       entitiesContainer: this.entitiesContainer,
       cellCoordinates: this.cellCoordinates,
@@ -241,7 +241,7 @@ export class TestScene extends BasicScene {
     );
   }
 
-  onEnemyWithSpawnerDeath = (roomType: RoomType, additionalCallback?: (scene: TestScene) => void) => (enemy: Entity) => {
+  onEnemyWithSpawnerDeath = (enemy: Enemy) => {
     const enemiesFromSpawnerCount = 2;
     this.entitiesContainer.add(
       new EnemySpawner({
@@ -249,21 +249,14 @@ export class TestScene extends BasicScene {
         positionPadding: this.cellCoordinates.size,
         position: enemy.mesh.position.clone(),
         spawnsCount: enemiesFromSpawnerCount,
-        onTrigger: this.spawnEnemyFromSpawner(roomType),
+        onTrigger: this.spawnEnemyFromSpawner(enemy.roomType),
         onDestroy: this.onEnemyDeath,
       })
     );
-    if (additionalCallback) {
-      additionalCallback(this);
-    }
   }
 
-
-  onEnemyDeath = (additionalCallback?: (scene: TestScene) => void) => () => {
+  onEnemyDeath = () => {
     this.currentRoomEnimiesCount--;
-    if (additionalCallback) {
-      additionalCallback(this);
-    }
     if (this.currentRoomEnimiesCount !== 0) {
       return;
     }
@@ -321,13 +314,13 @@ export class TestScene extends BasicScene {
     if (collisions.length !== 0) {
       return false;
     }
-    enemy.onDeath(this.onEnemyDeath());
+    enemy.addOnDeathCallback(this.onEnemyDeath);
     this.entitiesContainer.add(enemy);
     this.currentRoomEnimiesCount++;
     return true;
   }
 
-  spawnEnemy = (coordinates: Vector2, roomType: RoomType, onDeathCallback?: (scene: TestScene) => void) => {
+  spawnEnemy = (coordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback) => {
     this.currentRoomEnimiesCount++;
     const isReachedLevel1 =
       this.getMindeStateLevel(roomType) >= 1;
@@ -338,11 +331,16 @@ export class TestScene extends BasicScene {
           coordinates,
           roomType,
           this.getRandomEnemyBehaviorModifier(),
-          onDeathCallback
         );
+      if (onDeathCallback) {
+        enemy.addOnDeathCallback(onDeathCallback);
+      }
       return enemy;
     }
-    const enemy = this.spawnBasicEnemy(coordinates, roomType, onDeathCallback);
+    const enemy = this.spawnBasicEnemy(coordinates, roomType);
+    if (onDeathCallback) {
+      enemy.addOnDeathCallback(onDeathCallback);
+    }
     return enemy;
   }
 
@@ -356,9 +354,9 @@ export class TestScene extends BasicScene {
     }
   }
 
-  spawnBasicEnemy(coordinates: Vector2, roomType: RoomType, onDeathCallback?: (scene: TestScene) => void) {
+  spawnBasicEnemy(coordinates: Vector2, roomType: RoomType) {
     const enemy = this.createEnemy(coordinates, roomType);
-    enemy.onDeath(this.onEnemyDeath(onDeathCallback));
+    enemy.addOnDeathCallback(this.onEnemyDeath);
     return this.entitiesContainer.add(enemy) as Enemy;
   }
 
@@ -366,18 +364,17 @@ export class TestScene extends BasicScene {
     coordinates: Vector2,
     roomType: RoomType,
     behaviorModifier: EnemyBehaviorModifier,
-    onDeathCallback?: (scene: TestScene) => void
   ) {
     const enemy = this.createEnemy(
       coordinates,
       roomType,
       behaviorModifier
     );
-    const onDeath =
-      (behaviorModifier === EnemyBehaviorModifier.withSpawner) ?
-      this.onEnemyWithSpawnerDeath(roomType, onDeathCallback) :
-      this.onEnemyDeath(onDeathCallback);
-    enemy.onDeath(onDeath);
+    if (behaviorModifier === EnemyBehaviorModifier.withSpawner) {
+      enemy.addOnDeathCallback(this.onEnemyWithSpawnerDeath);
+    } else {
+      enemy.addOnDeathCallback(this.onEnemyDeath);
+    }
     return this.entitiesContainer.add(enemy) as Enemy;
   }
 

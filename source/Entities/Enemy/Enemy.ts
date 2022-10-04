@@ -3,6 +3,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS, lighter } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { BehaviorTree, BehaviorTreeNode } from './BehaviorTree';
+import { RoomType } from './Factory/EnemyFactory';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -30,6 +31,7 @@ export interface EnemyProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   behaviorTreeRoot: BehaviorTreeNode;
+  roomType: RoomType;
   color: Color;
   textures: EnemyTextures;
   hp: number;
@@ -45,12 +47,15 @@ export interface EnemyProps {
   behaviorModifier?: EnemyBehaviorModifier;
 }
 
+export type OnDeathCallback = (entity: Enemy) => void;
+
 export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   container: EntitiesContainer;
   behaviorTree: BehaviorTree;
+  roomType: EnemyProps['roomType'];
   hp: number;
   isDead: boolean;
-  onDeathCallback?: (entity: Enemy) => void;
+  onDeathCallbacks: OnDeathCallback[];
 
   constructor(props: EnemyProps) {
     const velocity = new Vector3();
@@ -80,9 +85,11 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     );
     this.container = props.container;
     this.hp = props.hp;
+    this.roomType = props.roomType;
     this.velocity = velocity;
     this.isDead = false;
     this.behavior.gun.setBulletAuthor(this);
+    this.onDeathCallbacks = [];
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
@@ -126,8 +133,8 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onHurtEnd();
   };
 
-  onDeath(callback: Enemy['onDeathCallback']) {
-    this.onDeathCallback = callback;
+  addOnDeathCallback(callback: OnDeathCallback) {
+    this.onDeathCallbacks.push(callback);
   }
 
   handleDeath() {
@@ -140,9 +147,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       jumpHeight: 0.7,
       durationSeconds: 0.43,
     }));
-    if (this.onDeathCallback) {
-      this.onDeathCallback(this);
-    }
+    this.onDeathCallbacks.forEach(callback => callback(this));
   }
 
   onCollide(entity: Entity) {

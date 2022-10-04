@@ -7,7 +7,6 @@ import {
   Vector3,
   RepeatWrapping,
   Color,
-  Scene,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -20,6 +19,7 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { DoorWall } from '@/Entities/DoorWall/DoorWall';
+import { OnDeathCallback } from '@/Entities/Enemy/Enemy';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
@@ -72,14 +72,14 @@ interface RoomTorches {
 type RoomTorchesPool = [Torch, Torch, Torch, Torch];
 
 export interface RoomSpawnerProps {
-  scene: Scene;
+  scene: TestScene;
   player: Player;
   entitiesContainer: EntitiesContainer;
   cellCoordinates: CellCoordinates;
   roomSize: Vector2;
   doorWidthHalf: number;
   onRoomVisit: (room: Room) => void;
-  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: (scene: TestScene) => void) => Entity;
+  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback) => Entity;
 }
 
 export class RoomSpawner {
@@ -265,7 +265,7 @@ export class RoomSpawner {
     if (!room) {
       return;
     }
-    this.scene.remove(room.floor);
+    this.scene.scene.remove(room.floor);
     room.walls.forEach(wall =>
       this.entitiesContainer.remove(wall.mesh)
     );
@@ -367,7 +367,7 @@ export class RoomSpawner {
       floorPosition.y
     );
     floorMesh.receiveShadow = true;
-    this.scene.add(floorMesh);
+    this.scene.scene.add(floorMesh);
     return floorMesh;
   }
 
@@ -469,16 +469,16 @@ export class RoomSpawner {
           break;
         case RoomCellType.Enemy:
           const onDeathCallback = cell.event ?
-            (scene: TestScene) => {
+            () => {
               switch (cell.event?.type) {
                 case RoomCellEventType.OpenDoorIfNoEntitiesWithTag:
-                  const isHasEntityWithTag = scene.currentRoom.entities.some(
+                  const isHasEntityWithTag = this.scene.currentRoom.entities.some(
                     entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
                   );
                   if (isHasEntityWithTag) {
                     return;
                   }
-                  scene.currentRoom.entities.forEach(entity => {
+                  this.scene.currentRoom.entities.forEach(entity => {
                     if (
                       (entity.tag === cell.event?.targetEntityTag) &&
                       (entity.type === ENTITY_TYPE.WALL)
