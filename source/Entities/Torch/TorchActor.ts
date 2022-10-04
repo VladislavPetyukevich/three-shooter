@@ -23,14 +23,11 @@ export class TorchActor implements Actor {
     const geometry = new BoxGeometry(1.5, 1.5, 0.001);
     const material = new MeshBasicMaterial();
     material.transparent = true;
-    const light = new PointLight(new Color(props.color), 80, 20);
-    light.position.y = 1.5;
     this.spriteSheet = new SpriteSheet({
       textures: [torchFile, torchFire1File, torchFire2File],
       material
     });
     this.mesh = new Mesh(geometry, material);
-    this.mesh.add(light);
     this.mesh.renderOrder = 1;
     this.mesh.position.set(
       props.position.x,
