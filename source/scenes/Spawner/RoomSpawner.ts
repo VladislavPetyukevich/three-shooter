@@ -211,6 +211,14 @@ export class RoomSpawner {
     );
   }
 
+  hideTorchesFromRoom(room: Room) {
+    if (room.type === RoomType.Neutral) {
+      return;
+    }
+    const torches = this.getRoomTorches(room.type);
+    torches.forEach(torch => torch.mesh.position.set(0, -100, 0));
+  }
+
   getRoomTorches(roomType: RoomType) {
     const roomMindStateLevel = this.getMindeStateLevel(roomType);
     switch (roomType) {
@@ -306,7 +314,10 @@ export class RoomSpawner {
         ),
         color: new Color(color),
         entitiesContainer: this.entitiesContainer,
-        onTrigger: () => this.onRoomVisit(room),
+        onTrigger: () => {
+          this.hideTorchesFromRoom(room);
+          this.onRoomVisit(room);
+        },
       })
     ) as Trigger;
     trigger.setScaticPositionOptimizations(true);
