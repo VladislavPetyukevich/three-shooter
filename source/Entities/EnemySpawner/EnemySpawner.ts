@@ -34,15 +34,9 @@ export class EnemySpawner extends Entity<EnemySpawnerActor, EnemySpawnerBehavior
         spawnsCount: props.spawnsCount,
       })
     );
-    this.hp = 1;
     this.container = props.container;
     this.onDestroyCallback = props.onDestroy;
     this.behavior.onDestroy = this.onDestroy;
-  }
-
-  onHit(damage: number) {
-    super.onHit(damage);
-    this.onDestroy();
   }
 
   getNewSpawnPosition() {
