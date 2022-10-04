@@ -131,6 +131,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   }
 
   handleDeath() {
+    this.hp = 0;
     this.isDead = true;
     this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
