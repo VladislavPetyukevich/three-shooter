@@ -35,7 +35,6 @@ export const enum ENTITY_TYPE {
   PLAYER = 'PLAYER',
   BULLET = 'BULLET',
   WALL = 'WALL',
-  DOOR = 'DOOR',
   ENEMY = 'ENEMY',
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK',
