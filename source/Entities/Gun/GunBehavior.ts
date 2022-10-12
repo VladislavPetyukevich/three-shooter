@@ -232,7 +232,7 @@ export class GunBehavior implements Behavior {
       return;
     }
     this.updateRecoil(delta);
-    if (this.fireType === 'automatic') {
+    if (this.fireType === GunFireType.automatic) {
       this.updateAutomaticShooting();
     }
   }
@@ -252,7 +252,7 @@ export class GunBehavior implements Behavior {
   }
 
   updateHeatLevel(delta: number) {
-    if (this.fireType !== 'automatic') {
+    if (this.fireType !== GunFireType.automatic) {
       return;
     }
     if (!this.isTriggerPulled) {

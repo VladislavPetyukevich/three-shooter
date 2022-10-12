@@ -4,10 +4,10 @@ import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { EnemyBehaviorModifier } from './Enemy';
+import { EnemyBehaviorModifier, EnemyGunProps } from './Enemy';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { Gun } from '@/Entities/Gun/Gun';
+import { Gun, GunFireType } from '@/Entities/Gun/Gun';
 import { audioStore } from '@/core/loaders';
 import { randomNumbers } from '@/RandomNumbers';
 import { TimeoutsManager } from '@/TimeoutsManager';
@@ -16,6 +16,7 @@ interface BehaviorProps {
   player: Player;
   velocity: Vector3;
   actor: EnemyActor;
+  gunProps: EnemyGunProps;
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
@@ -37,7 +38,8 @@ type TimeoutNames =
   'movement' |
   'strafe' |
   'gunpointStrafe' |
-  'shootDelay';
+  'shootDelay' |
+  'gunTriggerPulled';
 
 export class EnemyBehavior implements Behavior {
   player: Player;
@@ -84,8 +86,8 @@ export class EnemyBehavior implements Behavior {
       shootOffsetAngle: 5,
       shootOffsetInMoveAngle: 5,
       bulletsPerShoot: 1,
-      recoilTime: 0,
-      fireType: 'single',
+      recoilTime: props.gunProps.recoilTime,
+      fireType: props.gunProps.fireType,
       holderGeometry: this.actor.mesh.geometry,
     });
     this.BulletClass = props.BulletClass;
@@ -118,6 +120,7 @@ export class EnemyBehavior implements Behavior {
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,
+      gunTriggerPulled: ENEMY.SHOOT_TRIGGER_PULLED,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
@@ -419,6 +422,9 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateShoot(delta: number) {
+    if (this.gun.behavior.fireType === GunFireType.automatic) {
+      this.updateAutomaticShoot(delta);
+    }
     if (this.isHurt) {
       return;
     }
@@ -430,6 +436,16 @@ export class EnemyBehavior implements Behavior {
       this.currentBulletsToShoot--;
       this.updateGun();
       this.createBullet();
+    }
+  }
+
+  updateAutomaticShoot(delta: number) {
+    if (!this.gun.behavior.isTriggerPulled) {
+      return;
+    }
+    this.timeoutsManager.updateTimeOut('gunTriggerPulled', delta);
+    if (this.timeoutsManager.checkIsTimeOutExpired('gunTriggerPulled')) {
+      this.gun.releaseTrigger();
     }
   }
 

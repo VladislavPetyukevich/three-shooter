@@ -6,7 +6,10 @@ import { GunActor } from './GunActor';
 import { GunBehavior } from './GunBehavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 
-export type GunFireType = 'single' | 'automatic';
+export const enum GunFireType {
+  single,
+  automatic,
+}
 
 export interface GunHudTextures {
   idle: Texture;

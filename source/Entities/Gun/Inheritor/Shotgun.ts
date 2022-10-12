@@ -1,4 +1,4 @@
-import { Gun } from '../Gun';
+import { Gun, GunFireType } from '../Gun';
 import { InheritorGunProps } from './InheritorTypes';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
@@ -11,7 +11,7 @@ export class Shotgun extends Gun {
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 2,
       recoilTime: 0.2,
-      fireType: 'single',
+      fireType: GunFireType.single,
       hudTextures: {
         idle: texturesStore.getTexture(GAME_TEXTURE_NAME.gunTextureFile),
         fire: texturesStore.getTexture(GAME_TEXTURE_NAME.gunFireFile),

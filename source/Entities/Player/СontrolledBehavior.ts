@@ -18,7 +18,7 @@ import {
   ENTITY_MESSAGES,
   GAME_SOUND_NAME
 } from '@/constants';
-import { Gun } from '@/Entities/Gun/Gun';
+import { Gun, GunFireType } from '@/Entities/Gun/Gun';
 import { Boomerang } from '@/Entities/Boomerang/Boomerang';
 import { SinTable } from '@/SinTable';
 import { hud } from '@/HUD/HUD';
@@ -118,7 +118,7 @@ export class СontrolledBehavior implements Behavior {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
-      fireType: 'single',
+      fireType: GunFireType.single,
       recoilTime: 0,
       holderGeometry: this.actor.mesh.geometry,
     });

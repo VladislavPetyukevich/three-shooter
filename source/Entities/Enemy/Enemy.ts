@@ -7,6 +7,7 @@ import { RoomType } from './Factory/EnemyFactory';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
+import { GunFireType } from '@/Entities/Gun/Gun';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { VaporizationAnimation } from '@/Animations/Vaporization';
@@ -24,10 +25,16 @@ export const enum EnemyBehaviorModifier {
   withSpawner,
 }
 
+export interface EnemyGunProps {
+  fireType: GunFireType;
+  recoilTime: number;
+}
+
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
   player: Player;
   BulletClass: typeof Bullet;
+  gunProps: EnemyGunProps;
   container: EntitiesContainer;
   audioListener: AudioListener;
   behaviorTreeRoot: BehaviorTreeNode;
@@ -71,6 +78,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       new EnemyBehavior({
         player: props.player,
         BulletClass: props.BulletClass,
+        gunProps: props.gunProps,
         container: props.container,
         velocity,
         actor,

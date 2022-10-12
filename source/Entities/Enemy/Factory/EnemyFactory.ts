@@ -9,6 +9,7 @@ import {
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
+import { GunFireType } from '@/Entities/Gun/Gun';
 import { ENEMY, ENEMY_COLORS, ENEMY_TEXTURES } from '@/constants';
 
 export const enum RoomType {
@@ -35,6 +36,7 @@ export class EnemyFactory {
       color: this.getEnemyColor(props),
       hp: this.getEnemyHp(props),
       BulletClass: this.getEnemyBulletClass(props),
+      gunProps: this.getEnemyGunProps(props),
       walkSpeed:
         this.getEnemyWalkSpeed(props) *
         this.getEnemyWalkSpeedFactor(props),
@@ -96,6 +98,18 @@ export class EnemyFactory {
       default:
         throw new Error(`Unknown roomType: ${roomType}`);
     }
+  }
+
+  getEnemyGunProps(props: CreateEnemyProps) {
+    const roomType = props.roomType;
+    return roomType === RoomType.SexualPerversions ?
+      {
+        fireType: GunFireType.automatic,
+        recoilTime: 0.3,
+      } : {
+        fireType: GunFireType.single,
+        recoilTime: 0,
+      };
   }
 
   getEnemyWalkSpeed(props: CreateEnemyProps) {
