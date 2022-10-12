@@ -46,6 +46,7 @@ export class EnemyBehavior implements Behavior {
   velocity: Vector3;
   backupVelocity: Vector3;
   gun: Gun;
+  gunProps: EnemyGunProps;
   BulletClass: typeof Bullet;
   raycaster: Raycaster;
   followingPath: Vector2[];
@@ -79,6 +80,7 @@ export class EnemyBehavior implements Behavior {
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
     this.actor = props.actor;
+    this.gunProps = props.gunProps;
     this.gun = new Gun({
       playerCamera: props.player.camera,
       audioListener: props.audioListener,
@@ -137,7 +139,11 @@ export class EnemyBehavior implements Behavior {
   }
 
   createBullet() {
-    this.gun.shootBullet(this.BulletClass);
+    if (this.gunProps.isRaycast) {
+      this.gun.shootRaycast();
+    } else {
+      this.gun.shootBullet(this.BulletClass);
+    }
   }
 
   shoot() {

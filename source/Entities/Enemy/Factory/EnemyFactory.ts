@@ -106,9 +106,11 @@ export class EnemyFactory {
       {
         fireType: GunFireType.automatic,
         recoilTime: 0.3,
+        isRaycast: true,
       } : {
         fireType: GunFireType.single,
         recoilTime: 0,
+        isRaycast: false,
       };
   }
 

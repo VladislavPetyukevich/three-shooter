@@ -155,7 +155,8 @@ export class GunBehavior implements Behavior {
         }
         if (
           (intersectEntity.type === ENTITY_TYPE.ENEMY) ||
-          (intersectEntity.type === ENTITY_TYPE.ENEMY_SPAWNER)
+          (intersectEntity.type === ENTITY_TYPE.ENEMY_SPAWNER) ||
+          (intersectEntity.type === ENTITY_TYPE.PLAYER)
         ) {
           intersectEntity.onHit(1, this.bulletAuthor);
           break;

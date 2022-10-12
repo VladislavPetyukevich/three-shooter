@@ -28,6 +28,7 @@ export const enum EnemyBehaviorModifier {
 export interface EnemyGunProps {
   fireType: GunFireType;
   recoilTime: number;
+  isRaycast: boolean;
 }
 
 export interface EnemyProps {
