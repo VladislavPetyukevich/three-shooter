@@ -9,7 +9,7 @@ import {
 import { PlayerActor } from './PlayerActor';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { playerActions, PlayerAction } from '@/PlayerActions';
+import { playerActions, PlayerAction, PlayerActionListener, PlayerActionName } from '@/PlayerActions';
 import {
   PI_2,
   PLAYER,
@@ -71,6 +71,7 @@ export class СontrolledBehavior implements Behavior {
   isCameraRecoil: boolean;
   checkGunPointTimeout: number;
   checkGunPointTimeoutCurrent: number;
+  actions: { [key in PlayerActionName]: PlayerActionListener['listener'] };
 
   constructor(props: СontrolledBehaviorProps) {
     this.sinTable = new SinTable({
@@ -129,36 +130,23 @@ export class СontrolledBehavior implements Behavior {
       0
     );
     this.container.scene.add(this.gunShootLight);
-
-    playerActions.addActionListener(
-      'walkForward', this.handleWalkForward
-    );
-    playerActions.addActionListener(
-      'walkBackward', this.handleWalkBackward
-    );
-    playerActions.addActionListener(
-      'walkLeft', this.handleWalkLeft
-    );
-    playerActions.addActionListener(
-      'walkRight', this.handleWalkRight
-    );
-    playerActions.addActionListener(
-      'weapon1', this.handleWeapon1
-    );
-    playerActions.addActionListener(
-      'weapon2', this.handleWeapon2
-    );
-    playerActions.addActionListener(
-      'nextWeapon', this.handleWeaponNext
-    );
-    playerActions.addActionListener(
-      'prevWeapon', this.handleWeaponPrev
-    );
-    playerActions.addActionListener(
-      'firePrimary', this.handleFirePrimary
-    );
-    playerActions.addActionListener(
-      'fireSecondary', this.handleFireSecondary
+    this.actions = {
+      'walkForward': this.handleWalkForward,
+      'walkBackward': this.handleWalkBackward,
+      'walkLeft': this.handleWalkLeft,
+      'walkRight': this.handleWalkRight,
+      'weapon1': this.handleWeapon1,
+      'weapon2': this.handleWeapon2,
+      'nextWeapon': this.handleWeaponNext,
+      'prevWeapon': this.handleWeaponPrev,
+      'firePrimary': this.handleFirePrimary,
+      'fireSecondary': this.handleFireSecondary,
+    };
+    Object.keys(this.actions).forEach(actionName =>
+      playerActions.addActionListener(
+        actionName as PlayerActionName,
+        this.actions[actionName as PlayerActionName]
+      )
     );
   }
 
@@ -516,35 +504,11 @@ export class СontrolledBehavior implements Behavior {
   }
 
   onDestroy() {
-    playerActions.removeActionListener(
-      'walkForward', this.handleWalkForward
-    );
-    playerActions.removeActionListener(
-      'walkBackward', this.handleWalkBackward
-    );
-    playerActions.removeActionListener(
-      'walkLeft', this.handleWalkLeft
-    );
-    playerActions.removeActionListener(
-      'walkRight', this.handleWalkRight
-    );
-    playerActions.removeActionListener(
-      'weapon1', this.handleWeapon1
-    );
-    playerActions.removeActionListener(
-      'weapon2', this.handleWeapon2
-    );
-    playerActions.removeActionListener(
-      'nextWeapon', this.handleWeaponNext
-    );
-    playerActions.removeActionListener(
-      'prevWeapon', this.handleWeaponPrev
-    );
-    playerActions.removeActionListener(
-      'firePrimary', this.handleFirePrimary
-    );
-    playerActions.removeActionListener(
-      'fireSecondary', this.handleFireSecondary
+    Object.keys(this.actions).forEach(actionName =>
+      playerActions.removeActionListener(
+        actionName as PlayerActionName,
+        this.actions[actionName as PlayerActionName]
+      )
     );
   }
 }
