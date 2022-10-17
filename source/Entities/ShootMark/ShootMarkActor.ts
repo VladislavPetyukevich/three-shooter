@@ -4,7 +4,7 @@ import { texturesStore } from '@/core/loaders/TextureLoader';
 import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 
-interface ActorProps {
+interface ShootMarkActorProps {
   position: { x: number; y: number; z: number };
   playerCamera: Camera;
 }
@@ -16,7 +16,7 @@ export class ShootMarkActor implements Actor {
   currentSprite: number;
   lifeTime: number;
 
-  constructor(props: ActorProps) {
+  constructor(props: ShootMarkActorProps) {
     const shootMarkFile1 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark1);
     const shootMarkFile2 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark2);
     const size = 0.19;
