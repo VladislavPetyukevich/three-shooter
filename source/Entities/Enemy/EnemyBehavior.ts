@@ -90,7 +90,7 @@ export class EnemyBehavior implements Behavior {
       bulletsPerShoot: 1,
       recoilTime: props.gunProps.recoilTime,
       fireType: props.gunProps.fireType,
-      holderGeometry: this.actor.mesh.geometry,
+      holderMesh: this.actor.mesh,
     });
     this.BulletClass = props.BulletClass;
     this.raycaster = new Raycaster();

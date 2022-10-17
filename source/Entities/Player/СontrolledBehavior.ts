@@ -120,7 +120,7 @@ export class СontrolledBehavior implements Behavior {
       bulletsPerShoot: 1,
       fireType: GunFireType.single,
       recoilTime: 0,
-      holderGeometry: this.actor.mesh.geometry,
+      holderMesh: this.actor.mesh,
     });
     this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(

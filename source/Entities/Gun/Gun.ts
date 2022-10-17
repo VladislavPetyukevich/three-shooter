@@ -25,7 +25,7 @@ export interface GunProps {
   bulletsPerShoot: number;
   recoilTime: number;
   fireType: GunFireType;
-  holderGeometry: Mesh['geometry'];
+  holderMesh: Mesh;
   hudTextures?: GunHudTextures;
 }
 
@@ -37,6 +37,7 @@ export class Gun extends Entity<GunActor, GunBehavior> {
     const behavior = new GunBehavior({
       container: props.container,
       playerCamera: props.playerCamera,
+      holderMesh: props.holderMesh,
       audioListener: props.audioListener,
       shootOffsetAngle: props.shootOffsetAngle,
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
@@ -51,7 +52,7 @@ export class Gun extends Entity<GunActor, GunBehavior> {
       behavior
     );
     this.hudTextures = props.hudTextures;
-    this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderGeometry);
+    this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderMesh.geometry);
   }
 
   checkIsRecoil() {

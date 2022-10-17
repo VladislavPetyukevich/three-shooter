@@ -4,6 +4,7 @@ import {
   Raycaster,
   AudioListener,
   Audio,
+  Mesh,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
@@ -18,6 +19,7 @@ import { randomNumbers } from '@/RandomNumbers';
 
 interface BehaviorProps {
   playerCamera: Camera;
+  holderMesh: Mesh;
   container: EntitiesContainer;
   audioListener: AudioListener;
   shootOffsetAngle: number;
@@ -29,6 +31,7 @@ interface BehaviorProps {
 
 export class GunBehavior implements Behavior {
   playerCamera: Camera;
+  holderMesh: Mesh;
   bulletAuthor?: Entity;
   raycaster: Raycaster;
   container: EntitiesContainer;
@@ -52,6 +55,7 @@ export class GunBehavior implements Behavior {
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
+    this.holderMesh = props.holderMesh;
     this.raycaster = new Raycaster();
     this.container = props.container;
     this.audioListener = props.audioListener;
@@ -129,9 +133,33 @@ export class GunBehavior implements Behavior {
         const intersectEntity = this.container.entities.find(
           entity => entity.mesh.id === intersect.object.id
         );
-        if (!intersectEntity) {
+        if (
+          !intersectEntity ||
+          intersectEntity.isCollideTransparent
+        ) {
           continue;
         }
+
+        const shootTraceStartPos = new Vector3(
+          this.holderMesh.position.x,
+          0,
+          this.holderMesh.position.z,
+        );
+        const shootTraceEndPos = new Vector3(
+          intersect.point.x,
+          intersect.point.y,
+          intersect.point.z,
+        );
+        if (intersectEntity.type === ENTITY_TYPE.PLAYER) {
+          shootTraceStartPos.setY(shootTraceEndPos.y);
+          shootTraceEndPos.setY(0);
+        }
+        const shootTrace = new ShootTrace({
+          startPos: shootTraceStartPos,
+          endPos: shootTraceEndPos,
+          container: this.container,
+        });
+        this.container.add(shootTrace);
 
         if (intersectEntity.type === ENTITY_TYPE.WALL) {
           const shootMark = new ShootMark({
@@ -139,28 +167,11 @@ export class GunBehavior implements Behavior {
             position: intersect.point,
             container: this.container
           });
-          const shootTraceStartPos = new Vector3(
-            this.playerCamera.position.x,
-            0,
-            this.playerCamera.position.z,
-          );
-          const shootTrace = new ShootTrace({
-            startPos: shootTraceStartPos,
-            endPos: intersect.point,
-            container: this.container,
-          });
-          this.container.add(shootTrace);
           this.container.add(shootMark);
           break;
         }
-        if (
-          (intersectEntity.type === ENTITY_TYPE.ENEMY) ||
-          (intersectEntity.type === ENTITY_TYPE.ENEMY_SPAWNER) ||
-          (intersectEntity.type === ENTITY_TYPE.PLAYER)
-        ) {
-          intersectEntity.onHit(1, this.bulletAuthor);
-          break;
-        }
+        intersectEntity.onHit(1, this.bulletAuthor);
+        break;
       }
     }
   }

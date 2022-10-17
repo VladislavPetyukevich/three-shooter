@@ -6,5 +6,5 @@ export type InheritorGunProps =
     'playerCamera' |
     'container' |
     'audioListener' |
-    'holderGeometry'
+    'holderMesh'
   >;
