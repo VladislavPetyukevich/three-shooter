@@ -130,9 +130,7 @@ export class GunBehavior implements Behavior {
 
       for (let i = 0; i < intersects.length; i++) {
         const intersect = intersects[i];
-        const intersectEntity = this.container.entities.find(
-          entity => entity.mesh.id === intersect.object.id
-        );
+        const intersectEntity = this.container.meshIdToEntity.get(intersect.object.id);
         if (
           !intersectEntity ||
           intersectEntity.isCollideTransparent
