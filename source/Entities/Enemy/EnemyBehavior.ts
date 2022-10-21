@@ -298,12 +298,15 @@ export class EnemyBehavior implements Behavior {
     return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
   }
 
-  checkIsFollowingEnemyInAttackDistance() {
+  checkIsFollowingEnemyInAttackDistance(min: number, max: number) {
     if (!this.followingEnemy) {
       return false;
     }
     const distanceToPlayer = this.getDistanceToEntity(this.followingEnemy);
-    return distanceToPlayer <= ENEMY.ATTACK_DISTANCE;
+    return (
+      (distanceToPlayer > min) &&
+      (distanceToPlayer < max)
+    );
   }
 
   checkIsEnemyInParasiteAttackDistance(enemy: Entity) {
@@ -327,6 +330,26 @@ export class EnemyBehavior implements Behavior {
     this.timeoutsManager.updateExpiredTimeOuts();
   }
 
+  getDirectionToFollowingEntity() {
+    if (!this.followingEnemy) {
+      return;
+    }
+    if (this.followingEnemy.type === ENTITY_TYPE.PLAYER) {
+      const directionToPlayer = new Vector3();
+      this.actor.mesh.getWorldDirection(directionToPlayer);
+      return directionToPlayer;
+    } else {
+      const directionToEntity =
+        this.directionToPoint(
+          new Vector2(
+            this.followingEnemy.actor.mesh.position.x,
+            this.followingEnemy.actor.mesh.position.z
+          )
+        );
+      return directionToEntity;
+    }
+  }
+
   updateMovement(delta: number) {
     if (!this.followingEnemy) {
       return;
@@ -340,26 +363,14 @@ export class EnemyBehavior implements Behavior {
       return;
     }
 
-    if (this.followingEnemy.type === ENTITY_TYPE.PLAYER) {
-      const directionToPlayer = new Vector3();
-      this.actor.mesh.getWorldDirection(directionToPlayer);
-      this.raycaster.set(
-        this.actor.mesh.position,
-        directionToPlayer
-      );
-    } else {
-      const directionToEntity =
-        this.directionToPoint(
-          new Vector2(
-            this.followingEnemy.actor.mesh.position.x,
-            this.followingEnemy.actor.mesh.position.z
-          )
-        );
-      this.raycaster.set(
-        this.actor.mesh.position,
-        directionToEntity
-      );
+    const directionToFollowingEntity = this.getDirectionToFollowingEntity();
+    if (!directionToFollowingEntity) {
+      return;
     }
+    this.raycaster.set(
+      this.actor.mesh.position,
+      directionToFollowingEntity
+    );
     const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
     const entityIndex = intersectObjects.findIndex(intersect => 
       this.followingEnemy &&

@@ -23,6 +23,7 @@ export const enum EnemyBehaviorModifier {
   kamikaze,
   parasite,
   withSpawner,
+  longRangeAttack,
 }
 
 export interface EnemyGunProps {

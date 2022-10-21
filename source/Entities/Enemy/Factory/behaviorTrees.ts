@@ -1,4 +1,4 @@
-import { ENTITY_MESSAGES, ENTITY_TYPE } from '@/constants';
+import { ENTITY_MESSAGES, ENTITY_TYPE, ENEMY } from '@/constants';
 import { randomNumbers } from '@/RandomNumbers';
 import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
 
@@ -8,7 +8,15 @@ const hurtNode = (behavior: EnemyBehavior) => behavior.updateHurt();
 
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
-    behavior.checkIsFollowingEnemyInAttackDistance(),
+    behavior.checkIsFollowingEnemyInAttackDistance(0, ENEMY.ATTACK_DISTANCE),
+  nodeTrue: (behavior: EnemyBehavior, delta: number) =>
+    behavior.attackFollowingEnemy(delta),
+  nodeFalse: noop,
+};
+
+const attackCondLongRange = {
+  condition: (behavior: EnemyBehavior) =>
+    behavior.checkIsFollowingEnemyInAttackDistance(ENEMY.ATTACK_DISTANCE, ENEMY.ATTACK_DISTANCE_LONG_RANGE),
   nodeTrue: (behavior: EnemyBehavior, delta: number) =>
     behavior.attackFollowingEnemy(delta),
   nodeFalse: noop,
@@ -95,8 +103,25 @@ const strafe = (behavior: EnemyBehavior, delta: number) =>
 const gunpointStrafe = (behavior: EnemyBehavior, delta: number) =>
   behavior.updateGunpointReaction(delta);
 
+const moveToLongRange = (behavior: EnemyBehavior) => {
+  if (!behavior.followingEnemy) {
+    return true;
+  }
+  const distanceToEntity = behavior.getDistanceToEntity(behavior.followingEnemy);
+  if (distanceToEntity > ENEMY.ATTACK_DISTANCE) {
+    return true;
+  }
+  behavior.velocityToEntity(behavior.followingEnemy);
+  behavior.velocity.negate();
+  return false;
+};
+
 export const basicEnemySeq = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
+};
+
+export const longRangeEnemySeq = {
+  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
 };
 
 export const kamikazeEnemySeq = {
