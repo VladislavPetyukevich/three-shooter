@@ -7,6 +7,7 @@ import {
   kamikazeEnemySeq,
   parasiteEnemySeq,
   longRangeEnemySeq,
+  bleedEnemySeq,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
@@ -192,6 +193,8 @@ export class EnemyFactory {
         return parasiteEnemySeq;
       case EnemyBehaviorModifier.longRangeAttack:
         return longRangeEnemySeq;
+      case EnemyBehaviorModifier.bleed:
+        return bleedEnemySeq;
       default:
         return basicEnemySeq;
     }

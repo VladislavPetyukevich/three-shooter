@@ -4,7 +4,7 @@ import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
 
 const noop = () => true;
 
-const hurtNode = (behavior: EnemyBehavior) => behavior.updateHurt();
+const hurtNode = (behavior: EnemyBehavior) => !behavior.isHurt;
 
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
@@ -116,12 +116,24 @@ const moveToLongRange = (behavior: EnemyBehavior) => {
   return false;
 };
 
+const bleed = (behavior: EnemyBehavior, delta: number) => {
+  behavior.timeoutsManager.updateTimeOut('bleed', delta);
+  if (behavior.timeoutsManager.checkIsTimeOutExpired('bleed')) {
+    behavior.onBleedCallback && behavior.onBleedCallback();
+  }
+  return true;
+};
+
 export const basicEnemySeq = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
 export const longRangeEnemySeq = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
+};
+
+export const bleedEnemySeq = {
+  sequence: [bleed, hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
 export const kamikazeEnemySeq = {

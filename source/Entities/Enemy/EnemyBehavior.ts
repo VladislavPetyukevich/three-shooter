@@ -39,7 +39,8 @@ type TimeoutNames =
   'strafe' |
   'gunpointStrafe' |
   'shootDelay' |
-  'gunTriggerPulled';
+  'gunTriggerPulled' |
+  'bleed';
 
 export class EnemyBehavior implements Behavior {
   player: Player;
@@ -73,6 +74,7 @@ export class EnemyBehavior implements Behavior {
   isParasite: boolean;
   onHitDamage: number;
   onDeathCallback?: Function;
+  onBleedCallback?: Function;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
@@ -123,6 +125,7 @@ export class EnemyBehavior implements Behavior {
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,
       gunTriggerPulled: ENEMY.SHOOT_TRIGGER_PULLED,
+      bleed: ENEMY.BLEED_TIME_OUT,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.spawnSound(props.audioListener);
@@ -499,13 +502,6 @@ export class EnemyBehavior implements Behavior {
     this.isOnGunpointCurrent = false;
     this.randomStrafe(this.strafeAngleHigh);
     return true;
-  }
-
-  updateHurt() {
-    if (!this.isHurt) {
-      return true;
-    }
-    return false;
   }
 }
 

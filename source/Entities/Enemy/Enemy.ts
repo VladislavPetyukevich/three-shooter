@@ -24,6 +24,7 @@ export const enum EnemyBehaviorModifier {
   parasite,
   withSpawner,
   longRangeAttack,
+  bleed,
 }
 
 export interface EnemyGunProps {
@@ -103,6 +104,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
+    this.behavior.onBleedCallback = () => {
+      this.handleBleed();
+    };
 
     this.behaviorTree = new BehaviorTree(
       props.behaviorTreeRoot,
@@ -157,6 +161,16 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       durationSeconds: 0.3,
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
+  }
+
+  handleBleed() {
+    this.hp--;
+    if (this.hp <= 0) {
+      this.handleDeath();
+      return;
+    }
+    this.behavior.isHurt = true;
+    this.handleHurtAnimation();
   }
 
   onCollide(entity: Entity) {
