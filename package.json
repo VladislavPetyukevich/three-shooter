@@ -6,7 +6,6 @@
   "scripts": {
     "start": "webpack-dev-server --env development",
     "build": "webpack --env production",
-    "heroku-postbuild": "webpack --env production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -26,7 +25,6 @@
     "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
-    "express": "^4.16.2",
     "three": "0.110.0"
   }
 }
