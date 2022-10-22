@@ -265,7 +265,7 @@ export class GunBehavior implements Behavior {
   updateAutomaticShooting() {
     if (
       (this.currentRecoilTime !== 0) ||
-      (this.isTriggerPulled === false)
+      (!this.isTriggerPulled)
     ) {
       return;
     }
