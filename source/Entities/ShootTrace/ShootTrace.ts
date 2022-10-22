@@ -23,7 +23,7 @@ export class ShootTrace extends Entity {
     const behavior = new ShootTraceBehavior();
 
     super(
-      ENTITY_TYPE.SHOOT_MARK,
+      ENTITY_TYPE.SHOOT_TRACE,
       actor,
       behavior
     );

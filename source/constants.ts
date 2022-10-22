@@ -38,6 +38,7 @@ export const enum ENTITY_TYPE {
   ENEMY = 'ENEMY',
   GUN = 'GUN',
   SHOOT_MARK = 'SHOOT_MARK',
+  SHOOT_TRACE = 'SHOOT_TRACE',
   TORCH = 'TORCH',
   TRIGGER = 'TRIGGER',
   GUN_PICK_UP = 'GUN_PICK_UP',
