@@ -29,7 +29,7 @@ const enum GunOrderType {
   secondary
 }
 
-interface СontrolledBehaviorProps {
+interface ControlledBehaviorProps {
   actor: PlayerActor;
   camera: Camera;
   eyeY: number;
@@ -40,7 +40,7 @@ interface СontrolledBehaviorProps {
   audioListener: AudioListener;
 }
 
-export class СontrolledBehavior implements Behavior {
+export class ControlledBehavior implements Behavior {
   actor: PlayerActor;
   camera: Camera;
   raycaster: Raycaster;
@@ -73,7 +73,7 @@ export class СontrolledBehavior implements Behavior {
   checkGunPointTimeoutCurrent: number;
   actions: { [key in PlayerActionName]: PlayerActionListener['listener'] };
 
-  constructor(props: СontrolledBehaviorProps) {
+  constructor(props: ControlledBehaviorProps) {
     this.sinTable = new SinTable({
       step: 1,
       amplitude: 0.06,

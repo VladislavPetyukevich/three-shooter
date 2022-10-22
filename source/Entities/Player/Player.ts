@@ -3,7 +3,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { PlayerActor } from './PlayerActor';
-import { СontrolledBehavior } from './СontrolledBehavior';
+import { ControlledBehavior } from './ControlledBehavior';
 import { PLAYER, ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
 import { hud } from '@/HUD/HUD';
 
@@ -14,7 +14,7 @@ export interface PlayerProps {
   audioListener: AudioListener;
 }
 
-export class Player extends Entity<PlayerActor, СontrolledBehavior> {
+export class Player extends Entity<PlayerActor, ControlledBehavior> {
   camera: Camera;
   container: EntitiesContainer;
   hp: number;
@@ -32,7 +32,7 @@ export class Player extends Entity<PlayerActor, СontrolledBehavior> {
     super(
       ENTITY_TYPE.PLAYER,
       actor,
-      new СontrolledBehavior({
+      new ControlledBehavior({
         actor: actor,
         camera: props.camera,
         eyeY: PLAYER.BODY_HEIGHT,
