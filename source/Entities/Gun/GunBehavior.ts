@@ -63,7 +63,6 @@ export class GunBehavior implements Behavior {
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
     this.shootOffsetInMoveRadians = props.shootOffsetInMoveAngle * PI_180;
     this.bulletsPerShoot = props.bulletsPerShoot;
-    // this.maxEffectiveDistance = props.maxEffectiveDistance;
     this.recoilTime = props.recoilTime;
     this.fireType = props.fireType;
     this.isTriggerPulled = false;
