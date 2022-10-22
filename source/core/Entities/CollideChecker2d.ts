@@ -71,7 +71,7 @@ export class CollideChecker2d {
       return collisionsResult;
     }
     const entityGeometrySize = this.getSize(entity);
-    var bounds = {
+    const bounds = {
       xMin: newPosition.x - entityGeometrySize.width / 2,
       xMax: newPosition.x + entityGeometrySize.width / 2,
       zMin: newPosition.z - entityGeometrySize.height / 2,
