@@ -5,7 +5,6 @@ import {
   Fog,
   AmbientLight,
 } from 'three';
-import { Entity } from '@/core/Entities/Entity';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { PLAYER, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
@@ -153,7 +152,7 @@ export class TestScene extends BasicScene {
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
-          holderGeometry: this.player.mesh.geometry,
+          holderMesh: this.player.mesh,
         }),
         gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
       })
@@ -173,7 +172,7 @@ export class TestScene extends BasicScene {
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
-          holderGeometry: this.player.mesh.geometry,
+          holderMesh: this.player.mesh,
         }),
         gunTextureName: GAME_TEXTURE_NAME.machinegunTextureFile,
       })
@@ -349,6 +348,8 @@ export class TestScene extends BasicScene {
       return EnemyBehaviorModifier.withSpawner;
     } else if (randomNumbers.getRandom() >= 0.5) {
       return EnemyBehaviorModifier.kamikaze;
+    } else if (randomNumbers.getRandom() >= 0.5) {
+      return EnemyBehaviorModifier.longRangeAttack;
     } else {
       return EnemyBehaviorModifier.parasite;
     }

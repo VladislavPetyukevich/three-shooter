@@ -1,6 +1,5 @@
 import { AudioListener, Camera, Vector3, Mesh, Texture } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { Bullet } from '@/Entities/Bullet/Bullet';
 import { ENTITY_TYPE } from '@/constants';
 import { GunActor } from './GunActor';
 import { GunBehavior } from './GunBehavior';
@@ -16,18 +15,21 @@ export interface GunHudTextures {
   fire: Texture;
 }
 
-export interface GunProps {
+export interface GunPropsExternal {
   playerCamera: Camera;
   container: EntitiesContainer;
   audioListener: AudioListener;
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
-  maxEffectiveDistance: number;
   recoilTime: number;
   fireType: GunFireType;
   holderMesh: Mesh;
   hudTextures?: GunHudTextures;
+}
+
+export interface GunProps extends GunPropsExternal {
+  behavior: GunBehavior;
 }
 
 export class Gun extends Entity<GunActor, GunBehavior> {
@@ -35,23 +37,10 @@ export class Gun extends Entity<GunActor, GunBehavior> {
 
   constructor(props: GunProps) {
     const actor = new GunActor();
-    const behavior = new GunBehavior({
-      container: props.container,
-      playerCamera: props.playerCamera,
-      holderMesh: props.holderMesh,
-      audioListener: props.audioListener,
-      shootOffsetAngle: props.shootOffsetAngle,
-      shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
-      maxEffectiveDistance: props.maxEffectiveDistance,
-      bulletsPerShoot: props.bulletsPerShoot,
-      recoilTime: props.recoilTime,
-      fireType: props.fireType,
-    });
-
     super(
       ENTITY_TYPE.GUN,
       actor,
-      behavior
+      props.behavior
     );
     this.hudTextures = props.hudTextures;
     this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderMesh.geometry);
@@ -73,14 +62,8 @@ export class Gun extends Entity<GunActor, GunBehavior> {
     this.behavior.bulletAuthor = entity;
   }
 
-  shootRaycast() {
-    return this.behavior.shootRaycast();
-  }
-
-  shootBullet(bullet: typeof Bullet, additionalProps?: Record<string, any>) {
-    return this.behavior.shootBullet(
-      bullet, additionalProps
-    );
+  shoot() {
+    this.behavior.shoot();
   }
 
   releaseTrigger() {

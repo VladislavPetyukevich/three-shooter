@@ -84,7 +84,7 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
   onMessage(message: ENTITY_MESSAGES) {
     switch(message) {
       case ENTITY_MESSAGES.boomerangReturned:
-        this.behavior.gunBoomerang.setIsCanShoot(true);
+        // this.behavior.gunBoomerang.setIsCanShoot(true);
         break;
       default:
         break;

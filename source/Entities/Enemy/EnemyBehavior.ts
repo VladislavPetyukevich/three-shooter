@@ -11,6 +11,8 @@ import { Gun, GunFireType } from '@/Entities/Gun/Gun';
 import { audioStore } from '@/core/loaders';
 import { randomNumbers } from '@/RandomNumbers';
 import { TimeoutsManager } from '@/TimeoutsManager';
+import { Machinegun } from '../Gun/Inheritor/Machinegun';
+import { EnemyGunBullet } from '../Gun/Inheritor/EnemyGunBullet';
 
 interface BehaviorProps {
   player: Player;
@@ -82,20 +84,22 @@ export class EnemyBehavior implements Behavior {
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
     this.actor = props.actor;
-    this.gunProps = props.gunProps;
-    this.gun = new Gun({
-      playerCamera: props.player.camera,
-      audioListener: props.audioListener,
-      container: props.container,
-      shootOffsetAngle: 5,
-      shootOffsetInMoveAngle: 5,
-      maxEffectiveDistance: 0,
-      bulletsPerShoot: 1,
-      recoilTime: props.gunProps.recoilTime,
-      fireType: props.gunProps.fireType,
-      holderMesh: this.actor.mesh,
-    });
     this.BulletClass = props.BulletClass;
+    this.gunProps = props.gunProps;
+    this.gun = this.gunProps.isRaycast ?
+      new Machinegun({
+        playerCamera: props.player.camera,
+        audioListener: props.audioListener,
+        container: props.container,
+        holderMesh: this.actor.mesh,
+      }) :
+      new EnemyGunBullet({
+        BulletClass: this.BulletClass,
+        playerCamera: props.player.camera,
+        audioListener: props.audioListener,
+        container: props.container,
+        holderMesh: this.actor.mesh,
+      });
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.followingPath = [];
@@ -142,15 +146,11 @@ export class EnemyBehavior implements Behavior {
     spawnSound.play();
   }
 
-  createBullet() {
-    if (this.gunProps.isRaycast) {
-      this.gun.shootRaycast();
-    } else {
-      this.gun.shootBullet(this.BulletClass);
-    }
+  shoot() {
+    this.gun.shoot();
   }
 
-  shoot() {
+  setCurrentBulletsToShoot() {
     this.currentBulletsToShoot = randomNumbers.getRandomInRange(
       this.bulletsPerShoot.min,
       this.bulletsPerShoot.max
@@ -321,7 +321,7 @@ export class EnemyBehavior implements Behavior {
   attackFollowingEnemy(delta: number) {
     this.timeoutsManager.updateTimeOut('shoot', delta);
     if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
-      this.shoot();
+      this.setCurrentBulletsToShoot();
     }
     return true;
   }
@@ -456,7 +456,7 @@ export class EnemyBehavior implements Behavior {
     if (this.timeoutsManager.checkIsTimeOutExpired('shootDelay')) {
       this.currentBulletsToShoot--;
       this.updateGun();
-      this.createBullet();
+      this.shoot();
     }
   }
 
