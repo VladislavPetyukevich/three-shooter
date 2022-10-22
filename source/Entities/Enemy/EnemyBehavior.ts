@@ -89,6 +89,7 @@ export class EnemyBehavior implements Behavior {
       container: props.container,
       shootOffsetAngle: 5,
       shootOffsetInMoveAngle: 5,
+      maxEffectiveDistance: 0,
       bulletsPerShoot: 1,
       recoilTime: props.gunProps.recoilTime,
       fireType: props.gunProps.fireType,

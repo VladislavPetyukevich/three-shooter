@@ -118,6 +118,7 @@ export class СontrolledBehavior implements Behavior {
       audioListener: props.audioListener,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
+      maxEffectiveDistance: 0,
       bulletsPerShoot: 1,
       fireType: GunFireType.single,
       recoilTime: 0,

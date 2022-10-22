@@ -9,6 +9,7 @@ export class Machinegun extends Gun {
       ...props,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
+      maxEffectiveDistance: 0,
       bulletsPerShoot: 1,
       recoilTime: 0.15,
       fireType: GunFireType.automatic,

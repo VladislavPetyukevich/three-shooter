@@ -25,6 +25,7 @@ interface BehaviorProps {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
+  maxEffectiveDistance: number;
   recoilTime: number;
   fireType: GunFireType;
 }
@@ -42,6 +43,7 @@ export class GunBehavior implements Behavior {
   shootOffsetRadians: number;
   shootOffsetInMoveRadians: number;
   bulletsPerShoot: number;
+  maxEffectiveDistance: number;
   recoilTime: number;
   currentRecoilTime: number;
   secToMaxHeatLevel: number;
@@ -65,6 +67,7 @@ export class GunBehavior implements Behavior {
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
     this.shootOffsetInMoveRadians = props.shootOffsetInMoveAngle * PI_180;
     this.bulletsPerShoot = props.bulletsPerShoot;
+    this.maxEffectiveDistance = props.maxEffectiveDistance;
     this.recoilTime = props.recoilTime;
     this.fireType = props.fireType;
     this.isTriggerPulled = false;
@@ -168,7 +171,11 @@ export class GunBehavior implements Behavior {
           this.container.add(shootMark);
           break;
         }
-        intersectEntity.onHit(1, this.bulletAuthor);
+        const maxDamage = 1;
+        const damage = this.maxEffectiveDistance === 0 ?
+          maxDamage :
+          this.getDamage(intersect.distance);
+        intersectEntity.onHit(damage, this.bulletAuthor);
         break;
       }
     }
@@ -215,6 +222,14 @@ export class GunBehavior implements Behavior {
     const angleOffset =
       offsetX2 * randomNumbers.getRandom() - offset;
     return angleOffset;
+  }
+
+  getDamage(distance: number) {
+    const maxDamage = 1;
+    const damage = distance <= this.maxEffectiveDistance ?
+      maxDamage :
+      maxDamage / (distance - this.maxEffectiveDistance)
+    return damage;
   }
 
   setHorizontalRecoil(direction: Vector3, angleOffset: number) {

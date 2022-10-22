@@ -23,6 +23,7 @@ export interface GunProps {
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
+  maxEffectiveDistance: number;
   recoilTime: number;
   fireType: GunFireType;
   holderMesh: Mesh;
@@ -41,6 +42,7 @@ export class Gun extends Entity<GunActor, GunBehavior> {
       audioListener: props.audioListener,
       shootOffsetAngle: props.shootOffsetAngle,
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
+      maxEffectiveDistance: props.maxEffectiveDistance,
       bulletsPerShoot: props.bulletsPerShoot,
       recoilTime: props.recoilTime,
       fireType: props.fireType,
