@@ -10,9 +10,6 @@ export class ActorAnimatorDurationBased implements ActorAnimator {
 
   update(delta: number) {
     this.currentDuration += delta;
-    if (this.currentDuration >= this.durationSeconds) {
-      return false;
-    }
-    return true;
+    return this.currentDuration < this.durationSeconds;
   }
 }
