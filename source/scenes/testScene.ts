@@ -119,12 +119,9 @@ export class TestScene extends BasicScene {
       pointLightIntensity,
       pointLightDistance
     );
-    this.pointLight.castShadow = true;
-    this.pointLight.shadow.camera.near = 0.1;
-    this.pointLight.shadow.camera.far = 25;
     this.scene.add(this.pointLight);
 
-    this.scene.fog = new Fog(0x000000, 1.15, 200);
+    this.scene.fog = new Fog(0x202020, 0.15, 150);
 
     // MindState
     mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
