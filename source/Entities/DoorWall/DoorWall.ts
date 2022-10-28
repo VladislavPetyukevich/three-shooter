@@ -26,7 +26,8 @@ export class DoorWall extends Entity<WallActor, DoorBehavior> {
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
       isHorizontalWall: props.isHorizontalWall,
       textureRepeat: 3,
-      color: new Color('red')
+      color: new Color('red'),
+      maxDecalsCount: 0,
     });
     const behavior = new DoorBehavior({
       animation: new SlideAnimation({

@@ -411,6 +411,7 @@ export class RoomSpawner {
         this.getCenterPosition(info.position, info.size),
         info.size,
         roomType,
+        true,
       )
     );
   }
@@ -445,6 +446,7 @@ export class RoomSpawner {
               this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
               new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
               room.type,
+              false,
             )
           wall.tag = cell.tag;
           room.entities.push(wall);
@@ -516,12 +518,13 @@ export class RoomSpawner {
     }
   }
 
-  spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType) {
+  spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean) {
     const isHorizontalWall = size.x > size.y;
     const props: WallProps = {
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
       size: { width: size.x, height: WALL.SIZE, depth: size.y },
       isHorizontalWall: isHorizontalWall,
+      withDecals: withDecals,
     };
     switch (roomType) {
       case RoomType.Apathy:

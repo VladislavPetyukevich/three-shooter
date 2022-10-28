@@ -1,5 +1,8 @@
 import { Color } from 'three';
 import wallTextureFile from '@/assets/wall.png';
+import wallDecal1TextureFile from '@/assets/wallDecal1.png';
+import wallDecal2TextureFile from '@/assets/wallDecal2.png';
+import wallDecal3TextureFile from '@/assets/wallDecal3.png';
 import doorTextureFile from '@/assets/door.png';
 import floorTextureFile from '@/assets/floor.png';
 import gunTextureFile from './assets/gun.png';
@@ -153,6 +156,9 @@ export const enum ENTITY_MESSAGES {
 
 export const gameTextures = {
   wallTextureFile,
+  wallDecal1TextureFile,
+  wallDecal2TextureFile,
+  wallDecal3TextureFile,
   doorTextureFile,
   floorTextureFile,
   gunTextureFile,
@@ -184,6 +190,9 @@ export const gameSounds = {
 
 export const enum GAME_TEXTURE_NAME {
   wallTextureFile = 'wallTextureFile',
+  wallDecal1TextureFile = 'wallDecal1TextureFile',
+  wallDecal2TextureFile = 'wallDecal2TextureFile',
+  wallDecal3TextureFile = 'wallDecal3TextureFile',
   doorTextureFile = 'doorTextureFile',
   doorNormalFile = 'doorNormalFile',
   floorTextureFile = 'floorTextureFile',

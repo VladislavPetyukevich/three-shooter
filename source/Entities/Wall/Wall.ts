@@ -8,6 +8,7 @@ export interface WallProps {
   position: Vector3;
   size?: { width: number; height: number; depth: number };
   isHorizontalWall?: boolean;
+  withDecals?: boolean;
   color?: Color;
 }
 
@@ -23,6 +24,7 @@ export class Wall extends Entity {
       textureFileName: GAME_TEXTURE_NAME.wallTextureFile,
       textureRepeat: 3,
       color: props.color,
+      maxDecalsCount: props.withDecals ? 5 : 0,
     });
     const behavior = new WallBehavior({});
     super(

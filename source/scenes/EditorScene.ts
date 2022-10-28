@@ -340,6 +340,7 @@ export class EditorScene extends TestScene {
           this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
           new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
           this.currentRoom.type,
+          false,
         );
       default:
         throw new Error(`entityType: ${entityType} not found`);

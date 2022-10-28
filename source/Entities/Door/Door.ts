@@ -27,7 +27,8 @@ export class Door extends Entity<WallActor, DoorBehavior> {
       size: size,
       textureFileName: GAME_TEXTURE_NAME.doorTextureFile,
       isHorizontalWall: props.isHorizontalWall,
-      textureRepeat: 3 * 4
+      textureRepeat: 3 * 4,
+      maxDecalsCount: 0,
     });
     const absoluteWidth = props.isHorizontalWall ? props.size.width : props.size.depth;
     const position = props.isHorizontalWall ? props.position.x : props.position.z;
