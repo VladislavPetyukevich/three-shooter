@@ -1,6 +1,6 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME, PLAYER } from '@/constants';
+import { PLAYER } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 import { GunHudTextures } from '@/Entities/Gun/Gun';
 import { TimeoutsManager } from '@/TimeoutsManager';
@@ -100,7 +100,7 @@ export class HUD {
 
   show() {
     const damageOverlayMaterial = new SpriteMaterial({
-      map: texturesStore.getTexture(GAME_TEXTURE_NAME.damageEffect),
+      map: texturesStore.getTexture('damageEffect'),
       opacity: 0,
     });
     this.damageOverlay.material = damageOverlayMaterial;

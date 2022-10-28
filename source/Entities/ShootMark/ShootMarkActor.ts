@@ -1,7 +1,6 @@
 import { Mesh, BoxGeometry, MeshLambertMaterial, Camera } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 
 interface ShootMarkActorProps {
@@ -17,8 +16,8 @@ export class ShootMarkActor implements Actor {
   lifeTime: number;
 
   constructor(props: ShootMarkActorProps) {
-    const shootMarkFile1 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark1);
-    const shootMarkFile2 = texturesStore.getTexture(GAME_TEXTURE_NAME.shootMark2);
+    const shootMarkFile1 = texturesStore.getTexture('shootMark1');
+    const shootMarkFile2 = texturesStore.getTexture('shootMark2');
     const size = 0.19;
     const geometry = new BoxGeometry(size, size, size);
     const material = new MeshLambertMaterial();

@@ -10,7 +10,7 @@ import {
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { WALL, GAME_TEXTURE_NAME, PI_2, ENTITY_TYPE } from '@/constants';
+import { WALL, PI_2, ENTITY_TYPE } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
@@ -343,11 +343,11 @@ export class RoomSpawner {
   spawnRoomFloor(worldCoordinates: Vector2, worldSize: Vector2) {
     const floorGeometry = new PlaneGeometry(worldSize.x, worldSize.y);
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(-PI_2));
-    const floorTexture = texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile);
+    const floorTexture = texturesStore.getTexture('floorTextureFile');
     floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
     floorTexture.repeat.x = floorTexture.repeat.y = 32;
     floorTexture.needsUpdate = true;
-    const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture(GAME_TEXTURE_NAME.floorTextureFile) });
+    const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture('floorTextureFile') });
     const floorMesh = new Mesh(floorGeometry, floorMaterial);
     const floorPosition = this.getCenterPosition(
       worldCoordinates, worldSize

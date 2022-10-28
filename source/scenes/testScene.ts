@@ -6,7 +6,7 @@ import {
   AmbientLight,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
-import { PLAYER, GAME_TEXTURE_NAME, PI_180 } from '@/constants';
+import { PLAYER, PI_180 } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, EnemyBehaviorModifier, OnDeathCallback } from '@/Entities/Enemy/Enemy';
@@ -151,7 +151,7 @@ export class TestScene extends BasicScene {
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
         }),
-        gunTextureName: GAME_TEXTURE_NAME.gunTextureFile,
+        gunTextureName: 'gunTextureFile',
       })
     );
     if (!mindState.checkIsAnyPropReachLevel(1)) {
@@ -171,7 +171,7 @@ export class TestScene extends BasicScene {
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
         }),
-        gunTextureName: GAME_TEXTURE_NAME.machinegunTextureFile,
+        gunTextureName: 'machinegunTextureFile',
       })
     );
   }

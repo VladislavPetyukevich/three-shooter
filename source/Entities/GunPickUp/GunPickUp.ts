@@ -3,13 +3,13 @@ import { Entity } from '@/core/Entities/Entity';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunPickUpActor } from './GunPickUpActor';
 import { GunPickUpBehavior } from './GunPickUpBehavior';
-import { ENTITY_TYPE } from '@/constants';
+import { ENTITY_TYPE, gameTextures } from '@/constants';
 
 interface GunPickUpProps {
   size: Vector3;
   position: Vector3;
   gun: Gun;
-  gunTextureName: string;
+  gunTextureName: keyof typeof gameTextures;
 }
 
 export class GunPickUp extends Entity {

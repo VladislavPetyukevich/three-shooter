@@ -10,11 +10,12 @@ import { Actor } from '@/core/Entities/Actor';
 import { SinTable } from '@/SinTable';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { texturesStore } from '@/core/loaders/TextureLoader';
+import { gameTextures } from '@/constants';
 
 interface GunPickUpActorProps {
   size: Vector3;
   position: Vector3;
-  gunTextureName: string;
+  gunTextureName: keyof typeof gameTextures;
 }
 
 export class GunPickUpActor implements Actor {

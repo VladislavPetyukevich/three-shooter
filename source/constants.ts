@@ -188,50 +188,33 @@ export const gameSounds = {
   spawn,
 };
 
-export const enum GAME_TEXTURE_NAME {
-  wallTextureFile = 'wallTextureFile',
-  wallDecal1TextureFile = 'wallDecal1TextureFile',
-  wallDecal2TextureFile = 'wallDecal2TextureFile',
-  wallDecal3TextureFile = 'wallDecal3TextureFile',
-  doorTextureFile = 'doorTextureFile',
-  doorNormalFile = 'doorNormalFile',
-  floorTextureFile = 'floorTextureFile',
-  gunTextureFile = 'gunTextureFile',
-  gunFireFile = 'gunFireFile',
-  machinegunTextureFile = 'machinegunTextureFile',
-  machinegunFireFile = 'machinegunFireFile',
-  enemyApathyWalk1 = 'enemyApathyWalk1',
-  enemyApathyWalk2 = 'enemyApathyWalk2',
-  enemyApathyDeath = 'enemyApathyDeath',
-  enemyCowardiceWalk1 = 'enemyCowardiceWalk1',
-  enemyCowardiceWalk2 = 'enemyCowardiceWalk2',
-  enemyCowardiceDeath = 'enemyCowardiceDeath',
-  enemySPWalk1 = 'enemySPWalk1',
-  enemySPWalk2 = 'enemySPWalk2',
-  enemySPDeath = 'enemySPDeath',
-  shootMark1 = 'shootMark1',
-  shootMark2 = 'shootMark2',
-  torch = 'torch',
-  torchFire1 = 'torchFire1',
-  torchFire2 = 'torchFire2',
-  damageEffect = 'damageEffect',
-};
+interface EnemyTexturesSet {
+  walk1: keyof typeof gameTextures;
+  walk2: keyof typeof gameTextures;
+  death: keyof typeof gameTextures;
+}
 
-export const ENEMY_TEXTURES = {
+interface EnemyTextures {
+  Apathy: EnemyTexturesSet;
+  Cowardice: EnemyTexturesSet;
+  SP: EnemyTexturesSet;
+}
+
+export const ENEMY_TEXTURES: EnemyTextures = {
   Apathy: {
-    walk1: GAME_TEXTURE_NAME.enemyApathyWalk1,
-    walk2: GAME_TEXTURE_NAME.enemyApathyWalk2,
-    death: GAME_TEXTURE_NAME.enemyApathyDeath,
+    walk1: 'enemyApathyWalk1',
+    walk2: 'enemyApathyWalk2',
+    death: 'enemyApathyDeath',
   },
   Cowardice: {
-    walk1: GAME_TEXTURE_NAME.enemyCowardiceWalk1,
-    walk2: GAME_TEXTURE_NAME.enemyCowardiceWalk2,
-    death: GAME_TEXTURE_NAME.enemyCowardiceDeath,
+    walk1: 'enemyCowardiceWalk1',
+    walk2: 'enemyCowardiceWalk2',
+    death: 'enemyCowardiceDeath',
   },
   SP: {
-    walk1: GAME_TEXTURE_NAME.enemySPWalk1,
-    walk2: GAME_TEXTURE_NAME.enemySPWalk2,
-    death: GAME_TEXTURE_NAME.enemySPDeath,
+    walk1: 'enemySPWalk1',
+    walk2: 'enemySPWalk2',
+    death: 'enemySPDeath',
   },
 };
 

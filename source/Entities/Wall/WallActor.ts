@@ -12,6 +12,7 @@ import {
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { randomNumbers } from '@/RandomNumbers';
+import { gameTextures } from '@/constants';
 
 const WALL_TEXTURE_SIZE = 32;
 const DECAL_TEXTURE_SIZE = 16;
@@ -21,7 +22,7 @@ interface WallActorProps {
   size: { width: number; height: number, depth: number };
   position: Vector3;
   textureRepeat: number;
-  textureFileName: string;
+  textureFileName: keyof typeof gameTextures;
   maxDecalsCount: number;
   isHorizontalWall?: boolean;
   color?: Color;
@@ -135,8 +136,10 @@ export class WallActor implements Actor {
 
   getSizeSpecificTexture(textureName: string, sizeId: string) {
     const textureIdName = `${textureName}${sizeId}`;
-    return texturesStore.getTexture(textureIdName) ||
-      texturesStore.cloneTexture(textureName, textureIdName);
+    if (texturesStore.checkIsTextureExists(textureIdName)) {
+      return texturesStore.getTexture(textureIdName);
+    }
+    return texturesStore.cloneTexture(textureName, textureIdName);
   }
 
   update() { }

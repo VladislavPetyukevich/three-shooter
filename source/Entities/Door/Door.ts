@@ -2,7 +2,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { DoorBehavior } from './DoorBehavior';
 import { Vector3, Material } from 'three';
-import { ENTITY_TYPE, GAME_TEXTURE_NAME, DOOR } from '@/constants';
+import { ENTITY_TYPE, DOOR } from '@/constants';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SlideAnimation } from '@/Animations/SlideAnimation';
 
@@ -25,7 +25,7 @@ export class Door extends Entity<WallActor, DoorBehavior> {
     const actor = new WallActor({
       position: props.position,
       size: size,
-      textureFileName: GAME_TEXTURE_NAME.doorTextureFile,
+      textureFileName: 'doorTextureFile',
       isHorizontalWall: props.isHorizontalWall,
       textureRepeat: 3 * 4,
       maxDecalsCount: 0,

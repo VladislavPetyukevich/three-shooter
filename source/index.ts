@@ -16,7 +16,7 @@ import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { texturesStore, audioStore } from '@/core/loaders';
 import { ImageScaler } from '@/ImageScaler';
-import { gameTextures, GAME_TEXTURE_NAME, gameSounds } from './constants';
+import { gameTextures, gameSounds } from './constants';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { mindState } from '@/MindState';
@@ -141,7 +141,7 @@ export default class ThreeShooter {
     const onImagesScaleProgress = (progress: number) => {
       (<LoadingScene>this.currScene).onImagesScaleProgress(progress);
     };
-    imageScaler.addToIgnore(GAME_TEXTURE_NAME.damageEffect);
+    imageScaler.addToIgnore('damageEffect');
     imageScaler.scaleImages(gameTextures, onImagesScale, onImagesScaleProgress);
     audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
   }

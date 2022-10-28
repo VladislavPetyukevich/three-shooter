@@ -2,7 +2,6 @@ import { Mesh, BoxGeometry, MeshBasicMaterial, PointLight, Color } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Player } from '@/Entities/Player/Player';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
 import { SpriteSheet } from '@/SpriteSheet';
 
 interface ActorProps {
@@ -17,9 +16,9 @@ export class TorchActor implements Actor {
   spriteSheet: SpriteSheet;
 
   constructor(props: ActorProps) {
-    const torchFile = texturesStore.getTexture(GAME_TEXTURE_NAME.torch);
-    const torchFire1File = texturesStore.getTexture(GAME_TEXTURE_NAME.torchFire1);
-    const torchFire2File = texturesStore.getTexture(GAME_TEXTURE_NAME.torchFire2);
+    const torchFile = texturesStore.getTexture('torch');
+    const torchFire1File = texturesStore.getTexture('torchFire1');
+    const torchFire2File = texturesStore.getTexture('torchFire2');
     const geometry = new BoxGeometry(1.5, 1.5, 0.001);
     const material = new MeshBasicMaterial();
     material.transparent = true;

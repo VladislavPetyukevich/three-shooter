@@ -35,8 +35,16 @@ export class TextureLoader {
     );
   }
 
+  checkIsTextureExists(name: string) {
+    return !!this.texturesMap[name];
+  }
+
   getTexture(name: string) {
-    return this.texturesMap[name];
+    const texture = this.texturesMap[name];
+    if (!texture) {
+      console.warn(`Cannot get texture ${name}`);
+    }
+    return texture;
   }
 
   cloneTexture(originalName: string, cloneName: string) {

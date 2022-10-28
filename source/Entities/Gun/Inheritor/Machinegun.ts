@@ -1,7 +1,6 @@
 import { GunFireType } from '../Gun';
 import { InheritorGunProps } from './InheritorTypes';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GAME_TEXTURE_NAME } from '@/constants';
 import { GunRaycast } from '../GunRaycast';
 
 export class Machinegun extends GunRaycast {
@@ -16,8 +15,8 @@ export class Machinegun extends GunRaycast {
       recoilTime: 0.15,
       fireType: GunFireType.automatic,
       hudTextures: {
-        idle: texturesStore.getTexture(GAME_TEXTURE_NAME.machinegunTextureFile),
-        fire: texturesStore.getTexture(GAME_TEXTURE_NAME.machinegunFireFile),
+        idle: texturesStore.getTexture('machinegunTextureFile'),
+        fire: texturesStore.getTexture('machinegunFireFile'),
       },
     });
   }
