@@ -49,8 +49,8 @@ export class HUD {
     this.gunTargetX = 0;
     this.gunCurrX = 0;
     this.gunShiftAmplitude = 40;
-    this.gunShiftSpeed = 10;
-    this.gunXMax = 666;
+    this.gunShiftSpeed = 4;
+    this.gunXMax = 40;
     this.gunSpriteHeight = 0;
     this.gunOriginalRedColor = 0;
     this.damageOverlay = new Sprite();
