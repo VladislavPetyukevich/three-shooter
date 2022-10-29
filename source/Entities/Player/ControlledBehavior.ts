@@ -122,8 +122,9 @@ export class ControlledBehavior implements Behavior {
       'walkBackward': this.handleWalkBackward,
       'walkLeft': this.handleWalkLeft,
       'walkRight': this.handleWalkRight,
-      'weapon1': this.handleWeapon1,
-      'weapon2': this.handleWeapon2,
+      'weapon1': this.handleSwitchGunByIndex(0),
+      'weapon2': this.handleSwitchGunByIndex(1),
+      'weapon3': this.handleSwitchGunByIndex(2),
       'nextWeapon': this.handleWeaponNext,
       'prevWeapon': this.handleWeaponPrev,
       'firePrimary': this.handleFirePrimary,
@@ -152,18 +153,11 @@ export class ControlledBehavior implements Behavior {
     this.isKeyRight = !action.isEnded;
   }
 
-  handleWeapon1 = (action: PlayerAction) => {
+  handleSwitchGunByIndex = (gunIndex: number) => (action: PlayerAction) => {
     if (action.isEnded) {
       return;
     }
-    this.switchGun(0);
-  }
-
-  handleWeapon2 = (action: PlayerAction) => {
-    if (action.isEnded) {
-      return;
-    }
-    this.switchGun(1);
+    this.switchGun(gunIndex);
   }
 
   handleWeaponNext = (action: PlayerAction) => {

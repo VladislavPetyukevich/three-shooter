@@ -7,7 +7,8 @@ export type PlayerActionName =
   'prevWeapon' |
   'nextWeapon' |
   'weapon1' |
-  'weapon2';
+  'weapon2' |
+  'weapon3';
 
 export interface PlayerAction {
   name: PlayerActionName;
