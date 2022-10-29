@@ -127,7 +127,6 @@ export class ControlledBehavior implements Behavior {
       'nextWeapon': this.handleWeaponNext,
       'prevWeapon': this.handleWeaponPrev,
       'firePrimary': this.handleFirePrimary,
-      'fireSecondary': this.handleFireSecondary,
     };
     Object.keys(this.actions).forEach(actionName =>
       playerActions.addActionListener(
@@ -190,14 +189,6 @@ export class ControlledBehavior implements Behavior {
       this.handleReleaseTrigger(GunOrderType.primary);
     } else {
       this.handlePullTrigger(GunOrderType.primary);
-    }
-  }
-
-  handleFireSecondary = (action: PlayerAction) => {
-    if (action.isEnded) {
-      this.handleReleaseTrigger(GunOrderType.secondary);
-    } else {
-      this.handlePullTrigger(GunOrderType.secondary);
     }
   }
 
