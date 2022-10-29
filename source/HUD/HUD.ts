@@ -188,7 +188,7 @@ export class HUD {
     this.swithGunAnimationProgress = new EaseProgress({
       minValue: (this.swithGunAnimationStage === 'goingDown') ? topValue : bottomValue,
       maxValue: (this.swithGunAnimationStage === 'goingDown') ? bottomValue : topValue,
-      progressSpeed: 2.5,
+      progressSpeed: 4,
       transitionFunction: easeInSine,
     });
   }
