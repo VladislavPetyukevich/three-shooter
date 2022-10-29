@@ -18,8 +18,7 @@ import {
   ENTITY_MESSAGES,
   GAME_SOUND_NAME
 } from '@/constants';
-import { Gun, GunFireType } from '@/Entities/Gun/Gun';
-import { Boomerang } from '@/Entities/Boomerang/Boomerang';
+import { Gun } from '@/Entities/Gun/Gun';
 import { SinTable } from '@/SinTable';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
@@ -62,7 +61,6 @@ export class ControlledBehavior implements Behavior {
   damageSound: Audio;
   currentGunIndex: number;
   guns: Gun[];
-  // gunBoomerang: Gun;
   gunShootLight: PointLight;
   sinTable: SinTable;
   bobTimeout: number;
@@ -112,18 +110,6 @@ export class ControlledBehavior implements Behavior {
     this.guns = [];
     this.currentGunIndex = -1;
     this.updateHudGunTextures();
-    // this.gunBoomerang = new Gun({
-    //   container: props.container,
-    //   playerCamera: props.camera,
-    //   audioListener: props.audioListener,
-    //   shootOffsetAngle: 2.5,
-    //   shootOffsetInMoveAngle: 4.5,
-    //   maxEffectiveDistance: 0,
-    //   bulletsPerShoot: 1,
-    //   fireType: GunFireType.single,
-    //   recoilTime: 0,
-    //   holderMesh: this.actor.mesh,
-    // });
     this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(
       0,
@@ -284,11 +270,6 @@ export class ControlledBehavior implements Behavior {
   handleShootSecondary = () => {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
-    // this.gunBoomerang.shootBullet(
-    //   Boomerang,
-    //   { playerActor: this.actor }
-    // );
-    // this.gunBoomerang.setIsCanShoot(false);
   };
 
   updateHudGunTextures() {
@@ -352,9 +333,6 @@ export class ControlledBehavior implements Behavior {
       currentGun.update(delta);
       this.updateGunHeatLevel(delta);
     }
-    // this.gunBoomerang.setRotationY(playerRotationY);
-    // this.gunBoomerang.setPosition(this.camera.position);
-    // this.gunBoomerang.update(delta);
     this.updateCamera();
     this.updateIsRunning();
     if (this.isCanMove) {
