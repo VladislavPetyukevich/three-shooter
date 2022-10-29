@@ -22,7 +22,7 @@ export class Boomerang extends Bullet {
     });
     this.behavior = new BoomerangBehavior({
       actor: this.actor,
-      playerActor: props.playerActor,
+      author: props.author,
       velocity: this.velocity,
       setDirection: this.setDirection,
     });

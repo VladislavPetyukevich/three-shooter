@@ -15,6 +15,7 @@ import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
+import { BoomerangGun } from '@/Entities/Gun/Inheritor/BoomerangGun';
 import { Room, RoomSpawner } from './Spawner/RoomSpawner';
 import { CellCoordinates } from './CellCoordinates';
 import { mindState } from '@/MindState';
@@ -140,6 +141,24 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
+          this.player.mesh.position.x - this.cellCoordinates.size * 1.5,
+          this.player.mesh.position.y - 1,
+          this.player.mesh.position.z - this.cellCoordinates.size * 3,
+        ),
+        size: new Vector3(1, 0.5, 1),
+        gun: new BoomerangGun({
+          container: this.entitiesContainer,
+          playerCamera: this.player.camera,
+          player: this.player,
+          audioListener: this.audioListener,
+          holderMesh: this.player.mesh,
+        }),
+        gunTextureName: 'boomerangTextureFile',
+      })
+    );
+    this.entitiesContainer.add(
+      new GunPickUp({
+        position: new Vector3(
           this.player.mesh.position.x,
           this.player.mesh.position.y - 1,
           this.player.mesh.position.z - this.cellCoordinates.size * 3,
@@ -154,15 +173,12 @@ export class TestScene extends BasicScene {
         gunTextureName: 'gunTextureFile',
       })
     );
-    if (!mindState.checkIsAnyPropReachLevel(1)) {
-      return;
-    }
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
-          this.player.mesh.position.x,
+          this.player.mesh.position.x + this.cellCoordinates.size * 1.5,
           this.player.mesh.position.y - 1,
-          this.player.mesh.position.z - this.cellCoordinates.size * 5,
+          this.player.mesh.position.z - this.cellCoordinates.size * 3,
         ),
         size: new Vector3(1, 0.5, 1),
         gun: new Machinegun({

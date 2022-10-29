@@ -1,21 +1,20 @@
 import { Vector3 } from 'three';
-import { PlayerActor } from '@/Entities/Player/PlayerActor';
-import { Bullet } from '../Bullet/Bullet';
+import { Bullet, BulletProps } from '../Bullet/Bullet';
 import { BulletActor } from '../Bullet/BulletActor';
 import { BulletBehavior } from '../Bullet/BulletBehavior';
 import { BOOMERANG } from '@/constants';
 
 export interface BoomerangBehaviorProps {
-  playerActor: PlayerActor;
   actor: BulletActor;
   velocity: Vector3;
   setDirection: Bullet['setDirection'];
+  author?: BulletProps['author'];
 }
 
 type BoomerangPhase = 'flyForward' | 'flyBlackward';
 
 export class BoomerangBehavior extends BulletBehavior {
-  playerActor: PlayerActor;
+  author: BulletProps['author'];
   actor: BulletActor;
   velocity: Vector3;
   currentPhase: BoomerangPhase;
@@ -24,7 +23,7 @@ export class BoomerangBehavior extends BulletBehavior {
 
   constructor(props: BoomerangBehaviorProps) {
     super();
-    this.playerActor = props.playerActor;
+    this.author = props.author;
     this.actor = props.actor;
     this.velocity = props.velocity;
     this.currentPhase = 'flyForward';
@@ -51,7 +50,10 @@ export class BoomerangBehavior extends BulletBehavior {
   }
 
   updateFlyBackward() {
-    const playerPosition = this.playerActor.mesh.position;
+    if (!this.author) {
+      return;
+    }
+    const playerPosition = this.author.mesh.position;
     const direction = new Vector3(
       playerPosition.x - this.actor.mesh.position.x,
       0,

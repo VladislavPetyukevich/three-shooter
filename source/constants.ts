@@ -9,6 +9,8 @@ import gunTextureFile from './assets/gun.png';
 import gunFireFile from './assets/gunFire.png';
 import machinegunTextureFile from './assets/machinegun.png';
 import machinegunFireFile from './assets/machinegunFire.png';
+import boomerangTextureFile from './assets/boomerang.png';
+import boomerangFireTextureFile from './assets/boomerangFire.png';
 import enemyApathyWalk1 from './assets/enemyWalk1.png';
 import enemyApathyWalk2 from './assets/enemyWalk2.png';
 import enemyApathyDeath from './assets/enemyDeath.png';
@@ -165,6 +167,8 @@ export const gameTextures = {
   gunFireFile,
   machinegunTextureFile,
   machinegunFireFile,
+  boomerangTextureFile,
+  boomerangFireTextureFile,
   enemyApathyWalk1,
   enemyApathyWalk2,
   enemyApathyDeath,

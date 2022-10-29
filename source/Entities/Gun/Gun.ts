@@ -50,10 +50,6 @@ export class Gun extends Entity<GunActor, GunBehavior> {
     return this.behavior.isShoot;
   }
 
-  setIsCanShoot(isCanShoot: boolean) {
-    this.behavior.isShoot = !isCanShoot;
-  }
-
   setIsInMove(isInMove: boolean) {
     this.behavior.isInMove = isInMove;
   }

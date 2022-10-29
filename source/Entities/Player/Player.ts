@@ -2,6 +2,7 @@ import { Vector3, Camera, AudioListener } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
+import { BoomerangGun } from '../Gun/Inheritor/BoomerangGun';
 import { PlayerActor } from './PlayerActor';
 import { ControlledBehavior } from './ControlledBehavior';
 import { PLAYER, ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
@@ -84,7 +85,13 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
   onMessage(message: ENTITY_MESSAGES) {
     switch(message) {
       case ENTITY_MESSAGES.boomerangReturned:
-        // this.behavior.gunBoomerang.setIsCanShoot(true);
+        for (let i = this.behavior.guns.length; i--;) {
+          const gun = this.behavior.guns[i];
+          if (gun instanceof BoomerangGun) {
+            gun.canShoot = true;
+            break;
+          }
+        }
         break;
       default:
         break;
