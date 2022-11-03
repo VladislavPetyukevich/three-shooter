@@ -14,6 +14,7 @@ import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
 import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
+import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
 import { texturesStore, audioStore } from '@/core/loaders';
 import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, gameSounds } from './constants';
@@ -36,6 +37,7 @@ export default class ThreeShooter {
   renderer: WebGLRenderer;
   composer: EffectComposer;
   effectColorCorrection?: ShaderPass;
+  effectColorPalette?: ShaderPass;
 
   constructor(props: any) {
     this.gameProps = props;
@@ -177,6 +179,8 @@ export default class ThreeShooter {
 
     this.effectColorCorrection = new ShaderPass(ColorCorrectionShader);
     this.composer.addPass(this.effectColorCorrection);
+    this.effectColorPalette = new ShaderPass(ColorPaletteShader);
+    this.composer.addPass(this.effectColorPalette);
     this.onUpdateMindState();
 
     const effectFilm = new FilmPass(0.15, 0.015, 648, 0, 0.08);
