@@ -227,6 +227,7 @@ export class ControlledBehavior implements Behavior {
     if (!this.guns[gunIndex]) {
       return;
     }
+    this.handleReleaseTrigger();
     this.currentGunIndex = gunIndex;
     this.updateHudGunTextures();
   }
