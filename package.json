@@ -14,6 +14,7 @@
   "devDependencies": {
     "copy-webpack-plugin": "^10.2.4",
     "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
     "image-webpack-loader": "^8.1.0",
     "raw-loader": "^4.0.2",
     "source-map-loader": "^3.0.1",

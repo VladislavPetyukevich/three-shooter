@@ -2,48 +2,14 @@ const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const PATHS = {
+  root: path.join(__dirname),
   source: path.join(__dirname, 'source'),
   public: path.join(__dirname, 'public'),
   build: path.join(__dirname, 'build'),
 };
-
-const developmentConfig = {
-  mode: 'development',
-  devServer: {
-    static: {
-      directory: PATHS.public,
-    },
-    port: 8080,
-    hot: true
-  },
-  optimization: {
-    moduleIds: 'named',
-  },
-  plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
-  ],
-};
-
-const productionConfig = {
-  mode: 'production',
-  optimization: {
-    minimize: true,
-    minimizer: [new TerserPlugin({
-      terserOptions: {
-        ecma: 5,
-      },
-    })],
-  },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: PATHS.public, to: PATHS.build },
-      ],
-    }),
-  ],
-}
 
 const common = {
   entry: {
@@ -51,7 +17,8 @@ const common = {
   },
   output: {
     path: PATHS.build,
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
+    clean: true,
     library: {
       type: 'umd',
       name: 'ThreeShooter',
@@ -101,8 +68,54 @@ const common = {
         use: 'raw-loader'
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      hash: true,
+      inject: false,
+      template: PATHS.root + '/index.html',
+      filename: './index.html',
+    }),
+  ],
 };
+
+const developmentConfig = {
+  mode: 'development',
+  devServer: {
+    static: {
+      directory: PATHS.public,
+    },
+    port: 8080,
+    hot: true
+  },
+  optimization: {
+    moduleIds: 'named',
+  },
+  plugins: [
+    ...common.plugins,
+    new webpack.NoEmitOnErrorsPlugin(),
+  ],
+};
+
+const productionConfig = {
+  mode: 'production',
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        ecma: 5,
+      },
+    })],
+  },
+  plugins: [
+    ...common.plugins,
+    new CopyPlugin({
+      patterns: [
+        { from: PATHS.public, to: PATHS.build },
+      ],
+    }),
+  ],
+}
 
 module.exports = function (env) {
   if (env.development) {
