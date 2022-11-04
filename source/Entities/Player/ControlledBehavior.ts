@@ -23,11 +23,6 @@ import { SinTable } from '@/SinTable';
 import { hud } from '@/HUD/HUD';
 import { audioStore } from '@/core/loaders';
 
-const enum GunOrderType {
-  primary,
-  secondary
-}
-
 interface ControlledBehaviorProps {
   actor: PlayerActor;
   camera: Camera;
@@ -180,9 +175,9 @@ export class ControlledBehavior implements Behavior {
 
   handleFirePrimary = (action: PlayerAction) => {
     if (action.isEnded) {
-      this.handleReleaseTrigger(GunOrderType.primary);
+      this.handleReleaseTrigger();
     } else {
-      this.handlePullTrigger(GunOrderType.primary);
+      this.handlePullTrigger();
     }
   }
 
@@ -197,23 +192,18 @@ export class ControlledBehavior implements Behavior {
     this.damageSound.stop();
   }
 
-  handlePullTrigger = (gunOrderType: GunOrderType) => {
-    switch (gunOrderType) {
-      case GunOrderType.primary:
-        this.handleShootPrimary();
-        break;
-      case GunOrderType.secondary:
-        this.handleShootSecondary();
-        break;
-      default:
-        break;
+  handlePullTrigger() {
+    const direction = new Vector3();
+    this.camera.getWorldDirection(direction);
+    const currentGun = this.getCurrentGun();
+    if (currentGun) {
+      currentGun.shoot();
     }
+    this.cameraRecoilJump();
+    hud.gunFire();
   };
 
-  handleReleaseTrigger = (gunOrderType: GunOrderType) => {
-    if (gunOrderType !== GunOrderType.primary) {
-      return;
-    }
+  handleReleaseTrigger() {
     const currentGun = this.getCurrentGun();
     if (currentGun) {
       currentGun.releaseTrigger();
@@ -240,22 +230,6 @@ export class ControlledBehavior implements Behavior {
     this.currentGunIndex = gunIndex;
     this.updateHudGunTextures();
   }
-
-  handleShootPrimary = () => {
-    const direction = new Vector3();
-    this.camera.getWorldDirection(direction);
-    const currentGun = this.getCurrentGun();
-    if (currentGun) {
-      currentGun.shoot();
-    }
-    this.cameraRecoilJump();
-    hud.gunFire();
-  };
-
-  handleShootSecondary = () => {
-    const direction = new Vector3();
-    this.camera.getWorldDirection(direction);
-  };
 
   updateHudGunTextures() {
     const currentGun = this.getCurrentGun();
