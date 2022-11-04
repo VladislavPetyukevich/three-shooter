@@ -269,8 +269,33 @@ export class ControlledBehavior implements Behavior {
   }
 
   addGun(gun: Gun) {
-    this.guns.push(gun);
-    this.switchGun(this.guns.length - 1);
+    const gunIndex = this.getGunIndex(gun);
+    if (gunIndex === this.guns.length) {
+      this.guns.push(gun);
+    } else {
+      this.guns.splice(gunIndex, 0, gun);
+    }
+    this.currentGunIndex = -1;
+    this.switchGun(gunIndex);
+  }
+
+  getGunIndex(gun: Gun) {
+    if (this.guns.length === 0) {
+      return 0;
+    }
+    const newGunOrderIndex = gun.getOrderIndex();
+    if (
+      newGunOrderIndex > this.guns[this.guns.length -1].getOrderIndex()
+    ) {
+      return this.guns.length;
+    }
+    for (let i = 0; i < this.guns.length; i++) {
+      const currGunOrderIndex = this.guns[i].getOrderIndex();
+      if (newGunOrderIndex < currGunOrderIndex) {
+        return i;
+      }
+    }
+    return 0;
   }
 
   getCurrentGun() {

@@ -26,6 +26,7 @@ export interface GunPropsExternal {
   fireType: GunFireType;
   holderMesh: Mesh;
   hudTextures?: GunHudTextures;
+  orderIndex?: number;
 }
 
 export interface GunProps extends GunPropsExternal {
@@ -34,6 +35,7 @@ export interface GunProps extends GunPropsExternal {
 
 export class Gun extends Entity<GunActor, GunBehavior> {
   hudTextures?: GunHudTextures;
+  orderIndex?: number;
 
   constructor(props: GunProps) {
     const actor = new GunActor();
@@ -44,6 +46,7 @@ export class Gun extends Entity<GunActor, GunBehavior> {
     );
     this.hudTextures = props.hudTextures;
     this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderMesh.geometry);
+    this.orderIndex = props.orderIndex;
   }
 
   checkIsRecoil() {
@@ -76,6 +79,13 @@ export class Gun extends Entity<GunActor, GunBehavior> {
 
   getHudTextures() {
     return this.hudTextures;
+  }
+
+  getOrderIndex() {
+    if (typeof this.orderIndex === 'number') {
+      return this.orderIndex;
+    }
+    return 9999;
   }
 
   private getBulletPosisionOffset(geometry: Mesh['geometry']) {

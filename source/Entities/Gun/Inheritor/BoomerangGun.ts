@@ -25,6 +25,7 @@ export class BoomerangGun extends GunBullet {
         idle: texturesStore.getTexture('boomerangTextureFile'),
         fire: texturesStore.getTexture('boomerangFireTextureFile'),
       },
+      orderIndex: 2,
     });
     this.canShoot = true;
     this.setBulletAuthor(props.player);

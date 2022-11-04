@@ -18,6 +18,7 @@ export class Shotgun extends GunRaycast {
         idle: texturesStore.getTexture('gunTextureFile'),
         fire: texturesStore.getTexture('gunFireFile'),
       },
+      orderIndex: 0,
     });
   }
 }
