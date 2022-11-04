@@ -12,7 +12,6 @@ import { hud } from './HUD/HUD';
 import { ShaderPass } from './Postprocessing/ShaderPass';
 import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
-import { FilmPass } from './Postprocessing/FilmPass';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
 import { texturesStore, audioStore } from '@/core/loaders';
@@ -182,9 +181,6 @@ export default class ThreeShooter {
     this.effectColorPalette = new ShaderPass(ColorPaletteShader);
     this.composer.addPass(this.effectColorPalette);
     this.onUpdateMindState();
-
-    const effectFilm = new FilmPass(0.15, 0.015, 648, 0, 0.08);
-    this.composer.addPass(effectFilm);
   }
 
   onUpdateMindState = () => {
