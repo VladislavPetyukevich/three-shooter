@@ -14,7 +14,10 @@ export class ImageScaler {
     this.scaleFactor = scaleFactor;
     this.canvas = document.createElement('canvas');
     this.canvasScaled = document.createElement('canvas');
-    const context = this.canvas.getContext('2d');
+    const context = this.canvas.getContext(
+      '2d',
+      { willReadFrequently: true }
+    );
     const contextScaled = this.canvasScaled.getContext('2d');
     if (!context || !contextScaled) {
       throw new Error('Canvas context are not found.');
