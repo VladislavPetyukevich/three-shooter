@@ -1,10 +1,6 @@
 import { Box3, Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 
-export interface CollisionsResult {
-  entities: Entity[];
-}
-
 interface EntityBounds {
   xMin: number;
   xMax: number;
