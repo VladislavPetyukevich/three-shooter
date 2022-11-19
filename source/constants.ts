@@ -104,14 +104,6 @@ export const DOOR = {
   OPEN_SPEED: 15
 };
 
-export const FLYING_ENEMY = {
-  HP: 1,
-  FLYING_SPEED: 10,
-  SHAKE_SPEED: 5,
-  SHAKE_DISTANCE: 5,
-  Y_POS: 3
-};
-
 export const ENEMY = {
   WALK_SPEED: ENEMY_GAME_SPEED * 0.6,
   WALK_SPEED_FACTOR_KAMIKAZE: 1.4,
