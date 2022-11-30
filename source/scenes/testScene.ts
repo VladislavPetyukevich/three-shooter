@@ -20,6 +20,7 @@ import { Room, RoomSpawner } from './Spawner/RoomSpawner';
 import { CellCoordinates } from './CellCoordinates';
 import { mindState } from '@/MindState';
 import { randomNumbers } from '@/RandomNumbers';
+import { hud } from '@/HUD/HUD';
 
 export interface TestSceneProps extends BasicSceneProps {
   onPlayerDeath: Function;
@@ -32,6 +33,7 @@ export class TestScene extends BasicScene {
   ambientLightColor: number;
   ambientLightIntensity: number;
   player: Player;
+  enemiesKillCount: number;
   cellCoordinates: CellCoordinates;
   currentRoom: Room;
   enemyFactory: EnemyFactory;
@@ -82,6 +84,8 @@ export class TestScene extends BasicScene {
     });
     this.enemyFactory = new EnemyFactory();
     this.currentRoomEnimiesCount = 0;
+    this.enemiesKillCount = 0;
+    this.updateHudKillCount();
     const roomSizeScale = 2;
     this.roomSpawner = new RoomSpawner({
       scene: this,
@@ -268,11 +272,17 @@ export class TestScene extends BasicScene {
   }
 
   onEnemyDeath = () => {
+    this.enemiesKillCount++;
+    this.updateHudKillCount();
     this.currentRoomEnimiesCount--;
     if (this.currentRoomEnimiesCount !== 0) {
       return;
     }
     this.onRoomClear(this.currentRoom);
+  }
+
+  updateHudKillCount() {
+    hud.score.drawScore(this.enemiesKillCount);
   }
 
   onRoomClear(room: Room) {

@@ -6,6 +6,7 @@ import { GunHudTextures } from '@/Entities/Gun/Gun';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { EaseProgress, easeInSine } from '@/EaseProgress';
 import { SinTable } from '@/SinTable';
+import { HUDScore } from './HUDScore';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
@@ -37,6 +38,7 @@ export class HUD {
   };
   maxHp: number;
   maxDamageOverlayOpacity: number;
+  score: HUDScore;
 
   constructor() {
     this.scene = new Scene();
@@ -60,6 +62,9 @@ export class HUD {
     this.isGunSwitchAnimationStarted = false;
     this.swithGunAnimationStage = 'goingDown';
     this.isRunning = false;
+
+    this.score = new HUDScore({ width: 256, height: 32 });
+    this.scene.add(this.score.sprite);
   }
 
   setIsRunning(isRunning: boolean) {
@@ -169,9 +174,13 @@ export class HUD {
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
     this.bobState = this.getInitialBobState();
     const gunScale = height * 0.75;
+    const scoreScale = height * 0.1;
     this.gunSpriteHeight = -height + gunScale / 2;
+    const scoreSpriteHeight = -height + scoreScale / 2;
     this.gun.scale.set(gunScale * 2, gunScale, 1);
     this.gun.position.set(0, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
+    this.score.sprite.scale.set(scoreScale * 8, scoreScale, 1);
+    this.score.sprite.position.set(0 - width * 1 + scoreScale * 4, -scoreSpriteHeight, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(
