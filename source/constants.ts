@@ -71,12 +71,12 @@ export const lighter = (color: Color, factor: number) => {
 };
 
 export const COLORS = {
-  Apathy: createColor(42, 140, 186),
-  Cowardice: createColor(104, 142, 11),
-  SexualPerversions: createColor(166, 15, 11),
+  Apathy: createColor(23, 53, 255),
+  Cowardice: createColor(245, 108, 22),
+  SexualPerversions: createColor(255, 23, 57),
 };
 
-const wallDarkerFactor = 0.8;
+const wallDarkerFactor = 0.915;
 export const WALL_COLORS = {
   Neutral: darker(createColor(180, 180, 180), wallDarkerFactor),
   Apathy: darker(COLORS.Apathy, wallDarkerFactor),
