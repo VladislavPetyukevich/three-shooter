@@ -1,4 +1,4 @@
-import { Mesh, CylinderGeometry, MeshBasicMaterial, Vector3 } from 'three';
+import { Mesh, CylinderGeometry, MeshLambertMaterial, Vector3 } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { PI_2 } from '@/constants';
 
@@ -19,7 +19,7 @@ export class BoomerangActor implements Actor {
       4.5,
       5
     );
-    const material = new MeshBasicMaterial({ color: 0xCC0000 });
+    const material = new MeshLambertMaterial({ color: 0xCC0000 });
     this.mesh = new Mesh(geometry, material);
     this.mesh.rotation.x = PI_2;
     this.mesh.position.set(
