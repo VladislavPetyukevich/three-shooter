@@ -36,6 +36,18 @@ export class MindState {
     return this.value.level[propName];
   }
 
+  checkIsAllLevelsEqual() {
+    return Object.values(this.value.level).every(
+      (val, _, vals) => val === vals[0]
+    );
+  }
+
+  getMinLevel() {
+    return Math.min(
+      ...Object.values(this.value.level)
+    );
+  }
+
   increaseCount(prop: MindProperty) {
     this.value.count[prop]++;
     this.persistValue.totalCount++;

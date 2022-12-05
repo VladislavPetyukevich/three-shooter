@@ -98,7 +98,7 @@ export class TestScene extends BasicScene {
     });
     this.currentRoom = this.roomSpawner.createRoom(new Vector2(0, 0), RoomType.Neutral);
     this.roomSpawner.createNeighboringRooms(this.currentRoom);
-    this.openCloseDoors(this.currentRoom, false);
+    this.openCloseNeighboringRooms(this.currentRoom, false);
 
     const playerPosition = this.getInitialPlayerPositon();
     this.player.mesh.position.x = playerPosition.x;
@@ -198,27 +198,79 @@ export class TestScene extends BasicScene {
   handleRoomVisit = (room: Room) => {
     this.currentRoom = room;
     this.roomSpawner.fillRoomAfterVisit(room);
-    this.openCloseDoors(room, true);
+    this.openCloseNeighboringRooms(room, true);
   }
 
-  openCloseDoors(room: Room, isClose: boolean) {
+  openCloseNeighboringRooms(room: Room, isClose: boolean) {
     const doors = room.doors;
     const neighboringRooms = room.neighboringRooms;
     if (neighboringRooms.top) {
-      this.openCloseDoor(doors.top, isClose);
-      this.openCloseDoor(neighboringRooms.top.doors.bottom, isClose);
+      this.openCloseNeighboringDoors(
+        neighboringRooms.top,
+        doors.top,
+        neighboringRooms.top.doors.bottom,
+        isClose
+      );
     }
     if (neighboringRooms.bottom) {
-      this.openCloseDoor(doors.bottom, isClose);
-      this.openCloseDoor(neighboringRooms.bottom.doors.top, isClose);
+      this.openCloseNeighboringDoors(
+        neighboringRooms.bottom,
+        doors.bottom,
+        neighboringRooms.bottom.doors.top,
+        isClose
+      );
     }
     if (neighboringRooms.left) {
-      this.openCloseDoor(doors.left, isClose);
-      this.openCloseDoor(neighboringRooms.left.doors.right, isClose);
+      this.openCloseNeighboringDoors(
+        neighboringRooms.left,
+        doors.left,
+        neighboringRooms.left.doors.right,
+        isClose
+      );
     }
     if (neighboringRooms.right) {
-      this.openCloseDoor(doors.right, isClose);
-      this.openCloseDoor(neighboringRooms.right.doors.left, isClose);
+      this.openCloseNeighboringDoors(
+        neighboringRooms.right,
+        doors.right,
+        neighboringRooms.right.doors.left,
+        isClose
+      );
+    }
+  }
+
+  openCloseNeighboringDoors(
+    currentRoom: Room,
+    neighboringDoor1: Door,
+    neighboringDoor2: Door,
+    isClose: boolean
+  ) {
+    if (this.checkIsRoomShoulOpenClose(currentRoom, isClose)) {
+      this.openCloseDoor(neighboringDoor1, isClose);
+      this.openCloseDoor(neighboringDoor2, isClose);
+    }
+  }
+
+  checkIsRoomShoulOpenClose(room: Room, isClose: boolean) {
+    if (isClose) {
+      return true;
+    }
+    return !this.checkIsRoomAtMoreThanOthersMindLivel(room);
+  }
+
+  checkIsRoomAtMoreThanOthersMindLivel(room: Room) {
+    if (mindState.checkIsAllLevelsEqual()) {
+      return false;
+    }
+    const minLevel = mindState.getMinLevel();
+    switch (room.type) {
+      case RoomType.Apathy:
+        return mindState.getLevel('apathy') !== minLevel;
+      case RoomType.Cowardice:
+        return mindState.getLevel('cowardice') !== minLevel;
+      case RoomType.SexualPerversions:
+        return mindState.getLevel('sexualPerversions') !== minLevel;
+      default:
+        return false;
     }
   }
 
@@ -282,7 +334,7 @@ export class TestScene extends BasicScene {
     this.increaseMindState(room);
     this.roomSpawner.deleteNeighboringRooms(room);
     this.roomSpawner.createNeighboringRooms(room);
-    this.openCloseDoors(room, false);
+    this.openCloseNeighboringRooms(room, false);
   }
 
   onMindStateLevelIncrease = () => {
