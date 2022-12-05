@@ -2,7 +2,6 @@ import {
   ReinhardToneMapping,
   WebGLRenderer,
   BasicShadowMap,
-  Color,
 } from 'three';
 import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
@@ -19,7 +18,6 @@ import { ImageScaler } from '@/ImageScaler';
 import { gameTextures, gameSounds } from './constants';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
-import { mindState } from '@/MindState';
 
 const SceneClass = TestScene;
 
@@ -73,7 +71,6 @@ export default class ThreeShooter {
       this.prevTime = performance.now();
     });
     this.handleResize(props.renderWidth, props.renderHeight);
-    mindState.addUpdateListener(this.onUpdateMindState);
   }
 
   handleResize = (width: number, height: number) => {
@@ -180,24 +177,6 @@ export default class ThreeShooter {
     this.composer.addPass(this.effectColorCorrection);
     this.effectColorPalette = new ShaderPass(ColorPaletteShader);
     this.composer.addPass(this.effectColorPalette);
-    this.onUpdateMindState();
-  }
-
-  onUpdateMindState = () => {
-    if (!this.effectColorCorrection) {
-      return;
-    }
-    const uniforms = (<typeof ColorCorrectionShader['uniforms']>this.effectColorCorrection.uniforms);
-    uniforms.addRGB.value.set(
-      mindState.getProps().sexualPerversions,
-      mindState.getProps().cowardice,
-      mindState.getProps().apathy,
-    );
-    this.renderer.setClearColor(new Color(
-      mindState.getProps().sexualPerversions,
-      mindState.getProps().cowardice,
-      mindState.getProps().apathy,
-    ));
   }
 
   updateMouseSensitivity = (value: number) => {
