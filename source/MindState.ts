@@ -1,60 +1,56 @@
-type MindProperties = 'apathy' | 'cowardice' | 'sexualPerversions';
+type MindProperty = 'apathy' | 'cowardice' | 'sexualPerversions';
 
-export type MindStateProps = Record<MindProperties, number>;
+export type MindStateProps = Record<MindProperty, number>;
 
 interface MindStateValue {
-  props: MindStateProps;
-  levels: MindStateProps;
+  count: MindStateProps;
+  level: MindStateProps;
+};
+
+interface MindStatePersistValue {
+  totalCount: number;
 };
 
 export class MindState {
-  initialValue: number;
-  increaseAmount: number;
-  onUpdateCallbacks: Function[];
+  levelCount: number;
   onLevelIncreaseCallbacks: Function[];
   localStorageKey: string;
-  maxPropValue: number;
   value: MindStateValue;
+  persistValue: MindStatePersistValue;
 
   constructor() {
-    this.initialValue = 0;
-    this.increaseAmount = 0.01;
-    this.onUpdateCallbacks = [];
+    this.levelCount = 2;
     this.onLevelIncreaseCallbacks = [];
     this.localStorageKey = 'mindState';
     this.value = {
-      props: this.getInitialProps(),
-      levels: this.getInitialProps(),
+      count: this.getInitialValues(),
+      level: this.getInitialValues(),
     };
-    this.maxPropValue = 0.05;
+    this.persistValue = {
+      totalCount: 0,
+    };
     this.loadFromLocalStorage();
   }
 
-  getProps() {
-    return this.value.props;
+  getLevel(propName: MindProperty) {
+    return this.value.level[propName];
   }
 
-  getLevel() {
-    return this.value.levels;
-  }
-
-  increaseValue(prop: MindProperties) {
-    this.value.props[prop] += this.increaseAmount;
-    if (this.checkIsPropReachMaxValue(prop)) {
-      this.updateLevel(prop);
+  increaseCount(prop: MindProperty) {
+    this.value.count[prop]++;
+    this.persistValue.totalCount++;
+    if (this.checkIsPropReachLevel(prop)) {
+      this.increaseLevel(prop);
+      this.onLevelIncrease(prop, this.getLevel(prop));
     }
-    this.onUpdate();
     this.saveToLocalStorage();
   }
 
-  updateLevel(prop: MindProperties) {
-    this.value.props[prop] = this.initialValue;
-    this.value.levels[prop]++;
-    this.onLevelIncrease();
-  }
-
-  addUpdateListener(callback: Function) {
-    this.onUpdateCallbacks.push(callback);
+  resetValue() {
+    this.value = {
+      count: this.getInitialValues(),
+      level: this.getInitialValues(),
+    };
   }
 
   addLevelIncreaseListener(callback: Function) {
@@ -66,14 +62,8 @@ export class MindState {
       this.onLevelIncreaseCallbacks.filter(cb => cb !== callback);
   }
 
-  checkIsPropReachMaxValue(prop: MindProperties) {
-    return this.value.props[prop] >= this.maxPropValue;
-  }
-
-  checkIsAnyPropReachLevel(value: number) {
-    return (Object.keys(this.value.levels) as MindProperties[]).find(
-      propKey => this.value.levels[propKey] >= value
-    );
+  checkIsPropReachLevel(prop: MindProperty) {
+    return this.value.count[prop] % this.levelCount === 0;
   }
 
   private saveToLocalStorage() {
@@ -81,77 +71,57 @@ export class MindState {
   }
 
   private saveToLocalStorageCallback = (resolve: Function) => {
-    const stringified = JSON.stringify(this.value);
+    const stringified = JSON.stringify(this.persistValue);
     localStorage.setItem(this.localStorageKey, stringified);
     resolve();
   }
 
   private loadFromLocalStorage() {
     new Promise(this.loadFromLocalStorageCallback)
-      .then((value) => {
-        this.value = value;
-        this.onUpdate();
+      .then((persistValue) => {
+        this.persistValue = persistValue;
       })
       .catch(() => {});
   }
 
   private loadFromLocalStorageCallback = (
-    resolve: (value: MindStateValue) => void,
+    resolve: (persistValue: MindStatePersistValue) => void,
     reject: () => void,
   ) => {
     try {
-      const checkIsValid = (value: Record<any, any>) => (
-        (typeof value.apathy === 'number') &&
-        (typeof value.cowardice === 'number') &&
-        (typeof value.sexualPerversions === 'number')
-      );
-
       const stringified = localStorage.getItem(this.localStorageKey);
       if (!stringified) {
+        reject();
         return;
       }
       const parsed = JSON.parse(stringified);
       if (
-        (parsed.props) &&
-        (checkIsValid(parsed.props)) &&
-        (parsed.levels) &&
-        (checkIsValid(parsed.levels))
+        parsed.totalCount &&
+        typeof parsed.totalCount === 'number'
       ) {
-        resolve({
-          props: {
-            apathy: parsed.props.apathy,
-            cowardice: parsed.props.cowardice,
-            sexualPerversions: parsed.props.sexualPerversions,
-          },
-          levels: {
-            apathy: parsed.levels.apathy,
-            cowardice: parsed.levels.cowardice,
-            sexualPerversions: parsed.levels.sexualPerversions,
-          },
-        });
+        resolve(parsed);
       }
     } catch (error) {
       reject();
     }
   }
 
-  private onUpdate() {
-    this.onUpdateCallbacks.forEach(callback => callback());
+  private increaseLevel(prop: MindProperty) {
+    this.value.level[prop]++;
   }
 
-  private onLevelIncrease() {
-    this.onLevelIncreaseCallbacks.forEach(callback => callback());
+  private onLevelIncrease(prop: MindProperty, value: number) {
+    this.onLevelIncreaseCallbacks.forEach(callback => callback(prop, value));
   }
 
-
-  private getInitialProps() {
+  private getInitialValues() {
+    const initialValue = 0;
     return {
-      apathy: this.initialValue,
-      cowardice: this.initialValue,
-      sexualPerversions: this.initialValue,
+      apathy: initialValue,
+      cowardice: initialValue,
+      sexualPerversions: initialValue,
     };
   }
 }
 
 export const mindState = new MindState();
-

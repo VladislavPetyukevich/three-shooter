@@ -64,9 +64,6 @@ interface RoomTorches {
   apathy: RoomTorchesPool,
   cowardice: RoomTorchesPool,
   sexualPerversions: RoomTorchesPool,
-  apathyGray: RoomTorchesPool,
-  cowardiceGray: RoomTorchesPool,
-  sexualPerversionsGray: RoomTorchesPool,
 }
 
 type RoomTorchesPool = [Torch, Torch, Torch, Torch];
@@ -220,22 +217,12 @@ export class RoomSpawner {
   }
 
   getRoomTorches(roomType: RoomType) {
-    const roomMindStateLevel = this.getMindeStateLevel(roomType);
     switch (roomType) {
       case RoomType.Apathy:
-        if (roomMindStateLevel >= 1) {
-          return this.torches.apathyGray;
-        }
         return this.torches.apathy;
       case RoomType.Cowardice:
-        if (roomMindStateLevel >= 1) {
-          return this.torches.cowardiceGray;
-        }
         return this.torches.cowardice;
       case RoomType.SexualPerversions:
-        if (roomMindStateLevel >= 1) {
-          return this.torches.sexualPerversionsGray;
-        }
         return this.torches.sexualPerversions;
       default:
         throw new Error(`Cannot get room torches for room type ${roomType}`);
@@ -297,7 +284,7 @@ export class RoomSpawner {
   }
 
   spawnRoomActivateTrigger(room: Room) {
-    const color = this.getTriggerColor(room);
+    const color = 0xFF0000;
     const size = new Vector2(this.cellCoordinates.size, this.cellCoordinates.size);
     const position = this.getRoomActivateTriggerPostition(room);
     const trigger = this.entitiesContainer.add(
@@ -334,10 +321,6 @@ export class RoomSpawner {
         room
       )
     );
-  }
-
-  getTriggerColor(room: Room) {
-    return this.getMindeStateLevel(room.type) > 0 ? 0x333333 : 0xFF0000;
   }
 
   spawnRoomFloor(worldCoordinates: Vector2, worldSize: Vector2) {
@@ -611,13 +594,11 @@ export class RoomSpawner {
   }
 
   getSceneTorches() {
+    const color = new Color(0x600004);
     return {
-      apathy: this.createTorchesPool(new Color(0x600004)),
-      cowardice: this.createTorchesPool(new Color(0x600004)),
-      sexualPerversions: this.createTorchesPool(new Color(0x600004)),
-      apathyGray: this.createTorchesPool(new Color(0x333333)),
-      cowardiceGray: this.createTorchesPool(new Color(0x333333)),
-      sexualPerversionsGray: this.createTorchesPool(new Color(0x333333))
+      apathy: this.createTorchesPool(color),
+      cowardice: this.createTorchesPool(color),
+      sexualPerversions: this.createTorchesPool(color),
     };
   }
 
@@ -643,18 +624,5 @@ export class RoomSpawner {
       position.x + size.x / 2,
       position.y + size.y / 2
     );
-  }
-
-  getMindeStateLevel(roomType: RoomType) {
-    switch(roomType) {
-      case RoomType.Apathy:
-        return mindState.getLevel().apathy;
-      case RoomType.Cowardice:
-        return mindState.getLevel().cowardice;
-      case RoomType.SexualPerversions:
-        return mindState.getLevel().sexualPerversions;
-      default:
-        return 0;
-    }
   }
 }

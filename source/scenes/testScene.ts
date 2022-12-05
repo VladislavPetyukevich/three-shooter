@@ -23,7 +23,6 @@ import { randomNumbers } from '@/RandomNumbers';
 import { hud } from '@/HUD/HUD';
 
 export interface TestSceneProps extends BasicSceneProps {
-  onPlayerDeath: Function;
   onFinish: Function;
 }
 
@@ -104,7 +103,7 @@ export class TestScene extends BasicScene {
     const playerPosition = this.getInitialPlayerPositon();
     this.player.mesh.position.x = playerPosition.x;
     this.player.mesh.position.z = playerPosition.y;
-    this.camera.rotation.y = this.getInitialCameraRotation();
+    this.camera.rotation.y = 0;
 
     this.spawnGuns();
 
@@ -194,22 +193,6 @@ export class TestScene extends BasicScene {
         gunTextureName: 'machinegunTextureFile',
       })
     );
-  }
-
-  getInitialCameraRotation() {
-    if (this.checkIsPlayerShouldLookAtRoom(RoomType.Cowardice)) {
-      // (90 / 2 + 4) * PI_180;
-      return 49 * PI_180;
-    }
-    if (this.checkIsPlayerShouldLookAtRoom(RoomType.SexualPerversions)) {
-      // (270 + 90 / 2 - 4) * PI_180;
-      return 311 * PI_180;
-    }
-    return 0;
-  }
-
-  checkIsPlayerShouldLookAtRoom(roomType: RoomType) {
-    return this.getMindeStateLevel(roomType) < 1;
   }
 
   handleRoomVisit = (room: Room) => {
@@ -309,29 +292,16 @@ export class TestScene extends BasicScene {
   increaseMindState(room: Room) {
     switch(room.type) {
       case RoomType.Apathy:
-        mindState.increaseValue('apathy');
+        mindState.increaseCount('apathy');
         break;
       case RoomType.Cowardice:
-        mindState.increaseValue('cowardice');
+        mindState.increaseCount('cowardice');
         break;
       case RoomType.SexualPerversions:
-        mindState.increaseValue('sexualPerversions');
+        mindState.increaseCount('sexualPerversions');
         break;
       default:
         break;
-    }
-  }
-
-  getMindeStateLevel(roomType: RoomType) {
-    switch(roomType) {
-      case RoomType.Apathy:
-        return mindState.getLevel().apathy;
-      case RoomType.Cowardice:
-        return mindState.getLevel().cowardice;
-      case RoomType.SexualPerversions:
-        return mindState.getLevel().sexualPerversions;
-      default:
-        return 0;
     }
   }
 
@@ -353,10 +323,8 @@ export class TestScene extends BasicScene {
 
   spawnEnemy = (coordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback) => {
     this.currentRoomEnimiesCount++;
-    const isReachedLevel1 =
-      this.getMindeStateLevel(roomType) >= 1;
     const isSpawnSpecialEnemy = randomNumbers.getRandom() >= 0.5;
-    if (isReachedLevel1 && isSpawnSpecialEnemy) {
+    if (isSpawnSpecialEnemy) {
       const enemy =
         this.spawnSpecialEnemy(
           coordinates,
@@ -475,6 +443,7 @@ export class TestScene extends BasicScene {
 
   finish() {
     mindState.removeLevelIncreaseListener(this.onMindStateLevelIncrease);
+    mindState.resetValue();
     this.onFinish();
   }
 }
