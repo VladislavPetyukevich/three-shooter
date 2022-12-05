@@ -258,6 +258,7 @@ export class TestScene extends BasicScene {
   }
 
   onEnemyWithSpawnerDeath = (enemy: Enemy) => {
+    this.incrementEnemiesKillCount();
     const enemiesFromSpawnerCount = 2;
     this.entitiesContainer.add(
       new EnemySpawner({
@@ -266,20 +267,28 @@ export class TestScene extends BasicScene {
         position: enemy.mesh.position.clone(),
         spawnsCount: enemiesFromSpawnerCount,
         onTrigger: this.spawnEnemyFromSpawner(enemy.roomType),
-        onDestroy: this.onEnemyDeath,
+        onDestroy: this.onRoomEntityDestroy,
       })
     );
   }
 
   onEnemyDeath = () => {
+    this.incrementEnemiesKillCount();
+    this.onRoomEntityDestroy();
+  }
+
+  incrementEnemiesKillCount() {
     this.enemiesKillCount++;
     this.updateHudKillCount();
+  }
+
+  onRoomEntityDestroy = () => {
     this.currentRoomEnimiesCount--;
     if (this.currentRoomEnimiesCount !== 0) {
       return;
     }
     this.onRoomClear(this.currentRoom);
-  }
+  };
 
   updateHudKillCount() {
     hud.score.drawScore(this.enemiesKillCount);
