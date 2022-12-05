@@ -66,7 +66,7 @@ interface RoomTorches {
   sexualPerversions: RoomTorchesPool,
 }
 
-type RoomTorchesPool = [Torch, Torch, Torch, Torch];
+type RoomTorchesPool = [Torch, Torch, Torch, Torch, Torch, Torch, Torch, Torch];
 
 export interface RoomSpawnerProps {
   scene: TestScene;
@@ -185,26 +185,142 @@ export class RoomSpawner {
     }
 
     const torches = this.getRoomTorches(room.type);
-    const centerPos = this.getRoomActivateTriggerPostition(room);
+    const yPos = this.cellCoordinates.size / 2;
+    const wallShift = 1.1;
+    const rotationAngle = 0.575959;
+
+    const axisBottom: 'x' | 'z' = room.type === RoomType.Apathy ? 'x' : 'z';
+    const rotationBottom = room.type === RoomType.Cowardice ? rotationAngle : -rotationAngle;
+
+    const axisLeft: 'x' | 'z' = room.type === RoomType.Apathy ? 'z' : 'x';
+    const rotationLeft = room.type === RoomType.SexualPerversions ? rotationAngle : -rotationAngle;
+
+    torches[0].mesh.rotation[axisBottom] = rotationBottom;
+    const torch0Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
+          room.cellPosition.y + this.roomSize.y - wallShift
+        ),
+        room
+      )
+    );
     torches[0].mesh.position.set(
-      centerPos.x + this.cellCoordinates.size,
-      0,
-      centerPos.y
+      torch0Pos.x,
+      yPos,
+      torch0Pos.y
+    );
+
+    torches[1].mesh.rotation[axisBottom] = rotationBottom;
+    const torch1Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
+          room.cellPosition.y + this.roomSize.y - wallShift
+        ),
+        room
+      )
     );
     torches[1].mesh.position.set(
-      centerPos.x,
-      0,
-      centerPos.y + this.cellCoordinates.size
+      torch1Pos.x,
+      yPos,
+      torch1Pos.y
+    );
+
+    torches[2].mesh.rotation[axisBottom] = -rotationBottom;
+    const torch2Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
+          room.cellPosition.y + wallShift
+        ),
+        room
+      )
     );
     torches[2].mesh.position.set(
-      centerPos.x - this.cellCoordinates.size,
-      0,
-      centerPos.y
+      torch2Pos.x,
+      yPos,
+      torch2Pos.y
+    );
+
+    torches[3].mesh.rotation[axisBottom] = -rotationBottom;
+    const torch3Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
+          room.cellPosition.y + wallShift
+        ),
+        room
+      )
     );
     torches[3].mesh.position.set(
-      centerPos.x,
-      0,
-      centerPos.y - this.cellCoordinates.size
+      torch3Pos.x,
+      yPos,
+      torch3Pos.y
+    );
+
+    torches[4].mesh.rotation[axisLeft] = rotationLeft;
+    const torch4Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + wallShift,
+          room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
+        ),
+        room
+      )
+    );
+    torches[4].mesh.position.set(
+      torch4Pos.x,
+      yPos,
+      torch4Pos.y
+    );
+
+    torches[5].mesh.rotation[axisLeft] = rotationLeft;
+    const torch5Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + wallShift,
+          room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
+        ),
+        room
+      )
+    );
+    torches[5].mesh.position.set(
+      torch5Pos.x,
+      yPos,
+      torch5Pos.y
+    );
+
+    torches[6].mesh.rotation[axisLeft] = -rotationLeft;
+    const torch6Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x - wallShift,
+          room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
+        ),
+        room
+      )
+    );
+    torches[6].mesh.position.set(
+      torch6Pos.x,
+      yPos,
+      torch6Pos.y
+    );
+
+    torches[7].mesh.rotation[axisLeft] = -rotationLeft;
+    const torch7Pos = this.cellCoordinates.toWorldCoordinates(
+      this.rotatePositionForRoom(
+        new Vector2(
+          room.cellPosition.x + this.roomSize.x - wallShift,
+          room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
+        ),
+        room
+      )
+    );
+    torches[7].mesh.position.set(
+      torch7Pos.x,
+      yPos,
+      torch7Pos.y
     );
   }
 
@@ -604,6 +720,10 @@ export class RoomSpawner {
 
   createTorchesPool(color: Color): RoomTorchesPool {
     return [
+      this.createTorch(color),
+      this.createTorch(color),
+      this.createTorch(color),
+      this.createTorch(color),
       this.createTorch(color),
       this.createTorch(color),
       this.createTorch(color),
