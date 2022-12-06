@@ -30,10 +30,10 @@ import {
   getRandomRoomConstructor,
   RoomCellEventType,
 } from '@/dungeon/DungeonRoom';
-import { mindState } from '@/MindState';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { TestScene } from '../testScene';
+import { EntitiesPool } from './EntitiesPool';
 
 const enum Direction {
   Top, Bottom, Left, Right
@@ -60,14 +60,6 @@ export interface Room {
   constructors: RoomConstructors | null;
 }
 
-interface RoomTorches {
-  apathy: RoomTorchesPool,
-  cowardice: RoomTorchesPool,
-  sexualPerversions: RoomTorchesPool,
-}
-
-type RoomTorchesPool = [Torch, Torch, Torch, Torch, Torch, Torch, Torch, Torch];
-
 export interface RoomSpawnerProps {
   scene: TestScene;
   player: Player;
@@ -88,7 +80,7 @@ export class RoomSpawner {
   doorWidthHalf: RoomSpawnerProps['doorWidthHalf'];
   onRoomVisit: RoomSpawnerProps['onRoomVisit'];
   onSpawnEnemy: RoomSpawnerProps['onSpawnEnemy'];
-  torches: RoomTorches;
+  torchesPool: EntitiesPool;
 
   constructor(props: RoomSpawnerProps) {
     this.scene = props.scene;
@@ -99,7 +91,7 @@ export class RoomSpawner {
     this.doorWidthHalf = props.doorWidthHalf;
     this.onRoomVisit = props.onRoomVisit;
     this.onSpawnEnemy = props.onSpawnEnemy;
-    this.torches = this.getSceneTorches();
+    this.torchesPool = new EntitiesPool(this.createTorch, 8 * 3);
   };
 
   createNeighboringRooms(room: Room) {
@@ -184,7 +176,7 @@ export class RoomSpawner {
       return;
     }
 
-    const torches = this.getRoomTorches(room.type);
+    const torches = this.torchesPool.getEntities(8);
     const yPos = this.cellCoordinates.size / 2;
     const wallShift = 1.1;
     const rotationAngle = 0.575959;
@@ -324,27 +316,6 @@ export class RoomSpawner {
     );
   }
 
-  hideTorchesFromRoom(room: Room) {
-    if (room.type === RoomType.Neutral) {
-      return;
-    }
-    const torches = this.getRoomTorches(room.type);
-    torches.forEach(torch => torch.mesh.position.set(0, -100, 0));
-  }
-
-  getRoomTorches(roomType: RoomType) {
-    switch (roomType) {
-      case RoomType.Apathy:
-        return this.torches.apathy;
-      case RoomType.Cowardice:
-        return this.torches.cowardice;
-      case RoomType.SexualPerversions:
-        return this.torches.sexualPerversions;
-      default:
-        throw new Error(`Cannot get room torches for room type ${roomType}`);
-    }
-  }
-
   deleteNeighboringRooms(room: Room) {
     this.deleteRoomRelations(room);
   }
@@ -418,7 +389,6 @@ export class RoomSpawner {
         color: new Color(color),
         entitiesContainer: this.entitiesContainer,
         onTrigger: () => {
-          this.hideTorchesFromRoom(room);
           this.onRoomVisit(room);
         },
       })
@@ -709,29 +679,8 @@ export class RoomSpawner {
     return doorWall;
   }
 
-  getSceneTorches() {
+  createTorch = () => {
     const color = new Color(0x600004);
-    return {
-      apathy: this.createTorchesPool(color),
-      cowardice: this.createTorchesPool(color),
-      sexualPerversions: this.createTorchesPool(color),
-    };
-  }
-
-  createTorchesPool(color: Color): RoomTorchesPool {
-    return [
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-      this.createTorch(color),
-    ];
-  }
-
-  createTorch(color: Color) {
     return this.entitiesContainer.add(new Torch({
       position: new Vector3(0, -1000, 0),
       color: color,
