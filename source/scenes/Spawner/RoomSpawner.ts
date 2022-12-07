@@ -666,10 +666,8 @@ export class RoomSpawner {
   }
 
   createTorch = () => {
-    const color = new Color(0x600004);
     return this.entitiesContainer.add(new Torch({
       position: new Vector3(0, -1000, 0),
-      color: color,
       player: this.player,
     }));
   }

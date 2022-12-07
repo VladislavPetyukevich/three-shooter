@@ -1,4 +1,4 @@
-import { Mesh, BoxGeometry, Color, MeshLambertMaterial } from 'three';
+import { Mesh, BoxGeometry, MeshLambertMaterial } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Player } from '@/Entities/Player/Player';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -6,7 +6,6 @@ import { SpriteSheet } from '@/SpriteSheet';
 
 interface ActorProps {
   position: { x: number; y: number; z: number };
-  color: Color;
   player: Player;
 }
 
