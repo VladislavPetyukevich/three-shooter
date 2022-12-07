@@ -29,6 +29,8 @@ import torch from './assets/torch.png';
 import torchFire1 from './assets/torch1.png';
 import torchFire2 from './assets/torch2.png';
 import damageEffect from './assets/damage-effect.png';
+import fireFlare from './assets/fireFlare.png';
+import fireFlareAlpha from './assets/fireFlareAlpha.png';
 
 export const PI_180 = Math.PI / 180;
 
@@ -176,6 +178,8 @@ export const gameTextures = {
   torchFire1,
   torchFire2,
   damageEffect,
+  fireFlare,
+  fireFlareAlpha,
 };
 
 export const gameSounds = {

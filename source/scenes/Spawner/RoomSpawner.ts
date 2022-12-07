@@ -34,6 +34,7 @@ import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { TestScene } from '../testScene';
 import { EntitiesPool } from './EntitiesPool';
+import { FireFlare } from '@/Entities/FireFlare/FireFlare';
 
 const enum Direction {
   Top, Bottom, Left, Right
@@ -81,6 +82,7 @@ export class RoomSpawner {
   onRoomVisit: RoomSpawnerProps['onRoomVisit'];
   onSpawnEnemy: RoomSpawnerProps['onSpawnEnemy'];
   torchesPool: EntitiesPool;
+  fireFlaresPool: EntitiesPool;
 
   constructor(props: RoomSpawnerProps) {
     this.scene = props.scene;
@@ -91,7 +93,9 @@ export class RoomSpawner {
     this.doorWidthHalf = props.doorWidthHalf;
     this.onRoomVisit = props.onRoomVisit;
     this.onSpawnEnemy = props.onSpawnEnemy;
-    this.torchesPool = new EntitiesPool(this.createTorch, 8 * 3);
+    const torchesCount = 8 * 3;
+    this.torchesPool = new EntitiesPool(this.createTorch, torchesCount);
+    this.fireFlaresPool = new EntitiesPool(this.createFireFlare, torchesCount);
   };
 
   createNeighboringRooms(room: Room) {
@@ -176,10 +180,13 @@ export class RoomSpawner {
       return;
     }
 
-    const torches = this.torchesPool.getEntities(8);
+    const torchesCount = 8;
+    const torches = this.torchesPool.getEntities(torchesCount);
+    const fireFlares = this.fireFlaresPool.getEntities(torchesCount);
     const yPos = this.cellCoordinates.size / 2;
     const wallShift = 1.1;
     const rotationAngle = 0.575959;
+    const flareRotation = 1.5708;
 
     const axisBottom: 'x' | 'z' = room.type === RoomType.Apathy ? 'x' : 'z';
     const rotationBottom = room.type === RoomType.Cowardice ? rotationAngle : -rotationAngle;
@@ -187,133 +194,112 @@ export class RoomSpawner {
     const axisLeft: 'x' | 'z' = room.type === RoomType.Apathy ? 'z' : 'x';
     const rotationLeft = room.type === RoomType.SexualPerversions ? rotationAngle : -rotationAngle;
 
-    torches[0].mesh.rotation[axisBottom] = rotationBottom;
-    const torch0Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+    const flareRotationBottom = room.type === RoomType.Apathy ? 0 : flareRotation;
+    const flareRotationLeft = room.type === RoomType.Apathy ? flareRotation : 0;
+    const flareShiftAxisBottom: 'x' | 'z' = room.type === RoomType.Apathy ? 'z' : 'x';
+    const flareShiftAxisLeft: 'x' | 'z' = room.type === RoomType.Apathy ? 'x' : 'z';
+    const flareShiftBottom = room.type === RoomType.SexualPerversions ? 0.2 : -0.2;
+    const flareShiftLeft = room.type === RoomType.Cowardice ? -0.2 : 0.2;
+    const flareBottom = {
+      rotation: flareRotationBottom,
+      shiftAxis: flareShiftAxisBottom,
+      shift: flareShiftBottom,
+    };
+    const flareTop = {
+      rotation: flareRotationBottom,
+      shiftAxis: flareShiftAxisBottom,
+      shift: -flareShiftBottom,
+    };
+    const flareLeft = {
+      rotation: flareRotationLeft,
+      shiftAxis: flareShiftAxisLeft,
+      shift: flareShiftLeft,
+    };
+    const flareRight = {
+      rotation: flareRotationLeft,
+      shiftAxis: flareShiftAxisLeft,
+      shift: -flareShiftLeft,
+    };
+
+    [
+      // Bottom
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
           room.cellPosition.y + this.roomSize.y - wallShift
         ),
-        room
-      )
-    );
-    torches[0].mesh.position.set(
-      torch0Pos.x,
-      yPos,
-      torch0Pos.y
-    );
-
-    torches[1].mesh.rotation[axisBottom] = rotationBottom;
-    const torch1Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisBottom, value: rotationBottom },
+        flare: flareBottom,
+      },
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
           room.cellPosition.y + this.roomSize.y - wallShift
         ),
-        room
-      )
-    );
-    torches[1].mesh.position.set(
-      torch1Pos.x,
-      yPos,
-      torch1Pos.y
-    );
-
-    torches[2].mesh.rotation[axisBottom] = -rotationBottom;
-    const torch2Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisBottom, value: rotationBottom },
+        flare: flareBottom,
+      },
+      // Top
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        room
-      )
-    );
-    torches[2].mesh.position.set(
-      torch2Pos.x,
-      yPos,
-      torch2Pos.y
-    );
-
-    torches[3].mesh.rotation[axisBottom] = -rotationBottom;
-    const torch3Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisBottom, value: -rotationBottom },
+        flare: flareTop,
+      },
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        room
-      )
-    );
-    torches[3].mesh.position.set(
-      torch3Pos.x,
-      yPos,
-      torch3Pos.y
-    );
-
-    torches[4].mesh.rotation[axisLeft] = rotationLeft;
-    const torch4Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisBottom, value: -rotationBottom },
+        flare: flareTop,
+      },
+      // Left
+      {
+        pos: new Vector2(
           room.cellPosition.x + wallShift,
           room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
         ),
-        room
-      )
-    );
-    torches[4].mesh.position.set(
-      torch4Pos.x,
-      yPos,
-      torch4Pos.y
-    );
-
-    torches[5].mesh.rotation[axisLeft] = rotationLeft;
-    const torch5Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisLeft, value: rotationLeft },
+        flare: flareLeft,
+      },
+      {
+        pos: new Vector2(
           room.cellPosition.x + wallShift,
           room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
         ),
-        room
-      )
-    );
-    torches[5].mesh.position.set(
-      torch5Pos.x,
-      yPos,
-      torch5Pos.y
-    );
-
-    torches[6].mesh.rotation[axisLeft] = -rotationLeft;
-    const torch6Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisLeft, value: rotationLeft },
+        flare: flareLeft,
+      },
+      // Right
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
         ),
-        room
-      )
-    );
-    torches[6].mesh.position.set(
-      torch6Pos.x,
-      yPos,
-      torch6Pos.y
-    );
-
-    torches[7].mesh.rotation[axisLeft] = -rotationLeft;
-    const torch7Pos = this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
+        rotation: { axis: axisLeft, value: -rotationLeft },
+        flare: flareRight,
+      },
+      {
+        pos: new Vector2(
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
         ),
-        room
-      )
-    );
-    torches[7].mesh.position.set(
-      torch7Pos.x,
-      yPos,
-      torch7Pos.y
-    );
+        rotation: { axis: axisLeft, value: -rotationLeft },
+        flare: flareRight,
+      },
+    ].forEach((info, index) => {
+      torches[index].mesh.rotation[info.rotation.axis] = info.rotation.value;
+      const pos = this.cellCoordinates.toWorldCoordinates(
+        this.rotatePositionForRoom(info.pos, room)
+      );
+      torches[index].mesh.position.set(pos.x, yPos, pos.y);
+      fireFlares[index].mesh.rotateY(info.flare.rotation);
+      fireFlares[index].mesh.position.set(pos.x, yPos, pos.y);
+      fireFlares[index].mesh.position[info.flare.shiftAxis] -= info.flare.shift;
+    });
   }
 
   deleteNeighboringRooms(room: Room) {
@@ -685,6 +671,12 @@ export class RoomSpawner {
       position: new Vector3(0, -1000, 0),
       color: color,
       player: this.player,
+    }));
+  }
+
+  createFireFlare = () => {
+    return this.entitiesContainer.add(new FireFlare({
+      position: new Vector3(0, -1000, 0),
     }));
   }
 
