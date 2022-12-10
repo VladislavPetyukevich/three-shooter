@@ -73,7 +73,7 @@ export class HUD {
 
     this.totalScore = new HUDScore({
       size: { width: 256, height: 32 },
-      prefix: '💰',
+      prefix: '🛒',
     });
     this.scene.add(this.totalScore.sprite);
   }
