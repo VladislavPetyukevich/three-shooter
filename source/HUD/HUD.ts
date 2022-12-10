@@ -39,6 +39,7 @@ export class HUD {
   maxHp: number;
   maxDamageOverlayOpacity: number;
   score: HUDScore;
+  totalScore: HUDScore;
 
   constructor() {
     this.scene = new Scene();
@@ -63,8 +64,18 @@ export class HUD {
     this.swithGunAnimationStage = 'goingDown';
     this.isRunning = false;
 
-    this.score = new HUDScore({ width: 256, height: 32 });
+    this.score = new HUDScore({
+      size: { width: 256, height: 32 },
+      prefix: '💀',
+      textAlign: 'center',
+    });
     this.scene.add(this.score.sprite);
+
+    this.totalScore = new HUDScore({
+      size: { width: 256, height: 32 },
+      prefix: '💰',
+    });
+    this.scene.add(this.totalScore.sprite);
   }
 
   setIsRunning(isRunning: boolean) {
@@ -180,7 +191,9 @@ export class HUD {
     this.gun.scale.set(gunScale * 2, gunScale, 1);
     this.gun.position.set(0, this.gunSpriteHeight - this.bobState.currentSinValue, 1);
     this.score.sprite.scale.set(scoreScale * 8, scoreScale, 1);
-    this.score.sprite.position.set(0 - width * 1 + scoreScale * 4, -scoreSpriteHeight, 1);
+    this.score.sprite.position.set(0, -scoreSpriteHeight, 1);
+    this.totalScore.sprite.scale.set(scoreScale * 8, scoreScale, 1);
+    this.totalScore.sprite.position.set(0 - width * 1 + scoreScale * 4, -scoreSpriteHeight, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(

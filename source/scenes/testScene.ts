@@ -327,6 +327,7 @@ export class TestScene extends BasicScene {
 
   updateHudKillCount() {
     hud.score.drawScore(this.enemiesKillCount);
+    hud.totalScore.drawScore(mindState.persistValue.totalCount);
   }
 
   onRoomClear(room: Room) {

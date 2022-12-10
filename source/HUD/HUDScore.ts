@@ -1,5 +1,10 @@
-import { COLORS } from '@/constants';
 import { Sprite, CanvasTexture, SpriteMaterial } from 'three';
+
+interface HUDScoreProps {
+  size: ImageSize;
+  prefix: string;
+  textAlign?: HUDScore['textAlign'];
+}
 
 interface ImageSize {
   width: number;
@@ -8,23 +13,29 @@ interface ImageSize {
 
 export class HUDScore {
   fontSize: number;
+  prefix: string;
+  textAlign: CanvasRenderingContext2D['textAlign'];
   sprite: Sprite;
   texture: CanvasTexture;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  textX: number;
 
-  constructor(size: ImageSize) {
+  constructor(props: HUDScoreProps) {
     this.fontSize = 24;
-    this.canvas = this.initCanvas(size);
+    this.prefix = props.prefix;
+    this.textAlign = props.textAlign || 'left';
+    this.canvas = this.initCanvas(props.size);
     this.context = this.initContext();
     this.texture = new CanvasTexture(this.canvas);
     const material = new SpriteMaterial({ map: this.texture });
     this.sprite = new Sprite(material);
+    this.textX = this.getTextX();
   }
 
   drawScore(score: number) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.fillText(`💀: ${score}`, 0, this.fontSize);
+    this.context.fillText(`${this.prefix}: ${score}`, this.textX, this.fontSize);
     this.sprite.material.map && (this.sprite.material.map.needsUpdate = true);
   }
 
@@ -42,6 +53,14 @@ export class HUDScore {
     }
     context.font = `${this.fontSize}px sans-serif`;
     context.fillStyle = 'white';
+    context.textAlign = this.textAlign;
     return context;
+  }
+
+  getTextX() {
+    if (this.textAlign === 'center') {
+      return Math.round(this.canvas.width / 2);
+    }
+    return 0;
   }
 }
