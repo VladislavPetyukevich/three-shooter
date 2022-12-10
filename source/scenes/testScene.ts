@@ -339,7 +339,7 @@ export class TestScene extends BasicScene {
   }
 
   onMindStateLevelIncrease = () => {
-    this.finish();
+    // TODO: Cool effect here
   }
 
   increaseMindState(room: Room) {
