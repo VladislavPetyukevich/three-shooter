@@ -65,6 +65,7 @@ export class ControlledBehavior implements Behavior {
   checkGunPointTimeout: number;
   checkGunPointTimeoutCurrent: number;
   actions: { [key in PlayerActionName]: PlayerActionListener['listener'] };
+  walkSound: Audio;
 
   constructor(props: ControlledBehaviorProps) {
     this.sinTable = new SinTable({
@@ -102,6 +103,11 @@ export class ControlledBehavior implements Behavior {
     this.damageSound.setBuffer(damageSoundBuffer);
     this.damageSound.isPlaying = false;
     this.damageSound.setVolume(0.6);
+    this.walkSound = new Audio(props.audioListener);
+    const walkSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.walk);
+    this.walkSound.setBuffer(walkSoundBuffer);
+    this.walkSound.isPlaying = false;
+    this.walkSound.setVolume(0.2);
     this.guns = [];
     this.currentGunIndex = -1;
     this.updateHudGunTextures();
@@ -190,6 +196,7 @@ export class ControlledBehavior implements Behavior {
 
   onDeath() {
     this.damageSound.stop();
+    this.walkSound.stop();
   }
 
   handlePullTrigger() {
@@ -320,6 +327,7 @@ export class ControlledBehavior implements Behavior {
     }
     this.updateCamera();
     this.updateIsRunning();
+    this.updateWalkSound(this.isRunning);
     if (this.isCanMove) {
       this.updateVelocity(delta);
       this.updateShootLight();
@@ -454,6 +462,15 @@ export class ControlledBehavior implements Behavior {
     }
     if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
       intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
+    }
+  }
+
+  updateWalkSound(isPlaying: boolean) {
+    if (isPlaying && !this.walkSound.isPlaying) {
+      this.walkSound.play();
+    }
+    if (!isPlaying && this.walkSound.isPlaying) {
+      this.walkSound.stop();
     }
   }
 
