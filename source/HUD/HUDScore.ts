@@ -7,12 +7,14 @@ interface ImageSize {
 }
 
 export class HUDScore {
+  fontSize: number;
   sprite: Sprite;
   texture: CanvasTexture;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
 
   constructor(size: ImageSize) {
+    this.fontSize = 24;
     this.canvas = this.initCanvas(size);
     this.context = this.initContext();
     this.texture = new CanvasTexture(this.canvas);
@@ -22,7 +24,7 @@ export class HUDScore {
 
   drawScore(score: number) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.fillText(`💀: ${score}`, 0, 24);
+    this.context.fillText(`💀: ${score}`, 0, this.fontSize);
     this.sprite.material.map && (this.sprite.material.map.needsUpdate = true);
   }
 
@@ -38,7 +40,7 @@ export class HUDScore {
     if (!context) {
       throw new Error('HUDScore: Canvas context not found');
     }
-    context.font = '24px sans-serif';
+    context.font = `${this.fontSize}px sans-serif`;
     context.fillStyle = 'white';
     return context;
   }
