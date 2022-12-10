@@ -673,9 +673,11 @@ export class RoomSpawner {
   }
 
   createFireFlare = () => {
-    return this.entitiesContainer.add(new FireFlare({
+    const fireFlare = new FireFlare({
       position: new Vector3(0, -1000, 0),
-    }));
+    });
+    this.scene.scene.add(fireFlare.mesh);
+    return fireFlare;
   }
 
   getCenterPosition(position: Vector2, size: Vector2) {
