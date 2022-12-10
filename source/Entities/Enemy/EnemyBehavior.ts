@@ -1,5 +1,5 @@
 import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'three';
-import { ENTITY_TYPE, ENEMY, GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { ENTITY_TYPE, ENEMY, PI_180 } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
@@ -113,7 +113,7 @@ export class EnemyBehavior implements Behavior {
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.currentBulletsToShoot = 0;
     this.shootSound = new PositionalAudio(props.audioListener);
-    const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
+    const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
     this.isKamikaze = props.behaviorModifier === EnemyBehaviorModifier.kamikaze;
@@ -139,7 +139,7 @@ export class EnemyBehavior implements Behavior {
 
   spawnSound(audioListener: AudioListener) {
     const spawnSound = new PositionalAudio(audioListener);
-    const spawnSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.spawn);
+    const spawnSoundBuffer = audioStore.getSound('spawn');
     spawnSound.setBuffer(spawnSoundBuffer);
     this.actor.mesh.add(spawnSound);
     spawnSound.setRefDistance(2);

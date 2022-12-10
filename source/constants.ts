@@ -219,10 +219,3 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     death: 'enemySPDeath',
   },
 };
-
-export const enum GAME_SOUND_NAME {
-  gunShoot = 'gunShoot',
-  damage = 'damage',
-  spawn = 'spawn',
-  walk = 'walk',
-};

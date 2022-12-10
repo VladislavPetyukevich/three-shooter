@@ -36,7 +36,11 @@ class AudioLoader {
   }
 
   getSound(name: string) {
-    return this.soundsMap[name];
+    const sound = this.soundsMap[name];
+    if (!sound) {
+      console.warn(`Cannot get sound ${name}`);
+    }
+    return sound;
   }
 }
 

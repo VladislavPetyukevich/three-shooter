@@ -16,7 +16,6 @@ import {
   PI_180,
   ENTITY_TYPE,
   ENTITY_MESSAGES,
-  GAME_SOUND_NAME
 } from '@/constants';
 import { Gun } from '@/Entities/Gun/Gun';
 import { SinTable } from '@/SinTable';
@@ -99,12 +98,12 @@ export class ControlledBehavior implements Behavior {
     this.targetVelocity = new Vector3();
     this.moveDirection = new Vector3();
     this.damageSound = new Audio(props.audioListener);
-    const damageSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.damage);
+    const damageSoundBuffer = audioStore.getSound('damage');
     this.damageSound.setBuffer(damageSoundBuffer);
     this.damageSound.isPlaying = false;
     this.damageSound.setVolume(0.6);
     this.walkSound = new Audio(props.audioListener);
-    const walkSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.walk);
+    const walkSoundBuffer = audioStore.getSound('walk');
     this.walkSound.setBuffer(walkSoundBuffer);
     this.walkSound.isPlaying = false;
     this.walkSound.setVolume(0.2);

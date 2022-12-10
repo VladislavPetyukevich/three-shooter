@@ -10,7 +10,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { audioStore } from '@/core/loaders';
-import { GAME_SOUND_NAME, PI_180 } from '@/constants';
+import { PI_180 } from '@/constants';
 import { GunFireType } from './Gun';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { randomNumbers } from '@/RandomNumbers';
@@ -73,7 +73,7 @@ export class GunBehavior implements Behavior {
     const shootsToMaxHeat = 100;
     this.secToMaxHeatLevel = shootsToMaxHeat / shootsPerSec;
     this.heatLevel = 0;
-    const shootSoundBuffer = audioStore.getSound(GAME_SOUND_NAME.gunShoot);
+    const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);
     this.shootSound.isPlaying = false;
     this.bulletPositionOffset = 0;
