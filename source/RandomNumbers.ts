@@ -1,6 +1,6 @@
 import { RANDOM_NUMBERS_COUNT } from '@/constants';
 
-class RandomNumbers {
+export class RandomNumbers {
   m: number;
   a: number;
   c: number;

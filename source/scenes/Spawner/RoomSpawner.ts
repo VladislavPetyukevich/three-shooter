@@ -26,9 +26,9 @@ import { Torch } from '@/Entities/Torch/Torch';
 import {
   RoomCellType,
   RoomCell,
-  getRandomRoomConstructor,
   RoomCellEventType,
   RoomConstructor,
+  DungeonRoom,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -83,6 +83,7 @@ export class RoomSpawner {
   onSpawnEnemy: RoomSpawnerProps['onSpawnEnemy'];
   torchesPool: EntitiesPool;
   fireFlaresPool: EntitiesPool;
+  dungeonRoom: DungeonRoom;
 
   constructor(props: RoomSpawnerProps) {
     this.scene = props.scene;
@@ -96,6 +97,7 @@ export class RoomSpawner {
     const torchesCount = 8 * 3;
     this.torchesPool = new EntitiesPool(this.createTorch, torchesCount);
     this.fireFlaresPool = new EntitiesPool(this.createFireFlare, torchesCount);
+    this.dungeonRoom = new DungeonRoom();
   };
 
   createNeighboringRooms(room: Room) {
@@ -163,7 +165,10 @@ export class RoomSpawner {
         bottom: null,
       },
       entities: [],
-      constructor: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
+      constructor:
+        (type === RoomType.Neutral) ?
+          null :
+          this.dungeonRoom.getRandomRoomConstructor(),
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {

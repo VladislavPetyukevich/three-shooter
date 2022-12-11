@@ -1,6 +1,7 @@
 import { Vector2 } from 'three';
-import { randomNumbers } from '@/RandomNumbers';
+import { RandomNumbers } from '@/RandomNumbers';
 import { Entity } from '@/core/Entities/Entity';
+import { RANDOM_NUMBERS_COUNT } from '@/constants';
 
 export const enum RoomCellType {
   Empty,
@@ -34,8 +35,6 @@ export interface RoomConstructors {
 
 const enemyForDoor1Tag = 'enemyForDoor1';
 const doorForEnemy1Tag = 'doorForEnemy1';
-
-const emptyConstructor = () => [];
 
 const constructors = [
   () => {
@@ -119,7 +118,14 @@ const constructors = [
   }
 ];
 
-export const getRandomRoomConstructor = (): RoomConstructor => {
-  const index = Math.floor(randomNumbers.getRandom() * constructors.length);
-  return constructors[index];
-};
+export class DungeonRoom {
+  randomNumbersGenerator: RandomNumbers;
+
+  constructor() {
+    this.randomNumbersGenerator = new RandomNumbers(RANDOM_NUMBERS_COUNT);
+  }
+  getRandomRoomConstructor(): RoomConstructor {
+    const index = Math.floor(this.randomNumbersGenerator.getRandom() * constructors.length);
+    return constructors[index];
+  }
+}
