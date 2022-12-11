@@ -26,9 +26,9 @@ import { Torch } from '@/Entities/Torch/Torch';
 import {
   RoomCellType,
   RoomCell,
-  RoomConstructors,
   getRandomRoomConstructor,
   RoomCellEventType,
+  RoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -58,7 +58,7 @@ export interface Room {
     right: Room | null;
   };
   entities: Entity[];
-  constructors: RoomConstructors | null;
+  constructor: RoomConstructor | null;
 }
 
 export interface RoomSpawnerProps {
@@ -163,7 +163,7 @@ export class RoomSpawner {
         bottom: null,
       },
       entities: [],
-      constructors: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
+      constructor: (type === RoomType.Neutral) ? null : getRandomRoomConstructor(),
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {
@@ -472,18 +472,23 @@ export class RoomSpawner {
   }
 
   fillRoomAfterVisit(room: Room) {
-    if (!room.constructors) {
+    if (!room.constructor) {
       return;
     }
-    const cells = room.constructors.constructAfterVisit(this.roomSize);
+    const cells = room.constructor(this.roomSize).filter(cell =>
+      cell.type === RoomCellType.Enemy
+    );
     this.fillRoomCells(room, cells);
   }
 
   fillRoomBeforeVisit(room: Room) {
-    if (!room.constructors) {
+    if (!room.constructor) {
       return;
     }
-    const cells = room.constructors.constructBeforeVisit(this.roomSize);
+    const cells = room.constructor(this.roomSize).filter(cell =>
+      cell.type === RoomCellType.DoorWall ||
+      cell.type === RoomCellType.Wall
+    );
     this.fillRoomCells(room, cells);
   }
 
