@@ -6,7 +6,7 @@ import {
   AmbientLight,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
-import { PLAYER, PI_180 } from '@/constants';
+import { PLAYER } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, EnemyBehaviorModifier, OnDeathCallback } from '@/Entities/Enemy/Enemy';
@@ -19,7 +19,6 @@ import { BoomerangGun } from '@/Entities/Gun/Inheritor/BoomerangGun';
 import { Room, RoomSpawner } from './Spawner/RoomSpawner';
 import { CellCoordinates } from './CellCoordinates';
 import { mindState } from '@/MindState';
-import { randomNumbers } from '@/RandomNumbers';
 import { hud } from '@/HUD/HUD';
 
 export interface TestSceneProps extends BasicSceneProps {
@@ -374,15 +373,19 @@ export class TestScene extends BasicScene {
     return true;
   }
 
-  spawnEnemy = (coordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback) => {
+  spawnEnemy = (
+    coordinates: Vector2,
+    roomType: RoomType,
+    onDeathCallback?: OnDeathCallback,
+    behaviorModifier?: EnemyBehaviorModifier,
+  ) => {
     this.currentRoomEnimiesCount++;
-    const isSpawnSpecialEnemy = randomNumbers.getRandom() >= 0.5;
-    if (isSpawnSpecialEnemy) {
+    if (typeof behaviorModifier === 'number') {
       const enemy =
         this.spawnSpecialEnemy(
           coordinates,
           roomType,
-          this.getRandomEnemyBehaviorModifier(),
+          behaviorModifier,
         );
       if (onDeathCallback) {
         enemy.addOnDeathCallback(onDeathCallback);
@@ -394,18 +397,6 @@ export class TestScene extends BasicScene {
       enemy.addOnDeathCallback(onDeathCallback);
     }
     return enemy;
-  }
-
-  getRandomEnemyBehaviorModifier() {
-    if (randomNumbers.getRandom() >= 0.5) {
-      return EnemyBehaviorModifier.withSpawner;
-    } else if (randomNumbers.getRandom() >= 0.5) {
-      return EnemyBehaviorModifier.kamikaze;
-    } else if (randomNumbers.getRandom() >= 0.5) {
-      return EnemyBehaviorModifier.longRangeAttack;
-    } else {
-      return EnemyBehaviorModifier.parasite;
-    }
   }
 
   spawnBasicEnemy(coordinates: Vector2, roomType: RoomType) {

@@ -2,6 +2,7 @@ import { Vector2 } from 'three';
 import { RandomNumbers } from '@/RandomNumbers';
 import { Entity } from '@/core/Entities/Entity';
 import { RANDOM_NUMBERS_COUNT } from '@/constants';
+import { EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
 
 export const enum RoomCellType {
   Empty,
@@ -19,12 +20,19 @@ export interface RoomCellEvent {
   targetEntityTag: Entity['tag'];
 }
 
-export interface RoomCell {
+export interface BasicRoomCell {
   position: Vector2;
   type: RoomCellType;
   tag?: Entity['tag'];
   event?: RoomCellEvent;
 }
+
+export interface EnemyRoomCell extends BasicRoomCell {
+  type: RoomCellType.Enemy;
+  behaviorModifier: EnemyBehaviorModifier;
+}
+
+export type RoomCell = BasicRoomCell | EnemyRoomCell;
 
 export type RoomConstructor = (size: Vector2) => RoomCell[];
 
@@ -48,6 +56,7 @@ const constructors = [
         type: RoomCellType.Enemy,
         tag: enemyForDoor1Tag,
         event: doorEvent,
+        behaviorModifier: EnemyBehaviorModifier.kamikaze,
       },
       {
         position: new Vector2(4, 2),
@@ -55,6 +64,7 @@ const constructors = [
         tag: enemyForDoor1Tag,
         event: doorEvent,
       },
+      { position: new Vector2(4, 4), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag },
     ];
   },
   (size: Vector2) => {

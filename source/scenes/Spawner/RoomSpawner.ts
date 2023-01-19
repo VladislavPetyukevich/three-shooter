@@ -19,13 +19,14 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { DoorWall } from '@/Entities/DoorWall/DoorWall';
-import { OnDeathCallback } from '@/Entities/Enemy/Enemy';
+import { OnDeathCallback, EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import {
   RoomCellType,
   RoomCell,
+  EnemyRoomCell,
   RoomCellEventType,
   RoomConstructor,
   DungeonRoom,
@@ -69,7 +70,7 @@ export interface RoomSpawnerProps {
   roomSize: Vector2;
   doorWidthHalf: number;
   onRoomVisit: (room: Room) => void;
-  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback) => Entity;
+  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback, behaviorModifier?: EnemyBehaviorModifier) => Entity;
 }
 
 export class RoomSpawner {
@@ -550,7 +551,12 @@ export class RoomSpawner {
               }
             } :
             undefined;
-          const enemy = this.onSpawnEnemy(cellCoordinates, room.type, onDeathCallback);
+          const enemy = this.onSpawnEnemy(
+            cellCoordinates,
+            room.type,
+            onDeathCallback,
+            (cell as EnemyRoomCell).behaviorModifier,
+          );
           enemy.tag = cell.tag;
           room.entities.push(enemy);
           break;
