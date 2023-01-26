@@ -33,7 +33,7 @@ import {
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { TestScene } from '../testScene';
+import { OnEnemySpawn, TestScene } from '../testScene';
 import { EntitiesPool } from './EntitiesPool';
 import { FireFlare } from '@/Entities/FireFlare/FireFlare';
 
@@ -70,7 +70,7 @@ export interface RoomSpawnerProps {
   roomSize: Vector2;
   doorWidthHalf: number;
   onRoomVisit: (room: Room) => void;
-  onSpawnEnemy: (cellCoordinates: Vector2, roomType: RoomType, onDeathCallback?: OnDeathCallback, behaviorModifier?: EnemyBehaviorModifier) => Entity;
+  onEnemySpawn: OnEnemySpawn;
 }
 
 export class RoomSpawner {
@@ -81,7 +81,7 @@ export class RoomSpawner {
   roomSize: RoomSpawnerProps['roomSize'];
   doorWidthHalf: RoomSpawnerProps['doorWidthHalf'];
   onRoomVisit: RoomSpawnerProps['onRoomVisit'];
-  onSpawnEnemy: RoomSpawnerProps['onSpawnEnemy'];
+  onEnemySpawn: RoomSpawnerProps['onEnemySpawn'];
   torchesPool: EntitiesPool;
   fireFlaresPool: EntitiesPool;
   dungeonRoom: DungeonRoom;
@@ -94,7 +94,7 @@ export class RoomSpawner {
     this.roomSize = props.roomSize;
     this.doorWidthHalf = props.doorWidthHalf;
     this.onRoomVisit = props.onRoomVisit;
-    this.onSpawnEnemy = props.onSpawnEnemy;
+    this.onEnemySpawn = props.onEnemySpawn;
     const torchesCount = 8 * 3;
     this.torchesPool = new EntitiesPool(this.createTorch, torchesCount);
     this.fireFlaresPool = new EntitiesPool(this.createFireFlare, torchesCount);
@@ -551,7 +551,7 @@ export class RoomSpawner {
               }
             } :
             undefined;
-          const enemy = this.onSpawnEnemy(
+          const enemy = this.onEnemySpawn(
             cellCoordinates,
             room.type,
             onDeathCallback,
