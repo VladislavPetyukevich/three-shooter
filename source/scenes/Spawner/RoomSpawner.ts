@@ -507,63 +507,75 @@ export class RoomSpawner {
         );
       switch (cell.type) {
         case RoomCellType.Wall:
-          const wall =
-            this.spawnWall(
-              this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
-              new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
-              room.type,
-              false,
-            )
-          wall.tag = cell.tag;
-          room.entities.push(wall);
+          this.fillWallCell(room, cell, cellCoordinates);
           break;
         case RoomCellType.DoorWall:
-          const doorWall =
-            this.spawnDoorWall(
-              this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
-              new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)
-            );
-          doorWall.tag = cell.tag;
-          room.entities.push(doorWall);
+          this.fillDoorWallCell(room, cell, cellCoordinates);
           break;
         case RoomCellType.Enemy:
-          const onDeathCallback = cell.event ?
-            () => {
-              switch (cell.event?.type) {
-                case RoomCellEventType.OpenDoorIfNoEntitiesWithTag:
-                  const isHasEntityWithTag = this.scene.currentRoom.entities.some(
-                    entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
-                  );
-                  if (isHasEntityWithTag) {
-                    return;
-                  }
-                  this.scene.currentRoom.entities.forEach(entity => {
-                    if (
-                      (entity.tag === cell.event?.targetEntityTag) &&
-                      (entity.type === ENTITY_TYPE.WALL)
-                    ) {
-                      (entity as Door).open();
-                    }
-                  });
-                  break;
-                default:
-                  break;
-              }
-            } :
-            undefined;
-          const enemy = this.onEnemySpawn(
-            cellCoordinates,
-            room.type,
-            onDeathCallback,
-            (cell as EnemyRoomCell).behaviorModifier,
-          );
-          enemy.tag = cell.tag;
-          room.entities.push(enemy);
+          this.fillEnemyCell(room, cell, cellCoordinates);
           break;
         default:
           break;
       }
     });
+  }
+
+  fillWallCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
+    const wall =
+      this.spawnWall(
+        this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
+        new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
+        room.type,
+        false,
+      )
+    wall.tag = cell.tag;
+    room.entities.push(wall);
+  }
+
+  fillDoorWallCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
+    const doorWall =
+      this.spawnDoorWall(
+        this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
+        new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)
+      );
+    doorWall.tag = cell.tag;
+    room.entities.push(doorWall);
+  }
+
+  fillEnemyCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
+    const onDeathCallback = cell.event ?
+      () => {
+        switch (cell.event?.type) {
+          case RoomCellEventType.OpenDoorIfNoEntitiesWithTag:
+            const isHasEntityWithTag = this.scene.currentRoom.entities.some(
+              entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
+            );
+            if (isHasEntityWithTag) {
+              return;
+            }
+            this.scene.currentRoom.entities.forEach(entity => {
+              if (
+                (entity.tag === cell.event?.targetEntityTag) &&
+                (entity.type === ENTITY_TYPE.WALL)
+              ) {
+                (entity as Door).open();
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      } :
+      undefined;
+    const enemy = this.onEnemySpawn(
+      cellCoordinates,
+      room.type,
+      onDeathCallback,
+      (cell as EnemyRoomCell).behaviorModifier,
+    );
+    enemy.tag = cell.tag;
+    room.entities.push(enemy);
   }
 
   rotatePositionForRoom(position: Vector2, room: Room) {
