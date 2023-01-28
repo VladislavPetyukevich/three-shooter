@@ -19,7 +19,6 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { DoorWall } from '@/Entities/DoorWall/DoorWall';
-import { OnDeathCallback, EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
@@ -571,8 +570,8 @@ export class RoomSpawner {
     const enemy = this.onEnemySpawn(
       cellCoordinates,
       room.type,
+      (cell as EnemyRoomCell).kind,
       onDeathCallback,
-      (cell as EnemyRoomCell).behaviorModifier,
     );
     enemy.tag = cell.tag;
     room.entities.push(enemy);

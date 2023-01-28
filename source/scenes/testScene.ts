@@ -10,8 +10,8 @@ import { Entity } from '@/core/Entities/Entity';
 import { PLAYER } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
-import { Enemy, EnemyBehaviorModifier, OnDeathCallback } from '@/Entities/Enemy/Enemy';
-import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { Enemy, EnemyBehaviorFlag, OnDeathCallback } from '@/Entities/Enemy/Enemy';
+import { EnemyFactory, EnemyKind, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
@@ -25,8 +25,8 @@ import { hud } from '@/HUD/HUD';
 export type OnEnemySpawn = (
   cellCoordinates: Vector2,
   roomType: RoomType,
+  kind: EnemyKind,
   spawnerOnDeathCallback?: OnDeathCallback,
-  behaviorModifier?: EnemyBehaviorModifier
 ) => Entity;
 
 export interface TestSceneProps extends BasicSceneProps {
@@ -368,7 +368,8 @@ export class TestScene extends BasicScene {
   spawnEnemyFromSpawner = (roomType: RoomType) => (position: Vector3) => {
     const enemy = this.createEnemy(
       new Vector2(position.x, position.z),
-      roomType
+      roomType,
+      EnemyKind.Soul,
     );
     const collisions =
       this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.mesh.position);
@@ -384,16 +385,16 @@ export class TestScene extends BasicScene {
   spawnEnemy: OnEnemySpawn = (
     coordinates,
     roomType,
+    kind,
     spawnerOnDeathCallback?,
-    behaviorModifier?,
   ) => {
     this.currentRoomEnimiesCount++;
     const enemy = this.createEnemy(
       coordinates,
       roomType,
-      behaviorModifier
+      kind,
     );
-    if (behaviorModifier === EnemyBehaviorModifier.withSpawner) {
+    if (enemy.behavior.behaviorFlag === EnemyBehaviorFlag.withSpawner) {
       enemy.addOnDeathCallback(this.onEnemyWithSpawnerDeath);
     } else {
       enemy.addOnDeathCallback(this.onEnemyDeath);
@@ -407,7 +408,7 @@ export class TestScene extends BasicScene {
   createEnemy(
     coordinates: Vector2,
     roomType: RoomType,
-    behaviorModifier?: EnemyBehaviorModifier,
+    kind: EnemyKind,
   ) {
     return this.enemyFactory.createEnemy({
       position: { x: coordinates.x, y: PLAYER.BODY_HEIGHT, z: coordinates.y },
@@ -415,7 +416,7 @@ export class TestScene extends BasicScene {
       container: this.entitiesContainer,
       audioListener: this.audioListener,
       roomType,
-      behaviorModifier,
+      kind,
     });
   }
 

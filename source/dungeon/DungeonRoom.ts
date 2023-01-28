@@ -2,10 +2,9 @@ import { Vector2 } from 'three';
 import { RandomNumbers } from '@/RandomNumbers';
 import { Entity } from '@/core/Entities/Entity';
 import { RANDOM_NUMBERS_COUNT } from '@/constants';
-import { EnemyBehaviorModifier } from '@/Entities/Enemy/Enemy';
+import { EnemyKind } from '@/Entities/Enemy/Factory/EnemyFactory';
 
 export const enum RoomCellType {
-  Empty,
   Enemy,
   Wall,
   DoorWall,
@@ -22,30 +21,30 @@ export interface RoomCellEvent {
 
 export interface BasicRoomCell {
   position: Vector2;
-  type: RoomCellType;
   tag?: Entity['tag'];
   event?: RoomCellEvent;
 }
 
 export interface EnemyRoomCell extends BasicRoomCell {
   type: RoomCellType.Enemy;
-  behaviorModifier: EnemyBehaviorModifier;
+  kind: EnemyKind;
 }
 
-export type RoomCell = BasicRoomCell | EnemyRoomCell;
+export interface WallRoomCell extends BasicRoomCell {
+  type: RoomCellType.Wall | RoomCellType.DoorWall;
+}
+
+export type RoomCell =
+  WallRoomCell |
+  EnemyRoomCell;
 
 export type RoomConstructor = (size: Vector2) => RoomCell[];
-
-export interface RoomConstructors {
-  constructBeforeVisit: RoomConstructor;
-  constructAfterVisit: RoomConstructor;
-}
 
 const enemyForDoor1Tag = 'enemyForDoor1';
 const doorForEnemy1Tag = 'doorForEnemy1';
 
 const constructors = [
-  () => {
+  (): RoomCell[] => {
     const doorEvent = {
       type: RoomCellEventType.OpenDoorIfNoEntitiesWithTag,
       targetEntityTag: doorForEnemy1Tag,
@@ -56,34 +55,35 @@ const constructors = [
         type: RoomCellType.Enemy,
         tag: enemyForDoor1Tag,
         event: doorEvent,
-        behaviorModifier: EnemyBehaviorModifier.kamikaze,
+        kind: EnemyKind.Kamikaze,
       },
       {
         position: new Vector2(4, 2),
         type: RoomCellType.Enemy,
         tag: enemyForDoor1Tag,
         event: doorEvent,
+        kind: EnemyKind.Shooter,
       },
       { position: new Vector2(4, 4), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag },
     ];
   },
-  (size: Vector2) => {
+  (size: Vector2): RoomCell[] => {
     const stipSize = 2;
     const padding = 4;
     const centerX = Math.floor(size.x / 2);
     const centerY = Math.floor(size.y / 2);
     const cells: RoomCell[] = [
-      { position: new Vector2(2, 2), type: RoomCellType.Enemy },
-      { position: new Vector2(2, size.y - 3), type: RoomCellType.Enemy },
-      { position: new Vector2(size.x - 3, size.y - 3), type: RoomCellType.Enemy },
-      { position: new Vector2(size.x - 3, 2), type: RoomCellType.Enemy },
+      { position: new Vector2(2, 2), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(2, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(size.x - 3, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(size.x - 3, 2), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
     ];
     for (let x = centerX - stipSize; x < centerX + stipSize; x++) {
       if (x % 2 !== 0) {
         continue;
       }
       cells.push(
-        { position: new Vector2(x, padding), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag },
+        { position: new Vector2(x, padding), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag},
         { position: new Vector2(x, size.y - padding), type: RoomCellType.Wall },
       );
     }
@@ -98,12 +98,12 @@ const constructors = [
     }
     return cells;
   },
-  () => {
+  (): RoomCell[] => {
     return [
-      { position: new Vector2(3, 10), type: RoomCellType.Enemy },
-      { position: new Vector2(9, 3), type: RoomCellType.Enemy },
-      { position: new Vector2(10, 15), type: RoomCellType.Enemy },
-      { position: new Vector2(16, 9), type: RoomCellType.Enemy },
+      { position: new Vector2(3, 10), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(9, 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(10, 15), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+      { position: new Vector2(16, 9), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
 
       { position: new Vector2(3, 3 ), type: RoomCellType.Wall },
       { position: new Vector2(3, 16 ), type: RoomCellType.Wall },

@@ -24,10 +24,18 @@ const attackCondLongRange = {
 
 const updateCollisions = (behavior: EnemyBehavior) => {
   const collidedEntity = behavior.collidedEntity;
-  if (!collidedEntity) {
+  if (
+    !collidedEntity ||
+    !behavior.onHitDamage
+  ) {
     return true;
   }
-  collidedEntity.onHit(behavior.onHitDamage);
+  collidedEntity.onHit(
+    randomNumbers.getRandomInRange(
+      behavior.onHitDamage.min,
+      behavior.onHitDamage.max,
+    )
+  );
   behavior.followingPath = [];
   behavior.followingPoint = undefined;
   behavior.velocity.negate();

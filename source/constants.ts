@@ -127,6 +127,7 @@ export const ENEMY = {
     shoot: 0.7,
     gunpointStrafe: 0.5,
     strafe: 0.7,
+    movement: ENEMY_GAME_SPEED * 0.1
   },
 };
 
@@ -190,7 +191,7 @@ export const gameSounds = {
   walk,
 };
 
-interface EnemyTexturesSet {
+export interface EnemyTexturesSet {
   walk1: keyof typeof gameTextures;
   walk2: keyof typeof gameTextures;
   death: keyof typeof gameTextures;

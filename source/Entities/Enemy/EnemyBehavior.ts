@@ -4,7 +4,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { EnemyBehaviorModifier, EnemyGunProps } from './Enemy';
+import { EnemyBehaviorFlag, EnemyGunProps } from './Enemy';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Gun, GunFireType } from '@/Entities/Gun/Gun';
@@ -22,15 +22,16 @@ interface BehaviorProps {
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  behaviorModifier?: EnemyBehaviorModifier;
+  behaviorFlag?: EnemyBehaviorFlag;
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
-  onHitDamage: number;
+  onHitDamage?: { min: number; max: number; };
   hurtChance: number;
   delays: {
     shoot: number;
     gunpointStrafe: number,
     strafe: number,
+    movement: number;
   };
 }
 
@@ -72,9 +73,9 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
-  isKamikaze: boolean;
+  behaviorFlag?: EnemyBehaviorFlag;
   isParasite: boolean;
-  onHitDamage: number;
+  onHitDamage?: { min: number; max: number; };
   onDeathCallback?: Function;
   onBleedCallback?: Function;
 
@@ -116,8 +117,8 @@ export class EnemyBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
-    this.isKamikaze = props.behaviorModifier === EnemyBehaviorModifier.kamikaze;
-    this.isParasite = props.behaviorModifier === EnemyBehaviorModifier.parasite;
+    this.behaviorFlag = props.behaviorFlag;
+    this.isParasite = props.behaviorFlag === EnemyBehaviorFlag.parasite;
     this.isHurt = false;
     this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
@@ -125,7 +126,7 @@ export class EnemyBehavior implements Behavior {
     const timeoutValues = {
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
-      movement: (this.isKamikaze || this.isParasite) ? ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT : ENEMY.MOVEMENT_TIME_OUT,
+      movement: props.delays.movement,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
       shootDelay: props.delays.shoot,

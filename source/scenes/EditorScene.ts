@@ -1,6 +1,7 @@
 import { Vector2 } from 'three';
-import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
+import { Entity } from '@/core/Entities/Entity';
+import { EnemyKind } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { TestSceneProps, TestScene } from './testScene';
 
 interface SavedCell {
@@ -334,7 +335,12 @@ export class EditorScene extends TestScene {
         this.cellCoordinates.toWorldCoordinates(cell).add(roomCoordinates);
     switch (entityType) {
       case ENTITY_TYPE.ENEMY:
-        return this.spawnEnemy(cellCoordinates, this.currentRoom.type);
+        return this.spawnEnemy(
+          cellCoordinates,
+          this.currentRoom.type,
+          // TODO: Ability to choose EnemyKind
+          EnemyKind.Soul,
+        );
       case ENTITY_TYPE.WALL:
         return this.roomSpawner.spawnWall(
           this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),

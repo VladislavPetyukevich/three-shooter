@@ -19,12 +19,9 @@ export interface EnemyTextures {
   death: string;
 }
 
-export const enum EnemyBehaviorModifier {
-  kamikaze,
+export const enum EnemyBehaviorFlag {
   parasite,
   withSpawner,
-  longRangeAttack,
-  bleed,
 }
 
 export interface EnemyGunProps {
@@ -32,6 +29,13 @@ export interface EnemyGunProps {
   recoilTime: number;
   isRaycast: boolean;
 }
+
+export interface EnemyDelays {
+  shoot: number;
+  gunpointStrafe: number;
+  strafe: number;
+  movement: number;
+};
 
 export interface EnemyProps {
   position: { x: number; y: number; z: number };
@@ -46,15 +50,11 @@ export interface EnemyProps {
   textures: EnemyTextures;
   hp: number;
   walkSpeed: number;
-  onHitDamage: number;
+  onHitDamage?: { min: number; max: number; };
   bulletsPerShoot: { min: number; max: number; };
   hurtChance: number;
-  delays: {
-    shoot: number;
-    gunpointStrafe: number;
-    strafe: number;
-  };
-  behaviorModifier?: EnemyBehaviorModifier;
+  delays: EnemyDelays;
+  behaviorFlag?: EnemyBehaviorFlag;
 }
 
 export type OnDeathCallback = (entity: Enemy) => void;
@@ -86,7 +86,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         velocity,
         actor,
         audioListener: props.audioListener,
-        behaviorModifier: props.behaviorModifier,
+        behaviorFlag: props.behaviorFlag,
         walkSpeed: props.walkSpeed,
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
