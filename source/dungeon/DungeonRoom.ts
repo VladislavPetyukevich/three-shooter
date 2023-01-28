@@ -43,8 +43,8 @@ export type RoomConstructor = (size: Vector2) => RoomCell[];
 const enemyForDoor1Tag = 'enemyForDoor1';
 const doorForEnemy1Tag = 'doorForEnemy1';
 
-const constructors = [
-  (): RoomCell[] => {
+const constructors: RoomConstructor[] = [
+  () => {
     const doorEvent = {
       type: RoomCellEventType.OpenDoorIfNoEntitiesWithTag,
       targetEntityTag: doorForEnemy1Tag,
@@ -67,7 +67,7 @@ const constructors = [
       { position: new Vector2(4, 4), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag },
     ];
   },
-  (size: Vector2): RoomCell[] => {
+  (size) => {
     const stipSize = 2;
     const padding = 4;
     const centerX = Math.floor(size.x / 2);
@@ -98,7 +98,7 @@ const constructors = [
     }
     return cells;
   },
-  (): RoomCell[] => {
+  () => {
     return [
       { position: new Vector2(3, 10), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
       { position: new Vector2(9, 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
