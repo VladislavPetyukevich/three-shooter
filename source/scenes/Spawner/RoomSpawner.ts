@@ -362,14 +362,14 @@ export class RoomSpawner {
   }
 
   spawnRoomActivateTrigger(room: Room) {
-    const color = 0xFF0000;
-    const size = new Vector2(this.cellCoordinates.size, this.cellCoordinates.size);
+    const color = new Color(0xFFFFFF);
+    const size = new Vector2(this.cellCoordinates.size / 2, this.cellCoordinates.size / 2);
     const position = this.getRoomActivateTriggerPostition(room);
     const trigger = this.entitiesContainer.add(
       new Trigger({
         position: new Vector3(
           position.x,
-          this.cellCoordinates.size / 2,
+          2.0,
           position.y,
         ),
         size: new Vector3(
@@ -377,14 +377,13 @@ export class RoomSpawner {
           this.cellCoordinates.size,
           size.y,
         ),
-        color: new Color(color),
+        color,
         entitiesContainer: this.entitiesContainer,
         onTrigger: () => {
           this.onRoomVisit(room);
         },
       })
     ) as Trigger;
-    trigger.setScaticPositionOptimizations(true);
     return trigger;
   }
 
@@ -393,7 +392,7 @@ export class RoomSpawner {
       this.rotatePositionForRoom(
         new Vector2(
           room.cellPosition.x + this.roomSize.x / 2,
-          room.cellPosition.y + this.roomSize.y - 4
+          room.cellPosition.y + this.roomSize.y - 2.5
         ),
         room
       )
