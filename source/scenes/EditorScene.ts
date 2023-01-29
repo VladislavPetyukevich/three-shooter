@@ -3,6 +3,7 @@ import { ENTITY_TYPE } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { EnemyKind } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { TestSceneProps, TestScene } from './testScene';
+import { Room } from './Spawner/RoomSpawner';
 
 interface SavedCell {
   x: number;
@@ -30,6 +31,7 @@ export class EditorScene extends TestScene {
 
   constructor(props: TestSceneProps) {
     super(props);
+    this.roomSpawner.onRoomVisit = this.handleRoomVisit;
     this.enableKey = '`';
     this.isEditorMode = false;
     this.currentEditorEntities = [];
@@ -59,6 +61,12 @@ export class EditorScene extends TestScene {
     });
     this.createInfoElements();
   }
+
+  handleRoomVisit = (room: Room) => {
+    room.entities.forEach(
+      entity => this.entitiesContainer.remove(entity.mesh)
+    );
+  };
 
   loadFromLocalStorage() {
     const data = localStorage.getItem(this.localStorageKey);
