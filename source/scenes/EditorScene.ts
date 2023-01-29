@@ -63,6 +63,8 @@ export class EditorScene extends TestScene {
   }
 
   handleRoomVisit = (room: Room) => {
+    this.currentRoom = room;
+    this.enableEditorMode();
     room.entities.forEach(
       entity => this.entitiesContainer.remove(entity.mesh)
     );
