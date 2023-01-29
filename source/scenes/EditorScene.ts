@@ -22,6 +22,7 @@ export class EditorScene extends TestScene {
   isEditorMode: boolean;
   currentEditorEntities: Entity[][];
   currentEntityType: ENTITY_TYPE;
+  currentEnemyKind: EnemyKind;
   cellColors: CellColors;
   padding: number;
   localStorageKey: string;
@@ -33,6 +34,7 @@ export class EditorScene extends TestScene {
     this.isEditorMode = false;
     this.currentEditorEntities = [];
     this.currentEntityType = ENTITY_TYPE.ENEMY;
+    this.currentEnemyKind = EnemyKind.Soul;
     this.cellColors = {
       border: 'white',
       empty: 'black',
@@ -43,7 +45,7 @@ export class EditorScene extends TestScene {
     this.localStorageKey = 'editor-map';
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
-    this.createEntitiesButtons();
+    this.createEntitiesElements();
     document.addEventListener('keypress', (event) => {
       const isEnableKey = event.key === this.enableKey;
       if (!isEnableKey) {
@@ -138,7 +140,7 @@ export class EditorScene extends TestScene {
     }
   }
 
-  createEntitiesButtons() {
+  createEntitiesElements() {
     const mapContainer = document.getElementById('mapContainer');
     if (!mapContainer) {
       throw new Error('Map container not found');
@@ -152,6 +154,22 @@ export class EditorScene extends TestScene {
     enemyButton.style.background = this.cellColors.enemy;
     enemyButton.innerHTML = 'Enemy';
     enemyButton.onclick = () => this.currentEntityType = ENTITY_TYPE.ENEMY;
+    const enemyKindSelect = document.createElement('select');
+    enemyKindSelect.style.position = 'absolute';
+    enemyKindSelect.style.top = `${mapContainerBoundingClientRect.height}px`;
+    enemyKindSelect.style.left = '162px';
+    enemyKindSelect.style.background = 'azure';
+    [
+      this.createOption('Soul', EnemyKind.Soul),
+      this.createOption('Shooter', EnemyKind.Shooter),
+      this.createOption('Kamikaze', EnemyKind.Kamikaze),
+      this.createOption('Parasite', EnemyKind.Parasite),
+      this.createOption('Bleed', EnemyKind.Bleed),
+      this.createOption('Breeding', EnemyKind.Breeding),
+    ].forEach(option => enemyKindSelect.appendChild(option));
+    enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
+    enemyKindSelect.value = `${this.currentEnemyKind}`;
+    blockerEl.appendChild(enemyKindSelect);
     blockerEl.appendChild(enemyButton);
     const wallButton = document.createElement('button');
     wallButton.style.position = 'absolute';
@@ -184,6 +202,13 @@ export class EditorScene extends TestScene {
     saveButton.innerHTML = 'Save to local storage';
     saveButton.onclick = () => this.saveDungeonToLocalStorage();
     blockerEl.appendChild(saveButton);
+  }
+
+  createOption(textContent: string, value: number) {
+    const select = document.createElement('option');
+    select.textContent = textContent;
+    select.value = `${value}`;
+    return select;
   }
 
   logDungeonToConsole() {
@@ -338,8 +363,7 @@ export class EditorScene extends TestScene {
         return this.spawnEnemy(
           cellCoordinates,
           this.currentRoom.type,
-          // TODO: Ability to choose EnemyKind
-          EnemyKind.Soul,
+          this.currentEnemyKind,
         );
       case ENTITY_TYPE.WALL:
         return this.roomSpawner.spawnWall(
