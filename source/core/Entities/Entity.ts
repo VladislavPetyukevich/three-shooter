@@ -40,6 +40,9 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
   onDestroy() { }
 
   setScaticPositionOptimizations(isEnabled: boolean) {
+    if (isEnabled) {
+      this.mesh.updateMatrix();
+    }
     this.mesh.matrixAutoUpdate = !isEnabled;
   }
 
