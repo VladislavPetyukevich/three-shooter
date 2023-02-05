@@ -184,8 +184,6 @@
     });
 
     instructions.addEventListener('click', function (event) {
-      instructions.style.display = 'none';
-      blocker.style.display = 'none';
       renderContainer.requestPointerLock();
     });
 
@@ -273,11 +271,13 @@
     }
     loadSetting();
 
+    function setBlockerVisibility(isVisible) {
+      blocker.style.opacity = isVisible ? '1' : '0';
+      blocker.style.transition = isVisible ? '1s' : '0s';
+    }
+
     document.addEventListener('pointerlockchange', function (event) {
-      if (document.pointerLockElement != renderContainer) {
-        blocker.style.display = 'block';
-        instructions.style.display = '';
-      }
+      setBlockerVisibility(document.pointerLockElement != renderContainer)
       threeShooter.setEnabled(document.pointerLockElement === renderContainer);
     });
   </script>
