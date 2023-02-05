@@ -66,10 +66,6 @@ export default class ThreeShooter {
 
     props.renderContainer.appendChild(this.renderer.domElement);
     this.update();
-    document.addEventListener('pointerlockchange', () => {
-      this.enabled = document.pointerLockElement === props.renderContainer;
-      this.prevTime = performance.now();
-    });
     this.handleResize(props.renderWidth, props.renderHeight);
   }
 
@@ -99,6 +95,19 @@ export default class ThreeShooter {
     );
   }
 
+  setEnabled(newValue: boolean) {
+    if (!this.enabled && newValue) {
+      this.prevTime = performance.now();
+    }
+    this.enabled = newValue;
+    if (this.enabled && this.currScene instanceof LoadingScene) {
+      this.loaded = true;
+      if (this.loadedScene) {
+        this.changeScene(this.loadedScene);
+      }
+    }
+  }
+
   loadTextures(gameProps: any) {
     const imageScaler = new ImageScaler(8);
     const onLoad = () => {
@@ -108,19 +117,11 @@ export default class ThreeShooter {
         return;
       }
 
-      const pointerlockHandler = () => {
-        const isRenderContainer = document.pointerLockElement === gameProps.renderContainer;
-        if (!isRenderContainer) {
-          return;
-        }
-        this.loaded = true;
-        if (this.loadedScene) {
+      this.loadScene(SceneClass, gameProps, () => {
+        if (this.enabled && this.loadedScene) {
           this.changeScene(this.loadedScene);
         }
-        document.removeEventListener('pointerlockchange', pointerlockHandler);
-      };
-      this.loadScene(SceneClass, gameProps);
-      document.addEventListener('pointerlockchange', pointerlockHandler);
+      });
       gameProps.onLoad();
     };
 

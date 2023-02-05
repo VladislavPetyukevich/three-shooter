@@ -74,7 +74,6 @@ export class GunBehavior implements Behavior {
     this.currentRecoilTime = 0;
     const shootsPerSec = 1 / (this.recoilTime || 0.16);
     this.secToMaxHeatLevel = props.shootsToMaxHeat / shootsPerSec;
-    console.log('props.shootsToMaxHeat: ', props.shootsToMaxHeat);
     this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);
