@@ -4,6 +4,7 @@ import { GunBehaviorRaycast } from './GunBehaviorRaycast';
 interface GunRaycastProps extends GunPropsExternal {
   maxEffectiveDistance: number;
   damage: number;
+  shootsToMaxHeat: number;
 }
 
 export class GunRaycast extends Gun {
@@ -19,6 +20,7 @@ export class GunRaycast extends Gun {
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
       bulletsPerShoot: props.bulletsPerShoot,
       recoilTime: props.recoilTime,
+      shootsToMaxHeat: props.shootsToMaxHeat,
       fireType: props.fireType,
     });
     super({

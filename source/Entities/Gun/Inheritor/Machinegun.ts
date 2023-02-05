@@ -14,6 +14,7 @@ export class Machinegun extends GunRaycast {
       bulletsPerShoot: 1,
       recoilTime: 0.15,
       fireType: GunFireType.automatic,
+      shootsToMaxHeat: 23,
       hudTextures: {
         idle: texturesStore.getTexture('machinegunTextureFile'),
         fire: texturesStore.getTexture('machinegunFireFile'),

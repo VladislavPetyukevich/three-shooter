@@ -4,6 +4,7 @@ import { GunBehaviorBullet } from './GunBehaviorBullet';
 
 interface GunBulletProps extends GunPropsExternal {
   BulletClass: typeof Bullet;
+  shootsToMaxHeat: number;
 }
 
 export class GunBullet extends Gun {
@@ -18,6 +19,7 @@ export class GunBullet extends Gun {
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
       bulletsPerShoot: props.bulletsPerShoot,
       recoilTime: props.recoilTime,
+      shootsToMaxHeat: props.shootsToMaxHeat,
       fireType: props.fireType,
     });
     super({

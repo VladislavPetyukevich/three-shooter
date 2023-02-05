@@ -24,6 +24,7 @@ export interface BehaviorProps {
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
   recoilTime: number;
+  shootsToMaxHeat: number;
   fireType: GunFireType;
 }
 
@@ -72,8 +73,8 @@ export class GunBehavior implements Behavior {
     this.position = new Vector3();
     this.currentRecoilTime = 0;
     const shootsPerSec = 1 / (this.recoilTime || 0.16);
-    const shootsToMaxHeat = 10;
-    this.secToMaxHeatLevel = shootsToMaxHeat / shootsPerSec;
+    this.secToMaxHeatLevel = props.shootsToMaxHeat / shootsPerSec;
+    console.log('props.shootsToMaxHeat: ', props.shootsToMaxHeat);
     this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);

@@ -13,6 +13,7 @@ export class Shotgun extends GunRaycast {
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 2,
       recoilTime: 0.2,
+      shootsToMaxHeat: 1000,
       fireType: GunFireType.single,
       hudTextures: {
         idle: texturesStore.getTexture('gunTextureFile'),

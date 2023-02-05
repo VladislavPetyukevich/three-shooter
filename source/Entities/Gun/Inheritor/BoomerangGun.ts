@@ -21,6 +21,7 @@ export class BoomerangGun extends GunBullet {
       bulletsPerShoot: 1,
       recoilTime: 0.15,
       fireType: GunFireType.single,
+      shootsToMaxHeat: 1000,
       hudTextures: {
         idle: texturesStore.getTexture('boomerangTextureFile'),
         fire: texturesStore.getTexture('boomerangFireTextureFile'),

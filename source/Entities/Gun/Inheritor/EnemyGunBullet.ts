@@ -16,6 +16,7 @@ export class EnemyGunBullet extends GunBullet {
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
       recoilTime: 0.15,
+      shootsToMaxHeat: 1000,
       fireType: GunFireType.automatic,
     });
   }

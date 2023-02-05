@@ -23,6 +23,7 @@ export interface GunPropsExternal {
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
   recoilTime: number;
+  shootsToMaxHeat: number;
   fireType: GunFireType;
   holderMesh: Mesh;
   hudTextures?: GunHudTextures;
