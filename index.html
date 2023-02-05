@@ -223,8 +223,9 @@
     });
 
     function updatePixelRatio(value) {
-      pixelRatioValue.value = value;
-      threeShooter.renderer.setPixelRatio(+value);
+      const numberValue = +value || 1;
+      pixelRatioValue.value = numberValue;
+      threeShooter.renderer.setPixelRatio(numberValue);
       saveSettings();
     }
 
