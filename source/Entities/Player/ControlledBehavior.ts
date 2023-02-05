@@ -206,7 +206,6 @@ export class ControlledBehavior implements Behavior {
       currentGun.shoot();
     }
     this.cameraRecoilJump();
-    hud.gunFire();
   };
 
   handleReleaseTrigger() {
@@ -323,6 +322,7 @@ export class ControlledBehavior implements Behavior {
       currentGun.setPosition(this.camera.position);
       currentGun.update(delta);
       this.updateGunHeatLevel(delta);
+      this.updateGunHud(currentGun);
     }
     this.updateCamera();
     this.updateIsRunning();
@@ -430,7 +430,6 @@ export class ControlledBehavior implements Behavior {
     const isGunRecoil = currentGun && currentGun.checkIsRecoil();
     if (this.isCameraRecoil && !isGunRecoil) {
       this.gunShootLight.position.set(0, -50, 0);
-      hud.gunIdle();
     } else if (this.isCameraRecoil) {
       this.gunShootLight.position.set(
         this.camera.position.x,
@@ -461,6 +460,14 @@ export class ControlledBehavior implements Behavior {
     }
     if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
       intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
+    }
+  }
+
+  updateGunHud(gun: Gun) {
+    if (gun.behavior.isShoot && !gun.behavior.isCoolingDown) {
+      hud.gunFire();
+    } else {
+      hud.gunIdle();
     }
   }
 

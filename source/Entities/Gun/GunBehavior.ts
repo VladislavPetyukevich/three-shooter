@@ -37,6 +37,7 @@ export class GunBehavior implements Behavior {
   shootSound: Audio;
   isShoot: boolean;
   isInMove: boolean;
+  isCoolingDown: boolean;
   shootOffsetRadians: number;
   shootOffsetInMoveRadians: number;
   bulletsPerShoot: number;
@@ -60,6 +61,7 @@ export class GunBehavior implements Behavior {
     this.shootSound = new Audio(props.audioListener);
     this.isShoot = false;
     this.isInMove = false;
+    this.isCoolingDown = false;
     this.shootOffsetRadians = props.shootOffsetAngle * PI_180;
     this.shootOffsetInMoveRadians = props.shootOffsetInMoveAngle * PI_180;
     this.bulletsPerShoot = props.bulletsPerShoot;
@@ -70,7 +72,7 @@ export class GunBehavior implements Behavior {
     this.position = new Vector3();
     this.currentRecoilTime = 0;
     const shootsPerSec = 1 / (this.recoilTime || 0.16);
-    const shootsToMaxHeat = 100;
+    const shootsToMaxHeat = 10;
     this.secToMaxHeatLevel = shootsToMaxHeat / shootsPerSec;
     this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound('gunShoot');
@@ -142,7 +144,7 @@ export class GunBehavior implements Behavior {
   }
 
   update(delta: number) {
-    if (!this.isShoot) {
+    if (!this.isShoot || this.isCoolingDown) {
       return;
     }
     this.updateRecoil(delta);
@@ -165,15 +167,21 @@ export class GunBehavior implements Behavior {
     if (this.fireType !== GunFireType.automatic) {
       return;
     }
-    if (!this.isTriggerPulled) {
-      if (this.heatLevel !== 0) {
-        this.heatLevel = Math.max(this.heatLevel - delta, 0);
+    if (this.isTriggerPulled) {
+      this.heatLevel = Math.min(
+        this.heatLevel + (delta / this.secToMaxHeatLevel),
+        1
+      );
+      if (this.heatLevel === 1) {
+        this.isCoolingDown = true;
+        this.handleReleaseTrigger();
       }
       return;
     }
-    this.heatLevel = Math.min(
-      this.heatLevel + (delta / this.secToMaxHeatLevel),
-      1
-    );
+    if (this.heatLevel !== 0) {
+      this.heatLevel = Math.max(this.heatLevel - delta, 0);
+    } else {
+      this.isCoolingDown = false;
+    }
   }
 }

@@ -163,11 +163,15 @@ export class HUD {
   }
 
   gunFire() {
-    this.spriteSheet && this.spriteSheet.displaySprite(1);
+    if(this.spriteSheet && this.spriteSheet.currentIndex !== 1) {
+      this.spriteSheet.displaySprite(1);
+    }
   }
 
   gunIdle() {
-    this.spriteSheet && this.spriteSheet.displaySprite(0);
+    if(this.spriteSheet && this.spriteSheet.currentIndex !== 0) {
+      this.spriteSheet.displaySprite(0);
+    }
   }
 
   updateHp(hp: number) {
