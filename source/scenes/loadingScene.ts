@@ -6,12 +6,18 @@ export class LoadingScene extends BasicScene {
   texturesProgress: number;
   soundsProgress: number;
   imagesScaleProgress: number;
+  progress: number;
+  fakeProgress: number;
+  fakeProgressSpeed: number;
 
   constructor(props: BasicSceneProps) {
     super(props);
     this.texturesProgress = 0;
     this.soundsProgress = 0;
     this.imagesScaleProgress = 0;
+    this.progress = 0;
+    this.fakeProgress = 0;
+    this.fakeProgressSpeed = 4;
 
     const geometry = new BoxGeometry(1, 1, 1);
     const material = new MeshBasicMaterial({ color: 0x00ff00 });
@@ -37,9 +43,14 @@ export class LoadingScene extends BasicScene {
   }
 
   updateProgress() {
-    const progress = (this.texturesProgress + this.soundsProgress + this.imagesScaleProgress) / 3;
+    this.fakeProgress = 0;
+  }
+
+  displayProgress() {
+    this.progress = (this.texturesProgress + this.soundsProgress + this.imagesScaleProgress) / 3;
+    const fakeProgress = this.progress + this.fakeProgress;
     const oldMinX = new Box3().setFromObject(this.rotatingCube).min.x;
-    this.rotatingCube.scale.set(1 + progress * 8 / 100, 1, 1);
+    this.rotatingCube.scale.set(1 + fakeProgress * 8 / 100, 1, 1);
     const newMinX = new Box3().setFromObject(this.rotatingCube).min.x;
     const xDiff = newMinX - oldMinX;
     this.rotatingCube.position.set(
@@ -47,5 +58,13 @@ export class LoadingScene extends BasicScene {
       this.rotatingCube.position.y,
       this.rotatingCube.position.z
     );
+  }
+
+  update(delta: number) {
+    if (this.progress === 100) {
+      return;
+    }
+    this.fakeProgress += delta * this.fakeProgressSpeed;
+    this.displayProgress();
   }
 }
