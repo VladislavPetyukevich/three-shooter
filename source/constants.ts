@@ -1,37 +1,12 @@
 import { Color } from 'three';
-import wallTextureFile from '@/assets/wall.png';
-import wallDecal1TextureFile from '@/assets/wallDecal1.png';
-import wallDecal2TextureFile from '@/assets/wallDecal2.png';
-import wallDecal3TextureFile from '@/assets/wallDecal3.png';
-import doorTextureFile from '@/assets/door.png';
-import floorTextureFile from '@/assets/floor.png';
-import gunTextureFile from './assets/gun.png';
-import gunFireFile from './assets/gunFire.png';
-import machinegunTextureFile from './assets/machinegun.png';
-import machinegunFireFile from './assets/machinegunFire.png';
-import boomerangTextureFile from './assets/boomerang.png';
-import boomerangFireTextureFile from './assets/boomerangFire.png';
-import enemyApathyWalk1 from './assets/enemyWalk1.png';
-import enemyApathyWalk2 from './assets/enemyWalk2.png';
-import enemyApathyDeath from './assets/enemyDeath.png';
-import enemyCowardiceWalk1 from './assets/enemyCowardiceWalk1.png';
-import enemyCowardiceWalk2 from './assets/enemyCowardiceWalk2.png';
-import enemyCowardiceDeath from './assets/enemyCowardiceDeath.png';
-import enemySPWalk1 from './assets/enemySPWalk1.png';
-import enemySPWalk2 from './assets/enemySPWalk2.png';
-import enemySPDeath from './assets/enemySPDeath.png';
+import spriteSheet from './assets/spritesheet.png';
 import gunShoot from './assets/shoot.mp3';
 import damage from './assets/damage.mp3';
 import spawn from './assets/spawn.mp3';
 import walk from './assets/walk.mp3';
-import shootMark1 from './assets/shootMark1.png';
-import shootMark2 from './assets/shootMark2.png';
-import torch from './assets/torch.png';
-import torchFire1 from './assets/torch1.png';
-import torchFire2 from './assets/torch2.png';
-import damageEffect from './assets/damage-effect.png';
-import fireFlare from './assets/fireFlare.png';
-import fireFlareAlpha from './assets/fireFlareAlpha.png';
+import { ImagesInfo } from '@/SpriteSheetLoader';
+
+export { spriteSheet };
 
 export const PI_180 = Math.PI / 180;
 
@@ -152,36 +127,36 @@ export const enum ENTITY_MESSAGES {
   infestedByParasite,
 };
 
-export const gameTextures = {
-  wallTextureFile,
-  wallDecal1TextureFile,
-  wallDecal2TextureFile,
-  wallDecal3TextureFile,
-  doorTextureFile,
-  floorTextureFile,
-  gunTextureFile,
-  gunFireFile,
-  machinegunTextureFile,
-  machinegunFireFile,
-  boomerangTextureFile,
-  boomerangFireTextureFile,
-  enemyApathyWalk1,
-  enemyApathyWalk2,
-  enemyApathyDeath,
-  enemyCowardiceWalk1,
-  enemyCowardiceWalk2,
-  enemyCowardiceDeath,
-  enemySPWalk1,
-  enemySPWalk2,
-  enemySPDeath,
-  shootMark1,
-  shootMark2,
-  torch,
-  torchFire1,
-  torchFire2,
-  damageEffect,
-  fireFlare,
-  fireFlareAlpha,
+export const gameTextures: ImagesInfo = {
+  wallTextureFile: { x: 0, y: 289, width: 32, height: 32, },
+  wallDecal1TextureFile: { x: 32, y: 289, width: 16, height: 16, },
+  wallDecal2TextureFile: { x: 32, y: 305, width: 16, height: 16, },
+  wallDecal3TextureFile: { x: 48, y: 289, width: 16, height: 16, },
+  doorTextureFile: { x: 0, y: 321, width: 128, height: 32, },
+  floorTextureFile: { x: 80, y: 289, width: 16, height: 16, },
+  gunTextureFile: { x: 0, y: 193, width: 64, height: 32, },
+  gunFireFile: { x: 64, y: 193, width: 64, height: 32, },
+  machinegunTextureFile: { x: 0, y: 225, width: 64, height: 32, },
+  machinegunFireFile: { x: 64, y: 225, width: 64, height: 32, },
+  boomerangTextureFile: { x: 0, y: 257, width: 64, height: 32, },
+  boomerangFireTextureFile: { x: 64, y: 257, width: 64, height: 32, },
+  enemyApathyWalk1: { x: 0, y: 0, width: 32, height: 64, },
+  enemyApathyWalk2: { x: 32, y: 0, width: 32, height: 64, },
+  enemyApathyDeath: { x: 64, y: 0, width: 32, height: 64, },
+  enemyCowardiceWalk1: { x: 0, y: 129, width: 32, height: 64, },
+  enemyCowardiceWalk2: { x: 32, y: 129, width: 32, height: 64, },
+  enemyCowardiceDeath: { x: 64, y: 129, width: 32, height: 64, },
+  enemySPWalk1: { x: 0, y: 65, width: 32, height: 64, },
+  enemySPWalk2: { x: 32, y: 65, width: 32, height: 64, },
+  enemySPDeath: { x: 64, y: 65, width: 32, height: 64, },
+  shootMark1: { x: 91, y: 197, width: 1, height: 1, },
+  shootMark2: { x: 8, y: 0, width: 1, height: 1, },
+  torch: { x: 48, y: 305, width: 16, height: 16, },
+  torchFire1: { x: 64, y: 289, width: 16, height: 16, },
+  torchFire2: { x: 64, y: 305, width: 16, height: 16, },
+  fireFlare: { x: 80, y: 305, width: 16, height: 16, },
+  fireFlareAlpha: { x: 96, y: 289, width: 16, height: 16, },
+  damageEffect: { x: 0, y: 353, width: 16, height: 16, },
 };
 
 export const gameSounds = {

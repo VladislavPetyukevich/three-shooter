@@ -14,8 +14,8 @@ import { EffectComposer } from './Postprocessing/EffectComposer';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
 import { texturesStore, audioStore } from '@/core/loaders';
-import { ImageScaler } from '@/ImageScaler';
-import { gameTextures, gameSounds } from './constants';
+import { SpriteSheetLoader } from '@/SpriteSheetLoader';
+import { gameTextures, gameSounds, spriteSheet } from './constants';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 
@@ -109,7 +109,7 @@ export default class ThreeShooter {
   }
 
   loadTextures(gameProps: any) {
-    const imageScaler = new ImageScaler(8);
+    const spriteSheetLoader = new SpriteSheetLoader(spriteSheet, 8);
     const onLoad = () => {
       const soundsProgress = (<LoadingScene>this.currScene).soundsProgress;
       const texturesProgress = (<LoadingScene>this.currScene).texturesProgress;
@@ -140,8 +140,7 @@ export default class ThreeShooter {
     const onImagesScaleProgress = (progress: number) => {
       (<LoadingScene>this.currScene).onImagesScaleProgress(progress);
     };
-    imageScaler.addToIgnore('damageEffect');
-    imageScaler.scaleImages(gameTextures, onImagesScale, onImagesScaleProgress);
+    spriteSheetLoader.loadImages(gameTextures, onImagesScale, onImagesScaleProgress);
     audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
   }
 
