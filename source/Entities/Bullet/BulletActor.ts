@@ -1,5 +1,5 @@
 import { Actor } from '@/core/Entities/Actor';
-import { Mesh, SphereGeometry, MeshBasicMaterial, Vector3 } from 'three';
+import { Mesh, SphereGeometry, MeshLambertMaterial, Vector3 } from 'three';
 
 interface BulletActorProps {
   sphere: { radius: number; widthSegments: number, heightSegments: number };
@@ -15,7 +15,7 @@ export class BulletActor implements Actor {
       props.sphere.widthSegments,
       props.sphere.heightSegments
     );
-    const material = new MeshBasicMaterial({ color: 0xFF0000 });
+    const material = new MeshLambertMaterial({ color: 0xFF0000 });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.set(
       props.position.x,
