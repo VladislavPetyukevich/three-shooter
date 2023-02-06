@@ -7,7 +7,7 @@ export class Machinegun extends GunRaycast {
   constructor(props: InheritorGunProps) {
     super({
       ...props,
-      damage: 1,
+      damage: { min: 5, max: 15 },
       maxEffectiveDistance: 0,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,

@@ -1,9 +1,9 @@
 import { Gun, GunPropsExternal } from './Gun';
 import { GunBehaviorRaycast } from './GunBehaviorRaycast';
 
-interface GunRaycastProps extends GunPropsExternal {
+export interface GunRaycastProps extends GunPropsExternal {
   maxEffectiveDistance: number;
-  damage: number;
+  damage: { min: number; max: number; };
   shootsToMaxHeat: number;
 }
 

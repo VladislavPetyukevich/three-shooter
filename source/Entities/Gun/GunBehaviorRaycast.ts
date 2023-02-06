@@ -1,17 +1,19 @@
 import { ENTITY_TYPE } from '@/constants';
+import { randomNumbers } from '@/RandomNumbers';
 import { Vector3 } from 'three';
 import { ShootMark } from '../ShootMark/ShootMark';
 import { ShootTrace } from '../ShootTrace/ShootTrace';
 import { BehaviorProps, GunBehavior } from './GunBehavior';
+import { GunRaycastProps } from './GunRaycast';
 
 interface BehaviorRaycastProps extends BehaviorProps {
   maxEffectiveDistance: number;
-  damage: number;
+  damage: GunRaycastProps['damage'];
 }
 
 export class GunBehaviorRaycast extends GunBehavior {
   maxEffectiveDistance: number;
-  damage: number;
+  damage: GunRaycastProps['damage'];
 
   constructor(props: BehaviorRaycastProps) {
     super(props);
@@ -78,20 +80,23 @@ export class GunBehaviorRaycast extends GunBehavior {
           this.container.add(shootMark);
           break;
         }
-        const maxDamage = 1;
+        const maxDamage = randomNumbers.getRandomInRange(
+          this.damage.min,
+          this.damage.max
+        );
         const damage = this.maxEffectiveDistance === 0 ?
           maxDamage :
-          this.getDamage(intersect.distance);
+          this.getDamage(intersect.distance, maxDamage);
         intersectEntity.onHit(damage, this.bulletAuthor);
         break;
       }
     }
   }
 
-  getDamage(distance: number) {
+  getDamage(distance: number, maxDamage: number) {
     const damage = distance <= this.maxEffectiveDistance ?
-      this.damage :
-      this.damage / (distance - this.maxEffectiveDistance)
+      maxDamage :
+      maxDamage / (distance - this.maxEffectiveDistance)
     return damage;
   }
 }
