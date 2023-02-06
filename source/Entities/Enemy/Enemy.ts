@@ -124,16 +124,14 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     super.onHit(damage);
     if (this.hp <= 0) {
       this.handleDeath();
+      return;
     } else if (!this.behavior.isHurt) {
       this.behavior.onHit();
-      this.handleHurtAnimation();
     }
+    this.handleHurtAnimation();
   }
 
   handleHurtAnimation() {
-    if (!this.behavior.isHurt) {
-      return;
-    }
     this.animations = [];
     this.addAnimation(new HurtAnimation({
       actor: this.actor,
