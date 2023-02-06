@@ -41,6 +41,13 @@
           <option value="2">Next Gen</option>
           <option value="2.5">Next Gen Pro</option>
         </select>
+        <br />
+        <span>Aspect ratio:</span>
+        <select id="aspectRatio-value">
+          <option value="0" selected>Normal</option>
+          <option value="4:3">Square 4:3</option>
+          <option value="21:9">Ultrawide 21:9</option>
+        </select>
       </div>
     </div>
   </div>
@@ -61,6 +68,7 @@
     var fov = document.getElementById('fov');
     var fovValue = document.getElementById('fov-value');
     var pixelRatioValue = document.getElementById('pixelRatio-value');
+    var aspectRatioValue = document.getElementById('aspectRatio-value');
 
     function updateMouseSensitivityValue(value) {
       var valueFormated = (value * 100).toFixed(3);
@@ -86,10 +94,23 @@
     }
 
     function getRendererSize() {
-      return {
-        width: ~~Math.min(renderContainer.offsetHeight * (4/3), renderContainer.offsetWidth),
-        height: ~~renderContainer.offsetHeight
-      };
+      switch (aspectRatioValue.value) {
+        case '4:3':
+          return {
+            width: ~~Math.min(renderContainer.offsetHeight * (4/3), renderContainer.offsetWidth),
+            height: ~~renderContainer.offsetHeight
+          };
+        case '21:9':
+          return {
+            width: ~~renderContainer.offsetWidth,
+            height: ~~Math.min(renderContainer.offsetWidth * (9/21), renderContainer.offsetHeight)
+          };
+        default:
+          return {
+            width: ~~renderContainer.offsetWidth,
+            height: ~~renderContainer.offsetHeight
+          };
+      }
     }
 
     var rendererSize = getRendererSize();
@@ -175,13 +196,15 @@
       }
     });
 
-    window.addEventListener('resize', () => {
+    function handleResize() {
       var newRendererSize = getRendererSize();
       threeShooter.handleResize(
         newRendererSize.width,
         newRendererSize.height
       );
-    });
+    }
+
+    window.addEventListener('resize', handleResize);
 
     instructions.addEventListener('click', function (event) {
       renderContainer.requestPointerLock();
@@ -227,8 +250,22 @@
       saveSettings();
     }
 
+    function updateAspectRatio(value) {
+      if (!value) {
+        return;
+      }
+      aspectRatioValue.value = value;
+      handleResize();
+      saveSettings();
+    }
+
     pixelRatioValue.addEventListener('change', function(event) {
       updatePixelRatio(event.target.value);
+    });
+
+    aspectRatioValue.addEventListener('change', function(event) {
+      handleResize();
+      saveSettings();
     });
 
     function updateFov(value) {
@@ -248,6 +285,7 @@
         audioVolume: +audioVolume.value,
         fov: +fov.value,
         pixelRatio: +pixelRatioValue.value,
+        aspectRatio: aspectRatioValue.value,
       };
       localStorage.setItem(settingsKey, JSON.stringify(settings));
     }
@@ -265,6 +303,7 @@
         fov.value = settings.fov;
         updateFov(settings.fov);
         updatePixelRatio(settings.pixelRatio);
+        updateAspectRatio(settings.aspectRatio);
       } catch {
         console.error('Falied to load game settings');
       }
