@@ -85,6 +85,12 @@ const developmentConfig = {
     static: {
       directory: PATHS.public,
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        pathRewrite: { '^/api': '' },
+      },
+    },
     port: 8080,
     hot: true
   },

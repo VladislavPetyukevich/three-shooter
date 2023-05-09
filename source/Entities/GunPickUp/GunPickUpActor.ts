@@ -10,7 +10,7 @@ import { Actor } from '@/core/Entities/Actor';
 import { SinTable } from '@/SinTable';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { gameTextures } from '@/constants';
+import { gameTextures } from '@/constantsAssets';
 
 interface GunPickUpActorProps {
   size: Vector3;

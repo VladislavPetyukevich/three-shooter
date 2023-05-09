@@ -12,7 +12,7 @@ import {
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { randomNumbers } from '@/RandomNumbers';
-import { gameTextures } from '@/constants';
+import { gameTextures } from '@/constantsAssets';
 
 const WALL_TEXTURE_SIZE = 32;
 const DECAL_TEXTURE_SIZE = 16;

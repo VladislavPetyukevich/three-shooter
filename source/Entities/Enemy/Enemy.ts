@@ -12,6 +12,7 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { VaporizationAnimation } from '@/Animations/Vaporization';
 import { HurtAnimation } from '@/Animations/HurtAnimation';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export interface EnemyTextures {
   walk1: string;
@@ -45,6 +46,7 @@ export interface EnemyProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   behaviorTreeRoot: BehaviorTreeNode;
+  kind: EnemyKind;
   roomType: RoomType;
   color: Color;
   textures: EnemyTextures;
@@ -62,6 +64,7 @@ export type OnDeathCallback = (entity: Enemy) => void;
 export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   container: EntitiesContainer;
   behaviorTree: BehaviorTree;
+  kind: EnemyKind;
   roomType: EnemyProps['roomType'];
   hp: number;
   isDead: boolean;
@@ -112,6 +115,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       props.behaviorTreeRoot,
       this.behavior
     );
+    this.kind = props.kind;
   }
 
   onHit(damage: number, entity?: Entity) {

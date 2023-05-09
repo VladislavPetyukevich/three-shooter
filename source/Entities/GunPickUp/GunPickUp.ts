@@ -3,7 +3,8 @@ import { Entity } from '@/core/Entities/Entity';
 import { Gun } from '@/Entities/Gun/Gun';
 import { GunPickUpActor } from './GunPickUpActor';
 import { GunPickUpBehavior } from './GunPickUpBehavior';
-import { ENTITY_TYPE, gameTextures } from '@/constants';
+import { ENTITY_TYPE } from '@/constants';
+import { gameTextures } from '@/constantsAssets';
 
 interface GunPickUpProps {
   size: Vector3;

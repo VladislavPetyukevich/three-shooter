@@ -9,11 +9,11 @@ export class RandomNumbers {
   values: number[];
   i: number;
 
-  constructor(size: number) {
+  constructor(size: number, seed?: number) {
     this.m = 0x80000000;
     this.a = 1103515245;
     this.c = 12345;
-    this.seed = Math.floor(Math.random() * (this.m - 1));
+    this.seed = seed || Math.floor(Math.random() * (this.m - 1));
     this.state = this.seed;
     this.values = Array.from(
       { length: size },

@@ -7,11 +7,12 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
-import { PLAYER } from '@/constants';
+import { PLAYER, enemiesFromSpawnerCount, roomSize } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, EnemyBehaviorFlag, OnDeathCallback } from '@/Entities/Enemy/Enemy';
-import { EnemyFactory, EnemyKind, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
@@ -21,6 +22,8 @@ import { Room, RoomSpawner } from './Spawner/RoomSpawner';
 import { CellCoordinates } from './CellCoordinates';
 import { mindState } from '@/MindState';
 import { hud } from '@/HUD/HUD';
+import { PlayerLogs } from '@/PlayerLogs';
+import { OnScoreSubmit } from '..';
 
 export type OnEnemySpawn = (
   cellCoordinates: Vector2,
@@ -31,6 +34,7 @@ export type OnEnemySpawn = (
 
 export interface TestSceneProps extends BasicSceneProps {
   onFinish: Function;
+  onScoreSubmit: OnScoreSubmit;
 }
 
 export class TestScene extends BasicScene {
@@ -52,6 +56,7 @@ export class TestScene extends BasicScene {
   playerFallCurrenValue: number;
   playerFallMaxValue: number;
   onFinish: Function;
+  logs: PlayerLogs;
 
   constructor(props: TestSceneProps) {
     super(props);
@@ -82,6 +87,7 @@ export class TestScene extends BasicScene {
       }, 100);
     });
     this.player.setOnDeathCallback(() => {
+      props.onScoreSubmit(this.logs.values);
       this.ambientLight.color.setHex(0xFF0000);
       setTimeout(() => this.finish(), 400);
     });
@@ -92,13 +98,12 @@ export class TestScene extends BasicScene {
     this.currentRoomEnimiesCount = 0;
     this.enemiesKillCount = 0;
     this.updateHudKillCount();
-    const roomSizeScale = 2;
     this.roomSpawner = new RoomSpawner({
       scene: this,
       player: this.player,
       entitiesContainer: this.entitiesContainer,
       cellCoordinates: this.cellCoordinates,
-      roomSize: new Vector2(10 * roomSizeScale, 10 * roomSizeScale),
+      roomSize,
       doorWidthHalf: 1,
       onRoomVisit: this.handleRoomVisit,
       onEnemySpawn: this.spawnEnemy,
@@ -136,6 +141,8 @@ export class TestScene extends BasicScene {
 
     // MindState
     mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
+
+    this.logs = new PlayerLogs(this.roomSpawner.getSeed());
   }
 
   getInitialPlayerPositon() {
@@ -203,6 +210,7 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomVisit = (room: Room) => {
+    this.logs.roomVisit(room.constructorIndex);
     this.currentRoom = room;
     this.roomSpawner.fillRoomAfterVisit(room);
     this.openCloseNeighboringRooms(room, true);
@@ -301,7 +309,6 @@ export class TestScene extends BasicScene {
 
   onEnemyWithSpawnerDeath = (enemy: Enemy) => {
     this.incrementEnemiesKillCount();
-    const enemiesFromSpawnerCount = 2;
     this.entitiesContainer.add(
       new EnemySpawner({
         container: this.entitiesContainer,
@@ -314,7 +321,8 @@ export class TestScene extends BasicScene {
     );
   }
 
-  onEnemyDeath = () => {
+  onEnemyDeath = (enemy: Enemy) => {
+    this.logs.enemyKill(enemy);
     this.incrementEnemiesKillCount();
     this.onRoomEntityDestroy();
   }

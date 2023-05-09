@@ -1,7 +1,7 @@
 import { Vector2 } from 'three';
 import { ENTITY_TYPE } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
-import { EnemyKind } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
 

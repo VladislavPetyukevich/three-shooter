@@ -115,11 +115,34 @@
 
     var rendererSize = getRendererSize();
 
+    async function onScoreSubmit(logs) {
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Zig-Developer',
+          logs: logs,
+        }),
+      };
+
+      try {
+        const response = await fetch('/api/submitScore', options);
+        const responseJson = await response.json();
+        if (typeof responseJson.score !== 'number') {
+          throw new Error(`Score not found in response: ${JSON.stringify(responseJson)}`);
+        }
+        alert(JSON.stringify(responseJson));
+      } catch (err) {
+        console.error('Score not submited: ', err);
+      }
+    }
+
     var threeShooter = new ThreeShooter.default({
       renderContainer: renderContainer,
       renderWidth: rendererSize.width,
       renderHeight: rendererSize.height,
-      onLoad: onLoad
+      onLoad: onLoad,
+      onScoreSubmit: onScoreSubmit,
     });
 
     var keyBindings = {

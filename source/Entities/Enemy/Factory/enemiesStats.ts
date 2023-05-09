@@ -11,14 +11,10 @@ import {
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { GunFireType } from '@/Entities/Gun/Gun';
-import { 
-  ENEMY,
-  ENEMY_TEXTURES,
-} from '@/constants';
-import {
-  EnemyKind,
-  EnemiesStats,
-} from './EnemyFactory';
+import { ENEMY } from '@/constants';
+import { ENEMY_TEXTURES } from '@/constantsAssets';
+import { EnemiesStats } from './EnemyFactory';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export const enemiesStats: EnemiesStats = {
   [EnemyKind.Soul]: {

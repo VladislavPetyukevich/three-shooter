@@ -15,11 +15,14 @@ import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionS
 import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
 import { texturesStore, audioStore } from '@/core/loaders';
 import { SpriteSheetLoader } from '@/SpriteSheetLoader';
-import { gameTextures, gameSounds, spriteSheet } from './constants';
+import { gameTextures, gameSounds, spriteSheet } from './constantsAssets';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
+import { PlayerLogsValue } from './PlayerLogs';
 
 const SceneClass = TestScene;
+
+export type OnScoreSubmit = (playerLogs: PlayerLogsValue) => void;
 
 export default class ThreeShooter {
   gameProps: any;

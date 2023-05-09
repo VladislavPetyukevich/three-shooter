@@ -58,7 +58,7 @@ export interface Room {
     right: Room | null;
   };
   entities: Entity[];
-  constructor: RoomConstructor | null;
+  constructorIndex: number;
 }
 
 export interface RoomSpawnerProps {
@@ -145,6 +145,10 @@ export class RoomSpawner {
   createRoom(cellPosition: Vector2, type: RoomType): Room {
     const worldCoordinates = this.cellCoordinates.toWorldCoordinates(cellPosition);
     const worldSize = this.cellCoordinates.toWorldCoordinates(this.roomSize);
+    const constructorIndex =
+      type === RoomType.Neutral ?
+      -1 :
+      this.dungeonRoom.getRandomRoomConstructorIndex();
     const room: Room = {
       type: type,
       cellPosition: cellPosition,
@@ -165,10 +169,7 @@ export class RoomSpawner {
         bottom: null,
       },
       entities: [],
-      constructor:
-        (type === RoomType.Neutral) ?
-          null :
-          this.dungeonRoom.getRandomRoomConstructor(),
+      constructorIndex,
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {
@@ -475,21 +476,30 @@ export class RoomSpawner {
     );
   }
 
+  getRoomConstructor(room: Room) {
+    if (room.type === RoomType.Neutral) {
+      return null;
+    }
+    return this.dungeonRoom.getRoomConstructor(room.constructorIndex);
+  }
+
   fillRoomAfterVisit(room: Room) {
-    if (!room.constructor) {
+    const roomConstructor = this.getRoomConstructor(room);
+    if (!roomConstructor) {
       return;
     }
-    const cells = room.constructor(this.roomSize).filter(cell =>
+    const cells = roomConstructor(this.roomSize).filter(cell =>
       cell.type === RoomCellType.Enemy
     );
     this.fillRoomCells(room, cells);
   }
 
   fillRoomBeforeVisit(room: Room) {
-    if (!room.constructor) {
+    const roomConstructor = this.getRoomConstructor(room);
+    if (!roomConstructor) {
       return;
     }
-    const cells = room.constructor(this.roomSize).filter(cell =>
+    const cells = roomConstructor(this.roomSize).filter(cell =>
       cell.type === RoomCellType.DoorWall ||
       cell.type === RoomCellType.Wall
     );
@@ -711,5 +721,9 @@ export class RoomSpawner {
       position.x + size.x / 2,
       position.y + size.y / 2
     );
+  }
+
+  getSeed() {
+    return this.dungeonRoom.randomNumbersGenerator.seed;
   }
 }

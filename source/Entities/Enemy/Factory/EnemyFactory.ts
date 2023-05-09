@@ -9,26 +9,16 @@ import {
 } from '@/Entities/Enemy/Enemy';
 import { BehaviorTreeNode } from '../BehaviorTree';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { 
-  EnemyTexturesSet,
-  ENEMY_COLORS,
-} from '@/constants';
+import { ENEMY_COLORS } from '@/constants';
+import { EnemyTexturesSet } from '@/constantsAssets';
 import { enemiesStats } from './enemiesStats';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export const enum RoomType {
   Neutral,
   Apathy,
   Cowardice,
   SexualPerversions,
-}
-
-export const enum EnemyKind {
-  Soul,
-  Shooter,
-  Kamikaze,
-  Parasite,
-  Bleed,
-  Breeding,
 }
 
 interface Range {
