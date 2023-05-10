@@ -4,7 +4,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { EnemyBehaviorFlag, EnemyGunProps } from './Enemy';
+import { EnemyGunProps } from './Enemy';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Gun, GunFireType } from '@/Entities/Gun/Gun';
@@ -22,7 +22,6 @@ interface BehaviorProps {
   BulletClass: typeof Bullet;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  behaviorFlag?: EnemyBehaviorFlag;
   walkSpeed: number;
   bulletsPerShoot: { min: number; max: number; };
   onHitDamage?: { min: number; max: number; };
@@ -73,7 +72,6 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
-  behaviorFlag?: EnemyBehaviorFlag;
   onHitDamage?: { min: number; max: number; };
   onDeathCallback?: Function;
   onBleedCallback?: Function;
@@ -115,7 +113,6 @@ export class EnemyBehavior implements Behavior {
     const shootSoundBuffer = audioStore.getSound('gunShoot');
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
-    this.behaviorFlag = props.behaviorFlag;
     this.isHurt = false;
     this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;

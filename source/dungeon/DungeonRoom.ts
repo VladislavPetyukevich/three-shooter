@@ -9,7 +9,7 @@ export const enum EnemyKind {
   Kamikaze,
   Parasite,
   Bleed,
-  Breeding,
+  BreedingWithSpawner,
 }
 
 export const enum RoomCellType {

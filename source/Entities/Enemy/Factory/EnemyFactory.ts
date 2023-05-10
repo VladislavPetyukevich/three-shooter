@@ -5,7 +5,6 @@ import {
   Enemy,
   EnemyGunProps,
   EnemyDelays,
-  EnemyBehaviorFlag,
 } from '@/Entities/Enemy/Enemy';
 import { BehaviorTreeNode } from '../BehaviorTree';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -36,7 +35,6 @@ interface EnemyKindStats {
   walkSpeed: number;
   delays: EnemyDelays;
   behaviorTreeRoot: BehaviorTreeNode;
-  behaviorFlag?: EnemyBehaviorFlag;
   textures: EnemyTexturesSet;
 }
 

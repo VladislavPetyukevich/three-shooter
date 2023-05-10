@@ -10,7 +10,7 @@ import { Entity } from '@/core/Entities/Entity';
 import { PLAYER, enemiesFromSpawnerCount, roomSize } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
-import { Enemy, EnemyBehaviorFlag, OnDeathCallback } from '@/Entities/Enemy/Enemy';
+import { Enemy, OnDeathCallback } from '@/Entities/Enemy/Enemy';
 import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
@@ -402,7 +402,7 @@ export class TestScene extends BasicScene {
       roomType,
       kind,
     );
-    if (enemy.behavior.behaviorFlag === EnemyBehaviorFlag.withSpawner) {
+    if (enemy.kind === EnemyKind.BreedingWithSpawner) {
       enemy.addOnDeathCallback(this.onEnemyWithSpawnerDeath);
     } else {
       enemy.addOnDeathCallback(this.onEnemyDeath);

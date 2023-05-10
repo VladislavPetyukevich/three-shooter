@@ -175,7 +175,7 @@ export class EditorScene extends TestScene {
       this.createOption('Kamikaze', EnemyKind.Kamikaze),
       this.createOption('Parasite', EnemyKind.Parasite),
       this.createOption('Bleed', EnemyKind.Bleed),
-      this.createOption('Breeding', EnemyKind.Breeding),
+      this.createOption('Breeding', EnemyKind.BreedingWithSpawner),
     ].forEach(option => enemyKindSelect.appendChild(option));
     enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
     enemyKindSelect.value = `${this.currentEnemyKind}`;

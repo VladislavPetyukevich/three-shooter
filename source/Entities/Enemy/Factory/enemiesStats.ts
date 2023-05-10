@@ -5,9 +5,6 @@ import {
   longRangeEnemySeq,
   bleedEnemySeq,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
-import {
-  EnemyBehaviorFlag,
-} from '@/Entities/Enemy/Enemy';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
 import { GunFireType } from '@/Entities/Gun/Gun';
@@ -110,7 +107,7 @@ export const enemiesStats: EnemiesStats = {
     behaviorTreeRoot: bleedEnemySeq,
     textures: ENEMY_TEXTURES.SP,
   },
-  [EnemyKind.Breeding]: {
+  [EnemyKind.BreedingWithSpawner]: {
     hp: 20,
     hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
@@ -125,7 +122,6 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
     },
     behaviorTreeRoot: basicEnemySeq,
-    behaviorFlag: EnemyBehaviorFlag.withSpawner,
     textures: ENEMY_TEXTURES.Apathy,
   },
 };
