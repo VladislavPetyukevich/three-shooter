@@ -74,14 +74,12 @@ export class EnemyBehavior implements Behavior {
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   behaviorFlag?: EnemyBehaviorFlag;
-  isParasite: boolean;
   onHitDamage?: { min: number; max: number; };
   onDeathCallback?: Function;
   onBleedCallback?: Function;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
-    this.setFollowingEnemy(this.player);
     this.velocity = props.velocity;
     this.backupVelocity = new Vector3();
     this.actor = props.actor;
@@ -118,7 +116,6 @@ export class EnemyBehavior implements Behavior {
     this.shootSound.setBuffer(shootSoundBuffer);
     this.actor.mesh.add(this.shootSound);
     this.behaviorFlag = props.behaviorFlag;
-    this.isParasite = props.behaviorFlag === EnemyBehaviorFlag.parasite;
     this.isHurt = false;
     this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
@@ -265,23 +262,6 @@ export class EnemyBehavior implements Behavior {
     this.followingEnemy = entity;
     this.followingPath = [];
     this.followingPoint = undefined;
-  }
-
-  findEnemy() {
-    const entitiesInCantainer = this.container.entities;
-    const enemies = entitiesInCantainer.filter(entity =>
-      (entity.type === ENTITY_TYPE.ENEMY) &&
-      (!(<EnemyBehavior>entity.behavior).isParasite)
-    );
-    if (enemies.length === 0) {
-      return;
-    }
-    const enemyIndex = randomNumbers.getRandomInRange(0, enemies.length - 1);
-    const enemyTarget = enemies[enemyIndex];
-    if (!enemyTarget) {
-      return;
-    }
-    return enemyTarget;
   }
 
   updateWalkSprite(delta: number) {

@@ -21,7 +21,6 @@ export interface EnemyTextures {
 }
 
 export const enum EnemyBehaviorFlag {
-  parasite,
   withSpawner,
 }
 

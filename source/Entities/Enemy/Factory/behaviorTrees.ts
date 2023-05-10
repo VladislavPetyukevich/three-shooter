@@ -1,6 +1,8 @@
 import { ENTITY_MESSAGES, ENTITY_TYPE, ENEMY } from '@/constants';
 import { randomNumbers } from '@/RandomNumbers';
 import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
+import { Enemy } from '../Enemy';
+import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 const noop = () => true;
 
@@ -59,6 +61,7 @@ const infectCollisions = (behavior: EnemyBehavior) => {
 
 const updateFollowingEnemy = (behavior: EnemyBehavior) => {
   if (!behavior.followingEnemy) {
+    behavior.followingEnemy = behavior.player;
     return true;
   }
   if (
@@ -81,7 +84,7 @@ const findParasiteTarget = (behavior: EnemyBehavior) => {
   const entitiesInCantainer = behavior.container.entities;
   const enemies = entitiesInCantainer.filter(entity =>
     (entity.type === ENTITY_TYPE.ENEMY) &&
-    (!(<EnemyBehavior>entity.behavior).isParasite)
+    ((<Enemy>entity).kind !== EnemyKind.Parasite)
   );
   if (enemies.length === 0) {
     behavior.followingEnemy = behavior.player;
