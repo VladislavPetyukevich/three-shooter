@@ -244,7 +244,7 @@ export class ControlledBehavior implements Behavior {
     }
     const gunHudTextures = currentGun.getHudTextures();
     if (gunHudTextures) {
-      hud.setGunTextures(gunHudTextures);
+      hud.gun.setTextures(gunHudTextures);
     }
   }
 
@@ -340,7 +340,7 @@ export class ControlledBehavior implements Behavior {
   updateCamera() {
     const cameraMovement = playerActions.getCameraMovement();
     if (cameraMovement) {
-      hud.addGunShiftX(cameraMovement);
+      hud.gun.addShiftX(cameraMovement);
       this.camera.rotation.y -= cameraMovement;
       playerActions.resetCameraMovement();
     }
@@ -465,9 +465,9 @@ export class ControlledBehavior implements Behavior {
 
   updateGunHud(gun: Gun) {
     if (gun.behavior.isShoot && !gun.behavior.isCoolingDown) {
-      hud.gunFire();
+      hud.gun.fire();
     } else {
-      hud.gunIdle();
+      hud.gun.idle();
     }
   }
 
@@ -487,7 +487,7 @@ export class ControlledBehavior implements Behavior {
     }
     currentGun.behavior.updateHeatLevel(delta);
     const heatLevel = currentGun.behavior.heatLevel;
-    hud.updateGunHeatLevel(heatLevel);
+    hud.gun.updateHeatLevel(heatLevel);
   }
 
   onDestroy() {
