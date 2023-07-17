@@ -29,6 +29,12 @@ export class HUD {
     this.maxHp = PLAYER.HP;
     this.maxDamageOverlayOpacity = 0.8;
 
+    const damageOverlayMaterial = new SpriteMaterial({
+      map: texturesStore.getTexture('damageEffect'),
+      opacity: 0,
+    });
+    this.damageOverlay.material = damageOverlayMaterial;
+
     this.score = new HUDScore({
       size: { width: 256, height: 32 },
       prefix: '💀',
@@ -71,17 +77,12 @@ export class HUD {
   }
 
   hide() {
+    this.damageOverlay.visible = false;
     this.gun.hide();
-    this.scene.remove(this.damageOverlay);
   }
 
   show() {
-    const damageOverlayMaterial = new SpriteMaterial({
-      map: texturesStore.getTexture('damageEffect'),
-      opacity: 0,
-    });
-    this.damageOverlay.material = damageOverlayMaterial;
-    this.scene.add(this.damageOverlay);
+    this.damageOverlay.visible = true;
     this.gun.show();
   }
 
