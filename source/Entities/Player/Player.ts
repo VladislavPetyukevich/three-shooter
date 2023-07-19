@@ -56,6 +56,7 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
     if (entity.type === ENTITY_TYPE.GUN_PICK_UP) {
       this.container.remove(entity.mesh);
       const pickedGun = (<GunPickUp>entity).getGun();
+      pickedGun.setBulletAuthor(this);
       this.behavior.addGun(pickedGun);
     }
     return entity.type !== ENTITY_TYPE.WALL;

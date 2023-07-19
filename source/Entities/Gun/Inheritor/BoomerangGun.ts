@@ -2,17 +2,12 @@ import { GunFireType } from '../Gun';
 import { InheritorGunProps } from './InheritorTypes';
 import { GunBullet } from '../GunBullet';
 import { Boomerang } from '@/Entities/Boomerang/Boomerang';
-import { Player } from '@/Entities/Player/Player';
 import { texturesStore } from '@/core/loaders';
-
-interface BoomerangGunProps extends InheritorGunProps {
-  player: Player;
-}
 
 export class BoomerangGun extends GunBullet {
   canShoot: boolean;
 
-  constructor(props: BoomerangGunProps) {
+  constructor(props: InheritorGunProps) {
     super({
       ...props,
       BulletClass: Boomerang,
@@ -29,7 +24,6 @@ export class BoomerangGun extends GunBullet {
       orderIndex: 2,
     });
     this.canShoot = true;
-    this.setBulletAuthor(props.player);
   }
 
   shoot() {

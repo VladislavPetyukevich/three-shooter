@@ -166,7 +166,6 @@ export class TestScene extends BasicScene {
         gun: new BoomerangGun({
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
-          player: this.player,
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
         }),
