@@ -12,7 +12,7 @@ export class Machinegun extends GunRaycast {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
-      recoilTime: 0.15,
+      recoilTime: 0.10,
       fireType: GunFireType.automatic,
       shootsToMaxHeat: 23,
       hudTextures: {
