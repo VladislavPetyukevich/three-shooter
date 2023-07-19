@@ -248,6 +248,14 @@ export class ControlledBehavior implements Behavior {
     }
   }
 
+  handleVisualRecoilStart = () => {
+    hud.gun.fire();
+  };
+
+  handleVisualRecoilEnd = () => {
+    hud.gun.idle();
+  };
+
   addGun(gun: Gun) {
     const gunIndex = this.getGunIndex(gun);
     if (gunIndex === this.guns.length) {
@@ -256,6 +264,8 @@ export class ControlledBehavior implements Behavior {
       this.guns.splice(gunIndex, 0, gun);
     }
     this.currentGunIndex = -1;
+    gun.behavior.onVisualRecoilStart = this.handleVisualRecoilStart;
+    gun.behavior.onVisualRecoilEnd = this.handleVisualRecoilEnd;
     this.switchGun(gunIndex);
   }
 
@@ -322,7 +332,6 @@ export class ControlledBehavior implements Behavior {
       currentGun.setPosition(this.camera.position);
       currentGun.update(delta);
       this.updateGunHeatLevel(delta);
-      this.updateGunHud(currentGun);
     }
     this.updateCamera();
     this.updateIsRunning();
@@ -460,14 +469,6 @@ export class ControlledBehavior implements Behavior {
     }
     if (intersectedEntity.type === ENTITY_TYPE.ENEMY) {
       intersectedEntity.onMessage(ENTITY_MESSAGES.inPlayerGunpoint);
-    }
-  }
-
-  updateGunHud(gun: Gun) {
-    if (gun.behavior.isShoot && !gun.behavior.isCoolingDown) {
-      hud.gun.fire();
-    } else {
-      hud.gun.idle();
     }
   }
 

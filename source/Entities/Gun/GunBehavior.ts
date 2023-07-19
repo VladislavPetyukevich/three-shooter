@@ -15,6 +15,11 @@ import { GunFireType } from './Gun';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { randomNumbers } from '@/RandomNumbers';
 
+const enum VisualRecoilFrame {
+  Fire,
+  Idle,
+}
+
 export interface BehaviorProps {
   playerCamera: Camera;
   holderMesh: Mesh;
@@ -44,6 +49,8 @@ export class GunBehavior implements Behavior {
   bulletsPerShoot: number;
   recoilTime: number;
   currentRecoilTime: number;
+  visualRecoilTime: number;
+  visualRecoilFrame: VisualRecoilFrame;
   secToMaxHeatLevel: number;
   heatLevel: number;
   fireType: GunFireType;
@@ -52,6 +59,8 @@ export class GunBehavior implements Behavior {
   position: Vector3;
   bulletPositionOffset: number;
   lastShootBulletClass?: typeof Bullet;
+  onVisualRecoilStart?: Function;
+  onVisualRecoilEnd?: Function;
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;
@@ -68,6 +77,11 @@ export class GunBehavior implements Behavior {
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.recoilTime = props.recoilTime;
     this.fireType = props.fireType;
+    this.visualRecoilTime =
+      this.fireType === GunFireType.automatic ?
+        props.recoilTime / 5 :
+        0;
+    this.visualRecoilFrame = VisualRecoilFrame.Idle;
     this.isTriggerPulled = false;
     this.rotationY = 0;
     this.position = new Vector3();
@@ -130,10 +144,39 @@ export class GunBehavior implements Behavior {
     direction.z = direction.x * s + direction.z * c;
   }
 
-  updateRecoil(delta: number) {
-    if (this.recoilTime === undefined) {
+  updateVisualRecoil() {
+    if (!this.onVisualRecoilStart || !this.onVisualRecoilEnd) {
       return;
     }
+
+    if (this.isCoolingDown) {
+      if (this.visualRecoilFrame !== VisualRecoilFrame.Idle) {
+        this.visualRecoilFrame = VisualRecoilFrame.Idle;
+        this.onVisualRecoilEnd();
+      }
+      return;
+    }
+
+    if (!this.isShoot) {
+      if (this.visualRecoilFrame !== VisualRecoilFrame.Idle) {
+        this.visualRecoilFrame = VisualRecoilFrame.Idle;
+        this.onVisualRecoilEnd();
+      }
+      return;
+    }
+
+    if (this.currentRecoilTime < this.recoilTime - this.visualRecoilTime) {
+      if (this.visualRecoilFrame !== VisualRecoilFrame.Fire) {
+        this.visualRecoilFrame = VisualRecoilFrame.Fire;
+        this.onVisualRecoilStart();
+      }
+    } else if (this.visualRecoilFrame !== VisualRecoilFrame.Idle) {
+      this.visualRecoilFrame = VisualRecoilFrame.Idle;
+      this.onVisualRecoilEnd();
+    }
+  }
+
+  updateRecoil(delta: number) {
     if (this.currentRecoilTime < this.recoilTime) {
       this.currentRecoilTime += delta;
       return;
@@ -144,6 +187,7 @@ export class GunBehavior implements Behavior {
   }
 
   update(delta: number) {
+    this.updateVisualRecoil();
     if (!this.isShoot || this.isCoolingDown) {
       return;
     }
