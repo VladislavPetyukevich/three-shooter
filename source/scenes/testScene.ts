@@ -115,7 +115,6 @@ export class TestScene extends BasicScene {
     const playerPosition = this.getInitialPlayerPositon();
     this.player.mesh.position.x = playerPosition.x;
     this.player.mesh.position.z = playerPosition.y;
-    this.camera.rotation.y = 0;
 
     this.spawnGuns();
 

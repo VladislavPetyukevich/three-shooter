@@ -5,6 +5,9 @@ import {
   AudioListener,
   Raycaster,
   PointLight,
+  Object3D,
+  Quaternion,
+  Euler,
 } from 'three';
 import { PlayerActor } from './PlayerActor';
 import { Behavior } from '@/core/Entities/Behavior';
@@ -65,6 +68,12 @@ export class ControlledBehavior implements Behavior {
   checkGunPointTimeoutCurrent: number;
   actions: { [key in PlayerActionName]: PlayerActionListener['listener'] };
   walkSound: Audio;
+  pitchObject: Object3D;
+  yawObject: Object3D;
+  quat: Quaternion;
+  euler: Euler;
+  currentCameraY: number;
+  targetCameraY: number;
 
   constructor(props: ControlledBehaviorProps) {
     this.sinTable = new SinTable({
@@ -80,7 +89,17 @@ export class ControlledBehavior implements Behavior {
     this.actor = props.actor;
     this.eyeY = props.eyeY;
     this.camera = props.camera;
-    this.camera.position.y = this.eyeY;
+    this.targetCameraY = 0;
+    this.currentCameraY = 0;
+    this.pitchObject = new Object3D();
+    this.pitchObject.position.y = -this.pitchObject.scale.y;
+    this.pitchObject.add(this.camera);
+    this.yawObject = new Object3D();
+    this.yawObject.add(this.pitchObject);
+    this.quat = new Quaternion();
+    this.euler = new Euler();
+    this.euler.order = 'XYZ';
+    this.yawObject.position.copy(this.camera.position);
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.walkSpeed = props.walkSpeed;
@@ -205,7 +224,6 @@ export class ControlledBehavior implements Behavior {
     if (currentGun) {
       currentGun.shoot();
     }
-    this.cameraRecoilJump();
   };
 
   handleReleaseTrigger() {
@@ -249,10 +267,12 @@ export class ControlledBehavior implements Behavior {
   }
 
   handleVisualRecoilStart = () => {
+    this.targetCameraY = 0.010;
     hud.gun.fire();
   };
 
   handleVisualRecoilEnd = () => {
+    this.targetCameraY = 0;
     hud.gun.idle();
   };
 
@@ -292,14 +312,6 @@ export class ControlledBehavior implements Behavior {
     return this.guns[this.currentGunIndex];
   }
 
-  cameraRecoilJump() {
-    if (this.isCameraRecoil) {
-      return;
-    }
-    this.isCameraRecoil = true;
-    this.camera.position.y += this.cameraRecoil;
-  }
-
   updateBob(delta: number) {
     this.bobTimeout += delta;
     if (this.bobTimeout >= this.maxBobTimeout) {
@@ -325,15 +337,16 @@ export class ControlledBehavior implements Behavior {
   }
 
   update(delta: number) {
-    const playerRotationY = this.camera.rotation.y + Math.PI;
+    const playerRotationY = this.actor.mesh.rotation.y + Math.PI;
+
     const currentGun = this.getCurrentGun();
     if (currentGun) {
       currentGun.setRotationY(playerRotationY);
-      currentGun.setPosition(this.camera.position);
+      currentGun.setPosition(this.actor.mesh.position);
       currentGun.update(delta);
       this.updateGunHeatLevel(delta);
     }
-    this.updateCamera();
+    this.updateCamera(delta);
     this.updateIsRunning();
     this.updateWalkSound(this.isRunning);
     if (this.isCanMove) {
@@ -346,15 +359,19 @@ export class ControlledBehavior implements Behavior {
     }
   }
 
-  updateCamera() {
+  updateCamera(delta: number) {
     const cameraMovement = playerActions.getCameraMovement();
-    if (cameraMovement) {
-      hud.gun.addShiftX(cameraMovement);
-      this.camera.rotation.y -= cameraMovement;
-      playerActions.resetCameraMovement();
-    }
-    this.camera.position.x = this.actor.mesh.position.x;
-    this.camera.position.z = this.actor.mesh.position.z;
+    this.currentCameraY = this.lerp(this.currentCameraY, this.targetCameraY, delta * 35);
+    hud.gun.addShiftX(cameraMovement);
+    this.yawObject.rotation.y -= cameraMovement;
+    this.pitchObject.rotation.x = this.currentCameraY;
+    this.pitchObject.rotation.x = Math.max(-PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
+    this.euler.x = this.pitchObject.rotation.x;
+    this.euler.y = this.yawObject.rotation.y;
+    this.quat.setFromEuler(this.euler);
+    this.yawObject.position.copy(this.actor.mesh.position);
+    this.actor.mesh.rotation.y = this.yawObject.rotation.y;
+    playerActions.resetCameraMovement();
   }
 
   updateIsRunning() {
@@ -376,25 +393,25 @@ export class ControlledBehavior implements Behavior {
     } else {
       if (this.isKeyForward) {
         this.isRunning = true;
-        this.moveDirection.x -= Math.sin(this.camera.rotation.y);
-        this.moveDirection.z -= Math.cos(this.camera.rotation.y);
+        this.moveDirection.z -= 1;
       }
       if (this.isKeyBackward) {
         this.isRunning = true;
-        this.moveDirection.x += Math.sin(this.camera.rotation.y);
-        this.moveDirection.z += Math.cos(this.camera.rotation.y);
+        this.moveDirection.z += 1;
       }
       if (this.isKeyLeft) {
         this.isRunning = true;
-        this.moveDirection.x -= Math.sin(this.camera.rotation.y + PI_2);
-        this.moveDirection.z -= Math.cos(this.camera.rotation.y + PI_2);
+        this.moveDirection.x -= 1;
       }
       if (this.isKeyRight) {
         this.isRunning = true;
-        this.moveDirection.x += Math.sin(this.camera.rotation.y + PI_2);
-        this.moveDirection.z += Math.cos(this.camera.rotation.y + PI_2);
+        this.moveDirection.x += 1;
       }
     }
+
+    this.moveDirection.applyQuaternion(this.quat);
+    this.moveDirection.setY(0);
+
     this.targetVelocity.copy(
       this.moveDirection.normalize().multiplyScalar(this.walkSpeed)
     );
@@ -404,10 +421,6 @@ export class ControlledBehavior implements Behavior {
   updatePlayerBob(delta: number) {
     const currentGun = this.getCurrentGun();
     const isGunRecoil = currentGun && currentGun.checkIsRecoil();
-    if (this.isCameraRecoil && !isGunRecoil) {
-      this.camera.position.y -= this.cameraRecoil;
-      this.isCameraRecoil = false;
-    }
     hud.setIsRunning(this.isRunning);
     if (this.isRunning) {
       if (this.isKeyLeft != this.isKeyRight) {
@@ -440,11 +453,7 @@ export class ControlledBehavior implements Behavior {
     if (this.isCameraRecoil && !isGunRecoil) {
       this.gunShootLight.position.set(0, -50, 0);
     } else if (this.isCameraRecoil) {
-      this.gunShootLight.position.set(
-        this.camera.position.x,
-        this.camera.position.y,
-        this.camera.position.z
-      );
+      this.gunShootLight.position.copy(this.actor.mesh.position);
     }
   }
 

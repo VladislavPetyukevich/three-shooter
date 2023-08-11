@@ -46,6 +46,8 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
     );
     this.camera = props.camera;
     this.container = props.container;
+    this.container.scene.remove(this.camera);
+    this.container.scene.add(this.behavior.yawObject);
     this.velocity = velocity;
     this.hp = PLAYER.HP;
     this.isDead = false;
