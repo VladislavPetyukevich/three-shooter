@@ -92,7 +92,7 @@ export class ControlledBehavior implements Behavior {
     this.targetCameraY = 0;
     this.currentCameraY = 0;
     this.pitchObject = new Object3D();
-    this.pitchObject.position.y = -this.pitchObject.scale.y;
+    this.pitchObject.position.y = -this.pitchObject.scale.y * 1.5;
     this.pitchObject.add(this.camera);
     this.yawObject = new Object3D();
     this.yawObject.add(this.pitchObject);
