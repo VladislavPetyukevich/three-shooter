@@ -10,45 +10,57 @@
 </head>
 
 <body>
-  <div id="blocker">
-    <div id="instructions">
-      <div style="font-size: 20px">This is pre alpha version</div>
-      <div style="font-size:40px; color: red;">WARNING</div>
-      <div>This video game contains fast flashing images</div>
-      <br />
-      <div style="font-size:25px">Click to play</div>
-      <div>(W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)</div>
-      <br />
-      <div id="settings">
-        <div>Game settings:</div>
-        <span>Mouse sensitivity:</span>
-        <input id="mouse-sensitivity" type="range" min="1" max="800" value="200" step="1" >
-        <span id="mouse-sensitivity-value"></span>
-        <br />
-        <span>Audio volume:</span>
-        <input id="audio-volume" type="range" min="0" max="10" value="10" step="1" >
-        <span id="audio-volume-value"></span>
-        <br />
-        <span>FOV:</span>
-        <input id="fov" type="range" min="50" max="110" value="95" step="1" >
-        <span id="fov-value"></span>
-        <br />
-        <span>Render scale:</span>
-        <select id="pixelRatio-value">
-          <option value="0.18">1981</option>
-          <option value="0.5">Half</option>
-          <option value="1" selected>Normal</option>
-          <option value="2">Next Gen</option>
-          <option value="2.5">Next Gen Pro</option>
-        </select>
-        <br />
-        <span>Aspect ratio:</span>
-        <select id="aspectRatio-value">
-          <option value="0" selected>Normal</option>
-          <option value="4:3">Square 4:3</option>
-          <option value="21:9">Ultrawide 21:9</option>
-        </select>
+  <div class="blocker">
+    <div class="blocker-main">
+      <div class="blocker-main-content">
+        <h1>Three Shooter</h1>
+        <div>(W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)</div>
+        <div class="warning">
+          This video game contains fast flashing images
+        </div>
+        <div class="blocker-main-controls">
+          <button id="play-button">Play</button>
+          <button id="settings-button">Settings</button>
+        </div>
       </div>
+        <div
+          id="settings"
+          class="blocker-main-content blocker-settings"
+          style="opacity: 0;"
+        >
+          <div class="setting-label">
+            <span>Mouse sensitivity:</span>
+            <span id="mouse-sensitivity-value"></span>
+          </div>
+          <input id="mouse-sensitivity" type="range" min="1" max="800" value="200" step="1" >
+          <div class="setting-label">
+            <span>Audio volume:</span>
+            <span id="audio-volume-value"></span>
+          </div>
+          <input id="audio-volume" type="range" min="0" max="10" value="10" step="1" >
+          <div class="setting-label">
+            <span>FOV:</span>
+            <span id="fov-value"></span>
+          </div>
+          <input id="fov" type="range" min="50" max="110" value="95" step="1" >
+          <span class="setting-label">Render scale:</span>
+          <select id="pixelRatio-value">
+            <option value="0.18">1981</option>
+            <option value="0.5">Half</option>
+            <option value="1" selected>Normal</option>
+            <option value="2">Next Gen</option>
+            <option value="2.5">Next Gen Pro</option>
+          </select>
+          <span class="setting-label">Aspect ratio:</span>
+          <select id="aspectRatio-value">
+            <option value="0" selected>Normal</option>
+            <option value="4:3">Square 4:3</option>
+            <option value="21:9">Ultrawide 21:9</option>
+          </select>
+        </div>
+    </div>
+    <div class="blocker-footer">
+      <div>Build: pre alpha</div>
     </div>
   </div>
   <div id="render-container" />
@@ -57,10 +69,12 @@
     <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[i] %>"></script>
   <% } %>
   <script type="text/javascript">
-    var blocker = document.getElementById('blocker');
-    var instructions = document.getElementById('instructions');
-    var renderContainer = document.getElementById('render-container');
+    var blocker = document.querySelector('.blocker');
+    var playButton = document.getElementById('play-button');
+    var settingsButton = document.getElementById('settings-button');
     var settings = document.getElementById('settings');
+    var settingsVisible = false;
+    var renderContainer = document.getElementById('render-container');
     var mouseSensitivity = document.getElementById('mouse-sensitivity');
     var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
     var audioVolume = document.getElementById('audio-volume');
@@ -224,12 +238,15 @@
 
     window.addEventListener('resize', handleResize);
 
-    instructions.addEventListener('click', function (event) {
+    playButton.addEventListener('click', function (event) {
       renderContainer.requestPointerLock();
+      settingsVisible = false;
+      setElementVisibility(settings, settingsVisible);
     });
 
-    settings.addEventListener('click', function(event) {
-      event.stopPropagation();
+    settingsButton.addEventListener('click', function (event) {
+      settingsVisible = !settingsVisible;
+      setElementVisibility(settings, settingsVisible);
     });
 
     mouseSensitivity.addEventListener('input', function(event) {
@@ -315,11 +332,8 @@
       try {
         var settings = JSON.parse(localStorage.getItem(settingsKey));
         mouseSensitivity.value = settings.mouseSensitivity;
-        updateMouseSensitivity(settings.mouseSensitivity);
         audioVolume.value = settings.audioVolume;
-        updateAudioVolume(settings.audioVolume);
         fov.value = settings.fov;
-        updateFov(settings.fov);
         updatePixelRatio(settings.pixelRatio);
         updateAspectRatio(settings.aspectRatio);
       } catch {
@@ -327,14 +341,20 @@
       }
     }
     loadSetting();
+    updateMouseSensitivity(mouseSensitivity.value);
+    updateAudioVolume(audioVolume.value);
+    updateFov(fov.value);
 
-    function setBlockerVisibility(isVisible) {
-      blocker.style.opacity = isVisible ? '1' : '0';
-      blocker.style.transition = isVisible ? '1s' : '0s';
+    function setElementVisibility(element, isVisible) {
+      element.style.opacity = isVisible ? '1' : '0';
+      element.style.transition = isVisible ? '1s' : '0s';
     }
 
     document.addEventListener('pointerlockchange', function (event) {
-      setBlockerVisibility(document.pointerLockElement != renderContainer)
+      setElementVisibility(
+        blocker,
+        document.pointerLockElement != renderContainer
+      );
       threeShooter.setEnabled(document.pointerLockElement === renderContainer);
     });
   </script>

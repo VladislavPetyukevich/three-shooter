@@ -2,12 +2,17 @@ html, body {
   width: 100%;
   height: 100%;
 }
+
 body {
-  background-color: #ffffff;
+  background-color: #000;
   margin: 0;
   overflow: hidden;
-  font-family: arial;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
+
 #render-container {
   display: flex;
   justify-content: center;
@@ -16,27 +21,64 @@ body {
   height: 100%;
   background-color: black;
 }
-#blocker {
+
+.blocker {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  color: #ffffff;
+  overflow: auto;
   z-index: 1;
 }
-#instructions {
-  color: #ffffff;
-  text-align: center;
-  cursor: pointer;
+
+.blocker-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.blocker-main-content {
+  background-color: rgba(0,0,0,0.75);
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+}
+
+.blocker-main-content h1 {
   margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
+  margin-bottom: 1rem;
+  text-align: center;
 }
-#mouse-sensitivity {
-  width: 300px;
+
+.blocker-main-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 1rem;
 }
+
+.blocker-main-controls button:first-child {
+  margin-bottom: 1rem;
+}
+
+.blocker-settings {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+}
+
+.setting-label {
+  padding-top: 1.25rem;
+}
+
+.warning {
+  text-align: center;
+  font-size: 0.75rem;
+}
+
 input[type=range] {
   height: 9px;
   margin-top: 15px;
