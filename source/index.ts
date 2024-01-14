@@ -32,7 +32,7 @@ export default class ThreeShooter {
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
-  loaded: boolean;
+  controlsEnabled: boolean;
   pixelRatio: number;
   renderer: WebGLRenderer;
   composer: EffectComposer;
@@ -46,9 +46,8 @@ export default class ThreeShooter {
     globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
-    this.enabled = false;
-    this.loaded = false;
-    this.loadTextures(props);
+    this.enabled = true;
+    this.controlsEnabled = false;
 
     this.pixelRatio = 1;
     this.renderer = new WebGLRenderer({
@@ -70,6 +69,8 @@ export default class ThreeShooter {
     props.renderContainer.appendChild(this.renderer.domElement);
     this.update();
     this.handleResize(props.renderWidth, props.renderHeight);
+
+    this.loadResources(() => this.changeToMainScene());
   }
 
   handleResize = (width: number, height: number) => {
@@ -85,6 +86,9 @@ export default class ThreeShooter {
   }
 
   onPlayerActionStart(actionName: PlayerActionName) {
+    if (!this.controlsEnabled) {
+      return;
+    }
     playerActions.startAction(actionName);
   }
 
@@ -93,6 +97,9 @@ export default class ThreeShooter {
   }
 
   onPlayerCameraMove(movementX: number) {
+    if (!this.controlsEnabled) {
+      return;
+    }
     playerActions.addCameraMovement(
       movementX * this.mouseSensitivity
     );
@@ -103,79 +110,75 @@ export default class ThreeShooter {
       this.prevTime = performance.now();
     }
     this.enabled = newValue;
-    if (this.enabled && this.currScene instanceof LoadingScene) {
-      this.loaded = true;
-      if (this.loadedScene) {
-        this.changeScene(this.loadedScene);
-      }
-    }
+    this.controlsEnabled = newValue;
   }
 
-  loadTextures(gameProps: any) {
+  loadResources(onLoad: Function) {
     const spriteSheetLoader = new SpriteSheetLoader(spriteSheet, 8);
-    const onLoad = () => {
+    const onLoadSome = () => {
       const soundsProgress = (<LoadingScene>this.currScene).soundsProgress;
       const texturesProgress = (<LoadingScene>this.currScene).texturesProgress;
       if ((soundsProgress !== 100) || (texturesProgress !== 100)) {
         return;
       }
 
-      this.loadScene(SceneClass, gameProps, () => {
-        if (this.enabled && this.loadedScene) {
-          this.changeScene(this.loadedScene);
-        }
-      });
-      gameProps.onLoad();
+      onLoad();
+    };
+
+    const checkIsInLoadingScene = () => {
+      return this.currScene instanceof LoadingScene;
     };
 
     const onTexturesProgress = (progress: number) => {
+      if (!checkIsInLoadingScene()) {
+        return;
+      }
       (<LoadingScene>this.currScene).onTexturesProgress(progress);
     };
 
     const onSoundsProgress = (progress: number) => {
+      if (!checkIsInLoadingScene()) {
+        return;
+      }
       (<LoadingScene>this.currScene).onSoundsProgress(progress);
     };
 
     const onImagesScale = (imagesInfo: { [name: string]: string }) => {
-      texturesStore.loadTextures(imagesInfo, onLoad, onTexturesProgress);
+      texturesStore.loadTextures(imagesInfo, onLoadSome, onTexturesProgress);
     };
 
     const onImagesScaleProgress = (progress: number) => {
+      if (!checkIsInLoadingScene()) {
+        return;
+      }
       (<LoadingScene>this.currScene).onImagesScaleProgress(progress);
     };
     spriteSheetLoader.loadImages(gameTextures, onImagesScale, onImagesScaleProgress);
-    audioStore.loadSounds(gameSounds, onLoad, onSoundsProgress);
+    audioStore.loadSounds(gameSounds, onLoadSome, onSoundsProgress);
   }
 
-  onDungeonFinish = () => {
-    setTimeout(
-      () => {
-        this.loadScene(
-          SceneClass,
-          { ...this.gameProps, onFinish: this.onDungeonFinish },
-          () => this.loadedScene && this.changeScene(this.loadedScene)
-        );
-      },
-      0
-    );
+  onSceneFinish = () => {
+    this.changeToMainScene();
   }
 
-  loadScene(constructor: typeof BasicScene, gameProps: any, onLoaded?: Function) {
-    this.loadedScene = new constructor({
-      ...gameProps, onFinish: this.onDungeonFinish
+  changeToMainScene() {
+    const mainScene = new SceneClass({
+      ...this.gameProps,
+      onFinish: this.onSceneFinish,
     });
-    if (onLoaded) {
-      onLoaded();
-    }
+    this.changeScene(mainScene);
   }
 
   changeScene(scene: BasicScene) {
     hud.reset();
     this.currScene.entitiesContainer.onDestroy();
     this.currScene = scene;
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.currScene.scene, this.currScene.camera));
+    this.changeRenderingScene(this.currScene);
+  }
 
+  changeRenderingScene(scene: BasicScene) {
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(scene.scene, scene.camera));
     this.effectColorCorrection = new ShaderPass(ColorCorrectionShader);
     this.composer.addPass(this.effectColorCorrection);
     this.effectColorPalette = new ShaderPass(ColorPaletteShader);
@@ -195,7 +198,7 @@ export default class ThreeShooter {
   };
 
   update = () => {
-    if (this.enabled || !this.loaded) {
+    if (this.enabled) {
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
       if (delta < 1) {

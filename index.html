@@ -89,10 +89,6 @@
       fovValue.appendChild(valueNode);
     }
 
-    function onLoad() {
-      console.log('game loaded');
-    }
-
     function getRendererSize() {
       switch (aspectRatioValue.value) {
         case '4:3':
@@ -141,7 +137,6 @@
       renderContainer: renderContainer,
       renderWidth: rendererSize.width,
       renderHeight: rendererSize.height,
-      onLoad: onLoad,
       onScoreSubmit: onScoreSubmit,
     });
 
