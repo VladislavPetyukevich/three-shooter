@@ -79,6 +79,7 @@ export default class ThreeShooter {
     this.currScene.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
     this.composer.setSize(width, height);
+    this.updateRenderer(0);
   };
 
   onUpdateGlobalSettings = () => {
@@ -185,6 +186,12 @@ export default class ThreeShooter {
     this.composer.addPass(this.effectColorPalette);
   }
 
+  setPixelRatio = (value: number) => {
+    this.renderer.setPixelRatio(value);
+    this.changeRenderingScene(this.currScene);
+    this.updateRenderer(0);
+  };
+
   updateMouseSensitivity = (value: number) => {
     globalSettings.setSetting('mouseSensitivity', value);
   };
@@ -202,12 +209,8 @@ export default class ThreeShooter {
       const time = performance.now();
       const delta = (time - this.prevTime) / 1000;
       if (delta < 1) {
-        this.renderer.clear();
         this.currScene.update(delta);
-        this.composer.render(delta);
-        this.renderer.clearDepth();
-        this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
-        this.renderer.render(hud.scene, hud.camera);
+        this.updateRenderer(delta);
         hud.update(delta);
       } else {
         console.warn('Performance issues. Skip frame');
@@ -215,5 +218,13 @@ export default class ThreeShooter {
       this.prevTime = time;
     }
     requestAnimationFrame(this.update);
+  }
+
+  updateRenderer(delta: number) {
+    this.renderer.clear();
+    this.composer.render(delta);
+    this.renderer.clearDepth();
+    this.renderer.render(this.imageDisplayer.scene, this.imageDisplayer.camera);
+    this.renderer.render(hud.scene, hud.camera);
   }
 }

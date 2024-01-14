@@ -264,7 +264,7 @@
     function updatePixelRatio(value) {
       const numberValue = +value || 1;
       pixelRatioValue.value = numberValue;
-      threeShooter.renderer.setPixelRatio(numberValue);
+      threeShooter.setPixelRatio(numberValue);
       saveSettings();
     }
 
