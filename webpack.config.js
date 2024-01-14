@@ -4,6 +4,14 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const commitHash = require('child_process')
+  .execSync('git rev-parse --short HEAD')
+  .toString()
+  .trim();
+
+const buildPrefix = 'alpha';
+const build = `${buildPrefix}-${commitHash}`;
+
 const PATHS = {
   root: path.join(__dirname),
   source: path.join(__dirname, 'source'),
@@ -75,6 +83,9 @@ const common = {
       inject: false,
       template: PATHS.root + '/index.html',
       filename: './index.html',
+      templateParameters: {
+        build,
+      },
     }),
   ],
 };
@@ -131,11 +142,9 @@ module.exports = function (env) {
       developmentConfig
     );
   }
-  if (!env.development) {
-    return Object.assign(
-      {},
-      common,
-      productionConfig
-    );
-  }
+  return Object.assign(
+    {},
+    common,
+    productionConfig
+  );
 };
