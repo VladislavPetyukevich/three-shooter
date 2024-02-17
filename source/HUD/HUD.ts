@@ -8,6 +8,10 @@ import { HUDGun } from './HUDGun';
 
 const CAMERA_NEAR = -500;
 const CAMERA_FAR = 1000;
+const hudScoreSize = {
+  width: 512,
+  height: 64,
+};
 
 export class HUD {
   scene: Scene;
@@ -36,14 +40,14 @@ export class HUD {
     this.damageOverlay.material = damageOverlayMaterial;
 
     this.score = new HUDScore({
-      size: { width: 256, height: 32 },
+      size: hudScoreSize,
       prefix: '💀',
       textAlign: 'center',
     });
     this.scene.add(this.score.sprite);
 
     this.totalScore = new HUDScore({
-      size: { width: 256, height: 32 },
+      size: hudScoreSize,
       prefix: '🛒',
     });
     this.scene.add(this.totalScore.sprite);

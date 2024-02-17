@@ -22,7 +22,7 @@ export class HUDScore {
   textX: number;
 
   constructor(props: HUDScoreProps) {
-    this.fontSize = 24;
+    this.fontSize = 34;
     this.prefix = props.prefix;
     this.textAlign = props.textAlign || 'left';
     this.canvas = this.initCanvas(props.size);
