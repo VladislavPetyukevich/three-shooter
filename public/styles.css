@@ -1,3 +1,11 @@
+:root {
+  --text: #ccc;
+  --form-bg: #080808;
+  --button-border-color: #424242;
+  --button-bg: #171717;
+  --border-radius: 0.5rem;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -9,8 +17,28 @@ body {
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  color: var(--text);
   font-size: 16px;
   font-weight: 400;
+}
+
+button {
+  color: var(--text);
+  background-color: var(--button-bg);
+  font-size: 0.9rem;
+  border: 1px solid var(--button-border-color);
+  padding: 0rem 2rem;
+  height: 1.75rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: 300ms !important;
+  border-radius: var(--border-radius);
+}
+
+button:hover {
+  border-color: var(--text);
 }
 
 #render-container {
@@ -42,7 +70,7 @@ body {
 }
 
 .blocker-main-content {
-  background-color: rgba(0,0,0,0.75);
+  background-color: var(--form-bg);
   padding: 1.25rem;
   border-radius: 0.5rem;
 }
@@ -83,6 +111,7 @@ input[type=range] {
   height: 9px;
   margin-top: 15px;
   background-color: inherit;
+  appearance: none;
   -webkit-appearance: none;
 }
 input[type=range]:focus {
