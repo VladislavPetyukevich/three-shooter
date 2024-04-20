@@ -233,22 +233,6 @@ export class TestScene extends BasicScene {
         isClose
       );
     }
-    if (neighboringRooms.left) {
-      this.openCloseNeighboringDoors(
-        neighboringRooms.left,
-        doors.left,
-        neighboringRooms.left.doors.right,
-        isClose
-      );
-    }
-    if (neighboringRooms.right) {
-      this.openCloseNeighboringDoors(
-        neighboringRooms.right,
-        doors.right,
-        neighboringRooms.right.doors.left,
-        isClose
-      );
-    }
   }
 
   openCloseNeighboringDoors(

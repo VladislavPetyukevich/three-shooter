@@ -11,6 +11,7 @@ import {
 import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { WALL, PI_2, ENTITY_TYPE } from '@/constants';
+import { randomNumbers } from '@/RandomNumbers';
 import { Player } from '@/Entities/Player/Player';
 import { WallProps } from '@/Entities/Wall/Wall';
 import { WallApathy } from '@/Entities/Wall/Inheritor/WallApathy';
@@ -27,7 +28,6 @@ import {
   RoomCell,
   EnemyRoomCell,
   RoomCellEventType,
-  RoomConstructor,
   DungeonRoom,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
@@ -48,14 +48,10 @@ export interface Room {
   doors: {
     top: Door;
     bottom: Door;
-    left: Door;
-    right: Door;
   };
   neighboringRooms: {
     top: Room | null;
     bottom: Room | null;
-    left: Room | null;
-    right: Room | null;
   };
   entities: Entity[];
   constructorIndex: number;
@@ -101,27 +97,14 @@ export class RoomSpawner {
   };
 
   createNeighboringRooms(room: Room) {
-    const apathyRoom = this.createConnectedRoom(
+    const roomType = this.getRandomRoomType();
+    const neighboringRoom = this.createConnectedRoom(
       room.cellPosition,
       Direction.Top,
-      RoomType.Apathy,
+      roomType,
     );
-    const cowardiceRoom = this.createConnectedRoom(
-      room.cellPosition,
-      Direction.Left,
-      RoomType.Cowardice,
-    );
-    const sexualPerversionsRoom = this.createConnectedRoom(
-      room.cellPosition,
-      Direction.Right,
-      RoomType.SexualPerversions,
-    );
-    room.neighboringRooms.top = apathyRoom;
-    apathyRoom.neighboringRooms.bottom = room;
-    room.neighboringRooms.left = cowardiceRoom;
-    cowardiceRoom.neighboringRooms.right = room;
-    room.neighboringRooms.right = sexualPerversionsRoom;
-    sexualPerversionsRoom.neighboringRooms.left = room;
+    room.neighboringRooms.top = neighboringRoom;
+    neighboringRoom.neighboringRooms.bottom = room;
   }
 
   createConnectedRoom(cellPosition: Vector2, direction: Direction, type: RoomType) {
@@ -147,8 +130,8 @@ export class RoomSpawner {
     const worldSize = this.cellCoordinates.toWorldCoordinates(this.roomSize);
     const constructorIndex =
       type === RoomType.Neutral ?
-      -1 :
-      this.dungeonRoom.getRandomRoomConstructorIndex();
+        -1 :
+        this.dungeonRoom.getRandomRoomConstructorIndex();
     const room: Room = {
       type: type,
       cellPosition: cellPosition,
@@ -159,13 +142,9 @@ export class RoomSpawner {
       doors: {
         top: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
         bottom: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Bottom),
-        left: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Left),
-        right: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Right),
       },
       neighboringRooms: {
         top: null,
-        left: null,
-        right: null,
         bottom: null,
       },
       entities: [],
@@ -298,9 +277,7 @@ export class RoomSpawner {
       },
     ].forEach((info, index) => {
       torches[index].mesh.rotation[info.rotation.axis] = info.rotation.value;
-      const pos = this.cellCoordinates.toWorldCoordinates(
-        this.rotatePositionForRoom(info.pos, room)
-      );
+      const pos = this.cellCoordinates.toWorldCoordinates(info.pos);
       torches[index].mesh.position.set(pos.x, yPos, pos.y);
       fireFlares[index].mesh.rotateY(info.flare.rotation);
       fireFlares[index].mesh.position.set(pos.x, yPos, pos.y);
@@ -326,8 +303,6 @@ export class RoomSpawner {
     const doors = room.doors;
     this.removeEntity(doors.top);
     this.removeEntity(doors.bottom);
-    this.removeEntity(doors.left);
-    this.removeEntity(doors.right);
     this.deleteRoomRelations(room);
   }
 
@@ -349,16 +324,6 @@ export class RoomSpawner {
       neighboringRooms.bottom.neighboringRooms.top = null;
       this.deleteRoom(neighboringRooms.bottom);
       neighboringRooms.bottom = null;
-    }
-    if (neighboringRooms.left) {
-      neighboringRooms.left.neighboringRooms.right = null;
-      this.deleteRoom(neighboringRooms.left);
-      neighboringRooms.left = null;
-    }
-    if (neighboringRooms.right) {
-      neighboringRooms.right.neighboringRooms.left = null;
-      this.deleteRoom(neighboringRooms.right);
-      neighboringRooms.right = null;
     }
   }
 
@@ -390,13 +355,10 @@ export class RoomSpawner {
 
   getRoomActivateTriggerPostition(room: Room) {
     return this.cellCoordinates.toWorldCoordinates(
-      this.rotatePositionForRoom(
-        new Vector2(
-          room.cellPosition.x + this.roomSize.x / 2,
-          room.cellPosition.y + this.roomSize.y - 2.5
-        ),
-        room
-      )
+      new Vector2(
+        room.cellPosition.x + this.roomSize.x / 2,
+        room.cellPosition.y + this.roomSize.y - 2.5
+      ),
     );
   }
 
@@ -449,20 +411,12 @@ export class RoomSpawner {
       // Left
       {
         position: new Vector2(worldCoordinates.x, worldCoordinates.y + this.cellCoordinates.size),
-        size: new Vector2(this.cellCoordinates.size, halfHeight - this.cellCoordinates.size - doorPadding)
-      },
-      {
-        position: new Vector2(worldCoordinates.x, worldCoordinates.y + halfHeight + doorPadding),
-        size: new Vector2(this.cellCoordinates.size, halfHeight - this.cellCoordinates.size - doorPadding)
+        size: new Vector2(this.cellCoordinates.size, halfHeight * 2 - this.cellCoordinates.size * 2)
       },
       // Right
       {
         position: new Vector2(worldCoordinates.x + worldSize.x - this.cellCoordinates.size, worldCoordinates.y + this.cellCoordinates.size),
-        size: new Vector2(this.cellCoordinates.size, halfHeight - this.cellCoordinates.size - doorPadding)
-      },
-      {
-        position: new Vector2(worldCoordinates.x + worldSize.x - this.cellCoordinates.size, worldCoordinates.y + halfHeight + doorPadding),
-        size: new Vector2(this.cellCoordinates.size, halfHeight - this.cellCoordinates.size - doorPadding)
+        size: new Vector2(this.cellCoordinates.size, halfHeight * 2 - this.cellCoordinates.size * 2)
       },
     ];
 
@@ -510,9 +464,7 @@ export class RoomSpawner {
     cells.forEach(cell => {
       const cellPosition = cell.position.add(room.cellPosition);
       const cellCoordinates =
-        this.cellCoordinates.toWorldCoordinates(
-          this.rotatePositionForRoom(cellPosition, room),
-        );
+        this.cellCoordinates.toWorldCoordinates(cellPosition);
       switch (cell.type) {
         case RoomCellType.Wall:
           this.fillWallCell(room, cell, cellCoordinates);
@@ -584,29 +536,6 @@ export class RoomSpawner {
     );
     enemy.tag = cell.tag;
     room.entities.push(enemy);
-  }
-
-  rotatePositionForRoom(position: Vector2, room: Room) {
-    position.rotateAround(
-      this.getCenterPosition(room.cellPosition, this.roomSize),
-      this.getRotationAngleForRoomType(room.type),
-    );
-    return position;
-  }
-
-  getRotationAngleForRoomType(roomType: RoomType) {
-    switch (roomType) {
-      case RoomType.Apathy:
-        return 0;
-      case RoomType.SexualPerversions:
-        return 1.5707963267948966; // 90 degress in radians
-      case RoomType.Cowardice:
-        return -1.5707963267948966; // -90 degress in radians
-      case RoomType.Neutral:
-        return 0;
-      default:
-        throw new Error(`Unknown room type: ${roomType}`);
-    }
   }
 
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean) {
@@ -721,6 +650,18 @@ export class RoomSpawner {
       position.x + size.x / 2,
       position.y + size.y / 2
     );
+  }
+
+  getRandomRoomType() {
+    const typeNumber = randomNumbers.getRandomInRange(0, 2);
+    switch (typeNumber) {
+      case 0:
+        return RoomType.Apathy;
+      case 1:
+        return RoomType.Cowardice;
+      default:
+        return RoomType.SexualPerversions;
+    }
   }
 
   getSeed() {
