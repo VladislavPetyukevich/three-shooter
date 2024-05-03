@@ -172,8 +172,6 @@ export class EditorScene extends TestScene {
     utilityButtonsContainer.style.display = 'flex';
     utilityButtonsContainer.style.flexDirection = 'column';
     const clearButton = document.createElement('button');
-    clearButton.style.background = this.cellColors.empty;
-    clearButton.style.color = this.cellColors.border;
     clearButton.innerHTML = 'Clear';
     clearButton.onclick = () => {
       this.clearMapElements();
