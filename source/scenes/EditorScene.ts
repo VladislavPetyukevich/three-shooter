@@ -30,6 +30,11 @@ export class EditorScene extends TestScene {
   padding: number;
   localStorageKey: string;
   rootElement: HTMLElement;
+  selectedCell?: {
+    x: number;
+    y: number;
+    entity: Entity;
+  };
 
   constructor(props: TestSceneProps) {
     super(props);
@@ -81,7 +86,7 @@ export class EditorScene extends TestScene {
     const parsed: SavedCell[] = JSON.parse(data);
     parsed.forEach(cell => {
       const entity = this.spawnEntityInRoom(cell.x, cell.y, cell.type);
-      this.addEditorCellEntity(cell.x, cell.y, entity);
+      this.addEditorCellEntity(cell.x, cell.y, entity.type as ENTITY_TYPE);
     });
   }
 
@@ -103,25 +108,45 @@ export class EditorScene extends TestScene {
     mapContainer.id = 'mapContainer';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
+    mapContainer.style.userSelect = 'none';
     for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
       for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
         const mapCellEl = document.createElement('div');
+        mapCellEl.id = this.getMapCellElementId(cellX, cellY);
         mapCellEl.style.display = 'inline-block';
         mapCellEl.style.width = mapCellSize;
         mapCellEl.style.height = mapCellSize;
         mapCellEl.style.background = this.cellColors.empty;
         mapCellEl.style.border = `1px solid ${this.cellColors.border}`;
-        mapCellEl.onclick = (event) => {
+        mapCellEl.onclick = () => {
           const cellEntity = this.getEditorCellEntity(cellX, cellY);
           if (!cellEntity) {
-            (<HTMLDivElement>event.target).style.background = this.getCurrentCellColor();
-            const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
-            this.addEditorCellEntity(cellX, cellY, entity);
+            this.addEditorCellEntity(cellX, cellY, this.currentEntityType);
           } else {
-            (<HTMLDivElement>event.target).style.background = this.cellColors.empty;
             this.removeEditorCellEntity(cellX, cellY);
           }
-        }
+        };
+        mapCellEl.onmousedown = () => {
+          const cellEntity = this.getEditorCellEntity(cellX, cellY);
+          if (!cellEntity) {
+            return;
+          }
+          mapContainer.style.cursor = 'grabbing';
+          this.selectedCell = {
+            x: cellX,
+            y: cellY,
+            entity: cellEntity,
+          };
+        };
+        mapCellEl.onmouseup = () => {
+          mapContainer.style.cursor = 'default';
+          if (!this.selectedCell) {
+            return;
+          }
+          this.removeEditorCellEntity(this.selectedCell.x, this.selectedCell.y);
+          this.addEditorCellEntity(cellX, cellY, this.selectedCell.entity.type as ENTITY_TYPE);
+          this.selectedCell = undefined;
+        };
         mapContainer.appendChild(mapCellEl);
       }
       mapContainer.appendChild(
@@ -131,7 +156,27 @@ export class EditorScene extends TestScene {
     this.rootElement.appendChild(mapContainer);
   }
 
-  getCurrentCellColor() {
+  getMapCellElementId(cellX: number, cellY: number) {
+    return `map-cell-${cellX}-${cellY}`;
+  }
+
+  fillMapCellElement(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
+    const mapCellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
+    if (!mapCellEl) {
+      throw new Error('mapCellEl not found');
+    }
+    mapCellEl.style.background = this.getCellColor(entityType);
+  }
+
+  clearMapCellElement(cellX: number, cellY: number) {
+    const mapCellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
+    if (!mapCellEl) {
+      throw new Error('mapCellEl not found');
+    }
+    mapCellEl.style.background = this.cellColors.empty;
+  }
+
+  getCellColor(entityType: ENTITY_TYPE) {
     switch (this.currentEntityType) {
       case ENTITY_TYPE.ENEMY:
         return this.cellColors.enemy;
@@ -262,11 +307,13 @@ export class EditorScene extends TestScene {
     );
   }
 
-  addEditorCellEntity(cellX: number, cellY: number, entity: Entity) {
+  addEditorCellEntity(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
+    const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
     if (!this.currentEditorEntities[cellX]) {
       this.currentEditorEntities[cellX] = [];
     }
     this.currentEditorEntities[cellX][cellY] = entity;
+    this.fillMapCellElement(cellX, cellY, entity.type as ENTITY_TYPE);
   }
 
   removeEditorCellEntity(cellX: number, cellY: number) {
@@ -276,6 +323,7 @@ export class EditorScene extends TestScene {
     const entity = this.currentEditorEntities[cellX][cellY];
     this.entitiesContainer.remove(entity.mesh);
     delete this.currentEditorEntities[cellX][cellY];
+    this.clearMapCellElement(cellX, cellY);
   }
 
   getEditorCellEntity(cellX: number, cellY: number) {
