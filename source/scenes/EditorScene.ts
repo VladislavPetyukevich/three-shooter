@@ -41,9 +41,11 @@ export class EditorScene extends TestScene {
   selectedCell?: SelectedCell;
   groupSelectedCells: SelectedCell[];
   prevFilledGhoshCells: { x: number; y: number; }[];
+  fillMode: boolean;
 
   constructor(props: TestSceneProps) {
     super(props);
+    this.fillMode = false;
     this.groupSelectedCells = [];
     this.prevFilledGhoshCells = [];
     this.offsetBlockerMain();
@@ -145,7 +147,7 @@ export class EditorScene extends TestScene {
 
         mapCellEl.onclick = (event) => {
           const cellEntity = this.getEditorCellEntity(cellX, cellY);
-          if (event.altKey) {
+          if (event.ctrlKey) {
             if (!cellEntity) {
               return;
             }
@@ -163,11 +165,12 @@ export class EditorScene extends TestScene {
           }
         };
         mapCellEl.onmousedown = (event) => {
-          if (event.altKey) {
+          if (event.ctrlKey) {
             return;
           }
           const cellEntity = this.getEditorCellEntity(cellX, cellY);
           if (!cellEntity) {
+            this.fillMode = true;
             return;
           }
           mapContainer.style.cursor = 'grabbing';
@@ -180,6 +183,7 @@ export class EditorScene extends TestScene {
         };
         mapCellEl.onmouseup = () => {
           mapContainer.style.cursor = 'default';
+          this.fillMode = false;
           if (!this.selectedCell) {
             return;
           }
@@ -205,8 +209,19 @@ export class EditorScene extends TestScene {
           this.groupSelectedCells = [];
         };
         mapCellEl.onmousemove = (event) => {
-          if (event.altKey) {
-            const cellEntity = this.getEditorCellEntity(cellX, cellY);
+          const cellEntity = this.getEditorCellEntity(cellX, cellY);
+          if (event.altKey && cellEntity) {
+            this.removeEditorCellEntity(cellX, cellY);
+            return;
+          }
+          if (this.fillMode) {
+            if (cellEntity) {
+              return;
+            }
+            this.addEditorCellEntity(cellX, cellY, this.currentEntityType);
+            return;
+          }
+          if (event.ctrlKey) {
             if (!cellEntity) {
               return;
             }
