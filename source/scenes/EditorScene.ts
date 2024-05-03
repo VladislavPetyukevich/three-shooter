@@ -18,6 +18,8 @@ interface CellColors {
   wall: string;
 }
 
+const mapCellSize = '10px';
+
 export class EditorScene extends TestScene {
   enableKey: string;
   isEditorMode: boolean;
@@ -27,10 +29,12 @@ export class EditorScene extends TestScene {
   cellColors: CellColors;
   padding: number;
   localStorageKey: string;
-  frameTimeContainer?: HTMLSpanElement;
+  rootElement: HTMLElement;
 
   constructor(props: TestSceneProps) {
     super(props);
+    this.offsetBlockerMain();
+    this.rootElement = this.createEditorRootElement();
     this.roomSpawner.onRoomVisit = this.handleRoomVisit;
     this.enableKey = '`';
     this.isEditorMode = false;
@@ -38,7 +42,7 @@ export class EditorScene extends TestScene {
     this.currentEntityType = ENTITY_TYPE.ENEMY;
     this.currentEnemyKind = EnemyKind.Soul;
     this.cellColors = {
-      border: 'white',
+      border: '#666',
       empty: 'black',
       enemy: 'red',
       wall: 'gray',
@@ -59,7 +63,6 @@ export class EditorScene extends TestScene {
         this.enableEditorMode();
       }
     });
-    this.createInfoElements();
   }
 
   handleRoomVisit = (room: Room) => {
@@ -87,6 +90,7 @@ export class EditorScene extends TestScene {
     console.log('++++EDITOR MODE ENABLED++++');
     this.loadFromLocalStorage();
     this.restoreEditorMap();
+    this.moveCameraToSky();
     document.exitPointerLock();
     setTimeout(() => {
       this.disableBlockerInstructions();
@@ -94,29 +98,17 @@ export class EditorScene extends TestScene {
     }, 100);
   }
 
-  createInfoElements() {
-    this.frameTimeContainer = document.createElement('span');
-    this.frameTimeContainer.style.position = 'absolute';
-    this.frameTimeContainer.style.top = '0px';
-    this.frameTimeContainer.style.left = '240px';
-    this.frameTimeContainer.style.backgroundColor = 'white';
-    this.frameTimeContainer.innerHTML = 'FRAME TIME';
-    document.body.appendChild(this.frameTimeContainer);
-  }
-
   createMapElements() {
-    const blockerEl = this.getBlockerElement();
     const mapContainer = document.createElement('div');
     mapContainer.id = 'mapContainer';
-    mapContainer.style.position = 'absolute';
     mapContainer.style.zIndex = '5';
     mapContainer.style.lineHeight = '0';
     for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
       for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
         const mapCellEl = document.createElement('div');
         mapCellEl.style.display = 'inline-block';
-        mapCellEl.style.width = '12px';
-        mapCellEl.style.height = '12px';
+        mapCellEl.style.width = mapCellSize;
+        mapCellEl.style.height = mapCellSize;
         mapCellEl.style.background = this.cellColors.empty;
         mapCellEl.style.border = `1px solid ${this.cellColors.border}`;
         mapCellEl.onclick = (event) => {
@@ -136,7 +128,7 @@ export class EditorScene extends TestScene {
         document.createElement('br')
       );
     }
-    blockerEl.appendChild(mapContainer);
+    this.rootElement.appendChild(mapContainer);
   }
 
   getCurrentCellColor() {
@@ -151,23 +143,12 @@ export class EditorScene extends TestScene {
   }
 
   createEntitiesElements() {
-    const mapContainer = document.getElementById('mapContainer');
-    if (!mapContainer) {
-      throw new Error('Map container not found');
-    }
-    const mapContainerBoundingClientRect = mapContainer.getBoundingClientRect();
-    const blockerEl = this.getBlockerElement();
+    const container = document.createElement('div');
     const enemyButton = document.createElement('button');
-    enemyButton.style.position = 'absolute';
-    enemyButton.style.top = `${mapContainerBoundingClientRect.height}px`;
-    enemyButton.style.left = '60px';
     enemyButton.style.background = this.cellColors.enemy;
     enemyButton.innerHTML = 'Enemy';
     enemyButton.onclick = () => this.currentEntityType = ENTITY_TYPE.ENEMY;
     const enemyKindSelect = document.createElement('select');
-    enemyKindSelect.style.position = 'absolute';
-    enemyKindSelect.style.top = `${mapContainerBoundingClientRect.height}px`;
-    enemyKindSelect.style.left = '162px';
     enemyKindSelect.style.background = 'azure';
     [
       this.createOption('Soul', EnemyKind.Soul),
@@ -179,19 +160,18 @@ export class EditorScene extends TestScene {
     ].forEach(option => enemyKindSelect.appendChild(option));
     enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
     enemyKindSelect.value = `${this.currentEnemyKind}`;
-    blockerEl.appendChild(enemyKindSelect);
-    blockerEl.appendChild(enemyButton);
+    container.appendChild(enemyKindSelect);
+    container.appendChild(enemyButton);
     const wallButton = document.createElement('button');
-    wallButton.style.position = 'absolute';
-    wallButton.style.top = `${mapContainerBoundingClientRect.height}px`;
-    wallButton.style.left = '120px';
     wallButton.style.background = this.cellColors.wall;
     wallButton.innerHTML = 'Wall';
     wallButton.onclick = () => this.currentEntityType = ENTITY_TYPE.WALL;
-    blockerEl.appendChild(wallButton);
+    container.appendChild(wallButton);
+
+    const utilityButtonsContainer = document.createElement('div');
+    utilityButtonsContainer.style.display = 'flex';
+    utilityButtonsContainer.style.flexDirection = 'column';
     const clearButton = document.createElement('button');
-    clearButton.style.position = 'absolute';
-    clearButton.style.top = `${mapContainerBoundingClientRect.height}px`;
     clearButton.style.background = this.cellColors.empty;
     clearButton.style.color = this.cellColors.border;
     clearButton.innerHTML = 'Clear';
@@ -199,19 +179,17 @@ export class EditorScene extends TestScene {
       this.clearMapElements();
       this.clearEditorEntities();
     };
-    blockerEl.appendChild(clearButton);
+    utilityButtonsContainer.appendChild(clearButton);
     const exportButton = document.createElement('button');
-    exportButton.style.position = 'absolute';
-    exportButton.style.top = `${mapContainerBoundingClientRect.height + 20}px`;
     exportButton.innerHTML = 'Log to console';
     exportButton.onclick = () => this.logDungeonToConsole();
-    blockerEl.appendChild(exportButton);
+    utilityButtonsContainer.appendChild(exportButton);
     const saveButton = document.createElement('button');
-    saveButton.style.position = 'absolute';
-    saveButton.style.top = `${mapContainerBoundingClientRect.height + 40}px`;
     saveButton.innerHTML = 'Save to local storage';
     saveButton.onclick = () => this.saveDungeonToLocalStorage();
-    blockerEl.appendChild(saveButton);
+    utilityButtonsContainer.appendChild(saveButton);
+    container.appendChild(utilityButtonsContainer);
+    this.rootElement.appendChild(container);
   }
 
   createOption(textContent: string, value: number) {
@@ -367,7 +345,7 @@ export class EditorScene extends TestScene {
     const cell = new Vector2(cellX, cellY);
     const roomCoordinates = this.cellCoordinates.toWorldCoordinates(this.currentRoom.cellPosition);
     const cellCoordinates =
-        this.cellCoordinates.toWorldCoordinates(cell).add(roomCoordinates);
+      this.cellCoordinates.toWorldCoordinates(cell).add(roomCoordinates);
     switch (entityType) {
       case ENTITY_TYPE.ENEMY:
         return this.spawnEnemy(
@@ -387,6 +365,25 @@ export class EditorScene extends TestScene {
     }
   }
 
+  createEditorRootElement() {
+    const rootEl = document.createElement('div');
+    rootEl.style.position = 'absolute';
+    rootEl.style.top = '0px';
+    rootEl.style.left = '0px';
+    const blocker = this.getBlockerElement();
+    blocker.appendChild(rootEl);
+    return rootEl;
+  }
+
+  offsetBlockerMain() {
+    const blockerMain = document.getElementById('blocker-main');
+    if (!blockerMain) {
+      throw new Error('blockerMain not found');
+    }
+    blockerMain.style.position = 'absolute';
+    blockerMain.style.right = '0px';
+  }
+
   getBlockerElement() {
     const domEl = document.getElementById('blocker');
     if (!domEl) {
@@ -396,7 +393,7 @@ export class EditorScene extends TestScene {
   }
 
   getInstructionsElement() {
-    const domEl = document.getElementById('instructions');
+    const domEl = document.getElementById('blocker-main');
     if (!domEl) {
       throw new Error('Failed to find instructions element');
     }
@@ -408,25 +405,14 @@ export class EditorScene extends TestScene {
   }
 
   moveCameraToSky() {
-    this.camera.position.y = 10;
+    this.camera.position.y = 20;
   }
 
   update(delta: number) {
-    this.updateFrameTimeInfo(delta);
     if (this.isEditorMode) {
       this.entitiesContainer.update(0.0000001);
-      this.moveCameraToSky();
     } else {
       super.update(delta);
     }
   }
-
-  updateFrameTimeInfo(delta: number) {
-    if (!this.frameTimeContainer) {
-      return;
-    }
-    const deltaMs = delta * 1000;
-    this.frameTimeContainer.innerHTML = `Frame time: ${deltaMs.toFixed(1)}`;
-  }
 }
-
