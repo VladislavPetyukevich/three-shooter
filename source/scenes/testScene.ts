@@ -154,23 +154,6 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
-          this.player.mesh.position.x - this.cellCoordinates.size * 1.5,
-          this.player.mesh.position.y - 1,
-          this.player.mesh.position.z - this.cellCoordinates.size * 3,
-        ),
-        size: new Vector3(1, 0.5, 1),
-        gun: new BoomerangGun({
-          container: this.entitiesContainer,
-          playerCamera: this.player.camera,
-          audioListener: this.audioListener,
-          holderMesh: this.player.mesh,
-        }),
-        gunTextureName: 'boomerangTextureFile',
-      })
-    );
-    this.entitiesContainer.add(
-      new GunPickUp({
-        position: new Vector3(
           this.player.mesh.position.x,
           this.player.mesh.position.y - 1,
           this.player.mesh.position.z - this.cellCoordinates.size * 3,
@@ -188,9 +171,9 @@ export class TestScene extends BasicScene {
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
-          this.player.mesh.position.x + this.cellCoordinates.size * 1.5,
+          this.player.mesh.position.x,
           this.player.mesh.position.y - 1,
-          this.player.mesh.position.z - this.cellCoordinates.size * 3,
+          this.player.mesh.position.z - this.cellCoordinates.size * 2,
         ),
         size: new Vector3(1, 0.5, 1),
         gun: new Machinegun({
@@ -200,6 +183,23 @@ export class TestScene extends BasicScene {
           holderMesh: this.player.mesh,
         }),
         gunTextureName: 'machinegunTextureFile',
+      })
+    );
+    this.entitiesContainer.add(
+      new GunPickUp({
+        position: new Vector3(
+          this.player.mesh.position.x,
+          this.player.mesh.position.y - 1,
+          this.player.mesh.position.z - this.cellCoordinates.size * 1,
+        ),
+        size: new Vector3(1, 0.5, 1),
+        gun: new BoomerangGun({
+          container: this.entitiesContainer,
+          playerCamera: this.player.camera,
+          audioListener: this.audioListener,
+          holderMesh: this.player.mesh,
+        }),
+        gunTextureName: 'boomerangTextureFile',
       })
     );
   }
