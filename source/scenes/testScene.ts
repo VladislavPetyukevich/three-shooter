@@ -119,16 +119,16 @@ export class TestScene extends BasicScene {
     this.spawnGuns();
 
     // lights
-    this.ambientLightColor = 0x404040;
-    this.ambientLightIntensity = 7;
+    this.ambientLightColor = 0x808080;
+    this.ambientLightIntensity = 30;
     this.ambientLight = new AmbientLight(
       this.ambientLightColor,
       this.ambientLightIntensity
     );
     this.scene.add(this.ambientLight);
     const pointLightColor = 0xFFFFFF;
-    const pointLightIntensity = 110;
-    const pointLightDistance = 130;
+    const pointLightIntensity = 133 * 1.3;
+    const pointLightDistance = 1333 * 1.3;
     this.pointLight = new PointLight(
       pointLightColor,
       pointLightIntensity,
@@ -136,7 +136,7 @@ export class TestScene extends BasicScene {
     );
     this.scene.add(this.pointLight);
 
-    this.scene.fog = new Fog(0x202020, 0.15, 150);
+    this.scene.fog = new Fog(0x202020, 133 * 0.6, 133 * 1.9);
 
     // MindState
     mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
