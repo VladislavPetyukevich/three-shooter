@@ -367,7 +367,8 @@ export class RoomSpawner {
     floorGeometry.applyMatrix(new Matrix4().makeRotationX(-PI_2));
     const floorTexture = texturesStore.getTexture('floorTextureFile');
     floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
-    floorTexture.repeat.x = floorTexture.repeat.y = 32;
+    floorTexture.repeat.x = worldSize.x / 2;
+    floorTexture.repeat.y = worldSize.y / 2;
     floorTexture.needsUpdate = true;
     const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture('floorTextureFile') });
     const floorMesh = new Mesh(floorGeometry, floorMaterial);
