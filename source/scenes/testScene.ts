@@ -138,9 +138,6 @@ export class TestScene extends BasicScene {
 
     this.scene.fog = new Fog(0x202020, 133 * 0.6, 133 * 1.9);
 
-    // MindState
-    mindState.addLevelIncreaseListener(this.onMindStateLevelIncrease);
-
     this.logs = new PlayerLogs(this.roomSpawner.getSeed());
   }
 
@@ -219,7 +216,6 @@ export class TestScene extends BasicScene {
     const neighboringRooms = room.neighboringRooms;
     if (neighboringRooms.top) {
       this.openCloseNeighboringDoors(
-        neighboringRooms.top,
         doors.top,
         neighboringRooms.top.doors.bottom,
         isClose
@@ -227,7 +223,6 @@ export class TestScene extends BasicScene {
     }
     if (neighboringRooms.bottom) {
       this.openCloseNeighboringDoors(
-        neighboringRooms.bottom,
         doors.bottom,
         neighboringRooms.bottom.doors.top,
         isClose
@@ -236,39 +231,12 @@ export class TestScene extends BasicScene {
   }
 
   openCloseNeighboringDoors(
-    currentRoom: Room,
     neighboringDoor1: Door,
     neighboringDoor2: Door,
     isClose: boolean
   ) {
-    if (this.checkIsRoomShoulOpenClose(currentRoom, isClose)) {
-      this.openCloseDoor(neighboringDoor1, isClose);
-      this.openCloseDoor(neighboringDoor2, isClose);
-    }
-  }
-
-  checkIsRoomShoulOpenClose(room: Room, isClose: boolean) {
-    if (isClose) {
-      return true;
-    }
-    return !this.checkIsRoomAtMoreThanOthersMindLivel(room);
-  }
-
-  checkIsRoomAtMoreThanOthersMindLivel(room: Room) {
-    if (mindState.checkIsAllLevelsEqual()) {
-      return false;
-    }
-    const minLevel = mindState.getMinLevel();
-    switch (room.type) {
-      case RoomType.Apathy:
-        return mindState.getLevel('apathy') !== minLevel;
-      case RoomType.Cowardice:
-        return mindState.getLevel('cowardice') !== minLevel;
-      case RoomType.SexualPerversions:
-        return mindState.getLevel('sexualPerversions') !== minLevel;
-      default:
-        return false;
-    }
+    this.openCloseDoor(neighboringDoor1, isClose);
+    this.openCloseDoor(neighboringDoor2, isClose);
   }
 
   openCloseDoor(door: Door | null, isClose: boolean) {
@@ -329,30 +297,14 @@ export class TestScene extends BasicScene {
 
   onRoomClear(room: Room) {
     this.player.setHp(PLAYER.HP);
-    this.increaseMindState(room);
+    this.increaseMindState();
     this.roomSpawner.deleteNeighboringRooms(room);
     this.roomSpawner.createNeighboringRooms(room);
     this.openCloseNeighboringRooms(room, false);
   }
 
-  onMindStateLevelIncrease = () => {
-    // TODO: Cool effect here
-  }
-
-  increaseMindState(room: Room) {
-    switch(room.type) {
-      case RoomType.Apathy:
-        mindState.increaseCount('apathy');
-        break;
-      case RoomType.Cowardice:
-        mindState.increaseCount('cowardice');
-        break;
-      case RoomType.SexualPerversions:
-        mindState.increaseCount('sexualPerversions');
-        break;
-      default:
-        break;
-    }
+  increaseMindState() {
+    mindState.increaseTotalCount();
   }
 
   spawnEnemyFromSpawner = (roomType: RoomType) => (position: Vector3) => {
@@ -458,8 +410,6 @@ export class TestScene extends BasicScene {
   }
 
   finish() {
-    mindState.removeLevelIncreaseListener(this.onMindStateLevelIncrease);
-    mindState.resetValue();
     this.onFinish();
   }
 }
