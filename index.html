@@ -10,23 +10,31 @@
 </head>
 
 <body>
-  <div class="blocker">
-    <div class="blocker-main">
+  <div id="blocker" class="blocker">
+    <div id="blocker-main" class="blocker-main">
       <div class="blocker-main-content">
         <h1>Three Shooter</h1>
-        <div>(W, A, S, D = Move, MOUSE = Look around, Right click - on/off lighter, Esc - Show cursor)</div>
         <div class="warning">
           This video game contains fast flashing images
         </div>
+        <div>
+          <div>W, A, S, D = Move</div>
+          <div>MOUSE = Look around</div>
+          <div>Left click = Fire</div>
+          <div>1, 2, 3 or Mouse wheel = Switch weapon</div>
+          <div>Esc = Show cursor</div>
+        </div>
         <div class="blocker-main-controls">
-          <button id="play-button">Play</button>
-          <button id="settings-button">Settings</button>
+          <button id="play-button"><ion-icon class="additional" name="play"></ion-icon> Play</button>
+        </div>
+        <div class="blocker-second-controls">
+        <button id="settings-button"><ion-icon name="settings-sharp"></ion-icon></button>
         </div>
       </div>
         <div
           id="settings"
           class="blocker-main-content blocker-settings"
-          style="opacity: 0;"
+          style="display: none;"
         >
           <div class="setting-label">
             <span>Mouse sensitivity:</span>
@@ -346,8 +354,14 @@
     updateFov(fov.value);
 
     function setElementVisibility(element, isVisible) {
-      element.style.opacity = isVisible ? '1' : '0';
-      element.style.transition = isVisible ? '1s' : '0s';
+      if (isVisible) {
+        element.style.display = '';
+      } else {
+        element.style.display = 'none';
+      }
+      // element.style.visibility = isVisible ? 'visible' : 'hidden';
+      // element.style.opacity = isVisible ? '1' : '0';
+      // element.style.transition = isVisible ? '1s' : '0s';
     }
 
     document.addEventListener('pointerlockchange', function (event) {
@@ -359,6 +373,8 @@
     });
   </script>
 
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script type="text/javascript">
     function showFps(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);}
   </script>

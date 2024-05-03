@@ -4,6 +4,7 @@
   --button-border-color: #424242;
   --button-bg: #171717;
   --border-radius: 0.5rem;
+  --menu-border-color: #444;
 }
 
 html, body {
@@ -31,7 +32,9 @@ button {
   height: 1.75rem;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: 300ms !important;
   border-radius: var(--border-radius);
@@ -58,6 +61,7 @@ button:hover {
   width: 100%;
   height: 100%;
   color: #ffffff;
+  background: rgba(0,0,0,0.5);
   overflow: auto;
   z-index: 1;
 }
@@ -70,9 +74,11 @@ button:hover {
 }
 
 .blocker-main-content {
+  min-width: 600px;
   background-color: var(--form-bg);
-  padding: 1.25rem;
+  padding: 2.25rem;
   border-radius: 0.5rem;
+  border: 1px solid var(--menu-border-color);
 }
 
 .blocker-main-content h1 {
@@ -86,6 +92,14 @@ button:hover {
   flex-direction: column;
   align-items: stretch;
   padding-top: 1rem;
+}
+
+.blocker-second-controls {
+  text-align: right;
+}
+
+.blocker-second-controls button {
+  padding: 0.5rem;
 }
 
 .blocker-main-controls button:first-child {
@@ -105,6 +119,15 @@ button:hover {
 .warning {
   text-align: center;
   font-size: 0.75rem;
+}
+
+ion-icon.additional {
+  margin-right: 0.25rem;
+}
+
+#play-button {
+  font-size: 1.25rem;
+  padding: 1.25rem;
 }
 
 input[type=range] {
