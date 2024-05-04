@@ -4,6 +4,7 @@ export type PlayerActionName =
   'walkLeft' |
   'walkRight' |
   'firePrimary' |
+  'prevUsedWeapon' |
   'prevWeapon' |
   'nextWeapon' |
   'weapon1' |

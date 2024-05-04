@@ -74,6 +74,7 @@ export class ControlledBehavior implements Behavior {
   euler: Euler;
   currentCameraY: number;
   targetCameraY: number;
+  prevUsedGunIndex: number;
 
   constructor(props: ControlledBehaviorProps) {
     this.sinTable = new SinTable({
@@ -128,6 +129,7 @@ export class ControlledBehavior implements Behavior {
     this.walkSound.setVolume(0.2);
     this.guns = [];
     this.currentGunIndex = -1;
+    this.prevUsedGunIndex = this.currentGunIndex;
     this.updateHudGunTextures();
     this.gunShootLight = new PointLight('white', 20, 100);
     this.gunShootLight.position.set(
@@ -146,6 +148,7 @@ export class ControlledBehavior implements Behavior {
       'weapon3': this.handleSwitchGunByIndex(2),
       'nextWeapon': this.handleWeaponNext,
       'prevWeapon': this.handleWeaponPrev,
+      'prevUsedWeapon': this.handlePrevUsedWeapon,
       'firePrimary': this.handleFirePrimary,
     };
     Object.keys(this.actions).forEach(actionName =>
@@ -196,6 +199,15 @@ export class ControlledBehavior implements Behavior {
       this.circleClampGunIndex(this.currentGunIndex - 1)
     );
   }
+
+  handlePrevUsedWeapon = (action: PlayerAction) => {
+    if (action.isEnded) {
+      return;
+    }
+    this.switchGun(
+      this.circleClampGunIndex(this.prevUsedGunIndex)
+    );
+  };
 
   handleFirePrimary = (action: PlayerAction) => {
     if (action.isEnded) {
@@ -251,6 +263,7 @@ export class ControlledBehavior implements Behavior {
       return;
     }
     this.handleReleaseTrigger();
+    this.prevUsedGunIndex = this.currentGunIndex;
     this.currentGunIndex = gunIndex;
     this.updateHudGunTextures();
   }
