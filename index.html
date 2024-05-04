@@ -17,13 +17,8 @@
         <div class="warning">
           This video game contains fast flashing images
         </div>
-        <div>
-          <div>W, A, S, D = Move</div>
-          <div>MOUSE = Look around</div>
-          <div>Left click = Fire</div>
-          <div>1, 2, 3 or Mouse wheel = Switch weapon</div>
-          <div>Q = Switch to previous used weapon</div>
-          <div>Esc = Show cursor</div>
+        <div id="controls-info">
+          <div>Controls:</div>
         </div>
         <div class="blocker-main-controls">
           <button id="play-button"><ion-icon class="additional" name="play"></ion-icon> Play</button>
@@ -92,6 +87,42 @@
     var fovValue = document.getElementById('fov-value');
     var pixelRatioValue = document.getElementById('pixelRatio-value');
     var aspectRatioValue = document.getElementById('aspectRatio-value');
+
+    function generateControlsInfo() {
+      var controlsInfoContainer = document.getElementById('controls-info');
+      var controlsInfo = {
+          'W, A, S, D': 'Move',
+          'MOUSE': 'Look around',
+          'Left click': 'Fire',
+          '1, 2, 3 or Mouse wheel': 'Switch weapon',
+          'Q': 'Switch to previous used weapon',
+          'Esc': 'Show cursor',
+      };
+      var controlsInfoTable = document.createElement('table');
+      controlsInfoTable.className = 'controls-info-table';
+      var headRow = document.createElement('tr');
+      var headKeys = document.createElement('th');
+      headKeys.textContent = 'Key';
+      var headDescription = document.createElement('th');
+      headDescription.innerText = 'Description';
+      headRow.appendChild(headKeys);
+      headRow.appendChild(headDescription);
+      controlsInfoTable.appendChild(headRow);
+
+      Object.entries(controlsInfo).forEach(([controlKeys, controlDescription]) => {
+        var row = document.createElement('tr');
+        var dataKeys = document.createElement('td');
+        dataKeys.innerText = controlKeys;
+        var dataDescription = document.createElement('td');
+        dataDescription.innerText = controlDescription;
+        row.appendChild(dataKeys);
+        row.appendChild(dataDescription);
+        controlsInfoTable.appendChild(row);
+      });
+
+      controlsInfoContainer.appendChild(controlsInfoTable);
+    }
+    generateControlsInfo();
 
     function updateMouseSensitivityValue(value) {
       var valueFormated = (value * 100).toFixed(3);
