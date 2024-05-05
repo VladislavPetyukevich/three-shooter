@@ -64,7 +64,7 @@ export class EditorScene extends TestScene {
       wall: 'gray',
       transparent: 'transparent',
     };
-    this.padding = 2;
+    this.padding = 1;
     this.localStorageKey = 'editor-map';
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
