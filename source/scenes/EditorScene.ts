@@ -96,10 +96,9 @@ export class EditorScene extends TestScene {
       return;
     }
     const parsed: SavedCell[] = JSON.parse(data);
-    parsed.forEach(cell => {
-      const entity = this.spawnEntityInRoom(cell.x, cell.y, cell.type);
-      this.addEditorCellEntity(cell.x, cell.y, entity.type as ENTITY_TYPE);
-    });
+    parsed.forEach(cell =>
+      this.addEditorCellEntity(cell.x, cell.y, cell.type)
+    );
   }
 
   enableEditorMode() {
@@ -467,7 +466,7 @@ export class EditorScene extends TestScene {
   }
 
   addEditorCellEntity(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
-    const entity = this.spawnEntityInRoom(cellX, cellY, this.currentEntityType);
+    const entity = this.spawnEntityInRoom(cellX, cellY, entityType);
     if (!this.currentEditorEntities[cellX]) {
       this.currentEditorEntities[cellX] = [];
     }
