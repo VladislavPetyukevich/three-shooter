@@ -20,6 +20,12 @@ export class TimeoutsManager<K extends keyof Timeouts> {
     return this.currentTimeOuts[name] <= 0;
   }
 
+  expireAllTimeOuts() {
+    for (let name in this.currentTimeOuts) {
+      this.currentTimeOuts[name] = 0;
+    }
+  }
+
   updateExpiredTimeOuts() {
     for (let name in this.currentTimeOuts) {
       this.updateExpiredTimeOut(name as K);

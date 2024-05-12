@@ -31,7 +31,7 @@ interface EnemyKindStats {
   hurtChance: number;
   BulletClass: typeof Bullet;
   gunProps: EnemyGunProps;
-  bulletsPerShoot: Range;
+  bulletsPerShoot: number;
   walkSpeed: number;
   delays: EnemyDelays;
   behaviorTreeRoot: BehaviorTreeNode;

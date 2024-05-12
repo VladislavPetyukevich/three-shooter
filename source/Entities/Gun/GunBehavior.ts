@@ -5,6 +5,7 @@ import {
   AudioListener,
   Audio,
   Mesh,
+  PositionalAudio,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
@@ -37,6 +38,7 @@ export class GunBehavior implements Behavior {
   playerCamera: Camera;
   holderMesh: Mesh;
   bulletAuthor?: Entity;
+  remainingBullets: number | null;
   raycaster: Raycaster;
   container: EntitiesContainer;
   audioListener: AudioListener;
@@ -68,7 +70,7 @@ export class GunBehavior implements Behavior {
     this.raycaster = new Raycaster();
     this.container = props.container;
     this.audioListener = props.audioListener;
-    this.shootSound = new Audio(props.audioListener);
+    this.remainingBullets = null;
     this.isShoot = false;
     this.isInMove = false;
     this.isCoolingDown = false;
@@ -90,9 +92,26 @@ export class GunBehavior implements Behavior {
     this.secToMaxHeatLevel = props.shootsToMaxHeat / shootsPerSec;
     this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound('gunShoot');
+    this.shootSound = new PositionalAudio(props.audioListener);
     this.shootSound.setBuffer(shootSoundBuffer);
+    this.holderMesh.add(this.shootSound);
     this.shootSound.isPlaying = false;
     this.bulletPositionOffset = 0;
+  }
+
+  setRemainingBullets = (value: number) => {
+    this.remainingBullets = value;
+  };
+
+  pullBullet() {
+    if (this.remainingBullets === null) {
+      return true;
+    }
+    this.remainingBullets--;
+    if (this.remainingBullets === -1) {
+      return false;
+    }
+    return true;
   }
 
   handlePullTrigger = () => {

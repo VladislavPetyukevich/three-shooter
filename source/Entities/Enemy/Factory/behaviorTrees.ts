@@ -3,6 +3,7 @@ import { randomNumbers } from '@/RandomNumbers';
 import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
 import { Enemy } from '../Enemy';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { BehaviorTreeNode } from '../BehaviorTree';
 
 const noop = () => true;
 
@@ -11,16 +12,28 @@ const hurtNode = (behavior: EnemyBehavior) => !behavior.isHurt;
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
     behavior.checkIsFollowingEnemyInAttackDistance(0, ENEMY.ATTACK_DISTANCE),
-  nodeTrue: (behavior: EnemyBehavior, delta: number) =>
-    behavior.attackFollowingEnemy(delta),
+  nodeTrue: (behavior: EnemyBehavior, delta: number) => {
+    behavior.timeoutsManager.updateTimeOut('shoot', delta);
+    if (behavior.timeoutsManager.checkIsTimeOutExpired('shoot')) {
+      behavior.gun.behavior.setRemainingBullets(behavior.bulletsPerShoot);
+      behavior.timeoutsManager.updateExpiredTimeOut('shoot');
+    }
+    if (behavior.gun.behavior.remainingBullets === -1) {
+      return true;
+    }
+    behavior.updateGun();
+    if (!behavior.gun.checkIsRecoil()) {
+      behavior.shoot();
+    }
+    return true;
+  },
   nodeFalse: noop,
 };
 
 const attackCondLongRange = {
   condition: (behavior: EnemyBehavior) =>
     behavior.checkIsFollowingEnemyInAttackDistance(ENEMY.ATTACK_DISTANCE, ENEMY.ATTACK_DISTANCE_LONG_RANGE),
-  nodeTrue: (behavior: EnemyBehavior, delta: number) =>
-    behavior.attackFollowingEnemy(delta),
+  nodeTrue: attackCond.nodeTrue,
   nodeFalse: noop,
 };
 
@@ -131,27 +144,28 @@ const bleed = (behavior: EnemyBehavior, delta: number) => {
   behavior.timeoutsManager.updateTimeOut('bleed', delta);
   if (behavior.timeoutsManager.checkIsTimeOutExpired('bleed')) {
     behavior.onBleedCallback && behavior.onBleedCallback();
+    behavior.timeoutsManager.updateExpiredTimeOut('bleed');
   }
   return true;
 };
 
-export const basicEnemySeq = {
+export const basicEnemySeq: BehaviorTreeNode = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
-export const longRangeEnemySeq = {
+export const longRangeEnemySeq: BehaviorTreeNode = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
 };
 
-export const bleedEnemySeq = {
+export const bleedEnemySeq: BehaviorTreeNode = {
   sequence: [bleed, hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
-export const kamikazeEnemySeq = {
+export const kamikazeEnemySeq: BehaviorTreeNode = {
   sequence: [hurtNode, updateCollisions, updateFollowingEnemy, strafe, gunpointStrafe]
 };
 
-export const parasiteEnemySeq = {
+export const parasiteEnemySeq: BehaviorTreeNode = {
   sequence: [hurtNode, infectCollisions, findParasiteTarget, followTarget],
 };
 

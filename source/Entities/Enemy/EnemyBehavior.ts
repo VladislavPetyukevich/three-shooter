@@ -23,7 +23,7 @@ interface BehaviorProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   walkSpeed: number;
-  bulletsPerShoot: { min: number; max: number; };
+  bulletsPerShoot: number;
   onHitDamage?: { min: number; max: number; };
   hurtChance: number;
   delays: {
@@ -40,8 +40,6 @@ type TimeoutNames =
   'movement' |
   'strafe' |
   'gunpointStrafe' |
-  'shootDelay' |
-  'gunTriggerPulled' |
   'bleed';
 
 export class EnemyBehavior implements Behavior {
@@ -64,9 +62,8 @@ export class EnemyBehavior implements Behavior {
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
   walkSpeed: number;
-  bulletsPerShoot: { min: number; max: number; };
+  bulletsPerShoot: number;
   currentBulletsToShoot: number;
-  shootSound: PositionalAudio;
   isHurt: boolean;
   hurtChance: number;
   timeoutsManager: TimeoutsManager<TimeoutNames>;
@@ -83,20 +80,15 @@ export class EnemyBehavior implements Behavior {
     this.actor = props.actor;
     this.BulletClass = props.BulletClass;
     this.gunProps = props.gunProps;
-    this.gun = this.gunProps.isRaycast ?
-      new Machinegun({
-        playerCamera: props.player.camera,
-        audioListener: props.audioListener,
-        container: props.container,
-        holderMesh: this.actor.mesh,
-      }) :
-      new EnemyGunBullet({
-        BulletClass: this.BulletClass,
-        playerCamera: props.player.camera,
-        audioListener: props.audioListener,
-        container: props.container,
-        holderMesh: this.actor.mesh,
-      });
+    this.gun = new EnemyGunBullet({
+      BulletClass: this.BulletClass,
+      playerCamera: props.player.camera,
+      audioListener: props.audioListener,
+      container: props.container,
+      holderMesh: this.actor.mesh,
+      fireType: GunFireType.single,
+      recoilTime: this.gunProps.recoilTime,
+    });
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
     this.followingPath = [];
@@ -109,10 +101,6 @@ export class EnemyBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.currentBulletsToShoot = 0;
-    this.shootSound = new PositionalAudio(props.audioListener);
-    const shootSoundBuffer = audioStore.getSound('gunShoot');
-    this.shootSound.setBuffer(shootSoundBuffer);
-    this.actor.mesh.add(this.shootSound);
     this.isHurt = false;
     this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
@@ -123,11 +111,10 @@ export class EnemyBehavior implements Behavior {
       movement: props.delays.movement,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
-      shootDelay: props.delays.shoot,
-      gunTriggerPulled: ENEMY.SHOOT_TRIGGER_PULLED,
       bleed: ENEMY.BLEED_TIME_OUT,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
+    this.timeoutsManager.expireAllTimeOuts();
     this.spawnSound(props.audioListener);
     this.onHitDamage = props.onHitDamage;
   }
@@ -143,13 +130,6 @@ export class EnemyBehavior implements Behavior {
 
   shoot() {
     this.gun.shoot();
-  }
-
-  setCurrentBulletsToShoot() {
-    this.currentBulletsToShoot = randomNumbers.getRandomInRange(
-      this.bulletsPerShoot.min,
-      this.bulletsPerShoot.max
-    );
   }
 
   death() {
@@ -296,20 +276,10 @@ export class EnemyBehavior implements Behavior {
     return distanceToEnemy <= ENEMY.ATTACK_DISTANCE_PARASITE;
   }
 
-  attackFollowingEnemy(delta: number) {
-    this.timeoutsManager.updateTimeOut('shoot', delta);
-    if (this.timeoutsManager.checkIsTimeOutExpired('shoot')) {
-      this.setCurrentBulletsToShoot();
-    }
-    return true;
-  }
-
   update(delta: number) {
     this.gun.update(delta);
     this.updateWalkSprite(delta);
     this.updateMovement(delta);
-    this.updateShoot(delta);
-    this.timeoutsManager.updateExpiredTimeOuts();
   }
 
   getDirectionToFollowingEntity() {
@@ -340,6 +310,7 @@ export class EnemyBehavior implements Behavior {
     if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
       return;
     }
+    this.timeoutsManager.updateExpiredTimeOut('movement');
     if (this.followingPath.length !== 0) {
       this.updateFollowPath();
       return;
@@ -354,7 +325,7 @@ export class EnemyBehavior implements Behavior {
       directionToFollowingEntity
     );
     const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
-    const entityIndex = intersectObjects.findIndex(intersect => 
+    const entityIndex = intersectObjects.findIndex(intersect =>
       this.followingEnemy &&
       intersect.object.uuid === this.followingEnemy.mesh.uuid
     );
@@ -408,6 +379,7 @@ export class EnemyBehavior implements Behavior {
     if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
       return true;
     }
+    this.timeoutsManager.updateExpiredTimeOut('movement');
     this.setFollowingEnemy(this.followingEnemy);
     return true;
   }
@@ -416,36 +388,9 @@ export class EnemyBehavior implements Behavior {
     this.timeoutsManager.updateTimeOut('strafe', delta);
     if (this.timeoutsManager.checkIsTimeOutExpired('strafe')) {
       this.randomStrafe(this.strafeAngleLow);
+      this.timeoutsManager.updateExpiredTimeOut('strafe');
     }
     return true;
-  }
-
-  updateShoot(delta: number) {
-    if (this.gun.behavior.fireType === GunFireType.automatic) {
-      this.updateAutomaticShoot(delta);
-    }
-    if (this.isHurt) {
-      return;
-    }
-    if (this.currentBulletsToShoot === 0) {
-      return;
-    }
-    this.timeoutsManager.updateTimeOut('shootDelay', delta);
-    if (this.timeoutsManager.checkIsTimeOutExpired('shootDelay')) {
-      this.currentBulletsToShoot--;
-      this.updateGun();
-      this.shoot();
-    }
-  }
-
-  updateAutomaticShoot(delta: number) {
-    if (!this.gun.behavior.isTriggerPulled) {
-      return;
-    }
-    this.timeoutsManager.updateTimeOut('gunTriggerPulled', delta);
-    if (this.timeoutsManager.checkIsTimeOutExpired('gunTriggerPulled')) {
-      this.gun.releaseTrigger();
-    }
   }
 
   updateGun() {
@@ -474,6 +419,7 @@ export class EnemyBehavior implements Behavior {
     if (!this.timeoutsManager.checkIsTimeOutExpired('gunpointStrafe')) {
       return true;
     }
+    this.timeoutsManager.updateExpiredTimeOut('gunpointStrafe');
     this.isGunpointTriggered = false;
     if (!this.isOnGunpointCurrent) {
       return true;

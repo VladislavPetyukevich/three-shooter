@@ -7,7 +7,6 @@ import {
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
-import { GunFireType } from '@/Entities/Gun/Gun';
 import { ENEMY } from '@/constants';
 import { ENEMY_TEXTURES } from '@/constantsAssets';
 import { EnemiesStats } from './EnemyFactory';
@@ -19,11 +18,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
     gunProps: {
-      fireType: GunFireType.single,
-      recoilTime: 0,
-      isRaycast: false,
+      recoilTime: 0.5,
     },
-    bulletsPerShoot: { min: 1, max: 3 },
+    bulletsPerShoot: 3,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,
@@ -37,11 +34,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.66,
     BulletClass: BulletFastEasy,
     gunProps: {
-      fireType: GunFireType.automatic,
-      recoilTime: 0.3,
-      isRaycast: true,
+      recoilTime: 0.01,
     },
-    bulletsPerShoot: { min: 3, max: 6 },
+    bulletsPerShoot: 6,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,
@@ -56,11 +51,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.0,
     BulletClass: BulletSlowMeidum,
     gunProps: {
-      fireType: GunFireType.single,
-      recoilTime: 0.0,
-      isRaycast: false,
+      recoilTime: 0.1,
     },
-    bulletsPerShoot: { min: 0, max: 0 },
+    bulletsPerShoot: 0,
     walkSpeed: ENEMY.WALK_SPEED * ENEMY.WALK_SPEED_FACTOR_KAMIKAZE,
     delays: {
       ...ENEMY.DELAYS,
@@ -77,11 +70,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.5,
     BulletClass: BulletSlowMeidum,
     gunProps: {
-      fireType: GunFireType.single,
-      recoilTime: 0.0,
-      isRaycast: false,
+      recoilTime: 0.1,
     },
-    bulletsPerShoot: { min: 0, max: 0 },
+    bulletsPerShoot: 0,
     walkSpeed: ENEMY.WALK_SPEED * ENEMY.WALK_SPEED_FACTOR_PARASITE,
     delays: {
       ...ENEMY.DELAYS,
@@ -94,11 +85,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.7,
     BulletClass: BulletSlowMeidum,
     gunProps: {
-      fireType: GunFireType.single,
-      recoilTime: 0.0,
-      isRaycast: false,
+      recoilTime: 0.1,
     },
-    bulletsPerShoot: { min: 1, max: 3 },
+    bulletsPerShoot: 3,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,
@@ -112,11 +101,9 @@ export const enemiesStats: EnemiesStats = {
     hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
     gunProps: {
-      fireType: GunFireType.single,
-      recoilTime: 0,
-      isRaycast: false,
+      recoilTime: 0.1,
     },
-    bulletsPerShoot: { min: 1, max: 3 },
+    bulletsPerShoot: 3,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,

@@ -18,6 +18,9 @@ export class GunBehaviorBullet extends GunBehavior {
     if (this.isShoot) {
       return;
     }
+    if (!this.pullBullet()) {
+      return;
+    }
     this.handleShoot();
     this.lastShootBulletClass = this.BulletClass;
     const offsetX = this.bulletPositionOffset * Math.sin(this.rotationY);

@@ -21,9 +21,7 @@ export interface EnemyTextures {
 }
 
 export interface EnemyGunProps {
-  fireType: GunFireType;
   recoilTime: number;
-  isRaycast: boolean;
 }
 
 export interface EnemyDelays {
@@ -48,7 +46,7 @@ export interface EnemyProps {
   hp: number;
   walkSpeed: number;
   onHitDamage?: { min: number; max: number; };
-  bulletsPerShoot: { min: number; max: number; };
+  bulletsPerShoot: number;
   hurtChance: number;
   delays: EnemyDelays;
 }

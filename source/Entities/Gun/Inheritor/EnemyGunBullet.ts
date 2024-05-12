@@ -1,9 +1,8 @@
-import { GunFireType } from '../Gun';
-import { InheritorGunProps } from './InheritorTypes';
+import { EnemyInheritorGunProps } from './InheritorTypes';
 import { GunBullet } from '../GunBullet';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 
-interface EnemyGunBulletProps extends InheritorGunProps {
+interface EnemyGunBulletProps extends EnemyInheritorGunProps {
   BulletClass: typeof Bullet;
 }
 
@@ -15,9 +14,7 @@ export class EnemyGunBullet extends GunBullet {
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
       bulletsPerShoot: 1,
-      recoilTime: 0.15,
       shootsToMaxHeat: 1000,
-      fireType: GunFireType.automatic,
     });
   }
 }
