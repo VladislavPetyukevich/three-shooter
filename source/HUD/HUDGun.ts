@@ -85,6 +85,7 @@ export class HUDGun {
     } else {
       this.nextHudTextures = textures;
     }
+    this.sprite.material.color.r = this.originalRedColor;
     this.swithAnimationStage = isFirstTimeUpdate ? 'goingUp' : 'goingDown';
     this.initSwithAnimationProgress();
     this.isSwitchAnimationStarted = true;
@@ -107,6 +108,9 @@ export class HUDGun {
   }
 
   updateHeatLevel(heatLevel: number) {
+    if (this.isSwitchAnimationStarted) {
+      return;
+    }
     const newRedColor = this.originalRedColor + heatLevel * 8;
     this.sprite.material.color.r = newRedColor;
   }
