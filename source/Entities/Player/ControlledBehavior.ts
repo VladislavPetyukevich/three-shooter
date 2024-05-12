@@ -210,7 +210,7 @@ export class ControlledBehavior implements Behavior {
   handleFirePrimary = (action: PlayerAction) => {
     if (action.isEnded) {
       this.handleReleaseTrigger();
-    } else {
+    } else if (!hud.gun.isSwitchAnimationStarted) {
       this.handlePullTrigger();
     }
   }
