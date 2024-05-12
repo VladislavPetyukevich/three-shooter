@@ -424,6 +424,7 @@ export class RoomSpawner {
         info.size,
         roomType,
         true,
+        true,
       )
     );
   }
@@ -536,13 +537,14 @@ export class RoomSpawner {
     room.entities.push(enemy);
   }
 
-  spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean) {
+  spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean, unbreakable?: boolean) {
     const isHorizontalWall = size.x > size.y;
     const props: WallProps = {
       position: new Vector3(coordinates.x, 1.5, coordinates.y),
       size: { width: size.x, height: WALL.SIZE, depth: size.y },
       isHorizontalWall: isHorizontalWall,
-      withDecals: withDecals,
+      withDecals,
+      unbreakable,
     };
     switch (roomType) {
       case RoomType.Apathy:

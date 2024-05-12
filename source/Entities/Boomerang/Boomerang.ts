@@ -5,6 +5,7 @@ import { ENTITY_TYPE, ENTITY_MESSAGES, BOOMERANG } from '@/constants';
 import { Bullet, BulletProps } from '../Bullet/Bullet';
 import { BoomerangActor } from './BoomerangActor';
 import { BoomerangBehavior } from './BoomerangBehavior';
+import { Wall } from '../Wall/Wall';
 
 export interface BoomerangProps extends BulletProps {
   playerActor: PlayerActor;
@@ -31,16 +32,28 @@ export class Boomerang extends Bullet {
   }
 
   onCollide(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.WALL) {
+      if ((entity as Wall).unbreakable) {
+        if (this.behavior.currentPhase === 'flyBlackward') {
+          return true;
+        }
+        this.behavior.currentPhase = 'flyBlackward';
+        return false;
+      } else {
+        this.container.remove(entity.mesh);
+        return true;
+      }
+    }
     if (entity.type === ENTITY_TYPE.ENEMY) {
       if (this.damage) {
         entity.onHit(this.damage);
       }
       return true;
     }
-    if (entity.type !== ENTITY_TYPE.PLAYER) {
-      return true;
-    }
-    if (this.behavior.currentPhase === 'flyBlackward') {
+    if (
+      entity.type === ENTITY_TYPE.PLAYER &&
+      this.behavior.currentPhase === 'flyBlackward'
+    ) {
       this.container.remove(this.mesh);
       entity.onMessage(ENTITY_MESSAGES.boomerangReturned);
       return false;

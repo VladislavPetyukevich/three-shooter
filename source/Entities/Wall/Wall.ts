@@ -10,9 +10,12 @@ export interface WallProps {
   isHorizontalWall?: boolean;
   withDecals?: boolean;
   color?: Color;
+  unbreakable?: boolean;
 }
 
 export class Wall extends Entity {
+  unbreakable?: boolean;
+
   constructor(props: WallProps) {
     const size = props.size ?
       props.size :
@@ -32,5 +35,6 @@ export class Wall extends Entity {
       actor,
       behavior
     );
+    this.unbreakable = props.unbreakable;
   }
 }

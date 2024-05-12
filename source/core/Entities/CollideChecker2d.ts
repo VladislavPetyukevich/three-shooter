@@ -200,7 +200,7 @@ export class CollideChecker2d {
     }
     if (entity.mesh.geometry.type === 'CylinderGeometry') {
       return {
-        width: (<any>entity.mesh.geometry).parameters.width,
+        width: (<any>entity.mesh.geometry).parameters.height,
         height: (<any>entity.mesh.geometry).parameters.height
       };
     }

@@ -15,6 +15,7 @@ interface DoorProps {
 
 export class DoorWall extends Entity<WallActor, DoorBehavior> {
   container: EntitiesContainer;
+  unbreakable: boolean;
 
   constructor(props: DoorProps) {
     const size = props.size ?
@@ -47,6 +48,7 @@ export class DoorWall extends Entity<WallActor, DoorBehavior> {
     behavior.onOpen = () => this.onOpen();
     behavior.onClose = () => this.onClose();
     this.container = props.container;
+    this.unbreakable = true;
   }
 
   open() {
