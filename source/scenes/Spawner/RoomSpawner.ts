@@ -170,21 +170,18 @@ export class RoomSpawner {
     const fireFlares = this.fireFlaresPool.getEntities(torchesCount);
     const yPos = this.cellCoordinates.size / 2;
     const wallShift = 1.1;
-    const rotationAngle = 0.575959;
+    const rotationAngle = -0.575959;
     const flareRotation = 1.5708;
 
-    const axisBottom: 'x' | 'z' = room.type === RoomType.Apathy ? 'x' : 'z';
-    const rotationBottom = room.type === RoomType.Cowardice ? rotationAngle : -rotationAngle;
+    const axisBottom = 'x' as const;
+    const axisLeft = 'z' as const;
 
-    const axisLeft: 'x' | 'z' = room.type === RoomType.Apathy ? 'z' : 'x';
-    const rotationLeft = room.type === RoomType.SexualPerversions ? rotationAngle : -rotationAngle;
-
-    const flareRotationBottom = room.type === RoomType.Apathy ? 0 : flareRotation;
-    const flareRotationLeft = room.type === RoomType.Apathy ? flareRotation : 0;
-    const flareShiftAxisBottom: 'x' | 'z' = room.type === RoomType.Apathy ? 'z' : 'x';
-    const flareShiftAxisLeft: 'x' | 'z' = room.type === RoomType.Apathy ? 'x' : 'z';
-    const flareShiftBottom = room.type === RoomType.SexualPerversions ? 0.2 : -0.2;
-    const flareShiftLeft = room.type === RoomType.Cowardice ? -0.2 : 0.2;
+    const flareRotationBottom = 0;
+    const flareRotationLeft = flareRotation;
+    const flareShiftAxisBottom = 'z' as const;
+    const flareShiftAxisLeft = 'x' as const;
+    const flareShiftBottom = -0.2;
+    const flareShiftLeft = 0.2;
     const flareBottom = {
       rotation: flareRotationBottom,
       shiftAxis: flareShiftAxisBottom,
@@ -213,7 +210,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
           room.cellPosition.y + this.roomSize.y - wallShift
         ),
-        rotation: { axis: axisBottom, value: rotationBottom },
+        rotation: { axis: axisBottom, value: rotationAngle },
         flare: flareBottom,
       },
       {
@@ -221,7 +218,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
           room.cellPosition.y + this.roomSize.y - wallShift
         ),
-        rotation: { axis: axisBottom, value: rotationBottom },
+        rotation: { axis: axisBottom, value: rotationAngle },
         flare: flareBottom,
       },
       // Top
@@ -230,7 +227,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        rotation: { axis: axisBottom, value: -rotationBottom },
+        rotation: { axis: axisBottom, value: rotationAngle },
         flare: flareTop,
       },
       {
@@ -238,7 +235,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        rotation: { axis: axisBottom, value: -rotationBottom },
+        rotation: { axis: axisBottom, value: rotationAngle },
         flare: flareTop,
       },
       // Left
@@ -247,7 +244,7 @@ export class RoomSpawner {
           room.cellPosition.x + wallShift,
           room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: rotationLeft },
+        rotation: { axis: axisLeft, value: rotationAngle },
         flare: flareLeft,
       },
       {
@@ -255,7 +252,7 @@ export class RoomSpawner {
           room.cellPosition.x + wallShift,
           room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: rotationLeft },
+        rotation: { axis: axisLeft, value: rotationAngle },
         flare: flareLeft,
       },
       // Right
@@ -264,7 +261,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: -rotationLeft },
+        rotation: { axis: axisLeft, value: rotationAngle },
         flare: flareRight,
       },
       {
@@ -272,7 +269,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: -rotationLeft },
+        rotation: { axis: axisLeft, value: rotationAngle },
         flare: flareRight,
       },
     ].forEach((info, index) => {
