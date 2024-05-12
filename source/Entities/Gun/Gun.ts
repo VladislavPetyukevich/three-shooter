@@ -26,6 +26,7 @@ export interface GunPropsExternal {
   shootsToMaxHeat: number;
   fireType: GunFireType;
   holderMesh: Mesh;
+  shootSoundName: string;
   hudTextures?: GunHudTextures;
   orderIndex?: number;
 }

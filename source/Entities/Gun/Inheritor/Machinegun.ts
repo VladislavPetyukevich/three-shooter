@@ -20,6 +20,7 @@ export class Machinegun extends GunRaycast {
         fire: texturesStore.getTexture('machinegunFireFile'),
       },
       orderIndex: 1,
+      shootSoundName: 'shootMachinegun',
     });
   }
 }

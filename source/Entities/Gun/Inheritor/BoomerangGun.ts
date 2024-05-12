@@ -22,6 +22,7 @@ export class BoomerangGun extends GunBullet {
         fire: texturesStore.getTexture('boomerangFireTextureFile'),
       },
       orderIndex: 2,
+      shootSoundName: 'shootShotgun',
     });
     this.canShoot = true;
   }
