@@ -1,5 +1,6 @@
 import spriteSheet from './assets/spritesheet.png';
-import gunShoot from './assets/shoot.mp3';
+import shootShotgun from './assets/shoot-short.mp3';
+import shootMachinegun from './assets/shoot.mp3';
 import damage from './assets/damage.mp3';
 import spawn from './assets/spawn.mp3';
 import walk from './assets/walk.mp3';
@@ -40,7 +41,8 @@ export const gameTextures: ImagesInfo = {
 };
 
 export const gameSounds = {
-  gunShoot,
+  shootShotgun,
+  shootMachinegun,
   damage,
   spawn,
   walk,

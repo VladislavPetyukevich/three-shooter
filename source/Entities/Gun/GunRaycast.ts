@@ -22,6 +22,7 @@ export class GunRaycast extends Gun {
       recoilTime: props.recoilTime,
       shootsToMaxHeat: props.shootsToMaxHeat,
       fireType: props.fireType,
+      shootSoundName: 'shootMachinegun',
     });
     super({
       ...props,
