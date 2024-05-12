@@ -30,14 +30,15 @@ export class HUD {
     this.camera = new OrthographicCamera(-width, width, height, -height, CAMERA_NEAR, CAMERA_FAR);
 
     this.damageOverlay = new Sprite();
+    this.damageOverlay.position.z = 10;
     this.maxHp = PLAYER.HP;
-    this.maxDamageOverlayOpacity = 0.8;
-
+    this.maxDamageOverlayOpacity = 0.65;
     const damageOverlayMaterial = new SpriteMaterial({
-      map: texturesStore.getTexture('damageEffect'),
-      opacity: 0,
+      opacity: 0.0,
+      color: 'red',
     });
     this.damageOverlay.material = damageOverlayMaterial;
+    this.scene.add(this.damageOverlay);
 
     this.score = new HUDScore({
       size: hudScoreSize,
