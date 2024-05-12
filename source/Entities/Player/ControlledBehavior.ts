@@ -204,9 +204,7 @@ export class ControlledBehavior implements Behavior {
     if (action.isEnded) {
       return;
     }
-    this.switchGun(
-      this.circleClampGunIndex(this.prevUsedGunIndex)
-    );
+    this.switchGun(this.prevUsedGunIndex);
   };
 
   handleFirePrimary = (action: PlayerAction) => {
@@ -290,35 +288,12 @@ export class ControlledBehavior implements Behavior {
   };
 
   addGun(gun: Gun) {
-    const gunIndex = this.getGunIndex(gun);
-    if (gunIndex === this.guns.length) {
-      this.guns.push(gun);
-    } else {
-      this.guns.splice(gunIndex, 0, gun);
-    }
+    const gunIndex = gun.getOrderIndex();
+    this.guns[gunIndex] = gun;
     this.currentGunIndex = -1;
     gun.behavior.onVisualRecoilStart = this.handleVisualRecoilStart;
     gun.behavior.onVisualRecoilEnd = this.handleVisualRecoilEnd;
     this.switchGun(gunIndex);
-  }
-
-  getGunIndex(gun: Gun) {
-    if (this.guns.length === 0) {
-      return 0;
-    }
-    const newGunOrderIndex = gun.getOrderIndex();
-    if (
-      newGunOrderIndex > this.guns[this.guns.length -1].getOrderIndex()
-    ) {
-      return this.guns.length;
-    }
-    for (let i = 0; i < this.guns.length; i++) {
-      const currGunOrderIndex = this.guns[i].getOrderIndex();
-      if (newGunOrderIndex < currGunOrderIndex) {
-        return i;
-      }
-    }
-    return 0;
   }
 
   getCurrentGun() {
