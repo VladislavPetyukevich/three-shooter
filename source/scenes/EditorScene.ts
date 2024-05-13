@@ -1,5 +1,5 @@
 import { Vector2 } from 'three';
-import { ENTITY_TYPE } from '@/constants';
+import { ENTITY_TYPE, PLAYER } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
@@ -69,17 +69,28 @@ export class EditorScene extends TestScene {
     this.removeBackgroundColorFromBlocker();
     this.createMapElements();
     this.createEntitiesElements();
-    document.addEventListener('keypress', (event) => {
-      const isEnableKey = event.key === this.enableKey;
-      if (!isEnableKey) {
-        return;
-      }
-      if (this.isEditorMode) {
+    document.addEventListener('pointerlockchange', () => {
+      if (document.pointerLockElement) {
         this.disableEditorMode();
       } else {
         this.enableEditorMode();
       }
     });
+
+    this.pickupAllGuns();
+    this.isPlayerFallingAtStart = false;
+    this.player.canMove();
+    this.player.mesh.position.set(60, PLAYER.BODY_HEIGHT, -5.32);
+  }
+
+  pickupAllGuns() {
+    const gunPickups = this.entitiesContainer.entities.filter(
+      entity => entity.type === ENTITY_TYPE.GUN_PICK_UP
+    );
+    gunPickups.forEach((entity) => this.player.onCollide(entity));
+    setTimeout(() => {
+      this.player.behavior.handleSwitchGunByIndex(0)({ name: 'weapon1', isEnded: false });
+    }, 300);
   }
 
   handleRoomVisit = (room: Room) => {
@@ -101,15 +112,15 @@ export class EditorScene extends TestScene {
     );
   }
 
-  enableEditorMode() {
+  enableEditorMode = () => {
     this.isEditorMode = true;
     console.log('++++EDITOR MODE ENABLED++++');
     this.loadFromLocalStorage();
     this.restoreEditorMap();
+    this.player.cantMove();
     this.moveCameraToSky();
     document.exitPointerLock();
     setTimeout(() => {
-      this.disableBlockerInstructions();
       this.changeGameStatus(true);
     }, 100);
   }
@@ -560,21 +571,11 @@ export class EditorScene extends TestScene {
     blockerEl.style.backgroundColor = 'initial';
   }
 
-  disableEditorMode() {
+  disableEditorMode = () => {
     this.isEditorMode = false;
     console.log('----EDITOR MODE DISABLED----');
-    this.enableBlockerInstructions();
-    this.changeGameStatus(false);
-  }
-
-  disableBlockerInstructions() {
-    const domEl = this.getInstructionsElement();
-    domEl.style.display = 'none';
-  }
-
-  enableBlockerInstructions() {
-    const domEl = this.getInstructionsElement();
-    domEl.style.display = 'block';
+    this.player.canMove();
+    this.changeGameStatus(true);
   }
 
   spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
