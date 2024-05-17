@@ -1,8 +1,6 @@
 import {
-  PointLight,
   Vector2,
   Vector3,
-  Fog,
   AmbientLight,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
@@ -38,7 +36,6 @@ export interface TestSceneProps extends BasicSceneProps {
 }
 
 export class TestScene extends BasicScene {
-  pointLight: PointLight;
   ambientLight: AmbientLight;
   ambientLightColor: number;
   ambientLightIntensity: number;
@@ -119,24 +116,13 @@ export class TestScene extends BasicScene {
     this.spawnGuns();
 
     // lights
-    this.ambientLightColor = 0x808080;
-    this.ambientLightIntensity = 30;
+    this.ambientLightColor = 0xFFFFFF;
+    this.ambientLightIntensity = 1024;
     this.ambientLight = new AmbientLight(
       this.ambientLightColor,
       this.ambientLightIntensity
     );
     this.scene.add(this.ambientLight);
-    const pointLightColor = 0xFFFFFF;
-    const pointLightIntensity = 133 * 1.3;
-    const pointLightDistance = 1333 * 1.3;
-    this.pointLight = new PointLight(
-      pointLightColor,
-      pointLightIntensity,
-      pointLightDistance
-    );
-    this.scene.add(this.pointLight);
-
-    this.scene.fog = new Fog(0x202020, 133 * 0.6, 133 * 1.9);
 
     this.logs = new PlayerLogs(this.roomSpawner.getSeed());
   }
@@ -366,7 +352,6 @@ export class TestScene extends BasicScene {
     super.update(delta);
     this.updateDeathCamera(delta);
     this.updateFalling(delta);
-    this.pointLight.position.copy(this.player.mesh.position);
   }
 
   updateDeathCamera(delta: number) {
