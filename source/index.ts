@@ -24,8 +24,15 @@ const SceneClass = TestScene;
 
 export type OnScoreSubmit = (playerLogs: PlayerLogsValue) => void;
 
+interface GameProps {
+  renderContainer: HTMLElement;
+  renderWidth: number;
+  renderHeight: number;
+  onScoreSubmit: () => void;
+}
+
 export default class ThreeShooter {
-  gameProps: any;
+  gameProps: GameProps;
   currScene: BasicScene;
   loadedScene?: BasicScene;
   mouseSensitivity: number;
@@ -39,7 +46,7 @@ export default class ThreeShooter {
   effectColorCorrection?: ShaderPass;
   effectColorPalette?: ShaderPass;
 
-  constructor(props: any) {
+  constructor(props: GameProps) {
     this.gameProps = props;
     this.currScene = new LoadingScene(props);
     this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
@@ -114,7 +121,7 @@ export default class ThreeShooter {
     this.controlsEnabled = newValue;
   }
 
-  loadResources(onLoad: Function) {
+  loadResources(onLoad: () => void) {
     const spriteSheetLoader = new SpriteSheetLoader(spriteSheet, 8);
     const onLoadSome = () => {
       const soundsProgress = (<LoadingScene>this.currScene).soundsProgress;

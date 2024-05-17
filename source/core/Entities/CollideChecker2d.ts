@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from 'three';
+import { Box3, BoxGeometry, CylinderGeometry, SphereGeometry, Vector3 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 
 interface EntityBounds {
@@ -188,20 +188,20 @@ export class CollideChecker2d {
   getSize(entity: Entity): { width: number; height: number } {
     if (entity.mesh.geometry.type === 'BoxGeometry') {
       return {
-        width: (<any>entity.mesh.geometry).parameters.width,
-        height: (<any>entity.mesh.geometry).parameters.depth
+        width: (entity.mesh.geometry as BoxGeometry).parameters.width,
+        height: (entity.mesh.geometry as BoxGeometry).parameters.depth
       };
     }
     if (entity.mesh.geometry.type === 'SphereGeometry') {
       return {
-        width: (<any>entity.mesh.geometry).parameters.radius * 2,
-        height: (<any>entity.mesh.geometry).parameters.radius * 2
+        width: (entity.mesh.geometry as SphereGeometry).parameters.radius * 2,
+        height: (entity.mesh.geometry as SphereGeometry).parameters.radius * 2
       };
     }
     if (entity.mesh.geometry.type === 'CylinderGeometry') {
       return {
-        width: (<any>entity.mesh.geometry).parameters.height,
-        height: (<any>entity.mesh.geometry).parameters.height
+        width: (entity.mesh.geometry as CylinderGeometry).parameters.height,
+        height: (entity.mesh.geometry as CylinderGeometry).parameters.height
       };
     }
     throw new Error(`geometry type are not suported: ${entity.mesh.geometry.type}`);

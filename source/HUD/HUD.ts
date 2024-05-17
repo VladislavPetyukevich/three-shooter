@@ -1,5 +1,4 @@
 import { Scene, OrthographicCamera, SpriteMaterial, Sprite } from 'three';
-import { texturesStore } from '@/core/loaders/TextureLoader';
 import { PLAYER } from '@/constants';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { SinTable } from '@/SinTable';

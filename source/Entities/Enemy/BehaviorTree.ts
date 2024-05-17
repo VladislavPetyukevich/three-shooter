@@ -35,7 +35,7 @@ export class BehaviorTree {
   }
 
   updateSequenceNode(node: SequenceNode, delta: number): boolean {
-    for (let child of node.sequence) {
+    for (const child of node.sequence) {
       const result = this.updateNode(child, delta);
       if (!result) {
         return false;

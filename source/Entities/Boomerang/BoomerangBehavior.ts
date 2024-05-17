@@ -1,8 +1,8 @@
 import { Vector3 } from 'three';
 import { Bullet, BulletProps } from '../Bullet/Bullet';
 import { BulletActor } from '../Bullet/BulletActor';
-import { BulletBehavior } from '../Bullet/BulletBehavior';
 import { BOOMERANG } from '@/constants';
+import { Behavior } from '@/core/Entities/Behavior';
 
 export interface BoomerangBehaviorProps {
   actor: BulletActor;
@@ -13,7 +13,7 @@ export interface BoomerangBehaviorProps {
 
 type BoomerangPhase = 'flyForward' | 'flyBlackward';
 
-export class BoomerangBehavior extends BulletBehavior {
+export class BoomerangBehavior implements Behavior {
   author: BulletProps['author'];
   actor: BulletActor;
   velocity: Vector3;
@@ -22,7 +22,6 @@ export class BoomerangBehavior extends BulletBehavior {
   setDirection: Bullet['setDirection'];
 
   constructor(props: BoomerangBehaviorProps) {
-    super();
     this.author = props.author;
     this.actor = props.actor;
     this.velocity = props.velocity;
@@ -32,7 +31,6 @@ export class BoomerangBehavior extends BulletBehavior {
   }
 
   update(delta: number) {
-    super.update(delta);
     switch (this.currentPhase) {
       case 'flyForward':
         if (this.flyForwardTime >= BOOMERANG.FIRST_PHASE_TIME) {

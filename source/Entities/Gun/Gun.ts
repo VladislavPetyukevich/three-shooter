@@ -1,9 +1,10 @@
-import { AudioListener, Camera, Vector3, Mesh, Texture } from 'three';
+import { AudioListener, Camera, Vector3, Mesh, Texture, BoxGeometry } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE } from '@/constants';
 import { GunActor } from './GunActor';
 import { GunBehavior } from './GunBehavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
+import { Actor } from '@/core/Entities/Actor';
 
 export const enum GunFireType {
   single,
@@ -35,7 +36,7 @@ export interface GunProps extends GunPropsExternal {
   behavior: GunBehavior;
 }
 
-export class Gun extends Entity<GunActor, GunBehavior> {
+export class Gun extends Entity<Actor, GunBehavior> {
   hudTextures?: GunHudTextures;
   orderIndex?: number;
 
@@ -91,14 +92,12 @@ export class Gun extends Entity<GunActor, GunBehavior> {
   }
 
   private getBulletPosisionOffset(geometry: Mesh['geometry']) {
-    switch (geometry.type) {
-      case 'BoxGeometry':
-        const width = (<any>geometry).parameters.width;
-        const depth = (<any>geometry).parameters.depth;
-        return (width > depth) ? width : depth;
-      default:
-        throw new Error(`Cant handle geometry type: ${geometry.type}`);
+    if (geometry.type !== 'BoxGeometry') {
+      throw new Error(`Cant handle geometry type: ${geometry.type}`);
     }
+    const width = (geometry as BoxGeometry).parameters.width;
+    const depth = (geometry as BoxGeometry).parameters.depth;
+    return (width > depth) ? width : depth;
   }
 
   update(delta: number) {

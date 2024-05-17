@@ -33,7 +33,7 @@ export type OnEnemySpawn = (
 ) => Entity;
 
 export interface TestSceneProps extends BasicSceneProps {
-  onFinish: Function;
+  onFinish: () => void;
   onScoreSubmit: OnScoreSubmit;
 }
 
@@ -55,7 +55,7 @@ export class TestScene extends BasicScene {
   playerFallInitialValue: number;
   playerFallCurrenValue: number;
   playerFallMaxValue: number;
-  onFinish: Function;
+  onFinish: () => void;
   logs: PlayerLogs;
 
   constructor(props: TestSceneProps) {

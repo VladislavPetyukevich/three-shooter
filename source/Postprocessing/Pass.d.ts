@@ -16,6 +16,7 @@ export class Pass {
 }
 
 export namespace Pass {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 	class FullScreenQuad {
 		constructor( material?: Material );
 

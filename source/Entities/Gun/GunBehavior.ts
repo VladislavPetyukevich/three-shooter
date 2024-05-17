@@ -62,8 +62,8 @@ export class GunBehavior implements Behavior {
   position: Vector3;
   bulletPositionOffset: number;
   lastShootBulletClass?: typeof Bullet;
-  onVisualRecoilStart?: Function;
-  onVisualRecoilEnd?: Function;
+  onVisualRecoilStart?: () => void;
+  onVisualRecoilEnd?: () => void;
 
   constructor(props: BehaviorProps) {
     this.playerCamera = props.playerCamera;

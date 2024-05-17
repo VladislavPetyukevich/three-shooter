@@ -43,7 +43,7 @@ export class EaseProgress {
   }
 
   getCurrentProgress() {
-    const currentProgress = (!!this.transitionFunction) ?
+    const currentProgress = (this.transitionFunction) ?
       this.transitionFunction(this.currentProgress) :
       this.currentProgress;
     return this.convertToUserRange(currentProgress);

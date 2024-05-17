@@ -7,7 +7,6 @@ import { RoomType } from './Factory/EnemyFactory';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { GunFireType } from '@/Entities/Gun/Gun';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { VaporizationAnimation } from '@/Animations/Vaporization';
@@ -177,21 +176,25 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         this.behavior.onPlayerGunpoint();
         break;
       case ENTITY_MESSAGES.infestedByParasite:
-        const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
-        this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
-        const targetColor = lighter(
-          this.actor.material.color,
-          ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
-        );
-        this.addAnimation(new SmoothColorChange({
-          actor: this.actor,
-          targetColor,
-          durationSeconds: 2,
-        }));
+        this.handleInfestedByParasite();
         break;
       default:
         break;
     }
+  }
+
+  handleInfestedByParasite() {
+    const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
+    this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
+    const targetColor = lighter(
+      this.actor.material.color,
+      ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
+    );
+    this.addAnimation(new SmoothColorChange({
+      actor: this.actor,
+      targetColor,
+      durationSeconds: 2,
+    }));
   }
 
   update(delta: number) {

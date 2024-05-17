@@ -4,7 +4,6 @@
 
 import {
 	ShaderMaterial,
-	UniformsUtils
 } from "three";
 import { Pass } from "./Pass";
 

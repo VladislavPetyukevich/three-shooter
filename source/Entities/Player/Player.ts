@@ -20,8 +20,8 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
   container: EntitiesContainer;
   hp: number;
   isDead: boolean;
-  onHitCallback?: Function;
-  onDeathCallback?: Function;
+  onHitCallback?: () => void;
+  onDeathCallback?: () => void;
 
   constructor(props: PlayerProps) {
     const actor = new PlayerActor({
@@ -101,11 +101,11 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
     }
   }
 
-  setOnHitCallback(callback: Function) {
+  setOnHitCallback(callback: () => void) {
     this.onHitCallback = callback;
   }
 
-  setOnDeathCallback(callback: Function) {
+  setOnDeathCallback(callback: () => void) {
     this.onDeathCallback = callback;
   }
 

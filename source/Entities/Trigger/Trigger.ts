@@ -9,13 +9,13 @@ interface TriggerProps {
   size: Vector3;
   position: Vector3;
   color: Color;
-  onTrigger: Function;
+  onTrigger: () => void;
   entitiesContainer: EntitiesContainer;
 }
 
 export class Trigger extends Entity {
   isEnabled: boolean;
-  onTrigger: Function;
+  onTrigger: () => void;
   entitiesContainer: EntitiesContainer;
 
   constructor(props: TriggerProps) {

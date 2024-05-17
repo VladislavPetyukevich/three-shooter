@@ -76,7 +76,7 @@ export class Pathfinder2d {
       if (currentNode.position.x === endNode.position.x && currentNode.position.y === currentNode.position.y) {
         return this.restorePath(currentNode);
       }
-      for (let neighbour of this.getNeighboringCells(currentNode.position)) {
+      for (const neighbour of this.getNeighboringCells(currentNode.position)) {
         if (!this.checkIsCellWalkable(neighbour)) {
           continue;
         }

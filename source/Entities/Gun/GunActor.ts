@@ -8,5 +8,5 @@ export class GunActor implements Actor {
     this.mesh = new Mesh();
   }
 
-  update(delta: number) { }
+  update() { }
 }

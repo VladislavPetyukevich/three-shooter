@@ -24,5 +24,6 @@ export class BulletActor implements Actor {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(delta: number) { }
 }

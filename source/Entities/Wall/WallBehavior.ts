@@ -1,13 +1,7 @@
 import { Behavior } from '@/core/Entities/Behavior';
 
-interface WallBehaviorProps { }
-
 export class WallBehavior implements Behavior {
-  constructor(props: WallBehaviorProps) {
+  constructor() {}
 
-  }
-
-  update(delta: number) {
-
-  }
+  update() {}
 }

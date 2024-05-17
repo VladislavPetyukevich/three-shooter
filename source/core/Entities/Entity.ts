@@ -25,16 +25,19 @@ export class Entity<A extends Actor = Actor, B extends Behavior = Behavior> {
     return this.actor.mesh;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onHit(damage: number, entity?: Entity) {
     if (typeof this.hp === 'number') {
       this.hp -= damage;
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCollide(entity: Entity) {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMessage(message: string | number) { }
 
   onDestroy() { }

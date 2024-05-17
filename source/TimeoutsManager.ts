@@ -21,13 +21,13 @@ export class TimeoutsManager<K extends keyof Timeouts> {
   }
 
   expireAllTimeOuts() {
-    for (let name in this.currentTimeOuts) {
+    for (const name in this.currentTimeOuts) {
       this.currentTimeOuts[name] = 0;
     }
   }
 
   updateExpiredTimeOuts() {
-    for (let name in this.currentTimeOuts) {
+    for (const name in this.currentTimeOuts) {
       this.updateExpiredTimeOut(name as K);
     }
   }

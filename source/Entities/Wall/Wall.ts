@@ -29,7 +29,7 @@ export class Wall extends Entity {
       color: props.color,
       maxDecalsCount: props.withDecals ? 5 : 0,
     });
-    const behavior = new WallBehavior({});
+    const behavior = new WallBehavior();
     super(
       ENTITY_TYPE.WALL,
       actor,

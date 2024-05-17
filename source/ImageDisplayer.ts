@@ -17,7 +17,7 @@ export class ImageDisplayer {
 
   add(texture: Texture, width = 2, height = 2) {
     const material = new SpriteMaterial({ map: texture });
-    let sprite = new Sprite(material);
+    const sprite = new Sprite(material);
     sprite.scale.set(this.width * width, this.height * height, 0.0001);
     sprite.name = `${++currentId}`;
     this.scene.add(sprite);

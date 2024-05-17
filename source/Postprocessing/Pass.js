@@ -26,6 +26,7 @@ Object.assign( Pass.prototype, {
 
 	render: function ( /* renderer, writeBuffer, readBuffer, deltaTime, maskActive */ ) {
 
+		// eslint-disable-next-line no-undef
 		console.error( 'THREE.Pass: .render() must be implemented in derived pass.' );
 
 	}

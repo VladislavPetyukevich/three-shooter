@@ -424,8 +424,8 @@ export class EditorScene extends TestScene {
     const result = this.roomCells
       .map(cell => {
         const fields: string[] = [];
-        for (let key in cell) {
-          const value = (cell as any)[key];
+        for (const key in cell) {
+          const value = cell[key as keyof RoomCell];
           if (key === 'position') {
             fields.push(`${key}: new Vector2(${(value as Vector2).x}, ${(value as Vector2).y})`);
             continue;
@@ -577,6 +577,7 @@ export class EditorScene extends TestScene {
   }
 
   changeGameStatus(isEnabled: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (<any>window).threeShooter.enabled = isEnabled;
   }
 

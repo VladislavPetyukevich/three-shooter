@@ -511,20 +511,7 @@ export class RoomSpawner {
       () => {
         switch (cell.event?.type) {
           case RoomCellEventType.OpenDoorIfNoEntitiesWithTag:
-            const isHasEntityWithTag = this.scene.currentRoom.entities.some(
-              entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
-            );
-            if (isHasEntityWithTag) {
-              return;
-            }
-            this.scene.currentRoom.entities.forEach(entity => {
-              if (
-                (entity.tag === cell.event?.targetEntityTag) &&
-                (entity.type === ENTITY_TYPE.WALL)
-              ) {
-                (entity as Door).open();
-              }
-            });
+            this.handleOpenDoorIfNoEntitiesWithTag(cell);
             break;
           default:
             break;
@@ -539,6 +526,23 @@ export class RoomSpawner {
     );
     enemy.tag = cell.tag;
     room.entities.push(enemy);
+  }
+
+  handleOpenDoorIfNoEntitiesWithTag(cell: RoomCell) {
+    const isHasEntityWithTag = this.scene.currentRoom.entities.some(
+      entity => (Number(entity.hp) > 0) && (entity.tag === cell.tag)
+    );
+    if (isHasEntityWithTag) {
+      return;
+    }
+    this.scene.currentRoom.entities.forEach(entity => {
+      if (
+        (entity.tag === cell.event?.targetEntityTag) &&
+        (entity.type === ENTITY_TYPE.WALL)
+      ) {
+        (entity as Door).open();
+      }
+    });
   }
 
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean, unbreakable?: boolean) {

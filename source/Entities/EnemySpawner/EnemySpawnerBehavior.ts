@@ -19,7 +19,7 @@ export class EnemySpawnerBehavior implements Behavior {
   spawnsCount: number;
   onTrigger: (position: Vector3) => boolean;
   spawnTiumeoutManager: TimeoutsManager<'spawnEnemy'>;
-  onDestroy?: Function;
+  onDestroy?: () => void;
 
   constructor(props: EnemySpawnerBehaviorProps) {
     this.position = props.position;

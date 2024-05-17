@@ -27,10 +27,10 @@ export class MindState {
     new Promise(this.saveToLocalStorageCallback);
   }
 
-  private saveToLocalStorageCallback = (resolve: Function) => {
+  private saveToLocalStorageCallback = (resolve: (value: null) => void) => {
     const stringified = JSON.stringify(this.persistValue);
     localStorage.setItem(this.localStorageKey, stringified);
-    resolve();
+    resolve(null);
   }
 
   private loadFromLocalStorage() {

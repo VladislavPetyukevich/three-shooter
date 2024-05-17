@@ -11,7 +11,6 @@ import { Gun, GunFireType } from '@/Entities/Gun/Gun';
 import { audioStore } from '@/core/loaders';
 import { randomNumbers } from '@/RandomNumbers';
 import { TimeoutsManager } from '@/TimeoutsManager';
-import { Machinegun } from '../Gun/Inheritor/Machinegun';
 import { EnemyGunBullet } from '../Gun/Inheritor/EnemyGunBullet';
 
 interface BehaviorProps {
@@ -70,8 +69,8 @@ export class EnemyBehavior implements Behavior {
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   onHitDamage?: { min: number; max: number; };
-  onDeathCallback?: Function;
-  onBleedCallback?: Function;
+  onDeathCallback?: () => void;
+  onBleedCallback?: () => void;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;

@@ -2,7 +2,7 @@ interface Transition {
   name: string;
   from: string | string[];
   to: string;
-  callback?: Function;
+  callback?: () => void;
 }
 
 interface StateMachineProps {

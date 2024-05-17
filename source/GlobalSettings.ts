@@ -7,7 +7,7 @@ type Settings = Record<SettingName, number>;
 
 class GlobalSettings {
   settings: Settings;
-  onUpdateCallbacks: Function[];
+  onUpdateCallbacks: (() => void)[];
 
   constructor() {
     this.settings = {
@@ -27,7 +27,7 @@ class GlobalSettings {
     return this.settings[name] || 0;
   }
 
-  addUpdateListener(callback: Function) {
+  addUpdateListener(callback: () => void) {
     this.onUpdateCallbacks.push(callback);
   }
 

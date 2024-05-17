@@ -9,8 +9,8 @@ interface DoorBehaviorProps {
 export class DoorBehavior implements Behavior {
   animation: ActorAnimator;
   stateMachine: StateMachine;
-  onOpen?: Function;
-  onClose?: Function;
+  onOpen?: () => void;
+  onClose?: () => void;
 
   constructor(props: DoorBehaviorProps) {
     this.animation = props.animation;
