@@ -2,7 +2,6 @@ import { Vector2 } from 'three';
 import { ENTITY_TYPE, PLAYER } from '@/constants';
 import { EnemyKind, RoomCell, RoomCellType, constructors } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
-import { Room } from './Spawner/RoomSpawner';
 
 interface CellColors {
   border: string;
@@ -57,7 +56,6 @@ export class EditorScene extends TestScene {
     };
     this.padding = 1;
     this.localStorageKey = 'editor-map';
-    this.removeBackgroundColorFromBlocker();
     this.createMapElements();
     this.createEntitiesElements();
     document.addEventListener('pointerlockchange', () => {
@@ -83,14 +81,6 @@ export class EditorScene extends TestScene {
       this.player.behavior.handleSwitchGunByIndex(0)({ name: 'weapon1', isEnded: false });
     }, 300);
   }
-
-  handleRoomVisit = (room: Room) => {
-    this.currentRoom = room;
-    this.enableEditorMode();
-    room.entities.forEach(
-      entity => this.entitiesContainer.remove(entity.mesh)
-    );
-  };
 
   loadFromLocalStorage() {
     const data = localStorage.getItem(this.localStorageKey);
@@ -275,14 +265,6 @@ export class EditorScene extends TestScene {
     this.groupSelectedCells = [];
   }
 
-  resetMapCellElBorder(cellX: number, cellY: number) {
-    const mapCellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
-    if (!mapCellEl) {
-      throw new Error('mapCellEl not found');
-    }
-    mapCellEl.style.border = this.getMapCellBorder(false);
-  }
-
   getMapCellBorder(selected: boolean) {
     return `1px solid ${selected ? this.cellColors.borderSelected : this.cellColors.border}`;
   }
@@ -321,14 +303,6 @@ export class EditorScene extends TestScene {
       y: cellY,
     });
     mapCellEl.style.background = this.getCellColor(cell);
-  }
-
-  clearMapCellElement(cellX: number, cellY: number) {
-    const mapCellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
-    if (!mapCellEl) {
-      throw new Error('mapCellEl not found');
-    }
-    mapCellEl.style.background = this.cellColors.transparent;
   }
 
   clearGhostMapCellElement(cellX: number, cellY: number) {
@@ -442,28 +416,6 @@ export class EditorScene extends TestScene {
     localStorage.setItem(this.localStorageKey, JSON.stringify(this.roomCells));
   }
 
-  clearMapElements() {
-    for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
-      for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
-        this.clearMapCellElement(cellX, cellY);
-        this.clearGhostMapCellElement(cellX, cellY);
-      }
-    }
-  }
-
-  fillRoomAfterVisit() {
-    this.enableEditorMode();
-  }
-
-  deleteEntitiesFromScene(entityType: ENTITY_TYPE) {
-    const entities = this.entitiesContainer.entities.filter(
-      entity => entity.type === entityType
-    );
-    entities.forEach(
-      entity => this.entitiesContainer.remove(entity.mesh)
-    );
-  }
-
   addEditorCellEntity(cellX: number, cellY: number, entityType: RoomCellType) {
     const cell: RoomCell = entityType === RoomCellType.Enemy ? {
       position: new Vector2(cellX, cellY),
@@ -529,11 +481,6 @@ export class EditorScene extends TestScene {
     this.updateRoomCells();
   }
 
-  removeBackgroundColorFromBlocker() {
-    const blockerEl = this.getBlockerElement();
-    blockerEl.style.backgroundColor = 'initial';
-  }
-
   disableEditorMode = () => {
     this.isEditorMode = false;
     console.log('----EDITOR MODE DISABLED----');
@@ -564,14 +511,6 @@ export class EditorScene extends TestScene {
     const domEl = document.getElementById('blocker');
     if (!domEl) {
       throw new Error('Failed to find blocker element');
-    }
-    return domEl;
-  }
-
-  getInstructionsElement() {
-    const domEl = document.getElementById('blocker-main');
-    if (!domEl) {
-      throw new Error('Failed to find instructions element');
     }
     return domEl;
   }
