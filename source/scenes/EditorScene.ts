@@ -1,21 +1,8 @@
 import { Vector2 } from 'three';
 import { ENTITY_TYPE, PLAYER } from '@/constants';
-import { Entity } from '@/core/Entities/Entity';
-import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { EnemyKind, RoomCell, RoomCellType, constructors } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
-
-interface SavedCell {
-  x: number;
-  y: number;
-  type: ENTITY_TYPE;
-}
-
-interface SelectedCell {
-  x: number;
-  y: number;
-  entity: Entity;
-}
 
 interface CellColors {
   border: string;
@@ -23,6 +10,7 @@ interface CellColors {
   empty: string;
   enemy: string;
   wall: string;
+  wallMini: string;
   transparent: string;
 }
 
@@ -31,21 +19,24 @@ const mapCellSize = '0.75rem';
 export class EditorScene extends TestScene {
   enableKey: string;
   isEditorMode: boolean;
-  currentEditorEntities: Entity[][];
-  currentEntityType: ENTITY_TYPE;
+  roomCells: RoomCell[];
+  currentEntityType: RoomCellType;
   currentEnemyKind: EnemyKind;
   cellColors: CellColors;
   padding: number;
   localStorageKey: string;
   rootElement: HTMLElement;
-  selectedCell?: SelectedCell;
-  groupSelectedCells: SelectedCell[];
+  selectedCell?: RoomCell;
+  groupSelectedCells: RoomCell[];
   prevFilledGhoshCells: { x: number; y: number; }[];
   fillMode: boolean;
+  miniWallChecked: boolean;
 
   constructor(props: TestSceneProps) {
     super(props);
     this.fillMode = false;
+    this.miniWallChecked = false;
+    this.roomCells = [];
     this.groupSelectedCells = [];
     this.prevFilledGhoshCells = [];
     this.offsetBlockerMain();
@@ -53,8 +44,7 @@ export class EditorScene extends TestScene {
     this.roomSpawner.onRoomVisit = this.handleRoomVisit;
     this.enableKey = '`';
     this.isEditorMode = false;
-    this.currentEditorEntities = [];
-    this.currentEntityType = ENTITY_TYPE.ENEMY;
+    this.currentEntityType = RoomCellType.Wall;
     this.currentEnemyKind = EnemyKind.Soul;
     this.cellColors = {
       border: '#666',
@@ -62,6 +52,7 @@ export class EditorScene extends TestScene {
       empty: 'black',
       enemy: '#933',
       wall: 'gray',
+      wallMini: 'LightGray',
       transparent: 'transparent',
     };
     this.padding = 1;
@@ -106,10 +97,13 @@ export class EditorScene extends TestScene {
     if (!data) {
       return;
     }
-    const parsed: SavedCell[] = JSON.parse(data);
-    parsed.forEach(cell =>
-      this.addEditorCellEntity(cell.x, cell.y, cell.type)
-    );
+    const parsed: RoomCell[] = JSON.parse(data);
+    this.roomCells = [];
+    parsed.forEach(cell => this.roomCells.push({
+      ...cell,
+      position: new Vector2(cell.position.x, cell.position.y),
+    }));
+    this.updateRoomCells();
   }
 
   enableEditorMode = () => {
@@ -155,20 +149,9 @@ export class EditorScene extends TestScene {
         mapCellElGhost.style.background = this.cellColors.empty;
         mapCellElGhost.style.border = this.getMapCellBorder(false);
 
-        mapCellEl.onclick = (event) => {
-          const cellEntity = this.getEditorCellEntity(cellX, cellY);
-          if (event.ctrlKey) {
-            if (!cellEntity) {
-              return;
-            }
-            this.addGroupSelectedCell({
-              x: cellX,
-              y: cellY,
-              entity: cellEntity,
-            });
-            return;
-          }
-          if (!cellEntity) {
+        mapCellEl.onclick = () => {
+          const cell = this.getRoomCell(cellX, cellY);
+          if (!cell) {
             this.addEditorCellEntity(cellX, cellY, this.currentEntityType);
           } else {
             this.removeEditorCellEntity(cellX, cellY);
@@ -178,18 +161,13 @@ export class EditorScene extends TestScene {
           if (event.ctrlKey) {
             return;
           }
-          const cellEntity = this.getEditorCellEntity(cellX, cellY);
-          if (!cellEntity) {
+          const cell = this.getRoomCell(cellX, cellY);
+          if (!cell) {
             this.fillMode = true;
             return;
           }
           mapContainer.style.cursor = 'grabbing';
-          this.selectedCell = {
-            x: cellX,
-            y: cellY,
-            entity: cellEntity,
-          };
-          this.removeEditorCellEntity(cellX, cellY);
+          this.selectedCell = cell;
         };
         mapCellEl.onmouseup = () => {
           mapContainer.style.cursor = 'default';
@@ -197,29 +175,41 @@ export class EditorScene extends TestScene {
           if (!this.selectedCell) {
             return;
           }
+          const samePos = (
+            this.selectedCell.position.x === cellX &&
+            this.selectedCell.position.y === cellY
+          );
+          if (samePos) {
+            this.selectedCell = undefined;
+            return;
+          }
+          const cell = this.getRoomCell(cellX, cellY);
+          if (cell) {
+            this.removeEditorCellEntity(cellX, cellY);
+            return;
+          }
+          this.removeEditorCellEntity(this.selectedCell.position.x, this.selectedCell.position.y);
+          this.addEditorCellEntity(cellX, cellY, this.currentEntityType);
           this.clearPrevFilledGhoshCells();
-          this.addEditorCellEntity(cellX, cellY, this.selectedCell.entity.type as ENTITY_TYPE);
-          this.resetMapCellElBorder(this.selectedCell.x, this.selectedCell.y);
           if (this.groupSelectedCells) {
-            this.groupSelectedCells.forEach(cell => {
+            this.groupSelectedCells.forEach(groupSelectedCell => {
               if (!this.selectedCell) {
                 return;
               }
-              if (cell.x === this.selectedCell.x && cell.y === this.selectedCell.y) {
+              if (groupSelectedCell === this.selectedCell) {
                 return;
               }
-              const cellDiffX = cell.x - this.selectedCell.x;
-              const cellDiffY = cell.y - this.selectedCell.y;
-              this.removeEditorCellEntity(cell.x, cell.y);
-              this.addEditorCellEntity(cellX + cellDiffX, cellY + cellDiffY, cell.entity.type as ENTITY_TYPE);
-              this.resetMapCellElBorder(cell.x, cell.y);
+              const cellDiffX = groupSelectedCell.position.x - this.selectedCell.position.x;
+              const cellDiffY = groupSelectedCell.position.y - this.selectedCell.position.y;
+              this.removeEditorCellEntity(groupSelectedCell.position.x, groupSelectedCell.position.y);
+              this.addEditorCellEntity(cellX + cellDiffX, cellY + cellDiffY, this.currentEntityType);
             });
           }
           this.selectedCell = undefined;
-          this.groupSelectedCells = [];
+          this.clearGroupSelectedCells();
         };
         mapCellEl.onmousemove = (event) => {
-          const cellEntity = this.getEditorCellEntity(cellX, cellY);
+          const cellEntity = this.getRoomCell(cellX, cellY);
           if (event.altKey && cellEntity) {
             this.removeEditorCellEntity(cellX, cellY);
             return;
@@ -235,24 +225,19 @@ export class EditorScene extends TestScene {
             if (!cellEntity) {
               return;
             }
-            this.addGroupSelectedCell({
-              x: cellX,
-              y: cellY,
-              entity: cellEntity,
-            });
-            mapCellEl.style.border = this.getMapCellBorder(true);
+            this.addGroupSelectedCell(cellEntity);
             return;
           }
           if (this.selectedCell) {
             this.clearPrevFilledGhoshCells();
-            this.fillGhostMapCellElement(cellX, cellY, this.selectedCell.entity.type as ENTITY_TYPE);
+            this.fillGhostMapCellElement(cellX, cellY, this.selectedCell);
             this.groupSelectedCells.forEach(groupSelectedCell => {
               if (!this.selectedCell) {
                 return;
               }
-              const cellDiffX = groupSelectedCell.x - this.selectedCell.x;
-              const cellDiffY = groupSelectedCell.y - this.selectedCell.y;
-              this.fillGhostMapCellElement(cellX + cellDiffX, cellY + cellDiffY, groupSelectedCell.entity.type as ENTITY_TYPE)
+              const cellDiffX = groupSelectedCell.position.x - this.selectedCell.position.x;
+              const cellDiffY = groupSelectedCell.position.y - this.selectedCell.position.y;
+              this.fillGhostMapCellElement(cellX + cellDiffX, cellY + cellDiffY, groupSelectedCell);
             });
             return;
           }
@@ -272,14 +257,22 @@ export class EditorScene extends TestScene {
     this.rootElement.appendChild(mapContainerGhost);
   }
 
-  addGroupSelectedCell(cell: SelectedCell) {
-    const alreadySelected = !!this.groupSelectedCells.find(
-      c => c.x === cell.x && c.y === cell.y
-    );
+  addGroupSelectedCell(cell: RoomCell) {
+    const alreadySelected = this.groupSelectedCells.indexOf(cell) !== -1;
     if (alreadySelected) {
       return;
     }
     this.groupSelectedCells.push(cell);
+    const cellEl = this.getMapCellElement(cell.position.x, cell.position.y);
+    cellEl.style.border = this.getMapCellBorder(true);
+  }
+
+  clearGroupSelectedCells() {
+    this.groupSelectedCells.forEach(cell => {
+      const cellEl = this.getMapCellElement(cell.position.x, cell.position.y);
+      cellEl.style.border = this.getMapCellBorder(false);
+    });
+    this.groupSelectedCells = [];
   }
 
   resetMapCellElBorder(cellX: number, cellY: number) {
@@ -294,6 +287,14 @@ export class EditorScene extends TestScene {
     return `1px solid ${selected ? this.cellColors.borderSelected : this.cellColors.border}`;
   }
 
+  getMapCellElement(cellX: number, cellY: number) {
+    const cellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
+    if (!cellEl) {
+      throw new Error('cellEl not found');
+    }
+    return cellEl;
+  }
+
   getMapCellElementId(cellX: number, cellY: number) {
     return `map-cell-${cellX}-${cellY}`;
   }
@@ -302,15 +303,15 @@ export class EditorScene extends TestScene {
     return `map-cell-ghost-${cellX}-${cellY}`;
   }
 
-  fillMapCellElement(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
+  fillMapCellElement(cellX: number, cellY: number, cell: RoomCell) {
     const mapCellEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
     if (!mapCellEl) {
       throw new Error('mapCellEl not found');
     }
-    mapCellEl.style.background = this.getCellColor(entityType);
+    mapCellEl.style.background = this.getCellColor(cell);
   }
 
-  fillGhostMapCellElement(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
+  fillGhostMapCellElement(cellX: number, cellY: number, cell: RoomCell) {
     const mapCellEl = document.getElementById(this.getGhostMapCellElementId(cellX, cellY));
     if (!mapCellEl) {
       throw new Error('mapCellEl not found');
@@ -319,7 +320,7 @@ export class EditorScene extends TestScene {
       x: cellX,
       y: cellY,
     });
-    mapCellEl.style.background = this.getCellColor(entityType);
+    mapCellEl.style.background = this.getCellColor(cell);
   }
 
   clearMapCellElement(cellX: number, cellY: number) {
@@ -345,12 +346,14 @@ export class EditorScene extends TestScene {
     this.prevFilledGhoshCells = [];
   }
 
-  getCellColor(entityType: ENTITY_TYPE) {
-    switch (entityType) {
-      case ENTITY_TYPE.ENEMY:
-        return this.cellColors.enemy;
-      case ENTITY_TYPE.WALL:
+  getCellColor(cell: RoomCell) {
+    switch (cell.type) {
+      case RoomCellType.Wall:
+        return cell.mini ? this.cellColors.wallMini : this.cellColors.wall;
+      case RoomCellType.DoorWall:
         return this.cellColors.wall;
+      case RoomCellType.Enemy:
+        return this.cellColors.enemy;
       default:
         return '';
     }
@@ -361,7 +364,7 @@ export class EditorScene extends TestScene {
     const enemyButton = document.createElement('button');
     enemyButton.style.background = this.cellColors.enemy;
     enemyButton.innerHTML = 'Enemy';
-    enemyButton.onclick = () => this.currentEntityType = ENTITY_TYPE.ENEMY;
+    enemyButton.onclick = () => this.currentEntityType = RoomCellType.Enemy;
     const enemyKindSelect = document.createElement('select');
     enemyKindSelect.style.background = 'azure';
     [
@@ -379,8 +382,15 @@ export class EditorScene extends TestScene {
     const wallButton = document.createElement('button');
     wallButton.style.background = this.cellColors.wall;
     wallButton.innerHTML = 'Wall';
-    wallButton.onclick = () => this.currentEntityType = ENTITY_TYPE.WALL;
+    wallButton.onclick = () => this.currentEntityType = RoomCellType.Wall;
     container.appendChild(wallButton);
+    const miniCheckbox = document.createElement('input');
+    miniCheckbox.type = 'checkbox';
+    miniCheckbox.onclick = (event: MouseEvent) => {
+      const checked = (event.target as HTMLInputElement).checked;
+      this.miniWallChecked = checked;
+    };
+    container.appendChild(miniCheckbox);
 
     const utilityButtonsContainer = document.createElement('div');
     utilityButtonsContainer.style.display = 'flex';
@@ -388,8 +398,7 @@ export class EditorScene extends TestScene {
     const clearButton = document.createElement('button');
     clearButton.innerHTML = 'Clear';
     clearButton.onclick = () => {
-      this.clearMapElements();
-      this.clearEditorEntities();
+      this.clearEditor();
     };
     utilityButtonsContainer.appendChild(clearButton);
     const exportButton = document.createElement('button');
@@ -412,46 +421,25 @@ export class EditorScene extends TestScene {
   }
 
   logDungeonToConsole() {
-    let resultJson = '[';
-    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
-      const xRow = this.currentEditorEntities[cellX];
-      if (!xRow) {
-        continue;
-      }
-      for (let cellY = 0; cellY < xRow.length; cellY++) {
-        if (xRow[cellY]) {
-          const entityType = this.currentEditorEntities[cellX][cellY].type;
-          const entityTypeFormated =
-            entityType[0].toLocaleUpperCase() +
-            entityType.slice(1).toLocaleLowerCase();
-          resultJson += '\n  {';
-          resultJson += ` position: new Vector2(${cellX}, ${cellY}),`;
-          resultJson += ` type: RoomCellType.${entityTypeFormated}`;
-          resultJson += ' },';
+    const result = this.roomCells
+      .map(cell => {
+        const fields: string[] = [];
+        for (let key in cell) {
+          const value = (cell as any)[key];
+          if (key === 'position') {
+            fields.push(`${key}: new Vector2(${(value as Vector2).x}, ${(value as Vector2).y})`);
+            continue;
+          }
+          fields.push(`${key}: ${value}`);
         }
-      }
-    }
-    resultJson += '\n];';
-    console.log(resultJson);
+        return `{${fields.join(', ')}},`;
+      })
+      .join('\n');
+    console.log(result);
   }
 
   saveDungeonToLocalStorage() {
-    const data = [];
-    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
-      const xRow = this.currentEditorEntities[cellX];
-      if (!xRow) {
-        continue;
-      }
-      for (let cellY = 0; cellY < xRow.length; cellY++) {
-        if (xRow[cellY]) {
-          const entity = this.getEditorCellEntity(cellX, cellY);
-          data.push(
-            { x: cellX, y: cellY, type: entity?.type }
-          );
-        }
-      }
-    }
-    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
+    localStorage.setItem(this.localStorageKey, JSON.stringify(this.roomCells));
   }
 
   clearMapElements() {
@@ -476,94 +464,69 @@ export class EditorScene extends TestScene {
     );
   }
 
-  addEditorCellEntity(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
-    const entity = this.spawnEntityInRoom(cellX, cellY, entityType);
-    if (!this.currentEditorEntities[cellX]) {
-      this.currentEditorEntities[cellX] = [];
-    }
-    this.currentEditorEntities[cellX][cellY] = entity;
-    this.fillMapCellElement(cellX, cellY, entityType);
+  addEditorCellEntity(cellX: number, cellY: number, entityType: RoomCellType) {
+    const cell: RoomCell = entityType === RoomCellType.Enemy ? {
+      position: new Vector2(cellX, cellY),
+      type: entityType,
+      kind: EnemyKind.Soul,
+    } : {
+      position: new Vector2(cellX, cellY),
+      type: entityType,
+      mini: this.miniWallChecked,
+    };
+    this.roomCells.push(cell);
+    this.updateRoomCells();
   }
 
   removeEditorCellEntity(cellX: number, cellY: number) {
-    if (!this.currentEditorEntities[cellX]) {
+    const cell = this.getRoomCell(cellX, cellY);
+    if (!cell) {
       return;
     }
-    const entity = this.currentEditorEntities[cellX][cellY];
-    this.entitiesContainer.remove(entity.mesh);
-    delete this.currentEditorEntities[cellX][cellY];
-    this.clearMapCellElement(cellX, cellY);
+    const cellIndex = this.roomCells.indexOf(cell);
+    this.roomCells.splice(cellIndex, 1);
+    this.updateRoomCells();
   }
 
-  getNeighboringEntites(cellX: number, cellY: number) {
-    return [
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, 1, 0),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, -1, 0),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, 0, 1),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, 0, -1),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, 1, 1),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, 1, -1),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, -1, 1),
-      ...this.getNeighboringEntitesInDirection(cellX, cellY, -1, -1),
-    ];
-  }
-
-  getNeighboringEntitesInDirection(
-    cellX: number, cellY: number,
-    directionX: number, directionY: number,
-  ) {
-    const result: SelectedCell[] = [];
-
-    const coordinates: [number, number] = [cellX + directionX, cellY + directionY];
-    const neighbour = this.getEditorCellEntity(...coordinates);
-    if (neighbour) {
-      result.push({
-        x: coordinates[0],
-        y: coordinates[1],
-        entity: neighbour,
-      });
-      result.push(...this.getNeighboringEntitesInDirection(...coordinates, directionX, directionY));
-    }
-    return result;
-  }
-
-  getEditorCellEntity(cellX: number, cellY: number) {
-    if (!this.currentEditorEntities[cellX]) {
-      return;
-    }
-    return this.currentEditorEntities[cellX][cellY];
-  }
-
-  clearEditorEntities() {
-    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
-      const xRow = this.currentEditorEntities[cellX];
-      if (!xRow) {
-        continue;
-      }
-      for (let cellY = 0; cellY < xRow.length; cellY++) {
-        if (xRow[cellY]) {
-          this.removeEditorCellEntity(cellX, cellY);
-          delete xRow[cellY];
+  updateEditorMap() {
+    for (let cellY = this.padding; cellY < this.roomSpawner.roomSize.height - this.padding; cellY++) {
+      for (let cellX = this.padding; cellX < this.roomSpawner.roomSize.width - this.padding; cellX++) {
+        const editorMapEl = document.getElementById(this.getMapCellElementId(cellX, cellY));
+        if (!editorMapEl) {
+          throw new Error('editorMapEl not found');
         }
+        const cell = this.getRoomCell(cellX, cellY);
+        editorMapEl.style.background = cell ? this.getCellColor(cell) : this.cellColors.transparent;
       }
     }
+  }
+
+  getRoomCell(cellX: number, cellY: number) {
+    return this.roomCells.find(cell =>
+      cell.position.x === cellX && cell.position.y === cellY
+    );
+  }
+
+  clearEditor() {
+    this.roomCells = [];
+    this.updateRoomCells();
+  }
+
+  updateRoomCells() {
+    this.currentRoom.entities.forEach(entity => this.entitiesContainer.remove(entity.mesh));
+    this.currentRoom.entities = [];
+    constructors[0] = () => this.roomCells;
+    this.currentRoom.constructorIndex = 0;
+    this.roomSpawner.fillRoomBeforeVisit(this.currentRoom);
+    this.roomSpawner.fillRoomAfterVisit(this.currentRoom);
+    this.updateEditorMap();
   }
 
   restoreEditorMap() {
-    for (let cellX = 0; cellX < this.currentEditorEntities.length; cellX++) {
-      const xRow = this.currentEditorEntities[cellX];
-      if (!xRow) {
-        continue;
-      }
-      for (let cellY = 0; cellY < xRow.length; cellY++) {
-        if (xRow[cellY]) {
-          const entity = this.currentEditorEntities[cellX][cellY];
-          this.entitiesContainer.remove(entity.mesh);
-          const newEntity = this.spawnEntityInRoom(cellX, cellY, entity.type as ENTITY_TYPE);
-          this.currentEditorEntities[cellX][cellY] = newEntity;
-        }
-      }
-    }
+    const roomCellsClone = [...this.roomCells];
+    this.clearEditor();
+    this.roomCells = roomCellsClone;
+    this.updateRoomCells();
   }
 
   removeBackgroundColorFromBlocker() {
@@ -576,30 +539,6 @@ export class EditorScene extends TestScene {
     console.log('----EDITOR MODE DISABLED----');
     this.player.canMove();
     this.changeGameStatus(true);
-  }
-
-  spawnEntityInRoom(cellX: number, cellY: number, entityType: ENTITY_TYPE) {
-    const cell = new Vector2(cellX, cellY);
-    const roomCoordinates = this.cellCoordinates.toWorldCoordinates(this.currentRoom.cellPosition);
-    const cellCoordinates =
-      this.cellCoordinates.toWorldCoordinates(cell).add(roomCoordinates);
-    switch (entityType) {
-      case ENTITY_TYPE.ENEMY:
-        return this.spawnEnemy(
-          cellCoordinates,
-          this.currentRoom.type,
-          this.currentEnemyKind,
-        );
-      case ENTITY_TYPE.WALL:
-        return this.roomSpawner.spawnWall(
-          this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
-          new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
-          this.currentRoom.type,
-          false,
-        );
-      default:
-        throw new Error(`entityType: ${entityType} not found`);
-    }
   }
 
   createEditorRootElement() {
