@@ -2,6 +2,7 @@ import { Vector2 } from 'three';
 import { ENTITY_TYPE, PLAYER } from '@/constants';
 import { EnemyKind, RoomCell, RoomCellType, constructors } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
+import { Room } from './Spawner/RoomSpawner';
 
 interface CellColors {
   border: string;
@@ -71,6 +72,14 @@ export class EditorScene extends TestScene {
     this.player.canMove();
     this.player.mesh.position.set(60, PLAYER.BODY_HEIGHT, -5.32);
   }
+
+  handleRoomVisit = (room: Room) => {
+    this.currentRoom = room;
+    this.enableEditorMode();
+    room.entities.forEach(
+      entity => this.entitiesContainer.remove(entity.mesh)
+    );
+  };
 
   pickupAllGuns() {
     const gunPickups = this.entitiesContainer.entities.filter(
