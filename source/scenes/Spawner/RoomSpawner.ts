@@ -29,6 +29,7 @@ import {
   EnemyRoomCell,
   RoomCellEventType,
   DungeonRoom,
+  WallRoomCell,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -461,7 +462,7 @@ export class RoomSpawner {
 
   fillRoomCells(room: Room, cells: RoomCell[]) {
     cells.forEach(cell => {
-      const cellPosition = cell.position.add(room.cellPosition);
+      const cellPosition = cell.position.clone().add(room.cellPosition);
       const cellCoordinates =
         this.cellCoordinates.toWorldCoordinates(cellPosition);
       switch (cell.type) {
@@ -480,11 +481,14 @@ export class RoomSpawner {
     });
   }
 
-  fillWallCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
+  fillWallCell(room: Room, cell: WallRoomCell, cellCoordinates: Vector2) {
+    const wallSizeValue = cell.mini ? 1 : this.cellCoordinates.size;
+    const wallSize = new Vector2(wallSizeValue, wallSizeValue);
+    const centerPosition = this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size));
     const wall =
       this.spawnWall(
-        this.getCenterPosition(cellCoordinates, new Vector2(this.cellCoordinates.size, this.cellCoordinates.size)),
-        new Vector2(this.cellCoordinates.size, this.cellCoordinates.size),
+        centerPosition,
+        wallSize,
         room.type,
         false,
       )
@@ -546,31 +550,24 @@ export class RoomSpawner {
       withDecals,
       unbreakable,
     };
+    const WallConstructor = this.getWallConstructor(roomType);
+    const wall = this.entitiesContainer.add(
+      new WallConstructor(props)
+    );
+    wall.setScaticPositionOptimizations(true);
+    return wall;
+  }
+
+  getWallConstructor(roomType: RoomType) {
     switch (roomType) {
       case RoomType.Apathy:
-        const wallApathy = this.entitiesContainer.add(
-          new WallApathy(props)
-        );
-        wallApathy.setScaticPositionOptimizations(true);
-        return wallApathy;
+        return WallApathy;
       case RoomType.Cowardice:
-        const wallCowardice = this.entitiesContainer.add(
-          new WallCowardice(props)
-        );
-        wallCowardice.setScaticPositionOptimizations(true);
-        return wallCowardice;
+        return WallCowardice;
       case RoomType.SexualPerversions:
-        const wallSexualPerversions = this.entitiesContainer.add(
-          new WallSexualPerversions(props)
-        );
-        wallSexualPerversions.setScaticPositionOptimizations(true);
-        return wallSexualPerversions;
+        return WallSexualPerversions;
       default:
-        const wallNeutral = this.entitiesContainer.add(
-          new WallNeutral(props)
-        );
-        wallNeutral.setScaticPositionOptimizations(true);
-        return wallNeutral;
+        return WallNeutral;
     }
   }
 

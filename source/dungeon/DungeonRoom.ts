@@ -40,6 +40,7 @@ export interface EnemyRoomCell extends BasicRoomCell {
 
 export interface WallRoomCell extends BasicRoomCell {
   type: RoomCellType.Wall | RoomCellType.DoorWall;
+  mini: boolean;
 }
 
 export type RoomCell =
@@ -72,7 +73,7 @@ export const constructors: RoomConstructor[] = [
         event: doorEvent,
         kind: EnemyKind.Shooter,
       },
-      { position: new Vector2(4, 4), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag },
+      { position: new Vector2(4, 4), type: RoomCellType.DoorWall, mini: false, tag: doorForEnemy1Tag },
     ];
   },
   (size) => {
@@ -91,8 +92,8 @@ export const constructors: RoomConstructor[] = [
         continue;
       }
       cells.push(
-        { position: new Vector2(x, padding), type: RoomCellType.DoorWall, tag: doorForEnemy1Tag},
-        { position: new Vector2(x, size.y - padding), type: RoomCellType.Wall },
+        { position: new Vector2(x, padding), type: RoomCellType.DoorWall, mini: false, tag: doorForEnemy1Tag},
+        { position: new Vector2(x, size.y - padding), type: RoomCellType.Wall, mini: false, },
       );
     }
     for (let y = centerY - stipSize; y < centerY + stipSize; y++) {
@@ -100,8 +101,8 @@ export const constructors: RoomConstructor[] = [
         continue;
       }
       cells.push(
-        { position: new Vector2(padding, y), type: RoomCellType.Wall },
-        { position: new Vector2(size.x - padding, y), type: RoomCellType.Wall },
+        { position: new Vector2(padding, y), type: RoomCellType.Wall, mini: false, },
+        { position: new Vector2(size.x - padding, y), type: RoomCellType.Wall, mini: false, },
       );
     }
     return cells;
@@ -113,25 +114,25 @@ export const constructors: RoomConstructor[] = [
       { position: new Vector2(10, 15), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
       { position: new Vector2(16, 9), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
 
-      { position: new Vector2(3, 3 ), type: RoomCellType.Wall },
-      { position: new Vector2(3, 16 ), type: RoomCellType.Wall },
-      { position: new Vector2(5, 5 ), type: RoomCellType.Wall },
-      { position: new Vector2(5, 14 ), type: RoomCellType.Wall },
-      { position: new Vector2(7, 7 ), type: RoomCellType.Wall },
-      { position: new Vector2(7, 8 ), type: RoomCellType.Wall },
-      { position: new Vector2(7, 11 ), type: RoomCellType.Wall },
-      { position: new Vector2(7, 12 ), type: RoomCellType.Wall },
-      { position: new Vector2(8, 7 ), type: RoomCellType.Wall },
-      { position: new Vector2(11, 7 ), type: RoomCellType.Wall },
-      { position: new Vector2(11, 12 ), type: RoomCellType.Wall },
-      { position: new Vector2(12, 7 ), type: RoomCellType.Wall },
-      { position: new Vector2(12, 8 ), type: RoomCellType.Wall },
-      { position: new Vector2(12, 11 ), type: RoomCellType.Wall },
-      { position: new Vector2(12, 12 ), type: RoomCellType.Wall },
-      { position: new Vector2(14, 5 ), type: RoomCellType.Wall },
-      { position: new Vector2(14, 14 ), type: RoomCellType.Wall },
-      { position: new Vector2(16, 3 ), type: RoomCellType.Wall },
-      { position: new Vector2(16, 16 ), type: RoomCellType.Wall },
+      { position: new Vector2(3, 3 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(3, 16 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(5, 5 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(5, 14 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(7, 7 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(7, 8 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(7, 11 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(7, 12 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(8, 7 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(11, 7 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(11, 12 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(12, 7 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(12, 8 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(12, 11 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(12, 12 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(14, 5 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(14, 14 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(16, 3 ), type: RoomCellType.Wall, mini: false, },
+      { position: new Vector2(16, 16 ), type: RoomCellType.Wall, mini: false, },
     ];
   }
 ];
