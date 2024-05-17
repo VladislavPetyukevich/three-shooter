@@ -1,14 +1,17 @@
 import { Color } from 'three';
-import { COLORS } from '@/constants';
 
 const palette: Color[] = [];
 
-const baseColors = [
-  new Color(0x000000),
-  new Color(0xffffff),
-  COLORS.Cowardice,
-  COLORS.SexualPerversions,
-  COLORS.Apathy
+const baseColors: Color[] = [
+  new Color(0x130310),
+  new Color(0x1d0518),
+  new Color(0x270721),
+  new Color(0x3c0921),
+  new Color(0x520b20),
+  new Color(0x7d0f1f),
+  new Color(0xa8141d),
+  new Color(0xd3181c),
+  new Color(0xff252b),
 ];
 
 baseColors.forEach(color => {
