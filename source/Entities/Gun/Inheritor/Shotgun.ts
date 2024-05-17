@@ -11,7 +11,7 @@ export class Shotgun extends GunRaycast {
       maxEffectiveDistance: 25,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
-      bulletsPerShoot: 2,
+      bulletsPerShoot: 8,
       recoilTime: 0.2,
       shootsToMaxHeat: 1000,
       fireType: GunFireType.single,
