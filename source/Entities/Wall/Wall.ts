@@ -27,7 +27,7 @@ export class Wall extends Entity {
       textureFileName: 'wallTextureFile',
       textureRepeat: 3,
       color: props.color,
-      maxDecalsCount: props.withDecals ? 5 : 0,
+      decalsCount: props.withDecals ? 16 : 0,
     });
     const behavior = new WallBehavior();
     super(

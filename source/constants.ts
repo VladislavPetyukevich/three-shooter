@@ -62,6 +62,8 @@ export const ENEMY_COLORS = {
   PARASITE_LIGHTER_FACTOR: 0.9,
 };
 
+export const DECAL_COLOR = new Color(0x770000);
+
 const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 70;
 const BASE_DISTANCE = 20;

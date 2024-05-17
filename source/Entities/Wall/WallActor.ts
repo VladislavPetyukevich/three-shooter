@@ -13,9 +13,8 @@ import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 import { texturesStore } from '@/core/loaders/TextureLoader';
 import { randomNumbers } from '@/RandomNumbers';
 import { gameTextures } from '@/constantsAssets';
+import { DECAL_COLOR } from '@/constants';
 
-const WALL_TEXTURE_SIZE = 32;
-const DECAL_TEXTURE_SIZE = 16;
 const DECAL_TEXTURES = ['wallDecal1TextureFile', 'wallDecal2TextureFile', 'wallDecal3TextureFile'];
 
 interface WallActorProps {
@@ -23,7 +22,7 @@ interface WallActorProps {
   position: Vector3;
   textureRepeat: number;
   textureFileName: keyof typeof gameTextures;
-  maxDecalsCount: number;
+  decalsCount: number;
   isHorizontalWall?: boolean;
   color?: Color;
 }
@@ -32,7 +31,7 @@ export class WallActor implements Actor {
   mesh: Mesh;
   textureFileName: string;
   textureRepeat: number;
-  decalCoordinatesHash: Set<number>;
+  decalCoordinatesHash: Set<string>;
   color?: Color;
 
   constructor(props: WallActorProps) {
@@ -58,8 +57,8 @@ export class WallActor implements Actor {
     this.mesh = new Mesh(geometry, materials);
 
     this.decalCoordinatesHash = new Set();
-    if (props.maxDecalsCount) {
-      for (let i = randomNumbers.getRandomInRange(1, props.maxDecalsCount); i--;) {
+    if (props.decalsCount) {
+      for (let i = props.decalsCount; i--;) {
         const decal = this.createRandomDecal(props);
         decal && this.mesh.add(decal);
       }
@@ -88,16 +87,17 @@ export class WallActor implements Actor {
 
   createRandomDecal(props: WallActorProps) {
     const wallSize =
-      props.isHorizontalWall ? props.size.height : props.size.width;
-    const wallPixelSize = wallSize / WALL_TEXTURE_SIZE;
-    const maxX = WALL_TEXTURE_SIZE * wallSize / DECAL_TEXTURE_SIZE;
-    const xShift = randomNumbers.getRandomInRange(-maxX, maxX) * 16;
-    const yShift = -16 / 2 + 16 * randomNumbers.getRandomInRange(0, (WALL_TEXTURE_SIZE / DECAL_TEXTURE_SIZE) - 1);
-    const coordinatesHash = xShift;
-    if (this.decalCoordinatesHash.has(coordinatesHash)) {
+      props.isHorizontalWall ? props.size.depth : props.size.width;
+    const wallWidth = props.isHorizontalWall ? props.size.width : props.size.depth;
+    const decalWidth = 1.5;
+    const xShift = (wallWidth / 2 / decalWidth) - decalWidth / 2;
+    const xPos = randomNumbers.getRandomInRange(-xShift, xShift);
+    const yPos = (decalWidth / 4) * (randomNumbers.getRandomInRange(0, 1) ? 1 : -1);
+    const coordinateHash = `${xPos}${yPos}`;
+    if (this.decalCoordinatesHash.has(coordinateHash)) {
       return;
     }
-    this.decalCoordinatesHash.add(coordinatesHash);
+    this.decalCoordinatesHash.add(coordinateHash);
     const size = new Vector3(
       wallSize / 2,
       wallSize / 2,
@@ -109,13 +109,13 @@ export class WallActor implements Actor {
       0
     );
     const position = new Vector3(
-      props.isHorizontalWall ? (wallPixelSize) * xShift : 0,
-      (wallPixelSize) * yShift,
-      props.isHorizontalWall ? 0 : -(wallPixelSize) * xShift,
+      props.isHorizontalWall ? xPos * decalWidth : 0,
+      yPos,
+      props.isHorizontalWall ? 0 : xPos * decalWidth,
     );
     const decalMaterial = new MeshLambertMaterial({
       map: texturesStore.getTexture(this.getRandomDecalName()),
-      color: props.color,
+      color: DECAL_COLOR,
       transparent: true,
       polygonOffset: true,
       polygonOffsetFactor: -1.3,
