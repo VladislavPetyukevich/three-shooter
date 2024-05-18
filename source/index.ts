@@ -13,6 +13,7 @@ import { RenderPass } from './Postprocessing/RenderPass';
 import { EffectComposer } from './Postprocessing/EffectComposer';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
+import { SharpenShader } from './Postprocessing/Shaders/Sharpen';
 import { texturesStore, audioStore } from '@/core/loaders';
 import { SpriteSheetLoader } from '@/SpriteSheetLoader';
 import { gameTextures, gameSounds, spriteSheet } from './constantsAssets';
@@ -45,6 +46,7 @@ export default class ThreeShooter {
   composer: EffectComposer;
   effectColorCorrection?: ShaderPass;
   effectColorPalette?: ShaderPass;
+  effectSharpen?: ShaderPass;
 
   constructor(props: GameProps) {
     this.gameProps = props;
@@ -86,6 +88,10 @@ export default class ThreeShooter {
     this.currScene.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
     this.composer.setSize(width, height);
+    if (this.effectSharpen) {
+      this.effectSharpen.uniforms.width.value = window.innerWidth;
+		  this.effectSharpen.uniforms.height.value = window.innerHeight;
+    }
     this.updateRenderer(0);
   };
 
@@ -191,6 +197,8 @@ export default class ThreeShooter {
     this.composer.addPass(this.effectColorCorrection);
     this.effectColorPalette = new ShaderPass(ColorPaletteShader);
     this.composer.addPass(this.effectColorPalette);
+    this.effectSharpen = new ShaderPass(SharpenShader);
+    this.composer.addPass(this.effectSharpen);
   }
 
   setPixelRatio = (value: number) => {
