@@ -13,6 +13,7 @@ export class EnemyGunBullet extends GunBullet {
       BulletClass: props.BulletClass,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
+      shootOffsetY: false,
       bulletsPerShoot: 1,
       shootsToMaxHeat: 1000,
       shootSoundName: 'shootShotgun',

@@ -49,7 +49,10 @@ export class Bullet extends Entity {
   }
 
   onCollide(entity: Entity) {
-    if (entity.type === ENTITY_TYPE.BULLET) {
+    if (
+      entity.type === ENTITY_TYPE.BULLET ||
+      this.author === entity
+    ) {
       return true;
     }
     if (this.damage) {

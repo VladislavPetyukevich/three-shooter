@@ -13,6 +13,7 @@ export class BoomerangGun extends GunBullet {
       BulletClass: Boomerang,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
+      shootOffsetY: true,
       bulletsPerShoot: 1,
       recoilTime: 0.15,
       fireType: GunFireType.single,

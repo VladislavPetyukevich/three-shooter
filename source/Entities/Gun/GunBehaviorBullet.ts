@@ -27,7 +27,7 @@ export class GunBehaviorBullet extends GunBehavior {
     const offsetZ = this.bulletPositionOffset * Math.cos(this.rotationY);
     const bulletPosition = new Vector3(
       this.position.x + offsetX,
-      this.position.y,
+      this.position.y - (this.bulletPositionOffsetY || 0),
       this.position.z + offsetZ
     );
     const bulletDirection = new Vector3(

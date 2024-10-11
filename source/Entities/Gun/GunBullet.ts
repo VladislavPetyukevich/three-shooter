@@ -5,6 +5,7 @@ import { GunBehaviorBullet } from './GunBehaviorBullet';
 interface GunBulletProps extends GunPropsExternal {
   BulletClass: typeof Bullet;
   shootsToMaxHeat: number;
+  shootOffsetY: boolean;
 }
 
 export class GunBullet extends Gun {

@@ -34,6 +34,7 @@ export interface GunPropsExternal {
 
 export interface GunProps extends GunPropsExternal {
   behavior: GunBehavior;
+  shootOffsetY: boolean;
 }
 
 export class Gun extends Entity<Actor, GunBehavior> {
@@ -48,7 +49,10 @@ export class Gun extends Entity<Actor, GunBehavior> {
       props.behavior
     );
     this.hudTextures = props.hudTextures;
-    this.behavior.bulletPositionOffset = this.getBulletPosisionOffset(props.holderMesh.geometry);
+    this.behavior.bulletPositionOffset = this.getBulletPositionOffset(props.holderMesh.geometry);
+    if (props.shootOffsetY) {
+      this.behavior.bulletPositionOffsetY = this.getBulletPositionOffsetY(props.holderMesh.geometry);
+    }
     this.orderIndex = props.orderIndex;
   }
 
@@ -91,13 +95,20 @@ export class Gun extends Entity<Actor, GunBehavior> {
     return 9999;
   }
 
-  private getBulletPosisionOffset(geometry: Mesh['geometry']) {
+  private getBulletPositionOffset(geometry: Mesh['geometry']) {
     if (geometry.type !== 'BoxGeometry') {
       throw new Error(`Cant handle geometry type: ${geometry.type}`);
     }
     const width = (geometry as BoxGeometry).parameters.width;
     const depth = (geometry as BoxGeometry).parameters.depth;
     return (width > depth) ? width : depth;
+  }
+
+  private getBulletPositionOffsetY(geometry: Mesh['geometry']) {
+    if (geometry.type !== 'BoxGeometry') {
+      throw new Error(`Cant handle geometry type: ${geometry.type}`);
+    }
+    return (geometry as BoxGeometry).parameters.height / 4;
   }
 
   update(delta: number) {

@@ -27,6 +27,7 @@ export class GunRaycast extends Gun {
     super({
       ...props,
       behavior,
+      shootOffsetY: false,
     });
   }
 }

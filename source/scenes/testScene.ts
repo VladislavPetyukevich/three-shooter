@@ -22,6 +22,7 @@ import { mindState } from '@/MindState';
 import { hud } from '@/HUD/HUD';
 import { PlayerLogs } from '@/PlayerLogs';
 import { OnScoreSubmit } from '..';
+import { BulletShoutgunPlayer } from '@/Entities/Bullet/Inheritor/BulletShoutgunPlayer';
 
 export type OnEnemySpawn = (
   cellCoordinates: Vector2,
@@ -146,10 +147,12 @@ export class TestScene extends BasicScene {
         ),
         size: new Vector3(1, 0.5, 1),
         gun: new Shotgun({
+          BulletClass: BulletShoutgunPlayer,
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
+          shootOffsetY: true,
         }),
         gunTextureName: 'gunTextureFile',
       })

@@ -1,16 +1,22 @@
 import { GunFireType } from '../Gun';
 import { InheritorGunProps } from './InheritorTypes';
 import { texturesStore } from '@/core/loaders/TextureLoader';
-import { GunRaycast } from '../GunRaycast';
+import { GunBullet } from '../GunBullet';
+import { Bullet } from '@/Entities/Bullet/Bullet';
 
-export class Shotgun extends GunRaycast {
-  constructor(props: InheritorGunProps) {
+interface EnemyGunBulletProps extends InheritorGunProps {
+  BulletClass: typeof Bullet;
+  shootOffsetY: boolean;
+}
+
+export class Shotgun extends GunBullet {
+  constructor(props: EnemyGunBulletProps) {
     super({
       ...props,
-      damage: { min: 5, max: 15 },
-      maxEffectiveDistance: 25,
+      BulletClass: props.BulletClass,
       shootOffsetAngle: 2.5,
       shootOffsetInMoveAngle: 4.5,
+      shootOffsetY: props.shootOffsetY,
       bulletsPerShoot: 8,
       recoilTime: 0.2,
       shootsToMaxHeat: 1000,

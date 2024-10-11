@@ -61,6 +61,7 @@ export class GunBehavior implements Behavior {
   rotationY: number;
   position: Vector3;
   bulletPositionOffset: number;
+  bulletPositionOffsetY: number | null;
   lastShootBulletClass?: typeof Bullet;
   onVisualRecoilStart?: () => void;
   onVisualRecoilEnd?: () => void;
@@ -98,6 +99,7 @@ export class GunBehavior implements Behavior {
     this.holderMesh.add(this.shootSound);
     this.shootSound.isPlaying = false;
     this.bulletPositionOffset = 0;
+    this.bulletPositionOffsetY = null;
   }
 
   setRemainingBullets = (value: number) => {
