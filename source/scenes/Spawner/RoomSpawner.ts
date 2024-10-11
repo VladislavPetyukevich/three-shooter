@@ -228,7 +228,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 - this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        rotation: { axis: axisBottom, value: rotationAngle },
+        rotation: { axis: axisBottom, value: -rotationAngle },
         flare: flareTop,
       },
       {
@@ -236,7 +236,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x / 2 + this.roomSize.x / 4,
           room.cellPosition.y + wallShift
         ),
-        rotation: { axis: axisBottom, value: rotationAngle },
+        rotation: { axis: axisBottom, value: -rotationAngle },
         flare: flareTop,
       },
       // Left
@@ -262,7 +262,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 + this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: rotationAngle },
+        rotation: { axis: axisLeft, value: -rotationAngle },
         flare: flareRight,
       },
       {
@@ -270,7 +270,7 @@ export class RoomSpawner {
           room.cellPosition.x + this.roomSize.x - wallShift,
           room.cellPosition.y + this.roomSize.y / 2 - this.roomSize.y / 4
         ),
-        rotation: { axis: axisLeft, value: rotationAngle },
+        rotation: { axis: axisLeft, value: -rotationAngle },
         flare: flareRight,
       },
     ].forEach((info, index) => {
