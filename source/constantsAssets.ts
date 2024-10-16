@@ -37,6 +37,7 @@ export const gameTextures: ImagesInfo = {
   torchFire2: { x: 64, y: 305, width: 16, height: 16, },
   fireFlare: { x: 80, y: 305, width: 16, height: 16, },
   fireFlareAlpha: { x: 96, y: 289, width: 16, height: 16, },
+  skybox: { x: 0, y: 353, width: 32, height: 32, },
 };
 
 export const gameSounds = {

@@ -2,6 +2,11 @@ import {
   Vector2,
   Vector3,
   AmbientLight,
+  Mesh,
+  MeshBasicMaterial,
+  BackSide,
+  RepeatWrapping,
+  SphereGeometry,
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
@@ -23,6 +28,7 @@ import { hud } from '@/HUD/HUD';
 import { PlayerLogs } from '@/PlayerLogs';
 import { OnScoreSubmit } from '..';
 import { BulletShoutgunPlayer } from '@/Entities/Bullet/Inheritor/BulletShoutgunPlayer';
+import { texturesStore } from '@/core/loaders';
 
 export type OnEnemySpawn = (
   cellCoordinates: Vector2,
@@ -55,6 +61,8 @@ export class TestScene extends BasicScene {
   playerFallMaxValue: number;
   onFinish: () => void;
   logs: PlayerLogs;
+  skybox: Mesh;
+  skyboxMaterial: MeshBasicMaterial;
 
   constructor(props: TestSceneProps) {
     super(props);
@@ -126,6 +134,21 @@ export class TestScene extends BasicScene {
     this.scene.add(this.ambientLight);
 
     this.logs = new PlayerLogs(this.roomSpawner.getSeed());
+
+    const skyboxSize = 300;
+    const skyboxGeometry = new SphereGeometry(skyboxSize, 32, 32)
+    const texture = texturesStore.getTexture('skybox');
+    texture.wrapS = texture.wrapT = RepeatWrapping;
+    texture.repeat.x = skyboxSize / 16;
+    texture.repeat.y = skyboxSize / 32;
+    this.skyboxMaterial = new MeshBasicMaterial({
+      map: texture,
+      side: BackSide,
+    });
+    this.skybox = new Mesh(skyboxGeometry, this.skyboxMaterial);
+    this.skybox.position.copy(this.player.mesh.position);
+    this.skybox.position.setY(this.skybox.position.y + skyboxSize / 2 - PLAYER.BODY_HEIGHT * 2);
+    this.scene.add(this.skybox);
   }
 
   getInitialPlayerPositon() {
@@ -235,7 +258,7 @@ export class TestScene extends BasicScene {
     if (isClose) {
       door.close();
     } else {
-       door.open();
+      door.open();
     }
   }
 
@@ -355,6 +378,8 @@ export class TestScene extends BasicScene {
     super.update(delta);
     this.updateDeathCamera(delta);
     this.updateFalling(delta);
+    this.skybox.position.copy(this.player.mesh.position);
+    this.skyboxMaterial.map?.offset.addScalar(delta * 0.013);
   }
 
   updateDeathCamera(delta: number) {
