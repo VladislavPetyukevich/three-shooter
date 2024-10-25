@@ -67,6 +67,7 @@ export class GunBehaviorRaycast extends GunBehavior {
         const shootTrace = new ShootTrace({
           startPos: shootTraceStartPos,
           endPos: shootTraceEndPos,
+          rotationY: this.rotationY - angleOffset,
           container: this.container,
         });
         this.container.add(shootTrace);
