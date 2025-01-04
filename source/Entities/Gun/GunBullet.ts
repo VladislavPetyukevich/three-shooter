@@ -6,6 +6,7 @@ interface GunBulletProps extends GunPropsExternal {
   BulletClass: typeof Bullet;
   shootsToMaxHeat: number;
   shootOffsetY: boolean;
+  positionalAudio: boolean;
 }
 
 export class GunBullet extends Gun {
@@ -16,6 +17,7 @@ export class GunBullet extends Gun {
       playerCamera: props.playerCamera,
       holderMesh: props.holderMesh,
       audioListener: props.audioListener,
+      positionalAudio: props.positionalAudio,
       shootOffsetAngle: props.shootOffsetAngle,
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
       bulletsPerShoot: props.bulletsPerShoot,

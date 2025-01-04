@@ -17,6 +17,7 @@ export class EnemyGunBullet extends GunBullet {
       bulletsPerShoot: 1,
       shootsToMaxHeat: 1000,
       shootSoundName: 'shootShotgun',
+      positionalAudio: true,
     });
   }
 }

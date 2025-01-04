@@ -24,6 +24,7 @@ export class BoomerangGun extends GunBullet {
       },
       orderIndex: 2,
       shootSoundName: 'shootShotgun',
+      positionalAudio: false,
     });
     this.canShoot = true;
   }

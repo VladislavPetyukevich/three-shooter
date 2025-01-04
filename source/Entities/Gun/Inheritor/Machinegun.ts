@@ -21,6 +21,7 @@ export class Machinegun extends GunRaycast {
       },
       orderIndex: 1,
       shootSoundName: 'shootMachinegun',
+      positionalAudio: false,
     });
   }
 }

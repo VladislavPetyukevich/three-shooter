@@ -27,6 +27,7 @@ export class Shotgun extends GunBullet {
       },
       orderIndex: 0,
       shootSoundName: 'shootShotgun',
+      positionalAudio: false,
     });
   }
 }

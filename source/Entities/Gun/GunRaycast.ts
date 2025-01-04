@@ -5,6 +5,7 @@ export interface GunRaycastProps extends GunPropsExternal {
   maxEffectiveDistance: number;
   damage: { min: number; max: number; };
   shootsToMaxHeat: number;
+  positionalAudio: boolean;
 }
 
 export class GunRaycast extends Gun {
@@ -16,6 +17,7 @@ export class GunRaycast extends Gun {
       playerCamera: props.playerCamera,
       holderMesh: props.holderMesh,
       audioListener: props.audioListener,
+      positionalAudio: props.positionalAudio,
       shootOffsetAngle: props.shootOffsetAngle,
       shootOffsetInMoveAngle: props.shootOffsetInMoveAngle,
       bulletsPerShoot: props.bulletsPerShoot,

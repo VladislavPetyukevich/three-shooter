@@ -26,6 +26,7 @@ export interface BehaviorProps {
   holderMesh: Mesh;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  positionalAudio: boolean;
   shootOffsetAngle: number;
   shootOffsetInMoveAngle: number;
   bulletsPerShoot: number;
@@ -94,7 +95,8 @@ export class GunBehavior implements Behavior {
     this.secToMaxHeatLevel = props.shootsToMaxHeat / shootsPerSec;
     this.heatLevel = 0;
     const shootSoundBuffer = audioStore.getSound(props.shootSoundName);
-    this.shootSound = new PositionalAudio(props.audioListener);
+    const AudioClass = props.positionalAudio ? PositionalAudio : Audio;
+    this.shootSound = new AudioClass(props.audioListener);
     this.shootSound.setBuffer(shootSoundBuffer);
     this.holderMesh.add(this.shootSound);
     this.shootSound.isPlaying = false;
