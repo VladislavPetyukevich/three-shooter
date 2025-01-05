@@ -23,7 +23,8 @@ import {
 import { Gun } from '@/Entities/Gun/Gun';
 import { SinTable } from '@/SinTable';
 import { hud } from '@/HUD/HUD';
-import { audioStore } from '@/core/loaders';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 interface ControlledBehaviorProps {
   actor: PlayerActor;
@@ -34,6 +35,7 @@ interface ControlledBehaviorProps {
   container: EntitiesContainer;
   velocity: Vector3;
   audioListener: AudioListener;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export class ControlledBehavior implements Behavior {
@@ -118,15 +120,9 @@ export class ControlledBehavior implements Behavior {
     this.targetVelocity = new Vector3();
     this.moveDirection = new Vector3();
     this.damageSound = new Audio(props.audioListener);
-    const damageSoundBuffer = audioStore.getSound('damage');
-    this.damageSound.setBuffer(damageSoundBuffer);
-    this.damageSound.isPlaying = false;
-    this.damageSound.setVolume(0.6);
+    props.audioSlices.loadSliceToAudio('damage', this.damageSound);
     this.walkSound = new Audio(props.audioListener);
-    const walkSoundBuffer = audioStore.getSound('walk');
-    this.walkSound.setBuffer(walkSoundBuffer);
-    this.walkSound.isPlaying = false;
-    this.walkSound.setVolume(0.2);
+    props.audioSlices.loadSliceToAudio('walk', this.walkSound);
     this.guns = [];
     this.currentGunIndex = -1;
     this.prevUsedGunIndex = this.currentGunIndex;
@@ -489,6 +485,8 @@ export class ControlledBehavior implements Behavior {
   }
 
   onDestroy() {
+    this.damageSound.stop();
+    this.walkSound.stop();
     Object.keys(this.actions).forEach(actionName =>
       playerActions.removeActionListener(
         actionName as PlayerActionName,

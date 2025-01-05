@@ -12,6 +12,8 @@ import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { VaporizationAnimation } from '@/Animations/Vaporization';
 import { HurtAnimation } from '@/Animations/HurtAnimation';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 export interface EnemyTextures {
   walk1: string;
@@ -48,6 +50,7 @@ export interface EnemyProps {
   bulletsPerShoot: number;
   hurtChance: number;
   delays: EnemyDelays;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export type OnDeathCallback = (entity: Enemy) => void;
@@ -85,6 +88,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         delays: props.delays,
         onHitDamage: props.onHitDamage,
         hurtChance: props.hurtChance,
+        audioSlices: props.audioSlices,
       })
     );
     this.container = props.container;

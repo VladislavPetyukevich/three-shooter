@@ -7,12 +7,15 @@ import { PlayerActor } from './PlayerActor';
 import { ControlledBehavior } from './ControlledBehavior';
 import { PLAYER, ENTITY_TYPE, ENTITY_MESSAGES } from '@/constants';
 import { hud } from '@/HUD/HUD';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 export interface PlayerProps {
   position: Vector3;
   camera: Camera;
   container: EntitiesContainer;
   audioListener: AudioListener;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export class Player extends Entity<PlayerActor, ControlledBehavior> {
@@ -41,7 +44,8 @@ export class Player extends Entity<PlayerActor, ControlledBehavior> {
         cameraSpeed: PLAYER.CAMERA_ROTATION_SPEED,
         container: props.container,
         velocity: velocity,
-        audioListener: props.audioListener
+        audioListener: props.audioListener,
+        audioSlices: props.audioSlices,
       }),
     );
     this.camera = props.camera;

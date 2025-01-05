@@ -8,10 +8,11 @@ import { EnemyGunProps } from './Enemy';
 import { EnemyActor } from './EnemyActor';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Gun, GunFireType } from '@/Entities/Gun/Gun';
-import { audioStore } from '@/core/loaders';
 import { randomNumbers } from '@/RandomNumbers';
 import { TimeoutsManager } from '@/TimeoutsManager';
 import { EnemyGunBullet } from '../Gun/Inheritor/EnemyGunBullet';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 interface BehaviorProps {
   player: Player;
@@ -31,6 +32,7 @@ interface BehaviorProps {
     strafe: number,
     movement: number;
   };
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 type TimeoutNames =
@@ -68,6 +70,8 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
+  spawnSound: PositionalAudio;
+  audioSlices: AudioSlices<AudioSliceName>;
   onHitDamage?: { min: number; max: number; };
   onDeathCallback?: () => void;
   onBleedCallback?: () => void;
@@ -87,6 +91,7 @@ export class EnemyBehavior implements Behavior {
       holderMesh: this.actor.mesh,
       fireType: GunFireType.single,
       recoilTime: this.gunProps.recoilTime,
+      audioSlices: props.audioSlices,
     });
     this.raycaster = new Raycaster();
     this.raycaster.far = 70;
@@ -114,17 +119,17 @@ export class EnemyBehavior implements Behavior {
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.timeoutsManager.expireAllTimeOuts();
-    this.spawnSound(props.audioListener);
+    this.audioSlices = props.audioSlices;
+    this.spawnSound = new PositionalAudio(props.audioListener);
+    this.audioSlices.loadSliceToAudio('spawn' ,this.spawnSound);
+    this.actor.mesh.add(this.spawnSound);
+    this.spawnSound.setRefDistance(2);
+    this.playSpawnSound();
     this.onHitDamage = props.onHitDamage;
   }
 
-  spawnSound(audioListener: AudioListener) {
-    const spawnSound = new PositionalAudio(audioListener);
-    const spawnSoundBuffer = audioStore.getSound('spawn');
-    spawnSound.setBuffer(spawnSoundBuffer);
-    this.actor.mesh.add(spawnSound);
-    spawnSound.setRefDistance(2);
-    spawnSound.play();
+  playSpawnSound() {
+    this.spawnSound.play();
   }
 
   shoot() {

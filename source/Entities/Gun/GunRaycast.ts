@@ -25,6 +25,7 @@ export class GunRaycast extends Gun {
       shootsToMaxHeat: props.shootsToMaxHeat,
       fireType: props.fireType,
       shootSoundName: props.shootSoundName,
+      audioSlices: props.audioSlices,
     });
     super({
       ...props,

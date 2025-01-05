@@ -1,10 +1,7 @@
 import spriteSheet from './assets/spritesheet.png';
-import shootShotgun from './assets/shoot.mp3';
-import shootMachinegun from './assets/shoot-short.mp3';
-import damage from './assets/damage.mp3';
-import spawn from './assets/spawn.mp3';
-import walk from './assets/walk.mp3';
+import sfx from './assets/sxf.mp3';
 import { ImagesInfo } from '@/SpriteSheetLoader';
+import { SliceInfo } from './core/AudioSlices';
 
 export { spriteSheet };
 
@@ -41,11 +38,40 @@ export const gameTextures: ImagesInfo = {
 };
 
 export const gameSounds = {
-  shootShotgun,
-  shootMachinegun,
-  damage,
-  spawn,
-  walk,
+  sfx,
+};
+
+const playerAudioVolume = 0.2;
+const enemyAudioVolume = 0.4;
+
+export type AudioSliceName =
+  'damage' |
+  'shootShotgun' |
+  'shootMachinegun' |
+  'spawn' |
+  'walk';
+
+export const gameAudioSlices: Record<AudioSliceName, SliceInfo> = {
+  damage: {
+    soundName: 'sfx',
+    start: 0.05, end: 0.20, volume: playerAudioVolume,
+  },
+  shootShotgun: {
+    soundName: 'sfx',
+    start: 0.23, end: 0.48, volume: playerAudioVolume,
+  },
+  shootMachinegun: {
+    soundName: 'sfx',
+    start: 0.49, end: 0.62, volume: playerAudioVolume,
+  },
+  spawn: {
+    soundName: 'sfx',
+    start: 0.66, end: 0.94, volume: enemyAudioVolume,
+  },
+  walk: {
+    soundName: 'sfx',
+    start: 0.96, end: 7.34, volume: playerAudioVolume,
+  },
 };
 
 export interface EnemyTexturesSet {

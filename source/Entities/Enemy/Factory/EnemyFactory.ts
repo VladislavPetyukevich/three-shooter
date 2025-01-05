@@ -9,9 +9,10 @@ import {
 import { BehaviorTreeNode } from '../BehaviorTree';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { ENEMY_COLORS } from '@/constants';
-import { EnemyTexturesSet } from '@/constantsAssets';
+import { AudioSliceName, EnemyTexturesSet } from '@/constantsAssets';
 import { enemiesStats } from './enemiesStats';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { AudioSlices } from '@/core/AudioSlices';
 
 export const enum RoomType {
   Neutral,
@@ -49,6 +50,7 @@ export interface CreateEnemyProps {
   audioListener: AudioListener;
   roomType: RoomType;
   kind: EnemyKind;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export class EnemyFactory {

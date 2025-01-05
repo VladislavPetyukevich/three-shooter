@@ -10,11 +10,12 @@ import {
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { audioStore } from '@/core/loaders';
 import { PI_180 } from '@/constants';
 import { GunFireType } from './Gun';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { randomNumbers } from '@/RandomNumbers';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 const enum VisualRecoilFrame {
   Fire,
@@ -33,7 +34,8 @@ export interface BehaviorProps {
   recoilTime: number;
   shootsToMaxHeat: number;
   fireType: GunFireType;
-  shootSoundName: string;
+  shootSoundName: AudioSliceName;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export class GunBehavior implements Behavior {
@@ -94,10 +96,8 @@ export class GunBehavior implements Behavior {
     const shootsPerSec = 1 / (this.recoilTime || 0.16);
     this.secToMaxHeatLevel = props.shootsToMaxHeat / shootsPerSec;
     this.heatLevel = 0;
-    const shootSoundBuffer = audioStore.getSound(props.shootSoundName);
-    const AudioClass = props.positionalAudio ? PositionalAudio : Audio;
-    this.shootSound = new AudioClass(props.audioListener);
-    this.shootSound.setBuffer(shootSoundBuffer);
+    this.shootSound = props.positionalAudio ? new PositionalAudio(props.audioListener) : new Audio(props.audioListener);
+    props.audioSlices.loadSliceToAudio(props.shootSoundName, this.shootSound);
     this.holderMesh.add(this.shootSound);
     this.shootSound.isPlaying = false;
     this.bulletPositionOffset = 0;
@@ -251,5 +251,9 @@ export class GunBehavior implements Behavior {
     } else {
       this.isCoolingDown = false;
     }
+  }
+
+  onDestroy() {
+    this.shootSound.stop();
   }
 }

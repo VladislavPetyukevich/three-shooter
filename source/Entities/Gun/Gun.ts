@@ -5,6 +5,8 @@ import { GunActor } from './GunActor';
 import { GunBehavior } from './GunBehavior';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { Actor } from '@/core/Entities/Actor';
+import { AudioSlices } from '@/core/AudioSlices';
+import { AudioSliceName } from '@/constantsAssets';
 
 export const enum GunFireType {
   single,
@@ -27,9 +29,10 @@ export interface GunPropsExternal {
   shootsToMaxHeat: number;
   fireType: GunFireType;
   holderMesh: Mesh;
-  shootSoundName: string;
+  shootSoundName: AudioSliceName;
   hudTextures?: GunHudTextures;
   orderIndex?: number;
+  audioSlices: AudioSlices<AudioSliceName>;
 }
 
 export interface GunProps extends GunPropsExternal {
@@ -113,5 +116,9 @@ export class Gun extends Entity<Actor, GunBehavior> {
 
   update(delta: number) {
     this.behavior.update(delta);
+  }
+
+  onDestroy() {
+    this.behavior.onDestroy();
   }
 }

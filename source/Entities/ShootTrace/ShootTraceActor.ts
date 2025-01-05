@@ -1,4 +1,4 @@
-import { BufferGeometry, LineBasicMaterial, Mesh, Vector3, Line, Color, Float32BufferAttribute, PointsMaterial, Points, BoxGeometry, MeshBasicMaterial } from 'three';
+import { BufferGeometry, LineBasicMaterial, Mesh, Vector3, Line, Float32BufferAttribute, PointsMaterial, Points, BoxGeometry, MeshBasicMaterial } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { randomNumbers } from '@/RandomNumbers';
 import { PLAYER } from '@/constants';

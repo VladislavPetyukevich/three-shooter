@@ -6,7 +6,8 @@ export type InheritorGunProps =
     'playerCamera' |
     'container' |
     'audioListener' |
-    'holderMesh'
+    'holderMesh' |
+    'audioSlices'
   >;
 
 export type EnemyInheritorGunProps =
@@ -17,5 +18,6 @@ export type EnemyInheritorGunProps =
     'audioListener' |
     'holderMesh' |
     'fireType' |
-    'recoilTime'
+    'recoilTime' |
+    'audioSlices'
   >;

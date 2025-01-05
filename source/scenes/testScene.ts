@@ -79,7 +79,8 @@ export class TestScene extends BasicScene {
         camera: this.camera,
         position: new Vector3(0, PLAYER.BODY_HEIGHT, 0),
         container: this.entitiesContainer,
-        audioListener: this.audioListener
+        audioListener: this.audioListener,
+        audioSlices: this.audioSlices,
       })
     ) as Player;
     this.camera.position.y = this.initialCameraY;
@@ -176,6 +177,7 @@ export class TestScene extends BasicScene {
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
           shootOffsetY: true,
+          audioSlices: this.audioSlices,
         }),
         gunTextureName: 'gunTextureFile',
       })
@@ -193,6 +195,7 @@ export class TestScene extends BasicScene {
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
+          audioSlices: this.audioSlices,
         }),
         gunTextureName: 'machinegunTextureFile',
       })
@@ -210,6 +213,7 @@ export class TestScene extends BasicScene {
           playerCamera: this.player.camera,
           audioListener: this.audioListener,
           holderMesh: this.player.mesh,
+          audioSlices: this.audioSlices,
         }),
         gunTextureName: 'boomerangTextureFile',
       })
@@ -369,6 +373,7 @@ export class TestScene extends BasicScene {
       player: this.player,
       container: this.entitiesContainer,
       audioListener: this.audioListener,
+      audioSlices: this.audioSlices,
       roomType,
       kind,
     });

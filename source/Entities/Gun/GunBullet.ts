@@ -25,6 +25,7 @@ export class GunBullet extends Gun {
       shootsToMaxHeat: props.shootsToMaxHeat,
       fireType: props.fireType,
       shootSoundName: 'shootShotgun',
+      audioSlices: props.audioSlices,
     });
     super({
       ...props,
