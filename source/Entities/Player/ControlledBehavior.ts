@@ -47,6 +47,8 @@ export class ControlledBehavior implements Behavior {
   isKeyBackward: boolean;
   isKeyLeft: boolean;
   isKeyRight: boolean;
+  isKeyLookLeft: boolean;
+  isKeyLookRight: boolean;
   isCanMove: boolean;
   strafeCameraRotation: number;
   strafeCameraSpeed: number;
@@ -112,6 +114,8 @@ export class ControlledBehavior implements Behavior {
     this.isKeyBackward = false;
     this.isKeyLeft = false;
     this.isKeyRight = false;
+    this.isKeyLookLeft = false;
+    this.isKeyLookRight = false;
     this.isCanMove = true;
     this.strafeCameraRotation = 1.3 * PI_180;
     this.strafeCameraSpeed = 10;
@@ -146,6 +150,8 @@ export class ControlledBehavior implements Behavior {
       'prevWeapon': this.handleWeaponPrev,
       'prevUsedWeapon': this.handlePrevUsedWeapon,
       'firePrimary': this.handleFirePrimary,
+      'lookLeft': this.handleLookLeft,
+      'lookRight': this.handleLookRight,
     };
     Object.keys(this.actions).forEach(actionName =>
       playerActions.addActionListener(
@@ -169,6 +175,14 @@ export class ControlledBehavior implements Behavior {
 
   handleWalkRight = (action: PlayerAction) => {
     this.isKeyRight = !action.isEnded;
+  }
+
+  handleLookLeft = (action: PlayerAction) => {
+    this.isKeyLookLeft = !action.isEnded;
+  }
+
+  handleLookRight = (action: PlayerAction) => {
+    this.isKeyLookRight = !action.isEnded;
   }
 
   handleSwitchGunByIndex = (gunIndex: number) => (action: PlayerAction) => {
@@ -391,6 +405,12 @@ export class ControlledBehavior implements Behavior {
         this.isRunning = true;
         this.moveDirection.x += 1;
       }
+    }
+    if (this.isKeyLookLeft) {
+      playerActions.addCameraMovement(delta * -666.0);
+    }
+    if (this.isKeyLookRight) {
+      playerActions.addCameraMovement(delta * 666.0);
     }
 
     this.moveDirection.applyQuaternion(this.quat);

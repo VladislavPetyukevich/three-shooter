@@ -1,3 +1,5 @@
+import { globalSettings } from './GlobalSettings';
+
 export type PlayerActionName =
   'walkForward' |
   'walkBackward' |
@@ -9,7 +11,9 @@ export type PlayerActionName =
   'nextWeapon' |
   'weapon1' |
   'weapon2' |
-  'weapon3';
+  'weapon3' |
+  'lookLeft' |
+  'lookRight';
 
 export interface PlayerAction {
   name: PlayerActionName;
@@ -24,10 +28,17 @@ export interface PlayerActionListener {
 class PlayerActions {
   listeners: PlayerActionListener[];
   cameraMovementX: number;
+  mouseSensitivity: number;
 
   constructor() {
     this.listeners = [];
     this.cameraMovementX = 0;
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
+    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
+  }
+
+  onUpdateGlobalSettings = () => {
+    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
   }
 
   addActionListener(
@@ -64,7 +75,7 @@ class PlayerActions {
   }
 
   addCameraMovement(movementX: number) {
-    this.cameraMovementX += movementX;
+    this.cameraMovementX += movementX * this.mouseSensitivity;
   }
 
   getCameraMovement() {

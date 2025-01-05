@@ -36,7 +36,6 @@ export default class ThreeShooter {
   gameProps: GameProps;
   currScene: BasicScene;
   loadedScene?: BasicScene;
-  mouseSensitivity: number;
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
@@ -51,8 +50,6 @@ export default class ThreeShooter {
   constructor(props: GameProps) {
     this.gameProps = props;
     this.currScene = new LoadingScene(props);
-    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
-    globalSettings.addUpdateListener(this.onUpdateGlobalSettings);
     this.imageDisplayer = imageDisplayer;
     this.prevTime = performance.now();
     this.enabled = true;
@@ -95,10 +92,6 @@ export default class ThreeShooter {
     this.updateRenderer(0);
   };
 
-  onUpdateGlobalSettings = () => {
-    this.mouseSensitivity = globalSettings.getSetting('mouseSensitivity');
-  }
-
   onPlayerActionStart(actionName: PlayerActionName) {
     if (!this.controlsEnabled) {
       return;
@@ -115,7 +108,7 @@ export default class ThreeShooter {
       return;
     }
     playerActions.addCameraMovement(
-      movementX * this.mouseSensitivity
+      movementX
     );
   }
 
