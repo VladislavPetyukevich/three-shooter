@@ -1,4 +1,4 @@
-import { Mesh, Color, BoxGeometry, MeshLambertMaterial } from 'three';
+import { Mesh, Color, BoxGeometry, MeshLambertMaterial, MeshBasicMaterial } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Player } from '@/Entities/Player/Player';
 import { EnemyTextures } from './Enemy';
@@ -16,7 +16,8 @@ interface ActorProps {
 
 export class EnemyActor implements Actor {
   mesh: Mesh;
-  material: MeshLambertMaterial;
+  meshInner: Mesh;
+  materialInner: MeshLambertMaterial;
   player: Player;
   spriteSheet: SpriteSheet;
   easeColor: EaseColor;
@@ -26,26 +27,33 @@ export class EnemyActor implements Actor {
     const enemyWalk1File = texturesStore.getTexture(props.textures.walk1);
     const enemyWalk2File = texturesStore.getTexture(props.textures.walk2);
     const enemyDeathFile = texturesStore.getTexture(props.textures.death);
-    const geometry = new BoxGeometry(1.5, 3, 0.1);
-    this.material = new MeshLambertMaterial({
-      color: props.color,
+    const colliderGeometry = new BoxGeometry(1.5, 3, 1.5);
+    const innerGeometry = new BoxGeometry(1.5, 3, 0.1);
+    const material = new MeshBasicMaterial({
+      visible: false,
     });
-    this.material.transparent = true;
+    this.materialInner = new MeshLambertMaterial({
+      color: props.color,
+      transparent: true,
+      alphaTest: 0.1,
+    });
     this.spriteSheet = new SpriteSheet({
       textures: [enemyWalk1File, enemyWalk2File, enemyDeathFile],
-      material: this.material,
+      material: this.materialInner,
     });
-    this.mesh = new Mesh(geometry, this.material);
+    this.meshInner = new Mesh(innerGeometry, this.materialInner);
+    this.mesh = new Mesh(colliderGeometry, material);
     this.mesh.renderOrder = 1;
     this.mesh.position.set(
       props.position.x,
       props.position.y,
       props.position.z
     );
+    this.mesh.add(this.meshInner);
     this.player = props.player;
     this.easeColor = new EaseColor({
-      originalColor: this.material.color,
-      targetColor: this.material.color,
+      originalColor: this.materialInner.color,
+      targetColor: this.materialInner.color,
       speed: 1.5,
       transitionFunction: easeInSine,
     });
@@ -54,7 +62,7 @@ export class EnemyActor implements Actor {
 
   update(delta: number) {
     const playerMesh = this.player.mesh;
-    this.mesh.rotation.y = Math.atan2(
+    this.meshInner.rotation.y = Math.atan2(
       (playerMesh.position.x - this.mesh.position.x), (playerMesh.position.z - this.mesh.position.z)
     );
     this.updateColor(delta);
@@ -65,7 +73,7 @@ export class EnemyActor implements Actor {
       return;
     }
     this.easeColor.update(delta);
-    this.material.color = this.easeColor.getColor();
+    this.materialInner.color = this.easeColor.getColor();
     if (this.easeColor.checkIsProgressCompelete()) {
       this.isColorEaseActive = false;
     }

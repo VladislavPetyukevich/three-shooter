@@ -191,7 +191,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
     this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
     const targetColor = lighter(
-      this.actor.material.color,
+      this.actor.materialInner.color,
       ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
     );
     this.addAnimation(new SmoothColorChange({
