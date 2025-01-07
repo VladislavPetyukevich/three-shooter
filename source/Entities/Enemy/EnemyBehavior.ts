@@ -1,4 +1,4 @@
-import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster } from 'three';
+import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster, Audio } from 'three';
 import { ENTITY_TYPE, ENEMY, PI_180 } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
@@ -70,8 +70,9 @@ export class EnemyBehavior implements Behavior {
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
-  spawnSound: PositionalAudio;
   audioSlices: AudioSlices<AudioSliceName>;
+  spawnSound: PositionalAudio;
+  hitSound: Audio;
   onHitDamage?: { min: number; max: number; };
   onDeathCallback?: () => void;
   onBleedCallback?: () => void;
@@ -124,12 +125,22 @@ export class EnemyBehavior implements Behavior {
     this.audioSlices.loadSliceToAudio('spawn' ,this.spawnSound);
     this.actor.mesh.add(this.spawnSound);
     this.spawnSound.setRefDistance(2);
+    this.hitSound = new Audio(props.audioListener);
+    this.audioSlices.loadSliceToAudio('hit' ,this.hitSound);
+    this.actor.mesh.add(this.hitSound);
     this.playSpawnSound();
     this.onHitDamage = props.onHitDamage;
   }
 
   playSpawnSound() {
     this.spawnSound.play();
+  }
+
+  playHitSound() {
+    if (this.hitSound.isPlaying) {
+      return;
+    }
+    this.hitSound.play();
   }
 
   shoot() {
@@ -143,6 +154,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   onHit() {
+    this.playHitSound();
     if (randomNumbers.getRandom() > this.hurtChance) {
       return;
     }

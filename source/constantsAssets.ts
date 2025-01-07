@@ -1,5 +1,5 @@
 import spriteSheet from './assets/spritesheet.png';
-import sfx from './assets/sxf.mp3';
+import sfx from './assets/sfx.mp3';
 import { ImagesInfo } from '@/SpriteSheetLoader';
 import { SliceInfo } from './core/AudioSlices';
 
@@ -49,7 +49,8 @@ export type AudioSliceName =
   'shootShotgun' |
   'shootMachinegun' |
   'spawn' |
-  'walk';
+  'walk' |
+  'hit';
 
 export const gameAudioSlices: Record<AudioSliceName, SliceInfo> = {
   damage: {
@@ -71,6 +72,10 @@ export const gameAudioSlices: Record<AudioSliceName, SliceInfo> = {
   walk: {
     soundName: 'sfx',
     start: 0.96, end: 7.34, volume: playerAudioVolume,
+  },
+  hit: {
+    soundName: 'sfx',
+    start: 7.36, end: 7.40, volume: playerAudioVolume,
   },
 };
 
