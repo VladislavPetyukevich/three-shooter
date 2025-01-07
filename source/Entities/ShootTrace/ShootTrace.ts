@@ -27,6 +27,7 @@ export class ShootTrace extends Entity<ShootTraceActor, ShootTraceBehavior> {
     );
     this.container = props.container;
     this.lifeTime = 0;
+    this.isCollideTransparent = true;
   }
 
   update(delta: number) {
