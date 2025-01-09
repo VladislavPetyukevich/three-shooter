@@ -1,7 +1,7 @@
 import { Entity } from '@/core/Entities/Entity';
 import { WallActor } from '@/Entities/Wall/WallActor';
 import { DoorBehavior } from './DoorBehavior';
-import { Vector3, Material } from 'three';
+import { Vector3, Material, MeshBasicMaterial } from 'three';
 import { ENTITY_TYPE, DOOR } from '@/constants';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { SlideAnimation } from '@/Animations/SlideAnimation';
@@ -52,12 +52,13 @@ export class Door extends Entity<WallActor, DoorBehavior> {
     behavior.onOpen = () => this.onOpen();
     behavior.onClose = () => this.onClose();
     this.container = props.container;
+    const emptyMaterial = new MeshBasicMaterial({ visible: false });
     if (props.isHorizontalWall) {
-      delete (this.mesh.material as Material[])[0];
-      delete (this.mesh.material as Material[])[1];
+      (this.mesh.material as Material[])[0] = emptyMaterial;
+      (this.mesh.material as Material[])[1] = emptyMaterial;
     } else {
-      delete (this.mesh.material as Material[])[4];
-      delete (this.mesh.material as Material[])[5];
+      (this.mesh.material as Material[])[4] = emptyMaterial;
+      (this.mesh.material as Material[])[5] = emptyMaterial;
     }
   }
 

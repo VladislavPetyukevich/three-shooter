@@ -46,7 +46,7 @@ export class GunBehavior implements Behavior {
   raycaster: Raycaster;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  shootSound: Audio;
+  shootSound: Audio<GainNode | PannerNode>;
   isShoot: boolean;
   isInMove: boolean;
   isCoolingDown: boolean;

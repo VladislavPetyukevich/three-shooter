@@ -22,7 +22,7 @@ export class AudioSlices<SliceName extends string> {
     this.slicesInfo = slicesInfo;
   }
 
-  loadSliceToAudio(audioName: SliceName, audio: Audio) {
+  loadSliceToAudio(audioName: SliceName, audio: Audio<GainNode | PannerNode>) {
     const sliceInfo = this.slicesInfo[audioName];
     audio.setBuffer(audioStore.getSound(sliceInfo.soundName));
     audio.offset = sliceInfo.start;

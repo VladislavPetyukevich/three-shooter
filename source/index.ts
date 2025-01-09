@@ -2,6 +2,7 @@ import {
   ReinhardToneMapping,
   WebGLRenderer,
   BasicShadowMap,
+  Vector2,
 } from 'three';
 import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
@@ -63,9 +64,6 @@ export default class ThreeShooter {
     this.renderer.autoClear = false;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = BasicShadowMap;
-    this.renderer.physicallyCorrectLights = true;
-    this.renderer.gammaInput = true;
-    this.renderer.gammaOutput = true;
     this.renderer.toneMapping = ReinhardToneMapping;
     this.renderer.toneMappingExposure = Math.pow(0.68, 5.0);
 
@@ -85,12 +83,17 @@ export default class ThreeShooter {
     this.currScene.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
     this.composer.setSize(width, height);
-    if (this.effectSharpen) {
-      this.effectSharpen.uniforms.width.value = window.innerWidth;
-		  this.effectSharpen.uniforms.height.value = window.innerHeight;
-    }
+    this.updateSharpenSize(width, height);
     this.updateRenderer(0);
   };
+
+  updateSharpenSize(width: number, height: number) {
+    if (!this.effectSharpen) {
+      return;
+    }
+    this.effectSharpen.uniforms.width.value = width;
+    this.effectSharpen.uniforms.height.value = height;
+  }
 
   onPlayerActionStart(actionName: PlayerActionName) {
     if (!this.controlsEnabled) {
@@ -191,6 +194,9 @@ export default class ThreeShooter {
     this.effectColorPalette = new ShaderPass(ColorPaletteShader);
     this.composer.addPass(this.effectColorPalette);
     this.effectSharpen = new ShaderPass(SharpenShader);
+    const rendererSize = new Vector2();
+    this.renderer.getSize(rendererSize);
+    this.updateSharpenSize(rendererSize.x, rendererSize.y);
     this.composer.addPass(this.effectSharpen);
   }
 

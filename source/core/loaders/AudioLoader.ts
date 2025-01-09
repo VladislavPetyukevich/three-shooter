@@ -1,4 +1,4 @@
-import { AudioLoader as THREEAudioLoader, AudioBuffer } from 'three';
+import { AudioLoader as THREEAudioLoader } from 'three';
 
 const threeAudioLoader = new THREEAudioLoader();
 

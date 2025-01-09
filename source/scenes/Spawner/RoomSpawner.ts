@@ -362,7 +362,7 @@ export class RoomSpawner {
 
   spawnRoomFloor(worldCoordinates: Vector2, worldSize: Vector2) {
     const floorGeometry = new PlaneGeometry(worldSize.x, worldSize.y);
-    floorGeometry.applyMatrix(new Matrix4().makeRotationX(-PI_2));
+    floorGeometry.applyMatrix4(new Matrix4().makeRotationX(-PI_2));
     const floorTexture = texturesStore.getTexture('floorTextureFile');
     floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
     floorTexture.repeat.x = worldSize.x / 2;

@@ -8,6 +8,7 @@ import {
   Material,
   Color,
   Euler,
+  MeshBasicMaterial,
 } from 'three';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -50,8 +51,11 @@ export class WallActor implements Actor {
     const materials: Material[] = [];
     const horizontalMaterial = props.isHorizontalWall ? materialX : materialY;
     const vertivalMaterial = props.isHorizontalWall ? materialY : materialX;
+    const emptyMaterial = new MeshBasicMaterial({ visible: false });
     materials[0] = vertivalMaterial;
     materials[1] = vertivalMaterial;
+    materials[2] = emptyMaterial;
+    materials[3] = emptyMaterial;
     materials[4] = horizontalMaterial;
     materials[5] = horizontalMaterial;
     this.mesh = new Mesh(geometry, materials);
@@ -119,6 +123,7 @@ export class WallActor implements Actor {
       transparent: true,
       polygonOffset: true,
       polygonOffsetFactor: -1.3,
+      alphaTest: 0.5,
     });
     const decalGeometry = new DecalGeometry(
       this.mesh,

@@ -470,7 +470,7 @@ export class ControlledBehavior implements Behavior {
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
     this.raycaster.set(this.camera.position, direction);
-    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
+    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes, false);
     const firstIntersection = intersectObjects[0];
     if (!firstIntersection) {
       return;

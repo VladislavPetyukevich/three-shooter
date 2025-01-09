@@ -16,6 +16,7 @@
   "devDependencies": {
     "@eslint/js": "^9.2.0",
     "@types/eslint__js": "^8.42.3",
+    "@types/three": "^0.172.0",
     "copy-webpack-plugin": "^10.2.4",
     "eslint": "^8.57.0",
     "file-loader": "^6.2.0",
@@ -33,6 +34,6 @@
     "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
-    "three": "0.110.0"
+    "three": "^0.172.0"
   }
 }

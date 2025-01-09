@@ -127,7 +127,7 @@ export class TestScene extends BasicScene {
 
     // lights
     this.ambientLightColor = 0xFFFFFF;
-    this.ambientLightIntensity = 1024;
+    this.ambientLightIntensity = 64;
     this.ambientLight = new AmbientLight(
       this.ambientLightColor,
       this.ambientLightIntensity
