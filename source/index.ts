@@ -3,6 +3,7 @@ import {
   WebGLRenderer,
   BasicShadowMap,
   Vector2,
+  Data3DTexture,
 } from 'three';
 import { BasicScene } from './core/Scene';
 import { TestScene } from './scenes/testScene';
@@ -21,6 +22,7 @@ import { gameTextures, gameSounds, spriteSheet } from './constantsAssets';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { PlayerLogsValue } from './PlayerLogs';
+import { LUTImageLoader } from '@/core/loaders/LUTImageLoader';
 
 const SceneClass = TestScene;
 
@@ -198,6 +200,13 @@ export default class ThreeShooter {
     this.renderer.getSize(rendererSize);
     this.updateSharpenSize(rendererSize.x, rendererSize.y);
     this.composer.addPass(this.effectSharpen);
+    new LUTImageLoader()
+      .load(`film_default.png`, (result: { size: number; texture3D: Data3DTexture; }) => {
+        if (this.effectColorPalette) {
+          this.effectColorPalette.uniforms.lut.value = result.texture3D;
+          this.effectColorPalette.uniforms.lutSize.value = result.texture3D.image.width;
+        }
+      });
   }
 
   setPixelRatio = (value: number) => {

@@ -126,8 +126,8 @@ export class TestScene extends BasicScene {
     this.spawnGuns();
 
     // lights
-    this.ambientLightColor = 0xFFFFFF;
-    this.ambientLightIntensity = 64;
+    this.ambientLightColor = 0xE7E7E7;
+    this.ambientLightIntensity = 64 * 1.25;
     this.ambientLight = new AmbientLight(
       this.ambientLightColor,
       this.ambientLightIntensity
