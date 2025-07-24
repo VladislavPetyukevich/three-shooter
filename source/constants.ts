@@ -68,7 +68,7 @@ const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 70;
 const BASE_DISTANCE = 20;
 
-const roomSizeScale = 2;
+const roomSizeScale = 1;
 export const roomSize = new Vector2(20 * roomSizeScale, 20 * roomSizeScale);
 
 export const enemiesFromSpawnerCount = 2;

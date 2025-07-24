@@ -154,7 +154,7 @@ export class TestScene extends BasicScene {
 
   getInitialPlayerPositon() {
     const roomCenterCell = this.getCenterPosition(this.currentRoom.cellPosition, this.roomSpawner.roomSize);
-    const positionShift = -13;
+    const positionShift = -1;
     return new Vector2(
       roomCenterCell.x * this.cellCoordinates.size,
       (roomCenterCell.y + positionShift) * this.cellCoordinates.size
