@@ -48,10 +48,10 @@ export const COLORS = {
 
 const wallDarkerFactor = 0.915;
 export const WALL_COLORS = {
-  Neutral: darker(createColor(180, 180, 180), wallDarkerFactor),
-  Apathy: darker(COLORS.Apathy, wallDarkerFactor),
-  Cowardice: darker(COLORS.Cowardice, wallDarkerFactor),
-  SexualPerversions: darker(COLORS.SexualPerversions, wallDarkerFactor),
+  Neutral: darker(new Color(0xA7A797), wallDarkerFactor),
+  Apathy: darker(new Color(0x392D21), 0.115),
+  Cowardice: darker(new Color(0x2D3139), 0),
+  SexualPerversions: darker(new Color(0x817567), 0.815),
 };
 
 const enemyDarkerFactor = 0.0;
@@ -62,7 +62,7 @@ export const ENEMY_COLORS = {
   PARASITE_LIGHTER_FACTOR: 0.9,
 };
 
-export const DECAL_COLOR = new Color(0x770000);
+export const DECAL_COLOR = darker(new Color(0x9B5D89), 0.715);
 
 const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 70;
