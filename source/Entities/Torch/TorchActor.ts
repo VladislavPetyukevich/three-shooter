@@ -1,4 +1,4 @@
-import { Mesh, BoxGeometry, MeshLambertMaterial } from 'three';
+import { Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
 import { Actor } from '@/core/Entities/Actor';
 import { Player } from '@/Entities/Player/Player';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -20,7 +20,7 @@ export class TorchActor implements Actor {
     const torchFire1File = texturesStore.getTexture('torchFire1');
     const torchFire2File = texturesStore.getTexture('torchFire2');
     const geometry = new BoxGeometry(1.5, 1.5, 0.001);
-    const material = new MeshLambertMaterial();
+    const material = new MeshBasicMaterial();
     material.transparent = true;
     this.spriteSheet = new SpriteSheet({
       textures: [torchFile, torchFire1File, torchFire2File],
