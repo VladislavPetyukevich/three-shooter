@@ -1,5 +1,5 @@
 import { Vector2 } from 'three';
-import { ENTITY_TYPE, PLAYER } from '@/constants';
+import { ENTITY_TYPE } from '@/constants';
 import { EnemyKind, RoomCell, RoomCellType, constructors } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
@@ -367,12 +367,17 @@ export class EditorScene extends TestScene {
     wallButton.onclick = () => this.currentEntityType = RoomCellType.Wall;
     container.appendChild(wallButton);
     const miniCheckbox = document.createElement('input');
+    miniCheckbox.id = 'mini-wall-checkbox';
     miniCheckbox.type = 'checkbox';
     miniCheckbox.onclick = (event: MouseEvent) => {
       const checked = (event.target as HTMLInputElement).checked;
       this.miniWallChecked = checked;
     };
     container.appendChild(miniCheckbox);
+    const miniCheckboxLabel = document.createElement('label');
+    miniCheckboxLabel.htmlFor = 'mini-wall-checkbox';
+    miniCheckboxLabel.innerHTML = 'Mini wall';
+    container.appendChild(miniCheckboxLabel);
 
     const utilityButtonsContainer = document.createElement('div');
     utilityButtonsContainer.style.display = 'flex';
