@@ -70,7 +70,6 @@ export class EditorScene extends TestScene {
     this.pickupAllGuns();
     this.isPlayerFallingAtStart = false;
     this.player.canMove();
-    this.player.mesh.position.set(60, PLAYER.BODY_HEIGHT, -5.32);
   }
 
   handleRoomVisit = (room: Room) => {
