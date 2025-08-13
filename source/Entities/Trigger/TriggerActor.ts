@@ -27,7 +27,7 @@ export class TriggerActor implements Actor {
     });
     this.rotationSpeed = 1.3;
     const geometry = new CylinderGeometry(0, props.size.x, props.size.y, 3);
-    const material = new MeshLambertMaterial({ transparent: true, opacity: 0.6, color: props.color });
+    const material = new MeshLambertMaterial({ transparent: true, opacity: 0.3, color: props.color });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.copy(props.position);
     this.originalYPos = this.mesh.position.y;

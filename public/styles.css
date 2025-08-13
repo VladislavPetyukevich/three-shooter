@@ -141,7 +141,18 @@ th:first-child {
 
 .warning {
   text-align: center;
-  font-size: 0.75rem;
+}
+
+.credits {
+  padding-top: 1.25rem;
+}
+
+.credit {
+  text-align: center;
+}
+
+.credit a {
+  color: #0666e2;
 }
 
 ion-icon.additional {

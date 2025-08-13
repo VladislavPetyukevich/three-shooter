@@ -15,6 +15,7 @@ export class FireFlareActor implements Actor {
       map: texturesStore.getTexture('fireFlare'),
       alphaMap: texturesStore.getTexture('fireFlareAlpha'),
       transparent: true,
+      opacity: 0.1,
     });
     this.mesh = new Mesh(geometry, material);
     this.mesh.position.set(

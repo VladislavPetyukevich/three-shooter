@@ -8,7 +8,6 @@ import {
 } from '@/Entities/Enemy/Enemy';
 import { BehaviorTreeNode } from '../BehaviorTree';
 import { Bullet } from '@/Entities/Bullet/Bullet';
-import { ENEMY_COLORS } from '@/constants';
 import { AudioSliceName, EnemyTexturesSet } from '@/constantsAssets';
 import { enemiesStats } from './enemiesStats';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
@@ -60,18 +59,6 @@ export class EnemyFactory {
     return new Enemy({
       ...props,
       ...stats,
-      color: this.getEnemyColor(props),
     });
-  }
-
-  getEnemyColor(props: CreateEnemyProps) {
-    const roomType = props.roomType;
-    switch (roomType) {
-      case RoomType.Apathy: return ENEMY_COLORS.Apathy;
-      case RoomType.Cowardice: return ENEMY_COLORS.Cowardice;
-      case RoomType.SexualPerversions: return ENEMY_COLORS.SP;
-      default:
-        throw new Error(`Unknown roomType: ${roomType}`);
-    }
   }
 }

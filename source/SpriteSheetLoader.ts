@@ -1,8 +1,8 @@
+import { spriteCellSize } from "./constantsAssets";
+
 interface ImageInfo {
   x: number;
   y: number;
-  width: number;
-  height: number;
 }
 
 export type ImagesInfo = Record<string, ImageInfo>;
@@ -67,23 +67,23 @@ export class SpriteSheetLoader {
   }
 
   loadImage(info: ImageInfo, onLoad: (dataUrl: string) => void) {
-    this.canvas.width = info.width;
-    this.canvas.height = info.height;
-    this.canvasContext.clearRect(0, 0, info.width, info.height);
+    this.canvas.width = spriteCellSize;
+    this.canvas.height = spriteCellSize;
+    this.canvasContext.clearRect(0, 0, spriteCellSize, spriteCellSize);
     this.canvasContext.drawImage(
       this.sheetImage,
-      info.x, info.y, info.width, info.height,
-      0, 0, info.width, info.height
+      info.x * spriteCellSize, info.y * spriteCellSize, spriteCellSize, spriteCellSize,
+      0, 0, spriteCellSize, spriteCellSize
     );
-    const imageData = this.canvasContext.getImageData(0, 0, info.width, info.height);
-    const width = info.width * this.scaleFactor;
-    const height = info.height * this.scaleFactor;
+    const imageData = this.canvasContext.getImageData(0, 0, spriteCellSize, spriteCellSize);
+    const width = spriteCellSize * this.scaleFactor;
+    const height = spriteCellSize * this.scaleFactor;
     this.canvasScaled.width = width;
     this.canvasScaled.height = height;
     this.canvasContextScaled.clearRect(0, 0, width, height);
-    for (let currX = 0; currX < info.width; currX++) {
-      for (let currY = 0; currY < info.height; currY++) {
-        const pixelIndex = (Math.floor(currY) * info.width + Math.floor(currX)) * 4;
+    for (let currX = 0; currX < spriteCellSize; currX++) {
+      for (let currY = 0; currY < spriteCellSize; currY++) {
+        const pixelIndex = (Math.floor(currY) * spriteCellSize + Math.floor(currX)) * 4;
         const r = imageData.data[pixelIndex];
         const g = imageData.data[pixelIndex + 1];
         const b = imageData.data[pixelIndex + 2];

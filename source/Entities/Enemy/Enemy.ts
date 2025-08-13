@@ -1,6 +1,6 @@
-import { Vector3, AudioListener, Color } from 'three';
+import { Vector3, AudioListener } from 'three';
 import { Entity } from '@/core/Entities/Entity';
-import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY, ENEMY_COLORS, lighter } from '@/constants';
+import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { BehaviorTree, BehaviorTreeNode } from './BehaviorTree';
 import { RoomType } from './Factory/EnemyFactory';
@@ -8,7 +8,6 @@ import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { SmoothColorChange } from '@/Animations/SmoothColorChange';
 import { VaporizationAnimation } from '@/Animations/Vaporization';
 import { HurtAnimation } from '@/Animations/HurtAnimation';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
@@ -18,6 +17,8 @@ import { AudioSliceName } from '@/constantsAssets';
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
+  walk3: string;
+  walk4: string;
   death: string;
 }
 
@@ -42,7 +43,6 @@ export interface EnemyProps {
   behaviorTreeRoot: BehaviorTreeNode;
   kind: EnemyKind;
   roomType: RoomType;
-  color: Color;
   textures: EnemyTextures;
   hp: number;
   walkSpeed: number;
@@ -69,7 +69,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     const actor = new EnemyActor({
       position: props.position,
       player: props.player,
-      color: props.color,
       textures: props.textures,
     });
     super(
@@ -190,15 +189,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   handleInfestedByParasite() {
     const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
     this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
-    const targetColor = lighter(
-      this.actor.materialInner.color,
-      ENEMY_COLORS.PARASITE_LIGHTER_FACTOR
-    );
-    this.addAnimation(new SmoothColorChange({
-      actor: this.actor,
-      targetColor,
-      durationSeconds: 2,
-    }));
   }
 
   update(delta: number) {

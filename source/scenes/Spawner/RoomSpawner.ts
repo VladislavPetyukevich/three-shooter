@@ -2,11 +2,11 @@ import {
   PlaneGeometry,
   Mesh,
   Matrix4,
-  MeshBasicMaterial,
   Vector2,
   Vector3,
   RepeatWrapping,
   Color,
+  MeshLambertMaterial,
 } from 'three';
 import { Entity } from '@/core/Entities/Entity';
 import { texturesStore } from '@/core/loaders/TextureLoader';
@@ -368,7 +368,7 @@ export class RoomSpawner {
     floorTexture.repeat.x = worldSize.x / 2;
     floorTexture.repeat.y = worldSize.y / 2;
     floorTexture.needsUpdate = true;
-    const floorMaterial = new MeshBasicMaterial({ map: texturesStore.getTexture('floorTextureFile') });
+    const floorMaterial = new MeshLambertMaterial({ map: texturesStore.getTexture('floorTextureFile') });
     const floorMesh = new Mesh(floorGeometry, floorMaterial);
     const floorPosition = this.getCenterPosition(
       worldCoordinates, worldSize

@@ -1,6 +1,5 @@
 import {
   Vector3,
-  Color,
   Mesh,
   Material,
   MeshLambertMaterial,
@@ -30,18 +29,14 @@ export class GunPickUpActor implements Actor {
       amplitude: 0.1,
     });
     this.timeouts = new TimeoutsManager({
-      updateY: 0.01,
+      updateY: 0.001,
     });
     const geometry = new BoxGeometry(props.size.x, props.size.y, props.size.z);
     const material = new MeshLambertMaterial({
-      color: new Color(0x26496C),
+      transparent: true,
       map: texturesStore.getTexture(props.gunTextureName),
     });
-    const materialTop = new MeshLambertMaterial({
-      color: new Color(0x000000),
-    });
     const materials: Material[] = [];
-    materials[2] = materialTop;
     materials[0] = material;
     materials[1] = material;
     materials[4] = material;
@@ -52,7 +47,7 @@ export class GunPickUpActor implements Actor {
   }
 
   update(delta: number) {
-    this.mesh.rotateY(-delta);
+    this.mesh.rotateY(-delta * 2);
     if (this.timeouts.checkIsTimeOutExpired('updateY')) {
       this.timeouts.updateExpiredTimeOut('updateY');
       this.mesh.position.y = this.originalYPos + this.sinTable.getNextSinValue();

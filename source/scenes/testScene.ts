@@ -127,7 +127,7 @@ export class TestScene extends BasicScene {
 
     // lights
     this.ambientLightColor = 0xE7E7E7;
-    this.ambientLightIntensity = 64 * 1.25;
+    this.ambientLightIntensity = 6;
     this.ambientLight = new AmbientLight(
       this.ambientLightColor,
       this.ambientLightIntensity
@@ -162,6 +162,7 @@ export class TestScene extends BasicScene {
   }
 
   spawnGuns() {
+    const pickUpSize = new Vector3(1, 1, 0.00001);
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
@@ -169,7 +170,7 @@ export class TestScene extends BasicScene {
           this.player.mesh.position.y - 1,
           this.player.mesh.position.z - this.cellCoordinates.size * 3,
         ),
-        size: new Vector3(1, 0.5, 1),
+        size: pickUpSize,
         gun: new Shotgun({
           BulletClass: BulletShoutgunPlayer,
           container: this.entitiesContainer,
@@ -189,7 +190,7 @@ export class TestScene extends BasicScene {
           this.player.mesh.position.y - 1,
           this.player.mesh.position.z - this.cellCoordinates.size * 2,
         ),
-        size: new Vector3(1, 0.5, 1),
+        size: pickUpSize,
         gun: new Machinegun({
           container: this.entitiesContainer,
           playerCamera: this.player.camera,
@@ -207,7 +208,7 @@ export class TestScene extends BasicScene {
           this.player.mesh.position.y - 1,
           this.player.mesh.position.z - this.cellCoordinates.size * 1,
         ),
-        size: new Vector3(1, 0.5, 1),
+        size: pickUpSize,
         gun: new BoomerangGun({
           container: this.entitiesContainer,
           playerCamera: this.player.camera,

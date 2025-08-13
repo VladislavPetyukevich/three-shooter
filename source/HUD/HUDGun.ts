@@ -133,9 +133,9 @@ export class HUDGun {
 
   handleResize(height: number) {
     this.bobState = this.getInitialBobState();
-    const scale = height * 0.75;
+    const scale = height * 1.25;
     this.spriteHeight = -height + scale / 2;
-    this.sprite.scale.set(scale * 2, scale, 1);
+    this.sprite.scale.set(scale, scale, 1);
     this.sprite.position.set(0, this.spriteHeight - this.bobState.currentSinValue, 1);
     this.initSwithAnimationProgress();
   }

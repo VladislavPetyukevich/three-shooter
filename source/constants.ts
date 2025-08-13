@@ -40,30 +40,6 @@ export const lighter = (color: Color, factor: number) => {
   return lerpColor(color, WhiteColor, factor);
 };
 
-export const COLORS = {
-  Apathy: createColor(23, 53, 255),
-  Cowardice: createColor(245, 108, 22),
-  SexualPerversions: createColor(255, 23, 57),
-};
-
-const wallDarkerFactor = 0.915;
-export const WALL_COLORS = {
-  Neutral: darker(new Color(0xA7A797), wallDarkerFactor),
-  Apathy: darker(new Color(0x392D21), 0.115),
-  Cowardice: darker(new Color(0x2D3139), 0),
-  SexualPerversions: darker(new Color(0x817567), 0.815),
-};
-
-const enemyDarkerFactor = 0.0;
-export const ENEMY_COLORS = {
-  Apathy: darker(createColor(37, 178, 178), enemyDarkerFactor),
-  Cowardice: darker(createColor(105, 194, 15), enemyDarkerFactor),
-  SP: darker(createColor(177, 180, 203), enemyDarkerFactor),
-  PARASITE_LIGHTER_FACTOR: 0.9,
-};
-
-export const DECAL_COLOR = darker(new Color(0x9B5D89), 0.715);
-
 const GAME_SPEED = 1100;
 const ENEMY_GAME_SPEED = GAME_SPEED / 70;
 const BASE_DISTANCE = 20;
