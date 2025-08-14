@@ -24,7 +24,11 @@ export class EnemyActor implements Actor {
     const enemyWalk2File = texturesStore.getTexture(props.textures.walk2);
     const enemyWalk3File = texturesStore.getTexture(props.textures.walk3);
     const enemyWalk4File = texturesStore.getTexture(props.textures.walk4);
-    const enemyDeathFile = texturesStore.getTexture(props.textures.death);
+    const enemyHurtFile = texturesStore.getTexture(props.textures.hurt);
+    const enemyDeath1File = texturesStore.getTexture(props.textures.death1);
+    const enemyDeath2File = texturesStore.getTexture(props.textures.death2);
+    const enemyDeath3File = texturesStore.getTexture(props.textures.death3);
+    const enemyDeath4File = texturesStore.getTexture(props.textures.death4);
     const colliderGeometry = new BoxGeometry(3, 3, 3);
     const innerGeometry = new BoxGeometry(3, 3, 0.1);
     const material = new MeshBasicMaterial({
@@ -35,7 +39,17 @@ export class EnemyActor implements Actor {
       alphaTest: 0.1,
     });
     this.spriteSheet = new SpriteSheet({
-      textures: [enemyWalk1File, enemyWalk2File, enemyWalk3File, enemyWalk4File, enemyDeathFile],
+      textures: [
+        enemyWalk1File,
+        enemyWalk2File,
+        enemyWalk3File,
+        enemyWalk4File,
+        enemyHurtFile,
+        enemyDeath1File,
+        enemyDeath2File,
+        enemyDeath3File,
+        enemyDeath4File,
+      ],
       material: this.materialInner,
     });
     this.meshInner = new Mesh(innerGeometry, this.materialInner);

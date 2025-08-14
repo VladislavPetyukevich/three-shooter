@@ -24,17 +24,29 @@ export const gameTextures: ImagesInfo = {
   enemyApathyWalk2: { x: 1, y: 0, },
   enemyApathyWalk3: { x: 0, y: 1, },
   enemyApathyWalk4: { x: 1, y: 1, },
-  enemyApathyDeath: { x: 0, y: 2, },
+  enemyApathyHurt: { x: 0, y: 2, },
+  enemyApathyDeath1: { x: 0, y: 18, },
+  enemyApathyDeath2: { x: 1, y: 18, },
+  enemyApathyDeath3: { x: 0, y: 19, },
+  enemyApathyDeath4: { x: 1, y: 19, },
   enemyCowardiceWalk1: { x: 0, y: 12, },
   enemyCowardiceWalk2: { x: 1, y: 12, },
   enemyCowardiceWalk3: { x: 0, y: 13, },
   enemyCowardiceWalk4: { x: 1, y: 13, },
-  enemyCowardiceDeath: { x: 0, y: 14, },
+  enemyCowardiceHurt: { x: 0, y: 14, },
+  enemyCowardiceDeath1: { x: 0, y: 20, },
+  enemyCowardiceDeath2: { x: 1, y: 20, },
+  enemyCowardiceDeath3: { x: 0, y: 21, },
+  enemyCowardiceDeath4: { x: 1, y: 21, },
   enemySPWalk1: { x: 0, y: 15, },
   enemySPWalk2: { x: 1, y: 15, },
   enemySPWalk3: { x: 0, y: 16, },
   enemySPWalk4: { x: 1, y: 16, },
-  enemySPDeath: { x: 0, y: 17, },
+  enemySPHurt: { x: 0, y: 17, },
+  enemySPDeath1: { x: 0, y: 22, },
+  enemySPDeath2: { x: 1, y: 22, },
+  enemySPDeath3: { x: 0, y: 23, },
+  enemySPDeath4: { x: 1, y: 23, },
   shootMark1: { x: 1, y: 4, },
   shootMark2: { x: 1, y: 2, },
   torch: { x: 0, y: 10, },
@@ -92,7 +104,11 @@ export interface EnemyTexturesSet {
   walk2: keyof typeof gameTextures;
   walk3: keyof typeof gameTextures;
   walk4: keyof typeof gameTextures;
-  death: keyof typeof gameTextures;
+  hurt: keyof typeof gameTextures;
+  death1: keyof typeof gameTextures;
+  death2: keyof typeof gameTextures;
+  death3: keyof typeof gameTextures;
+  death4: keyof typeof gameTextures;
 }
 
 interface EnemyTextures {
@@ -107,20 +123,32 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     walk2: 'enemyApathyWalk2',
     walk3: 'enemyApathyWalk3',
     walk4: 'enemyApathyWalk4',
-    death: 'enemyApathyDeath',
+    hurt: 'enemyApathyHurt',
+    death1: 'enemyApathyDeath1',
+    death2: 'enemyApathyDeath2',
+    death3: 'enemyApathyDeath3',
+    death4: 'enemyApathyDeath4',
   },
   Cowardice: {
     walk1: 'enemyCowardiceWalk1',
     walk2: 'enemyCowardiceWalk2',
     walk3: 'enemyCowardiceWalk3',
     walk4: 'enemyCowardiceWalk4',
-    death: 'enemyCowardiceDeath',
+    hurt: 'enemyCowardiceHurt',
+    death1: 'enemyCowardiceDeath1',
+    death2: 'enemyCowardiceDeath2',
+    death3: 'enemyCowardiceDeath3',
+    death4: 'enemyCowardiceDeath4',
   },
   SP: {
     walk1: 'enemySPWalk1',
     walk2: 'enemySPWalk2',
     walk3: 'enemySPWalk3',
     walk4: 'enemySPWalk4',
-    death: 'enemySPDeath',
+    hurt: 'enemySPHurt',
+    death1: 'enemySPDeath1',
+    death2: 'enemySPDeath2',
+    death3: 'enemySPDeath3',
+    death4: 'enemySPDeath4',
   },
 };

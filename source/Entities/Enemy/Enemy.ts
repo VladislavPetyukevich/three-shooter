@@ -13,13 +13,18 @@ import { HurtAnimation } from '@/Animations/HurtAnimation';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { AudioSlices } from '@/core/AudioSlices';
 import { AudioSliceName } from '@/constantsAssets';
+import { DeathAnimation } from '@/Animations/DeathAnimation';
 
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
   walk3: string;
   walk4: string;
-  death: string;
+  hurt: string;
+  death1: string;
+  death2: string;
+  death3: string;
+  death4: string;
 }
 
 export interface EnemyGunProps {
@@ -133,7 +138,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.addAnimation(new HurtAnimation({
       actor: this.actor,
       durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 2,
+      hurtSpriteIndex: 4,
       onEnd: () => this.onHurtEnd(),
     }));
   }
@@ -151,9 +156,10 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.isDead = true;
     this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
-    this.addAnimation(new VaporizationAnimation({
+    this.addAnimation(new DeathAnimation({
       actor: this.actor,
-      durationSeconds: 0.3,
+      durationSeconds: ENEMY.DEATH_TIME_OUT,
+      spriteIndices: [5, 6, 7, 8],
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
   }
