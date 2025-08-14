@@ -103,12 +103,12 @@ export class EntitiesContainer {
       if (isDetectedPreviously) {
         return;
       }
-      const entity = this.meshIdToEntity.get(meshId);
-      if (!entity) {
+      const colidedEntity = this.meshIdToEntity.get(meshId);
+      if (!colidedEntity) {
         console.warn('Collided entity not found by mesh id');
         return;
       }
-      collisionsResult.push(entity);
+      collisionsResult.push(colidedEntity);
     });
     if (collisionsResult.length === 0) {
       this.collideChecker.updateEntityPosition(entity, newPosition);
