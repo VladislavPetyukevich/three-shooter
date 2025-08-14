@@ -387,28 +387,6 @@ export class EnemyBehavior implements Behavior {
     return direction;
   }
 
-  followFollowingEnemy(delta: number) {
-    if (!this.followingEnemy) {
-      return true;
-    }
-    this.timeoutsManager.updateTimeOut('movement', delta);
-    if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
-      return true;
-    }
-    this.timeoutsManager.updateExpiredTimeOut('movement');
-    this.setFollowingEnemy(this.followingEnemy);
-    return true;
-  }
-
-  strafe(delta: number) {
-    this.timeoutsManager.updateTimeOut('strafe', delta);
-    if (this.timeoutsManager.checkIsTimeOutExpired('strafe')) {
-      this.randomStrafe(this.strafeAngleLow);
-      this.timeoutsManager.updateExpiredTimeOut('strafe');
-    }
-    return true;
-  }
-
   updateGun() {
     if (!this.followingEnemy) {
       return;
@@ -425,24 +403,6 @@ export class EnemyBehavior implements Behavior {
       );
     }
     this.gun.setPosition(this.actor.mesh.position);
-  }
-
-  updateGunpointReaction(delta: number) {
-    if (!this.isGunpointTriggered) {
-      return true;
-    }
-    this.timeoutsManager.updateTimeOut('gunpointStrafe', delta);
-    if (!this.timeoutsManager.checkIsTimeOutExpired('gunpointStrafe')) {
-      return true;
-    }
-    this.timeoutsManager.updateExpiredTimeOut('gunpointStrafe');
-    this.isGunpointTriggered = false;
-    if (!this.isOnGunpointCurrent) {
-      return true;
-    }
-    this.isOnGunpointCurrent = false;
-    this.randomStrafe(this.strafeAngleHigh);
-    return true;
   }
 }
 

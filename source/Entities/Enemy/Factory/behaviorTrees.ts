@@ -121,11 +121,32 @@ export const followTarget = (behavior: EnemyBehavior) => {
   return true;
 };
 
-const strafe = (behavior: EnemyBehavior, delta: number) =>
-  behavior.strafe(delta);
+const strafe = (behavior: EnemyBehavior, delta: number) => {
+  behavior.timeoutsManager.updateTimeOut('strafe', delta);
+  if (behavior.timeoutsManager.checkIsTimeOutExpired('strafe')) {
+    behavior.randomStrafe(behavior.strafeAngleLow);
+    behavior.timeoutsManager.updateExpiredTimeOut('strafe');
+  }
+  return true;
+}
 
-const gunpointStrafe = (behavior: EnemyBehavior, delta: number) =>
-  behavior.updateGunpointReaction(delta);
+const gunpointStrafe = (behavior: EnemyBehavior, delta: number) => {
+  if (!behavior.isGunpointTriggered) {
+    return true;
+  }
+  behavior.timeoutsManager.updateTimeOut('gunpointStrafe', delta);
+  if (!behavior.timeoutsManager.checkIsTimeOutExpired('gunpointStrafe')) {
+    return true;
+  }
+  behavior.timeoutsManager.updateExpiredTimeOut('gunpointStrafe');
+  behavior.isGunpointTriggered = false;
+  if (!behavior.isOnGunpointCurrent) {
+    return true;
+  }
+  behavior.isOnGunpointCurrent = false;
+  behavior.randomStrafe(behavior.strafeAngleHigh);
+  return true;
+}
 
 const moveToLongRange = (behavior: EnemyBehavior) => {
   if (!behavior.followingEnemy) {
