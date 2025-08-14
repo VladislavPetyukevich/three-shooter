@@ -3,9 +3,11 @@ import { WallActor } from '@/Entities/Wall/WallActor';
 import { WallBehavior } from './WallBehavior';
 import { Vector3 } from 'three';
 import { ENTITY_TYPE, WALL } from '@/constants';
+import { gameTextures } from '@/constantsAssets';
 
 export interface WallProps {
   position: Vector3;
+  textureFileName: keyof typeof gameTextures;
   size?: { width: number; height: number; depth: number };
   isHorizontalWall?: boolean;
   withDecals?: boolean;
@@ -23,7 +25,7 @@ export class Wall extends Entity {
       position: props.position,
       size: size,
       isHorizontalWall: props.isHorizontalWall,
-      textureFileName: 'wallTextureFile',
+      textureFileName: props.textureFileName,
       textureRepeat: 3,
       decalsCount: props.withDecals ? 16 : 0,
     });

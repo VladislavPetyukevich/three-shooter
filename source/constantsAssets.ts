@@ -9,6 +9,9 @@ export const spriteCellSize = 64;
 
 export const gameTextures: ImagesInfo = {
   wallTextureFile: { x: 0, y: 3, },
+  wallApathyTextureFile: { x: 0, y: 24, },
+  wallCowardiceTextureFile: { x: 1, y: 14, },
+  wallSPTextureFile: { x: 1, y: 17, },
   wallDecal1TextureFile: { x: 0, y: 5, },
   wallDecal2TextureFile: { x: 0, y: 6, },
   wallDecal3TextureFile: { x: 1, y: 6, },
