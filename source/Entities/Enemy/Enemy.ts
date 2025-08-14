@@ -25,6 +25,7 @@ export interface EnemyTextures {
   death2: string;
   death3: string;
   death4: string;
+  attack: string;
 }
 
 export interface EnemyGunProps {
@@ -108,6 +109,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onBleedCallback = () => {
       this.handleBleed();
     };
+    this.behavior.onAttackCallback = () => {
+      this.handleAttack();
+    };
 
     this.behaviorTree = new BehaviorTree(
       props.behaviorTreeRoot,
@@ -127,7 +131,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     if (this.hp <= 0) {
       this.handleDeath();
       return;
-    } else if (!this.behavior.isHurt) {
+    } else if (!this.behavior.isBusy) {
       this.behavior.onHit();
     }
     this.handleHurtAnimation();
@@ -139,12 +143,12 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       actor: this.actor,
       durationSeconds: ENEMY.HURT_TIME_OUT,
       hurtSpriteIndex: 4,
-      onEnd: () => this.onHurtEnd(),
+      onEnd: () => this.onBusyEnd(),
     }));
   }
 
-  onHurtEnd() {
-    this.behavior.onHurtEnd();
+  onBusyEnd() {
+    this.behavior.onBusyEnd();
   };
 
   addOnDeathCallback(callback: OnDeathCallback) {
@@ -170,8 +174,17 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       this.handleDeath();
       return;
     }
-    this.behavior.isHurt = true;
+    this.behavior.isBusy = true;
     this.handleHurtAnimation();
+  }
+
+  handleAttack() {
+    this.addAnimation(new HurtAnimation({
+      actor: this.actor,
+      durationSeconds: ENEMY.HURT_TIME_OUT,
+      hurtSpriteIndex: 9,
+      onEnd: () => this.onBusyEnd(),
+    }));
   }
 
   onCollide(entity: Entity) {

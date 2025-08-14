@@ -65,7 +65,7 @@ export class EnemyBehavior implements Behavior {
   walkSpeed: number;
   bulletsPerShoot: number;
   currentBulletsToShoot: number;
-  isHurt: boolean;
+  isBusy: boolean;
   hurtChance: number;
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
@@ -74,6 +74,7 @@ export class EnemyBehavior implements Behavior {
   spawnSound: PositionalAudio;
   hitSound: Audio;
   onHitDamage?: { min: number; max: number; };
+  onAttackCallback?: () => void;
   onDeathCallback?: () => void;
   onBleedCallback?: () => void;
 
@@ -106,7 +107,7 @@ export class EnemyBehavior implements Behavior {
     this.walkSpeed = props.walkSpeed;
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.currentBulletsToShoot = 0;
-    this.isHurt = false;
+    this.isBusy = false;
     this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
@@ -143,7 +144,22 @@ export class EnemyBehavior implements Behavior {
     this.hitSound.play();
   }
 
+  onBusyStart() {
+    this.isBusy = true;
+    this.backupVelocity.copy(this.velocity);
+    this.velocity.set(0, 0, 0);
+  }
+
+  onBusyEnd() {
+    this.isBusy = false;
+    this.velocity.copy(this.backupVelocity);
+  }
+
   shoot() {
+    this.onBusyStart();
+    if (this.onAttackCallback) {
+      this.onAttackCallback();
+    }
     this.gun.shoot();
   }
 
@@ -158,14 +174,7 @@ export class EnemyBehavior implements Behavior {
     if (randomNumbers.getRandom() > this.hurtChance) {
       return;
     }
-    this.isHurt = true;
-    this.backupVelocity.copy(this.velocity);
-    this.velocity.set(0, 0, 0);
-  }
-
-  onHurtEnd() {
-    this.isHurt = false;
-    this.velocity.copy(this.backupVelocity);
+    this.onBusyStart();
   }
 
   randomMovement() {
@@ -258,7 +267,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateWalkSprite(delta: number) {
-    if (this.isHurt) {
+    if (this.isBusy) {
       return;
     }
     this.currentTitleDisplayTime += delta;

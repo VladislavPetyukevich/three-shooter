@@ -32,6 +32,7 @@ export const gameTextures: ImagesInfo = {
   enemyApathyDeath2: { x: 1, y: 18, },
   enemyApathyDeath3: { x: 0, y: 19, },
   enemyApathyDeath4: { x: 1, y: 19, },
+  enemyApathyAttack: { x: 0, y: 25, },
   enemyCowardiceWalk1: { x: 0, y: 12, },
   enemyCowardiceWalk2: { x: 1, y: 12, },
   enemyCowardiceWalk3: { x: 0, y: 13, },
@@ -41,6 +42,7 @@ export const gameTextures: ImagesInfo = {
   enemyCowardiceDeath2: { x: 1, y: 20, },
   enemyCowardiceDeath3: { x: 0, y: 21, },
   enemyCowardiceDeath4: { x: 1, y: 21, },
+  enemyCowardiceAttack: { x: 1, y: 25, },
   enemySPWalk1: { x: 0, y: 15, },
   enemySPWalk2: { x: 1, y: 15, },
   enemySPWalk3: { x: 0, y: 16, },
@@ -50,6 +52,7 @@ export const gameTextures: ImagesInfo = {
   enemySPDeath2: { x: 1, y: 22, },
   enemySPDeath3: { x: 0, y: 23, },
   enemySPDeath4: { x: 1, y: 23, },
+  enemySPAttack: { x: 0, y: 26, },
   shootMark1: { x: 1, y: 4, },
   shootMark2: { x: 1, y: 2, },
   torch: { x: 0, y: 10, },
@@ -112,6 +115,7 @@ export interface EnemyTexturesSet {
   death2: keyof typeof gameTextures;
   death3: keyof typeof gameTextures;
   death4: keyof typeof gameTextures;
+  attack: keyof typeof gameTextures;
 }
 
 interface EnemyTextures {
@@ -131,6 +135,7 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     death2: 'enemyApathyDeath2',
     death3: 'enemyApathyDeath3',
     death4: 'enemyApathyDeath4',
+    attack: 'enemyApathyAttack',
   },
   Cowardice: {
     walk1: 'enemyCowardiceWalk1',
@@ -142,6 +147,7 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     death2: 'enemyCowardiceDeath2',
     death3: 'enemyCowardiceDeath3',
     death4: 'enemyCowardiceDeath4',
+    attack: 'enemyCowardiceAttack',
   },
   SP: {
     walk1: 'enemySPWalk1',
@@ -153,5 +159,6 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     death2: 'enemySPDeath2',
     death3: 'enemySPDeath3',
     death4: 'enemySPDeath4',
+    attack: 'enemySPAttack',
   },
 };

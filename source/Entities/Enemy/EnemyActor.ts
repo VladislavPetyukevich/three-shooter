@@ -29,6 +29,7 @@ export class EnemyActor implements Actor {
     const enemyDeath2File = texturesStore.getTexture(props.textures.death2);
     const enemyDeath3File = texturesStore.getTexture(props.textures.death3);
     const enemyDeath4File = texturesStore.getTexture(props.textures.death4);
+    const enemyAttackFile = texturesStore.getTexture(props.textures.attack);
     const colliderGeometry = new BoxGeometry(3, 3, 3);
     const innerGeometry = new BoxGeometry(3, 3, 0.1);
     const material = new MeshBasicMaterial({
@@ -49,6 +50,7 @@ export class EnemyActor implements Actor {
         enemyDeath2File,
         enemyDeath3File,
         enemyDeath4File,
+        enemyAttackFile,
       ],
       material: this.materialInner,
     });

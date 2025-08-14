@@ -7,7 +7,7 @@ import { BehaviorTreeNode } from '../BehaviorTree';
 
 const noop = () => true;
 
-const hurtNode = (behavior: EnemyBehavior) => !behavior.isHurt;
+const busyNode = (behavior: EnemyBehavior) => !behavior.isBusy;
 
 const attackCond = {
   condition: (behavior: EnemyBehavior) =>
@@ -171,22 +171,22 @@ const bleed = (behavior: EnemyBehavior, delta: number) => {
 };
 
 export const basicEnemySeq: BehaviorTreeNode = {
-  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
+  sequence: [busyNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
 export const longRangeEnemySeq: BehaviorTreeNode = {
-  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
+  sequence: [busyNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
 };
 
 export const bleedEnemySeq: BehaviorTreeNode = {
-  sequence: [bleed, hurtNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
+  sequence: [bleed, busyNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
 
 export const kamikazeEnemySeq: BehaviorTreeNode = {
-  sequence: [hurtNode, updateCollisions, updateFollowingEnemy, strafe, gunpointStrafe]
+  sequence: [busyNode, updateCollisions, updateFollowingEnemy, strafe, gunpointStrafe]
 };
 
 export const parasiteEnemySeq: BehaviorTreeNode = {
-  sequence: [hurtNode, infectCollisions, findParasiteTarget, followTarget],
+  sequence: [busyNode, infectCollisions, findParasiteTarget, followTarget],
 };
 
