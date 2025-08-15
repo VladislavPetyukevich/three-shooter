@@ -222,7 +222,6 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomVisit = (room: Room) => {
-    this.logs.roomVisit(room.constructorIndex);
     this.currentRoom = room;
     this.roomSpawner.fillRoomAfterVisit(room);
     this.openCloseNeighboringRooms(room, true);

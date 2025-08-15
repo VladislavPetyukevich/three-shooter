@@ -481,7 +481,7 @@ export class EditorScene extends TestScene {
     this.currentRoom.entities.forEach(entity => this.entitiesContainer.remove(entity.mesh));
     this.currentRoom.entities = [];
     constructors[0] = () => this.roomCells;
-    this.currentRoom.constructorIndex = 0;
+    this.currentRoom.roomConstructor = constructors[0];
     this.roomSpawner.fillRoomBeforeVisit(this.currentRoom);
     this.roomSpawner.fillRoomAfterVisit(this.currentRoom);
     this.updateEditorMap();

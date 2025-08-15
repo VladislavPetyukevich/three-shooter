@@ -30,6 +30,7 @@ import {
   RoomCellEventType,
   DungeonRoom,
   WallRoomCell,
+  RoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -55,7 +56,7 @@ export interface Room {
     bottom: Room | null;
   };
   entities: Entity[];
-  constructorIndex: number;
+  roomConstructor: RoomConstructor;
 }
 
 export interface RoomSpawnerProps {
@@ -133,6 +134,7 @@ export class RoomSpawner {
       type === RoomType.Neutral ?
         -1 :
         this.dungeonRoom.getNextRoomConstructorIndex();
+    const roomConstructor = this.dungeonRoom.getRoomConstructor(constructorIndex);
     const room: Room = {
       type: type,
       cellPosition: cellPosition,
@@ -149,7 +151,7 @@ export class RoomSpawner {
         bottom: null,
       },
       entities: [],
-      constructorIndex,
+      roomConstructor,
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {
@@ -434,7 +436,7 @@ export class RoomSpawner {
     if (room.type === RoomType.Neutral) {
       return null;
     }
-    return this.dungeonRoom.getRoomConstructor(room.constructorIndex);
+    return room.roomConstructor;
   }
 
   fillRoomAfterVisit(room: Room) {
