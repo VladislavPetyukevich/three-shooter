@@ -8,7 +8,6 @@ import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
-import { VaporizationAnimation } from '@/Animations/Vaporization';
 import { HurtAnimation } from '@/Animations/HurtAnimation';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { AudioSlices } from '@/core/AudioSlices';

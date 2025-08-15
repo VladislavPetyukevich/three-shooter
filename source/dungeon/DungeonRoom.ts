@@ -1,9 +1,6 @@
 import { Vector2 } from 'three';
-import { RandomNumbers } from '@/RandomNumbers';
 import { Entity } from '@/core/Entities/Entity';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
-
-const RANDOM_NUMBERS_COUNT = 100;
 
 export const enum EnemyKind {
   Soul,
