@@ -15,6 +15,7 @@ interface DoorProps {
 
 export class Door extends Entity<WallActor, DoorBehavior> {
   container: EntitiesContainer;
+  unbreakable: boolean;
 
   constructor(props: DoorProps) {
     const size = {
@@ -60,6 +61,7 @@ export class Door extends Entity<WallActor, DoorBehavior> {
       (this.mesh.material as Material[])[4] = emptyMaterial;
       (this.mesh.material as Material[])[5] = emptyMaterial;
     }
+    this.unbreakable = true;
   }
 
   open() {
