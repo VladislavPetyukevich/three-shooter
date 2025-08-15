@@ -33,6 +33,7 @@ import { texturesStore } from '@/core/loaders';
 export type OnEnemySpawn = (
   cellCoordinates: Vector2,
   roomType: RoomType,
+  dungeonLevel: number,
   kind: EnemyKind,
   spawnerOnDeathCallback?: OnDeathCallback,
 ) => Entity;
@@ -116,8 +117,11 @@ export class TestScene extends BasicScene {
       onEnemySpawn: this.spawnEnemy,
     });
     this.currentRoom = this.roomSpawner.createRoom(new Vector2(0, 0), {
-      getCells: () => [],
-      roomType: RoomType.Neutral,
+      constructor: {
+        getCells: () => [],
+        roomType: RoomType.Neutral,
+      },
+      dungeonLevel: 0,
     });
     this.roomSpawner.createNeighboringRooms(this.currentRoom);
     this.openCloseNeighboringRooms(this.currentRoom, false);
@@ -330,6 +334,7 @@ export class TestScene extends BasicScene {
     const enemy = this.createEnemy(
       new Vector2(position.x, position.z),
       roomType,
+      this.currentRoom.roomConstructor.dungeonLevel,
       EnemyKind.Soul,
     );
     const collisions =
@@ -346,6 +351,7 @@ export class TestScene extends BasicScene {
   spawnEnemy: OnEnemySpawn = (
     coordinates,
     roomType,
+    dungeonLevel,
     kind,
     spawnerOnDeathCallback?,
   ) => {
@@ -353,6 +359,7 @@ export class TestScene extends BasicScene {
     const enemy = this.createEnemy(
       coordinates,
       roomType,
+      dungeonLevel,
       kind,
     );
     if (enemy.kind === EnemyKind.BreedingWithSpawner) {
@@ -369,6 +376,7 @@ export class TestScene extends BasicScene {
   createEnemy(
     coordinates: Vector2,
     roomType: RoomType,
+    dungeonLevel: number,
     kind: EnemyKind,
   ) {
     return this.enemyFactory.createEnemy({
@@ -378,6 +386,7 @@ export class TestScene extends BasicScene {
       audioListener: this.audioListener,
       audioSlices: this.audioSlices,
       roomType,
+      dungeonLevel,
       kind,
     });
   }

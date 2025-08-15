@@ -30,7 +30,7 @@ import {
   RoomCellEventType,
   DungeonRoom,
   WallRoomCell,
-  RoomConstructor,
+  DungeonRoomConstructor,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -56,7 +56,7 @@ export interface Room {
     bottom: Room | null;
   };
   entities: Entity[];
-  roomConstructor: RoomConstructor;
+  roomConstructor: DungeonRoomConstructor;
 }
 
 export interface RoomSpawnerProps {
@@ -99,8 +99,7 @@ export class RoomSpawner {
   };
 
   createNeighboringRooms(room: Room) {
-    const constructorIndex = this.dungeonRoom.getNextRoomConstructorIndex();
-    const roomConstructor = this.dungeonRoom.getRoomConstructor(constructorIndex);
+    const roomConstructor = this.dungeonRoom.getNextDungeonRoomConstructor();
     const neighboringRoom = this.createConnectedRoom(
       room.cellPosition,
       Direction.Top,
@@ -110,7 +109,7 @@ export class RoomSpawner {
     neighboringRoom.neighboringRooms.bottom = room;
   }
 
-  createConnectedRoom(cellPosition: Vector2, direction: Direction, roomConstructor: RoomConstructor) {
+  createConnectedRoom(cellPosition: Vector2, direction: Direction, roomConstructor: DungeonRoomConstructor) {
     const connectedRoomX = (direction === Direction.Left) ?
       cellPosition.x - this.roomSize.x :
       (direction === Direction.Right) ?
@@ -128,15 +127,15 @@ export class RoomSpawner {
     return this.createRoom(connectedRoomCellPosition, roomConstructor);
   }
 
-  createRoom(cellPosition: Vector2, roomConstructor: RoomConstructor): Room {
+  createRoom(cellPosition: Vector2, roomConstructor: DungeonRoomConstructor): Room {
     const worldCoordinates = this.cellCoordinates.toWorldCoordinates(cellPosition);
     const worldSize = this.cellCoordinates.toWorldCoordinates(this.roomSize);
     const room: Room = {
-      type: roomConstructor.roomType,
+      type: roomConstructor.constructor.roomType,
       cellPosition: cellPosition,
       floor: this.spawnRoomFloor(worldCoordinates, worldSize),
       walls: [
-        ...this.spawnRoomWalls(worldCoordinates, worldSize, roomConstructor.roomType)
+        ...this.spawnRoomWalls(worldCoordinates, worldSize, roomConstructor.constructor.roomType)
       ],
       doors: {
         top: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
@@ -147,7 +146,7 @@ export class RoomSpawner {
         bottom: null,
       },
       entities: [],
-      roomConstructor,
+      roomConstructor: roomConstructor,
     };
     this.fillRoomBeforeVisit(room);
     if (room.type !== RoomType.Neutral) {
@@ -436,7 +435,7 @@ export class RoomSpawner {
   }
 
   fillRoomAfterVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room)?.getCells;
+    const roomConstructor = this.getRoomConstructor(room)?.constructor.getCells;
     if (!roomConstructor) {
       return;
     }
@@ -447,7 +446,7 @@ export class RoomSpawner {
   }
 
   fillRoomBeforeVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room)?.getCells;
+    const roomConstructor = this.getRoomConstructor(room)?.constructor.getCells;
     if (!roomConstructor) {
       return;
     }
@@ -505,6 +504,7 @@ export class RoomSpawner {
   }
 
   fillEnemyCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
+    console.log(room.roomConstructor.dungeonLevel);
     const onDeathCallback = cell.event ?
       () => {
         switch (cell.event?.type) {
@@ -519,6 +519,7 @@ export class RoomSpawner {
     const enemy = this.onEnemySpawn(
       cellCoordinates,
       room.type,
+      room.roomConstructor.dungeonLevel,
       (cell as EnemyRoomCell).kind,
       onDeathCallback,
     );

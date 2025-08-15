@@ -48,6 +48,7 @@ export interface CreateEnemyProps {
   container: EntitiesContainer;
   audioListener: AudioListener;
   roomType: RoomType;
+  dungeonLevel: number;
   kind: EnemyKind;
   audioSlices: AudioSlices<AudioSliceName>;
 }
@@ -55,10 +56,17 @@ export interface CreateEnemyProps {
 export class EnemyFactory {
   static stats: EnemiesStats = enemiesStats;
   createEnemy(props: CreateEnemyProps) {
-    const stats = EnemyFactory.stats[props.kind];
+    const stats = this.getEnemyStats(props.kind, props.dungeonLevel);
     return new Enemy({
       ...props,
       ...stats,
     });
+  }
+
+  private getEnemyStats(kind: EnemyKind, dungeonLevel: number) {
+    const stats = { ...EnemyFactory.stats[kind] };
+    stats.hp *= dungeonLevel + 1;
+    stats.walkSpeed += dungeonLevel;
+    return stats;
   }
 }

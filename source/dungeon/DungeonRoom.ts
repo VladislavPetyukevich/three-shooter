@@ -56,7 +56,7 @@ const doorForEnemy1Tag = 'doorForEnemy1';
 
 export const constructors: RoomConstructor[] = [
   {
-    roomType: RoomType.Cowardice,
+    roomType: RoomType.SexualPerversions,
     getCells: () => {
       const doorEvent = {
         type: RoomCellEventType.OpenDoorIfNoEntitiesWithTag,
@@ -82,7 +82,7 @@ export const constructors: RoomConstructor[] = [
     },
   },
   {
-    roomType: RoomType.SexualPerversions,
+    roomType: RoomType.Apathy,
     getCells: (size) => {
       const stipSize = 2;
       const padding = 4;
@@ -116,7 +116,7 @@ export const constructors: RoomConstructor[] = [
     },
   },
   {
-    roomType: RoomType.Apathy,
+    roomType: RoomType.Cowardice,
     getCells: () => {
       return [
         { position: new Vector2(3, 10), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
@@ -148,19 +148,33 @@ export const constructors: RoomConstructor[] = [
   }
 ];
 
+export interface DungeonRoomConstructor {
+  constructor: RoomConstructor;
+  dungeonLevel: number;
+}
+
 export class DungeonRoom {
   currentRoomConstructorIndex: number;
+  dungeonLevel: number;
 
   constructor() {
-    this.currentRoomConstructorIndex = 0;
+    this.currentRoomConstructorIndex = -1;
+    this.dungeonLevel = 0;
   }
 
-  getNextRoomConstructorIndex() {
-    this.currentRoomConstructorIndex = (this.currentRoomConstructorIndex + 1) % constructors.length;
-    return this.currentRoomConstructorIndex;
+  private updateRoomConstructorIndex() {
+    this.currentRoomConstructorIndex++;
+    if (this.currentRoomConstructorIndex >= constructors.length) {
+      this.dungeonLevel++;
+      this.currentRoomConstructorIndex = 0;
+    }
   }
 
-  getRoomConstructor(index: number): RoomConstructor {
-    return constructors[index];
+  getNextDungeonRoomConstructor(): DungeonRoomConstructor {
+    this.updateRoomConstructorIndex();
+    return {
+      constructor: constructors[this.currentRoomConstructorIndex],
+      dungeonLevel: this.dungeonLevel,
+    };
   }
 }
