@@ -504,7 +504,6 @@ export class RoomSpawner {
   }
 
   fillEnemyCell(room: Room, cell: RoomCell, cellCoordinates: Vector2) {
-    console.log(room.roomConstructor.dungeonLevel);
     const onDeathCallback = cell.event ?
       () => {
         switch (cell.event?.type) {
