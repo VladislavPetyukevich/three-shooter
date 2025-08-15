@@ -115,7 +115,10 @@ export class TestScene extends BasicScene {
       onRoomVisit: this.handleRoomVisit,
       onEnemySpawn: this.spawnEnemy,
     });
-    this.currentRoom = this.roomSpawner.createRoom(new Vector2(0, 0), RoomType.Neutral);
+    this.currentRoom = this.roomSpawner.createRoom(new Vector2(0, 0), {
+      getCells: () => [],
+      roomType: RoomType.Neutral,
+    });
     this.roomSpawner.createNeighboringRooms(this.currentRoom);
     this.openCloseNeighboringRooms(this.currentRoom, false);
 

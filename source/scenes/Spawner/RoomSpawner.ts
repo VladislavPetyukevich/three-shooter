@@ -99,17 +99,18 @@ export class RoomSpawner {
   };
 
   createNeighboringRooms(room: Room) {
-    const roomType = this.getRandomRoomType();
+    const constructorIndex = this.dungeonRoom.getNextRoomConstructorIndex();
+    const roomConstructor = this.dungeonRoom.getRoomConstructor(constructorIndex);
     const neighboringRoom = this.createConnectedRoom(
       room.cellPosition,
       Direction.Top,
-      roomType,
+      roomConstructor,
     );
     room.neighboringRooms.top = neighboringRoom;
     neighboringRoom.neighboringRooms.bottom = room;
   }
 
-  createConnectedRoom(cellPosition: Vector2, direction: Direction, type: RoomType) {
+  createConnectedRoom(cellPosition: Vector2, direction: Direction, roomConstructor: RoomConstructor) {
     const connectedRoomX = (direction === Direction.Left) ?
       cellPosition.x - this.roomSize.x :
       (direction === Direction.Right) ?
@@ -124,23 +125,18 @@ export class RoomSpawner {
       connectedRoomX,
       connectedRoomY
     );
-    return this.createRoom(connectedRoomCellPosition, type);
+    return this.createRoom(connectedRoomCellPosition, roomConstructor);
   }
 
-  createRoom(cellPosition: Vector2, type: RoomType): Room {
+  createRoom(cellPosition: Vector2, roomConstructor: RoomConstructor): Room {
     const worldCoordinates = this.cellCoordinates.toWorldCoordinates(cellPosition);
     const worldSize = this.cellCoordinates.toWorldCoordinates(this.roomSize);
-    const constructorIndex =
-      type === RoomType.Neutral ?
-        -1 :
-        this.dungeonRoom.getNextRoomConstructorIndex();
-    const roomConstructor = this.dungeonRoom.getRoomConstructor(constructorIndex);
     const room: Room = {
-      type: type,
+      type: roomConstructor.roomType,
       cellPosition: cellPosition,
       floor: this.spawnRoomFloor(worldCoordinates, worldSize),
       walls: [
-        ...this.spawnRoomWalls(worldCoordinates, worldSize, type)
+        ...this.spawnRoomWalls(worldCoordinates, worldSize, roomConstructor.roomType)
       ],
       doors: {
         top: this.spawnRoomDoor(worldCoordinates, worldSize, Direction.Top),
@@ -440,7 +436,7 @@ export class RoomSpawner {
   }
 
   fillRoomAfterVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room);
+    const roomConstructor = this.getRoomConstructor(room)?.getCells;
     if (!roomConstructor) {
       return;
     }
@@ -451,7 +447,7 @@ export class RoomSpawner {
   }
 
   fillRoomBeforeVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room);
+    const roomConstructor = this.getRoomConstructor(room)?.getCells;
     if (!roomConstructor) {
       return;
     }
