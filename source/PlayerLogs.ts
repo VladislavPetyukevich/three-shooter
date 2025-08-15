@@ -5,8 +5,8 @@ export type PlayerLogsValue = number[][];
 export class PlayerLogs {
   values: PlayerLogsValue;
 
-  constructor(seed: number) {
-    this.values = [[seed]];
+  constructor() {
+    this.values = [];
   }
 
   roomVisit(value: number) {

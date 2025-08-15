@@ -132,7 +132,7 @@ export class RoomSpawner {
     const constructorIndex =
       type === RoomType.Neutral ?
         -1 :
-        this.dungeonRoom.getRandomRoomConstructorIndex();
+        this.dungeonRoom.getNextRoomConstructorIndex();
     const room: Room = {
       type: type,
       cellPosition: cellPosition,
@@ -677,9 +677,5 @@ export class RoomSpawner {
       default:
         return RoomType.SexualPerversions;
     }
-  }
-
-  getSeed() {
-    return this.dungeonRoom.randomNumbersGenerator.seed;
   }
 }

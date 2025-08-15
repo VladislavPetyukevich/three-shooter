@@ -138,14 +138,15 @@ export const constructors: RoomConstructor[] = [
 ];
 
 export class DungeonRoom {
-  randomNumbersGenerator: RandomNumbers;
+  currentRoomConstructorIndex: number;
 
   constructor() {
-    this.randomNumbersGenerator = new RandomNumbers(RANDOM_NUMBERS_COUNT);
+    this.currentRoomConstructorIndex = 0;
   }
 
-  getRandomRoomConstructorIndex() {
-    return Math.floor(this.randomNumbersGenerator.getRandom() * constructors.length);
+  getNextRoomConstructorIndex() {
+    this.currentRoomConstructorIndex = (this.currentRoomConstructorIndex + 1) % constructors.length;
+    return this.currentRoomConstructorIndex;
   }
 
   getRoomConstructor(index: number): RoomConstructor {

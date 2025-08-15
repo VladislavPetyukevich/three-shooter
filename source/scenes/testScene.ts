@@ -134,7 +134,7 @@ export class TestScene extends BasicScene {
     );
     this.scene.add(this.ambientLight);
 
-    this.logs = new PlayerLogs(this.roomSpawner.getSeed());
+    this.logs = new PlayerLogs();
 
     const skyboxSize = 300;
     const skyboxGeometry = new SphereGeometry(skyboxSize, 32, 32)
