@@ -105,7 +105,6 @@ export class EntitiesContainer {
       }
       const colidedEntity = this.meshIdToEntity.get(meshId);
       if (!colidedEntity) {
-        console.warn('Collided entity not found by mesh id');
         return;
       }
       collisionsResult.push(colidedEntity);
