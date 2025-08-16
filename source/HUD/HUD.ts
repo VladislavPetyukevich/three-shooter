@@ -20,7 +20,6 @@ export class HUD {
   maxHp: number;
   maxDamageOverlayOpacity: number;
   score: HUDScore;
-  totalScore: HUDScore;
 
   constructor() {
     this.scene = new Scene();
@@ -45,12 +44,6 @@ export class HUD {
       textAlign: 'center',
     });
     this.scene.add(this.score.sprite);
-
-    this.totalScore = new HUDScore({
-      size: hudScoreSize,
-      prefix: '🛒',
-    });
-    this.scene.add(this.totalScore.sprite);
 
     this.gun = new HUDGun();
     this.scene.add(this.gun.sprite);
@@ -107,8 +100,6 @@ export class HUD {
     const scoreSpriteHeight = -height + scoreScale / 2;
     this.score.sprite.scale.set(scoreScale * 8, scoreScale, 1);
     this.score.sprite.position.set(0, -scoreSpriteHeight, 1);
-    this.totalScore.sprite.scale.set(scoreScale * 8, scoreScale, 1);
-    this.totalScore.sprite.position.set(0 - width * 1 + scoreScale * 4, -scoreSpriteHeight, 1);
     const damageOverlayWidth = width * 2;
     const damageOverlayHeight = height * 2;
     this.damageOverlay.scale.set(
