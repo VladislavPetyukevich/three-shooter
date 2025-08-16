@@ -146,7 +146,7 @@ export class TestScene extends BasicScene {
     const skyboxGeometry = new SphereGeometry(skyboxSize, 32, 32)
     const texture = texturesStore.getTexture('skybox');
     texture.wrapS = texture.wrapT = RepeatWrapping;
-    texture.repeat.x = skyboxSize / 16;
+    texture.repeat.x = skyboxSize / 32;
     texture.repeat.y = skyboxSize / 32;
     this.skyboxMaterial = new MeshBasicMaterial({
       map: texture,
