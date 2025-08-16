@@ -1,8 +1,9 @@
 import { Vector2 } from 'three';
 import { ENTITY_TYPE } from '@/constants';
-import { EnemyKind, RoomCell, RoomCellType, constructors } from '@/dungeon/DungeonRoom';
+import { EnemyKind, RoomCell, RoomCellType } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
+import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 
 interface CellColors {
   border: string;
@@ -480,9 +481,11 @@ export class EditorScene extends TestScene {
   updateRoomCells() {
     this.currentRoom.entities.forEach(entity => this.entitiesContainer.remove(entity.mesh));
     this.currentRoom.entities = [];
-    constructors[0].getCells = () => this.roomCells;
     this.currentRoom.roomConstructor = {
-      constructor: constructors[0],
+      constructor: {
+        getCells: () => this.roomCells,
+        roomType: RoomType.SexualPerversions,
+      },
       dungeonLevel: 0,
     };
     this.roomSpawner.fillRoomBeforeVisit(this.currentRoom);
