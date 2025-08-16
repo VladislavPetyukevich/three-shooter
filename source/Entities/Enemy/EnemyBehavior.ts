@@ -40,8 +40,7 @@ type TimeoutNames =
   'hurt' |
   'movement' |
   'strafe' |
-  'gunpointStrafe' |
-  'bleed';
+  'gunpointStrafe';
 
 export class EnemyBehavior implements Behavior {
   player: Player;
@@ -76,7 +75,6 @@ export class EnemyBehavior implements Behavior {
   onHitDamage?: { min: number; max: number; };
   onAttackCallback?: () => void;
   onDeathCallback?: () => void;
-  onBleedCallback?: () => void;
 
   constructor(props: BehaviorProps) {
     this.player = props.player;
@@ -117,7 +115,6 @@ export class EnemyBehavior implements Behavior {
       movement: props.delays.movement,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
-      bleed: ENEMY.BLEED_TIME_OUT,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.timeoutsManager.expireAllTimeOuts();
@@ -294,11 +291,6 @@ export class EnemyBehavior implements Behavior {
       (distanceToPlayer > min) &&
       (distanceToPlayer < max)
     );
-  }
-
-  checkIsEnemyInParasiteAttackDistance(enemy: Entity) {
-    const distanceToEnemy = this.getDistanceToEntity(enemy);
-    return distanceToEnemy <= ENEMY.ATTACK_DISTANCE_PARASITE;
   }
 
   update(delta: number) {

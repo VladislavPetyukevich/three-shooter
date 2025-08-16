@@ -10,13 +10,12 @@ import {
 } from 'three';
 import { BasicSceneProps, BasicScene } from '@/core/Scene';
 import { Entity } from '@/core/Entities/Entity';
-import { PLAYER, enemiesFromSpawnerCount, roomSize } from '@/constants';
+import { PLAYER, roomSize } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, OnDeathCallback } from '@/Entities/Enemy/Enemy';
 import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
-import { EnemySpawner } from '@/Entities/EnemySpawner/EnemySpawner';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
@@ -280,20 +279,6 @@ export class TestScene extends BasicScene {
     );
   }
 
-  onEnemyWithSpawnerDeath = (enemy: Enemy) => {
-    this.incrementEnemiesKillCount();
-    this.entitiesContainer.add(
-      new EnemySpawner({
-        container: this.entitiesContainer,
-        positionPadding: this.cellCoordinates.size,
-        position: enemy.mesh.position.clone(),
-        spawnsCount: enemiesFromSpawnerCount,
-        onTrigger: this.spawnEnemyFromSpawner(enemy.roomType),
-        onDestroy: this.onRoomEntityDestroy,
-      })
-    );
-  }
-
   onEnemyDeath = (enemy: Enemy) => {
     this.logs.enemyKill(enemy);
     this.incrementEnemiesKillCount();
@@ -335,7 +320,7 @@ export class TestScene extends BasicScene {
       new Vector2(position.x, position.z),
       roomType,
       this.currentRoom.roomConstructor.dungeonLevel,
-      EnemyKind.Soul,
+      EnemyKind.Flyguy,
     );
     const collisions =
       this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.mesh.position);
@@ -353,7 +338,6 @@ export class TestScene extends BasicScene {
     roomType,
     dungeonLevel,
     kind,
-    spawnerOnDeathCallback?,
   ) => {
     this.currentRoomEnimiesCount++;
     const enemy = this.createEnemy(
@@ -362,14 +346,7 @@ export class TestScene extends BasicScene {
       dungeonLevel,
       kind,
     );
-    if (enemy.kind === EnemyKind.BreedingWithSpawner) {
-      enemy.addOnDeathCallback(this.onEnemyWithSpawnerDeath);
-    } else {
-      enemy.addOnDeathCallback(this.onEnemyDeath);
-    }
-    if (spawnerOnDeathCallback) {
-      enemy.addOnDeathCallback(spawnerOnDeathCallback);
-    }
+    enemy.addOnDeathCallback(this.onEnemyDeath);
     return this.entitiesContainer.add(enemy) as Enemy;
   }
 

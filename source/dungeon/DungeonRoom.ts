@@ -3,12 +3,12 @@ import { Entity } from '@/core/Entities/Entity';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 
 export const enum EnemyKind {
-  Soul,
-  Shooter,
-  Kamikaze,
-  Parasite,
-  Bleed,
-  BreedingWithSpawner,
+  Flyguy,
+  Commando,
+  Zombie,
+  Slayer,
+  Tank,
+  Soldier,
 }
 
 export const enum RoomCellType {
@@ -68,14 +68,14 @@ export const constructors: RoomConstructor[] = [
           type: RoomCellType.Enemy,
           tag: enemyForDoor1Tag,
           event: doorEvent,
-          kind: EnemyKind.Kamikaze,
+          kind: EnemyKind.Zombie,
         },
         {
           position: new Vector2(4, 2),
           type: RoomCellType.Enemy,
           tag: enemyForDoor1Tag,
           event: doorEvent,
-          kind: EnemyKind.Shooter,
+          kind: EnemyKind.Commando,
         },
         { position: new Vector2(4, 4), type: RoomCellType.DoorWall, mini: false, tag: doorForEnemy1Tag },
       ];
@@ -89,10 +89,10 @@ export const constructors: RoomConstructor[] = [
       const centerX = Math.floor(size.x / 2);
       const centerY = Math.floor(size.y / 2);
       const cells: RoomCell[] = [
-        { position: new Vector2(2, 2), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(2, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(size.x - 3, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(size.x - 3, 2), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+        { position: new Vector2(2, 2), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(2, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(size.x - 3, size.y - 3), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(size.x - 3, 2), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
       ];
       for (let x = centerX - stipSize; x < centerX + stipSize; x++) {
         if (x % 2 !== 0) {
@@ -119,10 +119,10 @@ export const constructors: RoomConstructor[] = [
     roomType: RoomType.Cowardice,
     getCells: () => {
       return [
-        { position: new Vector2(3, 10), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(9, 3), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(10, 15), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
-        { position: new Vector2(16, 9), type: RoomCellType.Enemy, kind: EnemyKind.Soul },
+        { position: new Vector2(3, 10), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(9, 3), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(10, 15), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
+        { position: new Vector2(16, 9), type: RoomCellType.Enemy, kind: EnemyKind.Flyguy },
 
         { position: new Vector2(3, 3), type: RoomCellType.Wall, mini: false, },
         { position: new Vector2(3, 16), type: RoomCellType.Wall, mini: false, },

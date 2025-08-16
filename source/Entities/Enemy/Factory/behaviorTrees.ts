@@ -1,8 +1,6 @@
-import { ENTITY_MESSAGES, ENTITY_TYPE, ENEMY } from '@/constants';
+import { ENEMY } from '@/constants';
 import { randomNumbers } from '@/RandomNumbers';
 import { EnemyBehavior } from '@/Entities/Enemy/EnemyBehavior';
-import { Enemy } from '../Enemy';
-import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { BehaviorTreeNode } from '../BehaviorTree';
 
 const noop = () => true;
@@ -57,21 +55,6 @@ const updateCollisions = (behavior: EnemyBehavior) => {
   return true;
 };
 
-const infectCollisions = (behavior: EnemyBehavior) => {
-  const collidedEntity = behavior.collidedEntity;
-  if (!collidedEntity) {
-    return true;
-  }
-  if (collidedEntity.type === ENTITY_TYPE.PLAYER) {
-    collidedEntity.onHit(1);
-    behavior.death();
-  } else if (collidedEntity.type === ENTITY_TYPE.ENEMY) {
-    collidedEntity.onMessage(ENTITY_MESSAGES.infestedByParasite);
-    behavior.death();
-  }
-  return false;
-};
-
 const updateFollowingEnemy = (behavior: EnemyBehavior) => {
   if (!behavior.followingEnemy) {
     behavior.followingEnemy = behavior.player;
@@ -83,32 +66,6 @@ const updateFollowingEnemy = (behavior: EnemyBehavior) => {
   ) {
     behavior.followingEnemy = behavior.player;
   }
-  return true;
-};
-
-const findParasiteTarget = (behavior: EnemyBehavior) => {
-  if (
-    behavior.followingEnemy &&
-    (typeof behavior.followingEnemy.hp === 'number') &&
-    (behavior.followingEnemy.hp > 0)
-  ) {
-    return true;
-  }
-  const entitiesInCantainer = behavior.container.entities;
-  const enemies = entitiesInCantainer.filter(entity =>
-    (entity.type === ENTITY_TYPE.ENEMY) &&
-    ((<Enemy>entity).kind !== EnemyKind.Parasite)
-  );
-  if (enemies.length === 0) {
-    behavior.followingEnemy = behavior.player;
-    return true;
-  }
-  const enemyIndex = randomNumbers.getRandomInRange(0, enemies.length - 1);
-  const enemyTarget = enemies[enemyIndex];
-  if (!enemyTarget) {
-    return false;
-  }
-  behavior.followingEnemy = enemyTarget;
   return true;
 };
 
@@ -161,15 +118,6 @@ const moveToLongRange = (behavior: EnemyBehavior) => {
   return false;
 };
 
-const bleed = (behavior: EnemyBehavior, delta: number) => {
-  behavior.timeoutsManager.updateTimeOut('bleed', delta);
-  if (behavior.timeoutsManager.checkIsTimeOutExpired('bleed')) {
-    behavior.onBleedCallback && behavior.onBleedCallback();
-    behavior.timeoutsManager.updateExpiredTimeOut('bleed');
-  }
-  return true;
-};
-
 export const basicEnemySeq: BehaviorTreeNode = {
   sequence: [busyNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
 };
@@ -178,15 +126,7 @@ export const longRangeEnemySeq: BehaviorTreeNode = {
   sequence: [busyNode, updateCollisions, updateFollowingEnemy, attackCondLongRange, moveToLongRange, strafe, gunpointStrafe]
 };
 
-export const bleedEnemySeq: BehaviorTreeNode = {
-  sequence: [bleed, busyNode, updateCollisions, updateFollowingEnemy, attackCond, strafe, gunpointStrafe]
-};
-
 export const kamikazeEnemySeq: BehaviorTreeNode = {
   sequence: [busyNode, updateCollisions, updateFollowingEnemy, strafe, gunpointStrafe]
-};
-
-export const parasiteEnemySeq: BehaviorTreeNode = {
-  sequence: [busyNode, infectCollisions, findParasiteTarget, followTarget],
 };
 

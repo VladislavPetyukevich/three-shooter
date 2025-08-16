@@ -45,7 +45,7 @@ export class EditorScene extends TestScene {
     this.enableKey = '`';
     this.isEditorMode = false;
     this.currentEntityType = RoomCellType.Wall;
-    this.currentEnemyKind = EnemyKind.Soul;
+    this.currentEnemyKind = EnemyKind.Flyguy;
     this.cellColors = {
       border: '#666',
       borderSelected: '#900',
@@ -350,12 +350,12 @@ export class EditorScene extends TestScene {
     const enemyKindSelect = document.createElement('select');
     enemyKindSelect.style.background = 'azure';
     [
-      this.createOption('Soul', EnemyKind.Soul),
-      this.createOption('Shooter', EnemyKind.Shooter),
-      this.createOption('Kamikaze', EnemyKind.Kamikaze),
-      this.createOption('Parasite', EnemyKind.Parasite),
-      this.createOption('Bleed', EnemyKind.Bleed),
-      this.createOption('Breeding', EnemyKind.BreedingWithSpawner),
+      this.createOption('Flyguy', EnemyKind.Flyguy),
+      this.createOption('Commando', EnemyKind.Commando),
+      this.createOption('Zombie', EnemyKind.Zombie),
+      this.createOption('Slayer', EnemyKind.Slayer),
+      this.createOption('Tank', EnemyKind.Tank),
+      this.createOption('Soldier', EnemyKind.Soldier),
     ].forEach(option => enemyKindSelect.appendChild(option));
     enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
     enemyKindSelect.value = `${this.currentEnemyKind}`;
@@ -433,7 +433,7 @@ export class EditorScene extends TestScene {
     const cell: RoomCell = entityType === RoomCellType.Enemy ? {
       position: new Vector2(cellX, cellY),
       type: entityType,
-      kind: EnemyKind.Soul,
+      kind: this.currentEnemyKind,
     } : {
       position: new Vector2(cellX, cellY),
       type: entityType,

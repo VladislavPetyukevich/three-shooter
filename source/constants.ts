@@ -47,8 +47,6 @@ const BASE_DISTANCE = 20;
 const roomSizeScale = 1;
 export const roomSize = new Vector2(20 * roomSizeScale, 20 * roomSizeScale);
 
-export const enemiesFromSpawnerCount = 2;
-
 export const WALL = {
   SIZE: 3
 };
@@ -60,19 +58,14 @@ export const DOOR = {
 export const ENEMY = {
   WALK_SPEED: ENEMY_GAME_SPEED * 0.6,
   WALK_SPEED_FACTOR_KAMIKAZE: 1.4,
-  WALK_SPEED_FACTOR_PARASITE: 1.5 * 2,
   BULLET_SPEED: ENEMY_GAME_SPEED * 3.5,
   MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.1,
   KAMIKAZE_MOVEMENT_TIME_OUT: ENEMY_GAME_SPEED * 0.04,
   HURT_TIME_OUT: 0.2,
   DEATH_TIME_OUT: 0.6,
-  BLEED_TIME_OUT: 5,
   SHOOT_TIME_OUT: 3,
   ATTACK_DISTANCE: BASE_DISTANCE,
   ATTACK_DISTANCE_LONG_RANGE: BASE_DISTANCE * 1.5,
-  ATTACK_DISTANCE_PARASITE: 2.5,
-  PARASITE_HP_BOOST_MIN: 1,
-  PARASITE_HP_BOOST_FACTOR: 0.5,
   DELAYS: {
     shoot: 0.7,
     gunpointStrafe: 0.5,
@@ -99,5 +92,4 @@ export const BOOMERANG = {
 export const enum ENTITY_MESSAGES {
   inPlayerGunpoint,
   boomerangReturned,
-  infestedByParasite,
 };

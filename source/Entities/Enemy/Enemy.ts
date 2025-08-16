@@ -105,9 +105,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
-    this.behavior.onBleedCallback = () => {
-      this.handleBleed();
-    };
     this.behavior.onAttackCallback = () => {
       this.handleAttack();
     };
@@ -167,16 +164,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.onDeathCallbacks.forEach(callback => callback(this));
   }
 
-  handleBleed() {
-    this.hp--;
-    if (this.hp <= 0) {
-      this.handleDeath();
-      return;
-    }
-    this.behavior.isBusy = true;
-    this.handleHurtAnimation();
-  }
-
   handleAttack() {
     this.addAnimation(new HurtAnimation({
       actor: this.actor,
@@ -196,17 +183,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       case ENTITY_MESSAGES.inPlayerGunpoint:
         this.behavior.onPlayerGunpoint();
         break;
-      case ENTITY_MESSAGES.infestedByParasite:
-        this.handleInfestedByParasite();
-        break;
       default:
         break;
     }
-  }
-
-  handleInfestedByParasite() {
-    const hpBoost = Math.round(this.hp * ENEMY.PARASITE_HP_BOOST_FACTOR);
-    this.hp += Math.min(ENEMY.PARASITE_HP_BOOST_MIN, hpBoost);
   }
 
   update(delta: number) {

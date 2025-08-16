@@ -1,9 +1,7 @@
 import {
   basicEnemySeq,
   kamikazeEnemySeq,
-  parasiteEnemySeq,
   longRangeEnemySeq,
-  bleedEnemySeq,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
@@ -13,7 +11,7 @@ import { EnemiesStats } from './EnemyFactory';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export const enemiesStats: EnemiesStats = {
-  [EnemyKind.Soul]: {
+  [EnemyKind.Flyguy]: {
     hp: 20,
     hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
@@ -27,9 +25,9 @@ export const enemiesStats: EnemiesStats = {
       shoot: ENEMY.DELAYS.shoot * 0.7
     },
     behaviorTreeRoot: basicEnemySeq,
-    textures: ENEMY_TEXTURES.Apathy,
+    textures: ENEMY_TEXTURES.Flyguy,
   },
-  [EnemyKind.Shooter]: {
+  [EnemyKind.Commando]: {
     hp: 30,
     hurtChance: 0.66,
     BulletClass: BulletFastEasy,
@@ -43,9 +41,9 @@ export const enemiesStats: EnemiesStats = {
       strafe: ENEMY.DELAYS.strafe * 0.7,
     },
     behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Cowardice,
+    textures: ENEMY_TEXTURES.Commando,
   },
-  [EnemyKind.Kamikaze]: {
+  [EnemyKind.Zombie]: {
     hp: 5,
     onHitDamage: { min: 10, max: 40 },
     hurtChance: 0.0,
@@ -62,53 +60,54 @@ export const enemiesStats: EnemiesStats = {
       movement: ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT,
     },
     behaviorTreeRoot: kamikazeEnemySeq,
-    textures: ENEMY_TEXTURES.Apathy,
+    textures: ENEMY_TEXTURES.Zombie,
   },
-  [EnemyKind.Parasite]: {
+  [EnemyKind.Slayer]: {
     hp: 30,
-    onHitDamage: { min: 10, max: 20 },
-    hurtChance: 0.5,
-    BulletClass: BulletSlowMeidum,
+    hurtChance: 0.66,
+    BulletClass: BulletFastEasy,
     gunProps: {
-      recoilTime: 0.1,
+      recoilTime: 0.01,
     },
-    bulletsPerShoot: 0,
-    walkSpeed: ENEMY.WALK_SPEED * ENEMY.WALK_SPEED_FACTOR_PARASITE,
-    delays: {
-      ...ENEMY.DELAYS,
-    },
-    behaviorTreeRoot: parasiteEnemySeq,
-    textures: ENEMY_TEXTURES.SP,
-  },
-  [EnemyKind.Bleed]: {
-    hp: 1000,
-    hurtChance: 0.7,
-    BulletClass: BulletSlowMeidum,
-    gunProps: {
-      recoilTime: 0.1,
-    },
-    bulletsPerShoot: 3,
+    bulletsPerShoot: 6,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,
-      shoot: ENEMY.DELAYS.shoot * 0.7
+      strafe: ENEMY.DELAYS.strafe * 0.7,
     },
-    behaviorTreeRoot: bleedEnemySeq,
-    textures: ENEMY_TEXTURES.SP,
+    behaviorTreeRoot: longRangeEnemySeq,
+    textures: ENEMY_TEXTURES.Slayer,
   },
-  [EnemyKind.BreedingWithSpawner]: {
-    hp: 20,
-    hurtChance: 0.78,
-    BulletClass: BulletSlowMeidum,
+  [EnemyKind.Tank]: {
+    hp: 30,
+    hurtChance: 0.66,
+    BulletClass: BulletFastEasy,
     gunProps: {
-      recoilTime: 0.1,
+      recoilTime: 0.01,
     },
-    bulletsPerShoot: 3,
+    bulletsPerShoot: 6,
     walkSpeed: ENEMY.WALK_SPEED,
     delays: {
       ...ENEMY.DELAYS,
+      strafe: ENEMY.DELAYS.strafe * 0.7,
     },
-    behaviorTreeRoot: basicEnemySeq,
-    textures: ENEMY_TEXTURES.Apathy,
+    behaviorTreeRoot: longRangeEnemySeq,
+    textures: ENEMY_TEXTURES.Tank,
+  },
+  [EnemyKind.Soldier]: {
+    hp: 30,
+    hurtChance: 0.66,
+    BulletClass: BulletFastEasy,
+    gunProps: {
+      recoilTime: 0.01,
+    },
+    bulletsPerShoot: 6,
+    walkSpeed: ENEMY.WALK_SPEED,
+    delays: {
+      ...ENEMY.DELAYS,
+      strafe: ENEMY.DELAYS.strafe * 0.7,
+    },
+    behaviorTreeRoot: longRangeEnemySeq,
+    textures: ENEMY_TEXTURES.Soldier,
   },
 };
