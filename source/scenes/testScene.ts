@@ -153,6 +153,7 @@ export class TestScene extends BasicScene {
       side: BackSide,
     });
     this.skybox = new Mesh(skyboxGeometry, this.skyboxMaterial);
+    this.skybox.rotation.y = Math.PI / 2;
     this.skybox.position.copy(this.player.mesh.position);
     this.skybox.position.setY(this.skybox.position.y + skyboxSize / 2 - PLAYER.BODY_HEIGHT * 2);
     this.scene.add(this.skybox);
