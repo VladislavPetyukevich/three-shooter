@@ -325,7 +325,12 @@
         });
 
         fullscreenButton.addEventListener('click', function (event) {
-          document.body.requestFullscreen();
+          const fullscreenElement = document.fullscreenElement;
+          if (fullscreenElement) {
+            document.exitFullscreen();
+          } else {
+            document.body.requestFullscreen();
+          }
         });
 
         mouseSensitivity.addEventListener('input', function (event) {
