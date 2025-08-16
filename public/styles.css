@@ -1,10 +1,15 @@
 :root {
-  --text: #ccc;
-  --form-bg: #080808;
-  --button-border-color: #424242;
-  --button-bg: #171717;
+  --text: #e6e6ec;
+  --link: #c1c1d2;
+  --form-bg: #0e0e12;
+  --button-bg: #333346;
+  --button-bg-hover: #535373;
   --border-radius: 0.5rem;
-  --menu-border-color: #444;
+  --table-border-color: #333346;
+  --table-header-bg: #1a1a24;
+  --input-range-bg: #333346;
+  --input-range-thumb-bg: #a6a6bf;
+  --input-select-bg: #333346;
 }
 
 html,
@@ -17,8 +22,9 @@ body {
   background-color: #000;
   margin: 0;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Spline Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
   color: var(--text);
   font-size: 16px;
   font-weight: 400;
@@ -27,10 +33,10 @@ body {
 button {
   color: var(--text);
   background-color: var(--button-bg);
-  font-size: 0.9rem;
-  border: 1px solid var(--button-border-color);
-  padding: 0rem 2rem;
-  height: 1.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  height: 3rem;
   text-align: center;
   text-decoration: none;
   display: inline-flex;
@@ -39,10 +45,11 @@ button {
   cursor: pointer;
   transition: 300ms !important;
   border-radius: var(--border-radius);
+  padding: 0;
 }
 
 button:hover {
-  border-color: var(--text);
+  background-color: var(--button-bg-hover);
 }
 
 #render-container {
@@ -75,58 +82,60 @@ button:hover {
 }
 
 .blocker-main-content {
-  min-width: 600px;
+  min-width: 400px;
   background-color: var(--form-bg);
   padding: 2.25rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--menu-border-color);
+  border-radius: 0.25rem;
 }
 
 .blocker-main-content h1 {
   margin: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   text-align: center;
+  font-weight: bold;
+  font-size: 2rem;
 }
 
 #controls-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .controls-info-table {
   text-align: left;
 }
 
-.controls-info-table td,
-th {
-  border: 1px solid var(--button-border-color);
-  padding: 0.25rem;
+table {
+  border-collapse: collapse;
 }
 
-.controls-info-table tr td:first-child,
-th:first-child {
-  padding-right: 1.25rem;
+table td,
+table th {
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--table-border-color);
+}
+
+table th {
+  background-color: var(--table-header-bg);
+  font-weight: 500;
+}
+
+table td {
+  font-weight: 400;
 }
 
 .blocker-main-controls {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
 }
 
-.blocker-second-controls {
-  text-align: right;
-}
-
-.blocker-second-controls button {
-  padding: 0.5rem;
-}
-
-.blocker-main-controls button:first-child {
-  margin-bottom: 1rem;
+.blocker-main-controls button {
+  margin-bottom: 0.75rem;
 }
 
 .blocker-settings {
@@ -136,88 +145,104 @@ th:first-child {
 }
 
 .setting-label {
+  text-align: center;
+  font-size: 0.875rem;
   padding-top: 1.25rem;
+  padding-bottom: 0.25rem;
+}
+
+#settings input[type=range] {
+  width: 100%;
 }
 
 .warning {
-  text-align: center;
+  text-align: left;
 }
 
 .credits {
-  padding-top: 1.25rem;
+  padding-top: 0.25rem;
 }
 
 .credit {
-  text-align: center;
+  text-align: left;
 }
 
 .credit a {
-  color: #0666e2;
+  color: var(--link);
 }
 
 ion-icon.additional {
   margin-right: 0.25rem;
 }
 
-#play-button {
-  font-size: 1.25rem;
-  padding: 1.25rem;
+select {
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  background-color: var(--input-select-bg);
+  color: var(--text);
+  text-align: center;
 }
 
-input[type=range] {
-  height: 9px;
-  margin-top: 15px;
-  background-color: inherit;
-  appearance: none;
+/*********** Baseline, reset styles ***********/
+input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 25rem;
 }
 
-input[type=range]:focus {
+/* Removes default focus */
+input[type="range"]:focus {
   outline: none;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 5px;
-  cursor: pointer;
-  box-shadow: 1px 1px 1px #000000;
-  background: white;
-  border-radius: 3px;
-  border: 1px solid #000000;
+/******** Chrome, Safari, Opera and Edge Chromium styles ********/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: var(--input-range-bg);
+  border-radius: 0.5rem;
+  height: 0.5rem;
 }
 
-input[type=range]::-webkit-slider-thumb {
-  box-shadow: 1px 1px 1px #000000;
-  border: 1px solid black;
-  height: 20px;
-  width: 10px;
-  border-radius: 3px;
-  background: white;
-  cursor: pointer;
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  margin-top: -9px;
+  /* Override default look */
+  appearance: none;
+  margin-top: -4px;
+  /* Centers thumb on the track */
+  background-color: var(--input-range-thumb-bg);
+  border-radius: 0.5rem;
+  height: 1rem;
+  width: 1rem;
 }
 
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: white;
+input[type="range"]:focus::-webkit-slider-thumb {
+  outline: 3px solid var(--input-range-thumb-bg);
+  outline-offset: 0.125rem;
 }
 
-input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 5px;
-  cursor: pointer;
-  box-shadow: 1px 1px 1px #000000;
-  background: white;
-  border-radius: 3px;
-  border: 1px solid black;
+/*********** Firefox styles ***********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+  background-color: var(--input-range-bg);
+  border-radius: 0.5rem;
+  height: 0.5rem;
 }
 
-input[type=range]::-moz-range-thumb {
-  box-shadow: 1px 1px 1px #000000;
-  border: 1px solid black;
-  height: 20px;
-  width: 10px;
-  border-radius: 3px;
-  background: white;
-  cursor: pointer;
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--input-range-thumb-bg);
+  border: none;
+  /*Removes extra border that FF applies*/
+  border-radius: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+  outline: 3px solid var(--input-range-thumb-bg);
+  outline-offset: 0.125rem;
 }

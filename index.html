@@ -7,6 +7,9 @@
   <title>Three Shooter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -19,418 +22,430 @@
         </div>
         <div class="credits">
           <div class="credit">
-            Enemy sprites from: <a href="https://fredrichi.itch.io/free-characters-with-animations-for-fps-game" target="_blank">Free Characters with Animations For FPS game</a>
+            Enemy sprites from: <a href="https://fredrichi.itch.io/free-characters-with-animations-for-fps-game"
+              target="_blank">Free Characters with Animations For FPS game</a>
           </div>
           <div class="credit">
-            Wall and floor sprites from: <a href="https://foxh3ad.itch.io/foxtexcom" target="_blank">Foxtex - Complete Edition</a>
+            Wall and floor sprites from: <a href="https://foxh3ad.itch.io/foxtexcom" target="_blank">Foxtex - Complete
+              Edition</a>
           </div>
           <div class="credit">
-            Skybox from: <a href="https://screamingbrainstudios.itch.io/seamless-sky-backgrounds" target="_blank">Seamless sky backgrounds</a>
+            Skybox from: <a href="https://screamingbrainstudios.itch.io/seamless-sky-backgrounds"
+              target="_blank">Seamless sky backgrounds</a>
           </div>
-        </div>
-        <div id="controls-info">
-          <div>Controls:</div>
         </div>
         <div class="blocker-main-controls">
-          <button id="play-button"><ion-icon class="additional" name="play"></ion-icon> Play</button>
-        </div>
-        <div class="blocker-second-controls">
-        <button id="settings-button"><ion-icon name="settings-sharp"></ion-icon></button>
-        <button id="fullscreen-button"><ion-icon name="scan-sharp"></ion-icon></button>
+          <button id="play-button">Play</button>
+
+          <button id="fullscreen-button">Fullscreen</button>
+
+          <button id="controls-button">Controls</button>
+          <div id="controls-info" style="display: none;"></div>
+
+          <button id="settings-button">Settings</button>
+
+          <div id="settings" class="blocker-settings" style="display: none;">
+            <div class="setting-label">
+              <span>Mouse sensitivity:</span>
+              <span id="mouse-sensitivity-value"></span>
+            </div>
+            <input id="mouse-sensitivity" type="range" min="1" max="800" value="200" step="1">
+            <div class="setting-label">
+              <span>Audio volume:</span>
+              <span id="audio-volume-value"></span>
+            </div>
+            <input id="audio-volume" type="range" min="0" max="10" value="10" step="1">
+            <div class="setting-label">
+              <span>FOV:</span>
+              <span id="fov-value"></span>
+            </div>
+            <input id="fov" type="range" min="50" max="110" value="95" step="1">
+            <span class="setting-label">Render scale:</span>
+            <select id="pixelRatio-value">
+              <option value="0.18">1981</option>
+              <option value="0.5">Half</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Next Gen</option>
+              <option value="2.5">Next Gen Pro</option>
+            </select>
+            <span class="setting-label">Aspect ratio:</span>
+            <select id="aspectRatio-value">
+              <option value="0" selected>Normal</option>
+              <option value="4:3">Square 4:3</option>
+              <option value="21:9">Ultrawide 21:9</option>
+            </select>
+          </div>
         </div>
       </div>
-        <div
-          id="settings"
-          class="blocker-main-content blocker-settings"
-          style="display: none;"
-        >
-          <div class="setting-label">
-            <span>Mouse sensitivity:</span>
-            <span id="mouse-sensitivity-value"></span>
-          </div>
-          <input id="mouse-sensitivity" type="range" min="1" max="800" value="200" step="1" >
-          <div class="setting-label">
-            <span>Audio volume:</span>
-            <span id="audio-volume-value"></span>
-          </div>
-          <input id="audio-volume" type="range" min="0" max="10" value="10" step="1" >
-          <div class="setting-label">
-            <span>FOV:</span>
-            <span id="fov-value"></span>
-          </div>
-          <input id="fov" type="range" min="50" max="110" value="95" step="1" >
-          <span class="setting-label">Render scale:</span>
-          <select id="pixelRatio-value">
-            <option value="0.18">1981</option>
-            <option value="0.5">Half</option>
-            <option value="1" selected>Normal</option>
-            <option value="2">Next Gen</option>
-            <option value="2.5">Next Gen Pro</option>
-          </select>
-          <span class="setting-label">Aspect ratio:</span>
-          <select id="aspectRatio-value">
-            <option value="0" selected>Normal</option>
-            <option value="4:3">Square 4:3</option>
-            <option value="21:9">Ultrawide 21:9</option>
-          </select>
-        </div>
+
     </div>
     <div class="blocker-footer">
-      <div>Build: <%= build %></div>
+      <div>Build: <%= build %>
+      </div>
     </div>
   </div>
   <div id="render-container" />
 
   <% for(var i=0; i < htmlWebpackPlugin.files.js.length; i++) {%>
     <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[i] %>"></script>
-  <% } %>
-  <script type="text/javascript">
-    var blocker = document.querySelector('.blocker');
-    var playButton = document.getElementById('play-button');
-    var settingsButton = document.getElementById('settings-button');
-    var fullscreenButton = document.getElementById('fullscreen-button');
-    var settings = document.getElementById('settings');
-    var settingsVisible = false;
-    var renderContainer = document.getElementById('render-container');
-    var mouseSensitivity = document.getElementById('mouse-sensitivity');
-    var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
-    var audioVolume = document.getElementById('audio-volume');
-    var audioVolumeValue = document.getElementById('audio-volume-value');
-    var fov = document.getElementById('fov');
-    var fovValue = document.getElementById('fov-value');
-    var pixelRatioValue = document.getElementById('pixelRatio-value');
-    var aspectRatioValue = document.getElementById('aspectRatio-value');
+    <% } %>
+      <script type="text/javascript">
+        var blocker = document.querySelector('.blocker');
+        var playButton = document.getElementById('play-button');
+        var settingsButton = document.getElementById('settings-button');
+        var fullscreenButton = document.getElementById('fullscreen-button');
+        var controlsButton = document.getElementById('controls-button');
+        var controlsInfo = document.getElementById('controls-info');
+        var controlsVisible = false;
+        var settings = document.getElementById('settings');
+        var settingsVisible = false;
+        var renderContainer = document.getElementById('render-container');
+        var mouseSensitivity = document.getElementById('mouse-sensitivity');
+        var mouseSensitivityValue = document.getElementById('mouse-sensitivity-value');
+        var audioVolume = document.getElementById('audio-volume');
+        var audioVolumeValue = document.getElementById('audio-volume-value');
+        var fov = document.getElementById('fov');
+        var fovValue = document.getElementById('fov-value');
+        var pixelRatioValue = document.getElementById('pixelRatio-value');
+        var aspectRatioValue = document.getElementById('aspectRatio-value');
 
-    function generateControlsInfo() {
-      var controlsInfoContainer = document.getElementById('controls-info');
-      var controlsInfo = {
-          'W, A, S, D': 'Move',
-          'MOUSE': 'Look around',
-          'Left click': 'Fire',
-          '1, 2, 3 or Mouse wheel': 'Switch weapon',
-          'Q': 'Switch to previous used weapon',
-          'Esc': 'Show cursor',
-      };
-      var controlsInfoTable = document.createElement('table');
-      controlsInfoTable.className = 'controls-info-table';
-      var headRow = document.createElement('tr');
-      var headKeys = document.createElement('th');
-      headKeys.textContent = 'Key';
-      var headDescription = document.createElement('th');
-      headDescription.innerText = 'Description';
-      headRow.appendChild(headKeys);
-      headRow.appendChild(headDescription);
-      controlsInfoTable.appendChild(headRow);
-
-      Object.entries(controlsInfo).forEach(([controlKeys, controlDescription]) => {
-        var row = document.createElement('tr');
-        var dataKeys = document.createElement('td');
-        dataKeys.innerText = controlKeys;
-        var dataDescription = document.createElement('td');
-        dataDescription.innerText = controlDescription;
-        row.appendChild(dataKeys);
-        row.appendChild(dataDescription);
-        controlsInfoTable.appendChild(row);
-      });
-
-      controlsInfoContainer.appendChild(controlsInfoTable);
-    }
-    generateControlsInfo();
-
-    function updateMouseSensitivityValue(value) {
-      var valueFormated = (value * 100).toFixed(3);
-      var valueNode = document.createTextNode(valueFormated);
-      mouseSensitivityValue.innerHTML = '';
-      mouseSensitivityValue.appendChild(valueNode);
-    }
-
-    function updateAudioVolumeValue(value) {
-      var valueNode = document.createTextNode(value.toFixed(1));
-      audioVolumeValue.innerHTML = '';
-      audioVolumeValue.appendChild(valueNode);
-    }
-
-    function updateFovValue(value) {
-      var valueNode = document.createTextNode(value);
-      fovValue.innerHTML = '';
-      fovValue.appendChild(valueNode);
-    }
-
-    function getRendererSize() {
-      switch (aspectRatioValue.value) {
-        case '4:3':
-          return {
-            width: ~~Math.min(renderContainer.offsetHeight * (4/3), renderContainer.offsetWidth),
-            height: ~~renderContainer.offsetHeight
+        function generateControlsInfo() {
+          var controlsData = {
+            'W, A, S, D': 'Move',
+            'MOUSE': 'Look around',
+            'Left click': 'Fire',
+            '1, 2, 3 or Mouse wheel': 'Switch weapon',
+            'Q': 'Switch to previous used weapon',
+            'Esc': 'Show cursor',
           };
-        case '21:9':
-          return {
-            width: ~~renderContainer.offsetWidth,
-            height: ~~Math.min(renderContainer.offsetWidth * (9/21), renderContainer.offsetHeight)
-          };
-        default:
-          return {
-            width: ~~renderContainer.offsetWidth,
-            height: ~~renderContainer.offsetHeight
-          };
-      }
-    }
+          var controlsInfoTable = document.createElement('table');
+          controlsInfoTable.className = 'controls-info-table';
+          var headRow = document.createElement('tr');
+          var headKeys = document.createElement('th');
+          headKeys.textContent = 'Key';
+          var headDescription = document.createElement('th');
+          headDescription.innerText = 'Description';
+          headRow.appendChild(headKeys);
+          headRow.appendChild(headDescription);
+          controlsInfoTable.appendChild(headRow);
 
-    var rendererSize = getRendererSize();
+          Object.entries(controlsData).forEach(([controlKeys, controlDescription]) => {
+            var row = document.createElement('tr');
+            var dataKeys = document.createElement('td');
+            dataKeys.innerText = controlKeys;
+            var dataDescription = document.createElement('td');
+            dataDescription.innerText = controlDescription;
+            row.appendChild(dataKeys);
+            row.appendChild(dataDescription);
+            controlsInfoTable.appendChild(row);
+          });
 
-    async function onScoreSubmit(logs) {
-      const options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Zig-Developer',
-          logs: logs,
-        }),
-      };
-
-      try {
-        const response = await fetch('/api/submitScore', options);
-        const responseJson = await response.json();
-        if (typeof responseJson.score !== 'number') {
-          throw new Error(`Score not found in response: ${JSON.stringify(responseJson)}`);
+          controlsInfo.appendChild(controlsInfoTable);
         }
-        alert(JSON.stringify(responseJson));
-      } catch (err) {
-        console.error('Score not submited: ', err);
-      }
-    }
+        generateControlsInfo();
 
-    var threeShooter = new ThreeShooter.default({
-      renderContainer: renderContainer,
-      renderWidth: rendererSize.width,
-      renderHeight: rendererSize.height,
-      onScoreSubmit: onScoreSubmit,
-    });
+        function updateMouseSensitivityValue(value) {
+          var valueFormated = (value * 100).toFixed(3);
+          var valueNode = document.createTextNode(valueFormated);
+          mouseSensitivityValue.innerHTML = '';
+          mouseSensitivityValue.appendChild(valueNode);
+        }
 
-    var keyBindings = {
-      49: 'weapon1',
-      50: 'weapon2',
-      51: 'weapon3',
-      87: 'walkForward',
-      83: 'walkBackward',
-      65: 'walkLeft',
-      68: 'walkRight',
-      81: 'prevUsedWeapon',
-      37: 'lookLeft',
-      39: 'lookRight',
-      32: 'firePrimary',
-    };
+        function updateAudioVolumeValue(value) {
+          var valueNode = document.createTextNode(value.toFixed(1));
+          audioVolumeValue.innerHTML = '';
+          audioVolumeValue.appendChild(valueNode);
+        }
 
-    var mouseBindings = {
-      0: 'firePrimary'
-    };
+        function updateFovValue(value) {
+          var valueNode = document.createTextNode(value);
+          fovValue.innerHTML = '';
+          fovValue.appendChild(valueNode);
+        }
 
-    var actionPhases = {
-      start: 'start',
-      end: 'end'
-    };
+        function getRendererSize() {
+          switch (aspectRatioValue.value) {
+            case '4:3':
+              return {
+                width: ~~Math.min(renderContainer.offsetHeight * (4 / 3), renderContainer.offsetWidth),
+                height: ~~renderContainer.offsetHeight
+              };
+            case '21:9':
+              return {
+                width: ~~renderContainer.offsetWidth,
+                height: ~~Math.min(renderContainer.offsetWidth * (9 / 21), renderContainer.offsetHeight)
+              };
+            default:
+              return {
+                width: ~~renderContainer.offsetWidth,
+                height: ~~renderContainer.offsetHeight
+              };
+          }
+        }
 
-    function handlePlayerAction(bindings, code, actionPhase) {
-      var binding = bindings[code];
-      if (!binding) {
-        return;
-      }
-      switch (actionPhase) {
-        case 'start':
-          threeShooter.onPlayerActionStart(binding);
-          break;
-        case 'end':
-          threeShooter.onPlayerActionEnd(binding);
-          break;
-      }
-    }
+        var rendererSize = getRendererSize();
 
-    function handlePlayerKeyboardAction(keyCode, actionPhase) {
-      handlePlayerAction(keyBindings, keyCode, actionPhase);
-    }
+        async function onScoreSubmit(logs) {
+          const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'Zig-Developer',
+              logs: logs,
+            }),
+          };
 
-    document.addEventListener('keydown', function(event) {
-      handlePlayerKeyboardAction(event.keyCode, actionPhases.start);
-    });
+          try {
+            const response = await fetch('/api/submitScore', options);
+            const responseJson = await response.json();
+            if (typeof responseJson.score !== 'number') {
+              throw new Error(`Score not found in response: ${JSON.stringify(responseJson)}`);
+            }
+            alert(JSON.stringify(responseJson));
+          } catch (err) {
+            console.error('Score not submited: ', err);
+          }
+        }
 
-    document.addEventListener('keyup', function(event) {
-      handlePlayerKeyboardAction(event.keyCode, actionPhases.end);
-    });
+        var threeShooter = new ThreeShooter.default({
+          renderContainer: renderContainer,
+          renderWidth: rendererSize.width,
+          renderHeight: rendererSize.height,
+          onScoreSubmit: onScoreSubmit,
+        });
 
-    function handlePlayerMouseAction(keyCode, actionPhase) {
-      handlePlayerAction(mouseBindings, keyCode, actionPhase);
-    }
+        var keyBindings = {
+          49: 'weapon1',
+          50: 'weapon2',
+          51: 'weapon3',
+          87: 'walkForward',
+          83: 'walkBackward',
+          65: 'walkLeft',
+          68: 'walkRight',
+          81: 'prevUsedWeapon',
+          37: 'lookLeft',
+          39: 'lookRight',
+          32: 'firePrimary',
+        };
 
-    document.addEventListener('mousedown', function(event) {
-      handlePlayerMouseAction(event.button, actionPhases.start);
-    });
+        var mouseBindings = {
+          0: 'firePrimary'
+        };
 
-    document.addEventListener('mouseup', function(event) {
-      handlePlayerMouseAction(event.button, actionPhases.end);
-    });
+        var actionPhases = {
+          start: 'start',
+          end: 'end'
+        };
 
-    document.addEventListener('mousemove', function(event) {
-      var movementX = event.movementX;
-      threeShooter.onPlayerCameraMove(movementX);
-    });
+        function handlePlayerAction(bindings, code, actionPhase) {
+          var binding = bindings[code];
+          if (!binding) {
+            return;
+          }
+          switch (actionPhase) {
+            case 'start':
+              threeShooter.onPlayerActionStart(binding);
+              break;
+            case 'end':
+              threeShooter.onPlayerActionEnd(binding);
+              break;
+          }
+        }
 
-    document.addEventListener('wheel', function(event) {
-      var isWheelDown = event.deltaY > 0;
-      var isWheelUp = event.deltaY < 0;
-      if (isWheelDown) {
-        threeShooter.onPlayerActionStart('prevWeapon');
-      }
-      if (isWheelUp) {
-        threeShooter.onPlayerActionStart('nextWeapon');
-      }
-    });
+        function handlePlayerKeyboardAction(keyCode, actionPhase) {
+          handlePlayerAction(keyBindings, keyCode, actionPhase);
+        }
 
-    function handleResize() {
-      var newRendererSize = getRendererSize();
-      threeShooter.handleResize(
-        newRendererSize.width,
-        newRendererSize.height
-      );
-    }
+        document.addEventListener('keydown', function (event) {
+          handlePlayerKeyboardAction(event.keyCode, actionPhases.start);
+        });
 
-    window.addEventListener('resize', handleResize);
+        document.addEventListener('keyup', function (event) {
+          handlePlayerKeyboardAction(event.keyCode, actionPhases.end);
+        });
 
-    playButton.addEventListener('click', function (event) {
-      renderContainer.requestPointerLock();
-      settingsVisible = false;
-      setElementVisibility(settings, settingsVisible);
-    });
+        function handlePlayerMouseAction(keyCode, actionPhase) {
+          handlePlayerAction(mouseBindings, keyCode, actionPhase);
+        }
 
-    settingsButton.addEventListener('click', function (event) {
-      settingsVisible = !settingsVisible;
-      setElementVisibility(settings, settingsVisible);
-    });
+        document.addEventListener('mousedown', function (event) {
+          handlePlayerMouseAction(event.button, actionPhases.start);
+        });
 
-    fullscreenButton.addEventListener('click', function (event) {
-      document.body.requestFullscreen();
-    });
+        document.addEventListener('mouseup', function (event) {
+          handlePlayerMouseAction(event.button, actionPhases.end);
+        });
 
-    mouseSensitivity.addEventListener('input', function(event) {
-      var value = +event.target.value;
-      updateMouseSensitivity(value);
-    });
+        document.addEventListener('mousemove', function (event) {
+          var movementX = event.movementX;
+          threeShooter.onPlayerCameraMove(movementX);
+        });
 
-    function updateMouseSensitivity(value) {
-      var newSensitivity = (0.002 * value) / 200;
-      threeShooter.updateMouseSensitivity(newSensitivity);
-      updateMouseSensitivityValue(newSensitivity);
-      saveSettings();
-    }
+        document.addEventListener('wheel', function (event) {
+          var isWheelDown = event.deltaY > 0;
+          var isWheelUp = event.deltaY < 0;
+          if (isWheelDown) {
+            threeShooter.onPlayerActionStart('prevWeapon');
+          }
+          if (isWheelUp) {
+            threeShooter.onPlayerActionStart('nextWeapon');
+          }
+        });
 
-    audioVolume.addEventListener('input', function(event) {
-      const value = +event.target.value;
-      updateAudioVolume(value);
-    });
+        function handleResize() {
+          var newRendererSize = getRendererSize();
+          threeShooter.handleResize(
+            newRendererSize.width,
+            newRendererSize.height
+          );
+        }
 
-    function updateAudioVolume(value) {
-      var newVolume = value / 10;
-      threeShooter.updateAudioVolume(newVolume);
-      updateAudioVolumeValue(newVolume);
-      saveSettings();
-    }
+        window.addEventListener('resize', handleResize);
 
-    fov.addEventListener('input', function(event) {
-      const value = +event.target.value;
-      updateFov(value);
-    });
+        playButton.addEventListener('click', function (event) {
+          renderContainer.requestPointerLock();
+          settingsVisible = false;
+          setElementVisibility(settings, settingsVisible);
+          controlsVisible = false;
+          setElementVisibility(controlsInfo, controlsVisible);
+        });
 
-    function updatePixelRatio(value) {
-      const numberValue = +value || 1;
-      pixelRatioValue.value = numberValue;
-      threeShooter.setPixelRatio(numberValue);
-      saveSettings();
-    }
+        controlsButton.addEventListener('click', function (event) {
+          controlsVisible = !controlsVisible;
+          settingsVisible = false;
+          setElementVisibility(controlsInfo, controlsVisible);
+          setElementVisibility(settings, settingsVisible);
+        });
 
-    function updateAspectRatio(value) {
-      if (!value) {
-        return;
-      }
-      aspectRatioValue.value = value;
-      handleResize();
-      saveSettings();
-    }
+        settingsButton.addEventListener('click', function (event) {
+          settingsVisible = !settingsVisible;
+          controlsVisible = false;
+          setElementVisibility(settings, settingsVisible);
+          setElementVisibility(controlsInfo, controlsVisible);
+        });
 
-    pixelRatioValue.addEventListener('change', function(event) {
-      updatePixelRatio(event.target.value);
-    });
+        fullscreenButton.addEventListener('click', function (event) {
+          document.body.requestFullscreen();
+        });
 
-    aspectRatioValue.addEventListener('change', function(event) {
-      handleResize();
-      saveSettings();
-    });
+        mouseSensitivity.addEventListener('input', function (event) {
+          var value = +event.target.value;
+          updateMouseSensitivity(value);
+        });
 
-    function updateFov(value) {
-      threeShooter.updateFov(value);
-      updateFovValue(value);
-      saveSettings();
-    }
+        function updateMouseSensitivity(value) {
+          var newSensitivity = (0.002 * value) / 200;
+          threeShooter.updateMouseSensitivity(newSensitivity);
+          updateMouseSensitivityValue(newSensitivity);
+          saveSettings();
+        }
 
-    var settingsKey = 'settings';
+        audioVolume.addEventListener('input', function (event) {
+          const value = +event.target.value;
+          updateAudioVolume(value);
+        });
 
-    function saveSettings() {
-      if (!localStorage) {
-        return;
-      }
-      var settings = {
-        mouseSensitivity: +mouseSensitivity.value,
-        audioVolume: +audioVolume.value,
-        fov: +fov.value,
-        pixelRatio: +pixelRatioValue.value,
-        aspectRatio: aspectRatioValue.value,
-      };
-      localStorage.setItem(settingsKey, JSON.stringify(settings));
-    }
+        function updateAudioVolume(value) {
+          var newVolume = value / 10;
+          threeShooter.updateAudioVolume(newVolume);
+          updateAudioVolumeValue(newVolume);
+          saveSettings();
+        }
 
-    function loadSetting() {
-      if (!localStorage) {
-        return;
-      }
-      try {
-        var settings = JSON.parse(localStorage.getItem(settingsKey));
-        mouseSensitivity.value = settings.mouseSensitivity;
-        audioVolume.value = settings.audioVolume;
-        fov.value = settings.fov;
-        updatePixelRatio(settings.pixelRatio);
-        updateAspectRatio(settings.aspectRatio);
-      } catch {
-        console.error('Falied to load game settings');
-      }
-    }
-    loadSetting();
-    updateMouseSensitivity(mouseSensitivity.value);
-    updateAudioVolume(audioVolume.value);
-    updateFov(fov.value);
+        fov.addEventListener('input', function (event) {
+          const value = +event.target.value;
+          updateFov(value);
+        });
 
-    function setElementVisibility(element, isVisible) {
-      if (isVisible) {
-        element.style.display = '';
-      } else {
-        element.style.display = 'none';
-      }
-      // element.style.visibility = isVisible ? 'visible' : 'hidden';
-      // element.style.opacity = isVisible ? '1' : '0';
-      // element.style.transition = isVisible ? '1s' : '0s';
-    }
+        function updatePixelRatio(value) {
+          const numberValue = +value || 1;
+          pixelRatioValue.value = numberValue;
+          threeShooter.setPixelRatio(numberValue);
+          saveSettings();
+        }
 
-    document.addEventListener('pointerlockchange', function (event) {
-      setElementVisibility(
-        blocker,
-        document.pointerLockElement != renderContainer
-      );
-      threeShooter.setEnabled(document.pointerLockElement === renderContainer);
-    });
-  </script>
+        function updateAspectRatio(value) {
+          if (!value) {
+            return;
+          }
+          aspectRatioValue.value = value;
+          handleResize();
+          saveSettings();
+        }
 
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <script type="text/javascript">
-    function showFps(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);}
-  </script>
+        pixelRatioValue.addEventListener('change', function (event) {
+          updatePixelRatio(event.target.value);
+        });
+
+        aspectRatioValue.addEventListener('change', function (event) {
+          handleResize();
+          saveSettings();
+        });
+
+        function updateFov(value) {
+          threeShooter.updateFov(value);
+          updateFovValue(value);
+          saveSettings();
+        }
+
+        var settingsKey = 'settings';
+
+        function saveSettings() {
+          if (!localStorage) {
+            return;
+          }
+          var settings = {
+            mouseSensitivity: +mouseSensitivity.value,
+            audioVolume: +audioVolume.value,
+            fov: +fov.value,
+            pixelRatio: +pixelRatioValue.value,
+            aspectRatio: aspectRatioValue.value,
+          };
+          localStorage.setItem(settingsKey, JSON.stringify(settings));
+        }
+
+        function loadSetting() {
+          if (!localStorage) {
+            return;
+          }
+          try {
+            var settings = JSON.parse(localStorage.getItem(settingsKey));
+            mouseSensitivity.value = settings.mouseSensitivity;
+            audioVolume.value = settings.audioVolume;
+            fov.value = settings.fov;
+            updatePixelRatio(settings.pixelRatio);
+            updateAspectRatio(settings.aspectRatio);
+          } catch {
+            console.error('Falied to load game settings');
+          }
+        }
+        loadSetting();
+        updateMouseSensitivity(mouseSensitivity.value);
+        updateAudioVolume(audioVolume.value);
+        updateFov(fov.value);
+
+        function setElementVisibility(element, isVisible) {
+          if (isVisible) {
+            element.style.display = '';
+          } else {
+            element.style.display = 'none';
+          }
+        }
+
+        document.addEventListener('pointerlockchange', function (event) {
+          setElementVisibility(
+            blocker,
+            document.pointerLockElement != renderContainer
+          );
+          threeShooter.setEnabled(document.pointerLockElement === renderContainer);
+        });
+      </script>
+
+      <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+      <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+      <script type="text/javascript">
+        function showFps() { var script = document.createElement('script'); script.onload = function () { var stats = new Stats(); document.body.appendChild(stats.dom); requestAnimationFrame(function loop() { stats.update(); requestAnimationFrame(loop) }); }; script.src = '//mrdoob.github.io/stats.js/build/stats.min.js'; document.head.appendChild(script); }
+      </script>
 </body>
 
 </html>
