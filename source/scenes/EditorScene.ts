@@ -1,6 +1,6 @@
 import { Vector2 } from 'three';
 import { ENTITY_TYPE } from '@/constants';
-import { EnemyKind, RoomCell, RoomCellType } from '@/dungeon/DungeonRoom';
+import { EnemyKind, RoomCell, RoomCellEventType, RoomCellType } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
 import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
@@ -11,11 +11,18 @@ interface CellColors {
   empty: string;
   enemy: string;
   wall: string;
+  doorWall: string;
   wallMini: string;
   transparent: string;
 }
 
 const mapCellSize = '0.75rem';
+const enemyForDoor1Tag = 'enemyForDoor1';
+const doorForEnemy1Tag = 'doorForEnemy1';
+const doorEvent = {
+  type: RoomCellEventType.OpenDoorIfNoEntitiesWithTag,
+  targetEntityTag: doorForEnemy1Tag,
+};
 
 export class EditorScene extends TestScene {
   enableKey: string;
@@ -32,11 +39,15 @@ export class EditorScene extends TestScene {
   prevFilledGhoshCells: { x: number; y: number; }[];
   fillMode: boolean;
   miniWallChecked: boolean;
+  enemyDoorTagChecked: boolean;
+  firstLoad: boolean;
 
   constructor(props: TestSceneProps) {
     super(props);
     this.fillMode = false;
     this.miniWallChecked = false;
+    this.enemyDoorTagChecked = false;
+    this.firstLoad = true;
     this.roomCells = [];
     this.groupSelectedCells = [];
     this.prevFilledGhoshCells = [];
@@ -53,7 +64,8 @@ export class EditorScene extends TestScene {
       empty: 'black',
       enemy: '#933',
       wall: 'gray',
-      wallMini: 'LightGray',
+      doorWall: 'lightgray',
+      wallMini: 'darkgray',
       transparent: 'transparent',
     };
     this.padding = 1;
@@ -96,19 +108,17 @@ export class EditorScene extends TestScene {
     if (!data) {
       return;
     }
-    const parsed: RoomCell[] = JSON.parse(data);
-    this.roomCells = [];
-    parsed.forEach(cell => this.roomCells.push({
-      ...cell,
-      position: new Vector2(cell.position.x, cell.position.y),
-    }));
+    this.roomCells = JSON.parse(data);
     this.updateRoomCells();
   }
 
   enableEditorMode = () => {
     this.isEditorMode = true;
     console.log('++++EDITOR MODE ENABLED++++');
-    this.loadFromLocalStorage();
+    if (this.firstLoad) {
+      this.loadFromLocalStorage();
+      this.firstLoad = false;
+    }
     this.restoreEditorMap();
     this.player.cantMove();
     this.moveCameraToSky();
@@ -334,7 +344,7 @@ export class EditorScene extends TestScene {
       case RoomCellType.Wall:
         return cell.mini ? this.cellColors.wallMini : this.cellColors.wall;
       case RoomCellType.DoorWall:
-        return this.cellColors.wall;
+        return this.cellColors.doorWall;
       case RoomCellType.Enemy:
         return this.cellColors.enemy;
       default:
@@ -344,12 +354,15 @@ export class EditorScene extends TestScene {
 
   createEntitiesElements() {
     const container = document.createElement('div');
+    container.style.marginTop = '0.5rem';
     const enemyButton = document.createElement('button');
+    enemyButton.style.width = '100px';
+    enemyButton.style.marginRight = '0.5rem';
     enemyButton.style.background = this.cellColors.enemy;
     enemyButton.innerHTML = 'Enemy';
     enemyButton.onclick = () => this.currentEntityType = RoomCellType.Enemy;
     const enemyKindSelect = document.createElement('select');
-    enemyKindSelect.style.background = 'azure';
+    enemyKindSelect.style.marginRight = '0.5rem';
     [
       this.createOption('Flyguy', EnemyKind.Flyguy),
       this.createOption('Commando', EnemyKind.Commando),
@@ -360,13 +373,30 @@ export class EditorScene extends TestScene {
     ].forEach(option => enemyKindSelect.appendChild(option));
     enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
     enemyKindSelect.value = `${this.currentEnemyKind}`;
-    container.appendChild(enemyKindSelect);
+    const enemyDoorTag = document.createElement('input');
+    enemyDoorTag.id = 'enemy-door-tag';
+    enemyDoorTag.type = 'checkbox';
+    enemyDoorTag.onclick = (event: MouseEvent) => {
+      const checked = (event.target as HTMLInputElement).checked;
+      this.enemyDoorTagChecked = checked;
+    };
+    const enemyDoorTagLabel = document.createElement('label');
+    enemyDoorTagLabel.htmlFor = 'enemy-door-tag';
+    enemyDoorTagLabel.innerHTML = 'Open door event';
     container.appendChild(enemyButton);
+    container.appendChild(enemyKindSelect);
+    container.appendChild(enemyDoorTag);
+    container.appendChild(enemyDoorTagLabel);
+    container.appendChild(document.createElement('br'));
+
     const wallButton = document.createElement('button');
+    wallButton.style.width = '100px';
+    wallButton.style.marginTop = '0.5rem';
     wallButton.style.background = this.cellColors.wall;
     wallButton.innerHTML = 'Wall';
     wallButton.onclick = () => this.currentEntityType = RoomCellType.Wall;
     container.appendChild(wallButton);
+
     const miniCheckbox = document.createElement('input');
     miniCheckbox.id = 'mini-wall-checkbox';
     miniCheckbox.type = 'checkbox';
@@ -379,21 +409,33 @@ export class EditorScene extends TestScene {
     miniCheckboxLabel.htmlFor = 'mini-wall-checkbox';
     miniCheckboxLabel.innerHTML = 'Mini wall';
     container.appendChild(miniCheckboxLabel);
+    container.appendChild(document.createElement('br'));
+
+    const doorWallButton = document.createElement('button');
+    doorWallButton.style.width = '100px';
+    doorWallButton.style.marginTop = '0.5rem';
+    doorWallButton.style.background = this.cellColors.wall;
+    doorWallButton.innerHTML = 'DoorWall';
+    doorWallButton.onclick = () => this.currentEntityType = RoomCellType.DoorWall;
+    container.appendChild(doorWallButton);
 
     const utilityButtonsContainer = document.createElement('div');
     utilityButtonsContainer.style.display = 'flex';
     utilityButtonsContainer.style.flexDirection = 'column';
     const clearButton = document.createElement('button');
+    clearButton.style.marginTop = '0.5rem';
     clearButton.innerHTML = 'Clear';
     clearButton.onclick = () => {
       this.clearEditor();
     };
     utilityButtonsContainer.appendChild(clearButton);
     const exportButton = document.createElement('button');
+    exportButton.style.marginTop = '0.5rem';
     exportButton.innerHTML = 'Log to console';
     exportButton.onclick = () => this.logDungeonToConsole();
     utilityButtonsContainer.appendChild(exportButton);
     const saveButton = document.createElement('button');
+    saveButton.style.marginTop = '0.5rem';
     saveButton.innerHTML = 'Save to local storage';
     saveButton.onclick = () => this.saveDungeonToLocalStorage();
     utilityButtonsContainer.appendChild(saveButton);
@@ -409,37 +451,43 @@ export class EditorScene extends TestScene {
   }
 
   logDungeonToConsole() {
-    const result = this.roomCells
-      .map(cell => {
-        const fields: string[] = [];
-        for (const key in cell) {
-          const value = cell[key as keyof RoomCell];
-          if (key === 'position') {
-            fields.push(`${key}: new Vector2(${(value as Vector2).x}, ${(value as Vector2).y})`);
-            continue;
-          }
-          fields.push(`${key}: ${value}`);
-        }
-        return `{${fields.join(', ')}},`;
-      })
-      .join('\n');
-    console.log(result);
+    console.log(JSON.stringify(this.roomCells, null, 2));
   }
 
   saveDungeonToLocalStorage() {
     localStorage.setItem(this.localStorageKey, JSON.stringify(this.roomCells));
   }
 
+  createEntityCell(cellX: number, cellY: number, entityType: RoomCellType) {
+    switch (entityType) {
+      case RoomCellType.Enemy:
+        return {
+          position: new Vector2(cellX, cellY),
+          type: entityType,
+          kind: this.currentEnemyKind,
+          tag: this.enemyDoorTagChecked ? enemyForDoor1Tag : undefined,
+          event: this.enemyDoorTagChecked ? doorEvent : undefined,
+        };
+      case RoomCellType.Wall:
+        return {
+          position: new Vector2(cellX, cellY),
+          type: entityType,
+          mini: this.miniWallChecked,
+        };
+      case RoomCellType.DoorWall:
+        return {
+          position: new Vector2(cellX, cellY),
+          type: entityType,
+          mini: this.miniWallChecked,
+          tag: doorForEnemy1Tag,
+        };
+      default:
+        throw new Error('Invalid entity type');
+    }
+  }
+
   addEditorCellEntity(cellX: number, cellY: number, entityType: RoomCellType) {
-    const cell: RoomCell = entityType === RoomCellType.Enemy ? {
-      position: new Vector2(cellX, cellY),
-      type: entityType,
-      kind: this.currentEnemyKind,
-    } : {
-      position: new Vector2(cellX, cellY),
-      type: entityType,
-      mini: this.miniWallChecked,
-    };
+    const cell: RoomCell = this.createEntityCell(cellX, cellY, entityType);
     this.roomCells.push(cell);
     this.updateRoomCells();
   }

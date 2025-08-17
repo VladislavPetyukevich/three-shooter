@@ -338,6 +338,7 @@ export class TestScene extends BasicScene {
     roomType,
     dungeonLevel,
     kind,
+    onDeathCallback,
   ) => {
     this.currentRoomEnimiesCount++;
     const enemy = this.createEnemy(
@@ -347,6 +348,9 @@ export class TestScene extends BasicScene {
       kind,
     );
     enemy.addOnDeathCallback(this.onEnemyDeath);
+    if (onDeathCallback) {
+      enemy.addOnDeathCallback(onDeathCallback);
+    }
     return this.entitiesContainer.add(enemy) as Enemy;
   }
 

@@ -459,7 +459,7 @@ export class RoomSpawner {
 
   fillRoomCells(room: Room, cells: RoomCell[]) {
     cells.forEach(cell => {
-      const cellPosition = cell.position.clone().add(room.cellPosition);
+      const cellPosition = new Vector2(cell.position.x, cell.position.y).add(room.cellPosition);
       const cellCoordinates =
         this.cellCoordinates.toWorldCoordinates(cellPosition);
       switch (cell.type) {
