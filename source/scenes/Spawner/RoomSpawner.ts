@@ -435,22 +435,22 @@ export class RoomSpawner {
   }
 
   fillRoomAfterVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room)?.constructor.getCells;
-    if (!roomConstructor) {
+    const roomCells = this.getRoomConstructor(room)?.constructor.cells;
+    if (!roomCells) {
       return;
     }
-    const cells = roomConstructor(this.roomSize).filter(cell =>
+    const cells = roomCells.filter(cell =>
       cell.type === RoomCellType.Enemy
     );
     this.fillRoomCells(room, cells);
   }
 
   fillRoomBeforeVisit(room: Room) {
-    const roomConstructor = this.getRoomConstructor(room)?.constructor.getCells;
-    if (!roomConstructor) {
+    const roomCells = this.getRoomConstructor(room)?.constructor.cells;
+    if (!roomCells) {
       return;
     }
-    const cells = roomConstructor(this.roomSize).filter(cell =>
+    const cells = roomCells.filter(cell =>
       cell.type === RoomCellType.DoorWall ||
       cell.type === RoomCellType.Wall
     );

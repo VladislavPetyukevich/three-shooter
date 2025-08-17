@@ -531,7 +531,7 @@ export class EditorScene extends TestScene {
     this.currentRoom.entities = [];
     this.currentRoom.roomConstructor = {
       constructor: {
-        getCells: () => this.roomCells,
+        cells: this.roomCells,
         roomType: RoomType.SexualPerversions,
       },
       dungeonLevel: 0,

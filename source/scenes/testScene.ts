@@ -117,7 +117,7 @@ export class TestScene extends BasicScene {
     });
     this.currentRoom = this.roomSpawner.createRoom(new Vector2(0, 0), {
       constructor: {
-        getCells: () => [],
+        cells: [],
         roomType: RoomType.Neutral,
       },
       dungeonLevel: 0,
