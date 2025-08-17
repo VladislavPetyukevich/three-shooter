@@ -27,7 +27,7 @@ export interface RoomCellEvent {
 }
 
 export interface BasicRoomCell {
-  position: Vector2;
+  position: { x: number, y: number };
   tag?: Entity['tag'];
   event?: RoomCellEvent;
 }
@@ -62,20 +62,208 @@ export const constructors: RoomConstructor['getCells'][] = [
     };
     return [
       {
-        position: new Vector2(2, 2),
-        type: RoomCellType.Enemy,
-        tag: enemyForDoor1Tag,
-        event: doorEvent,
-        kind: EnemyKind.Zombie,
+        "position": {
+          "x": 5,
+          "y": 1
+        },
+        "type": 1,
+        "mini": false
       },
       {
-        position: new Vector2(4, 2),
-        type: RoomCellType.Enemy,
-        tag: enemyForDoor1Tag,
-        event: doorEvent,
-        kind: EnemyKind.Commando,
+        "position": {
+          "x": 5,
+          "y": 2
+        },
+        "type": 1,
+        "mini": false
       },
-      { position: new Vector2(4, 4), type: RoomCellType.DoorWall, mini: false, tag: doorForEnemy1Tag },
+      {
+        "position": {
+          "x": 5,
+          "y": 3
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 15,
+          "y": 1
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 15,
+          "y": 2
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 15,
+          "y": 3
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 5,
+          "y": 4
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 15,
+          "y": 4
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 8,
+          "y": 2
+        },
+        "type": 0,
+        "kind": 4
+      },
+      {
+        "position": {
+          "x": 12,
+          "y": 2
+        },
+        "type": 0,
+        "kind": 4
+      },
+      {
+        "position": {
+          "x": 5,
+          "y": 5
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 15,
+          "y": 5
+        },
+        "type": 1,
+        "mini": false
+      },
+      {
+        "position": {
+          "x": 6,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 7,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 8,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 9,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 10,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 11,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 12,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 13,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 14,
+          "y": 5
+        },
+        "type": 2,
+        "mini": false,
+        "tag": "doorForEnemy1"
+      },
+      {
+        "position": {
+          "x": 7,
+          "y": 8
+        },
+        "type": 0,
+        "kind": 0,
+        "tag": "enemyForDoor1",
+        "event": {
+          "type": 0,
+          "targetEntityTag": "doorForEnemy1"
+        }
+      },
+      {
+        "position": {
+          "x": 13,
+          "y": 8
+        },
+        "type": 0,
+        "kind": 0,
+        "tag": "enemyForDoor1",
+        "event": {
+          "type": 0,
+          "targetEntityTag": "doorForEnemy1"
+        }
+      }
     ];
   },
   (size) => {
