@@ -284,6 +284,11 @@ export class TestScene extends BasicScene {
     this.logs.enemyKill(enemy);
     this.incrementEnemiesKillCount();
     this.onRoomEntityDestroy();
+    
+    // Switch back to ambient music when room is cleared
+    if (this.currentRoomEnimiesCount === 0) {
+      this.crossfadeMusic('ambient', 2);
+    }
   }
 
   incrementEnemiesKillCount() {
@@ -351,6 +356,12 @@ export class TestScene extends BasicScene {
     if (onDeathCallback) {
       enemy.addOnDeathCallback(onDeathCallback);
     }
+
+    // Switch to combat music when first enemy spawns in room
+    if (this.currentRoomEnimiesCount === 1) {
+      this.crossfadeMusic('combat', 1.5);
+    }
+
     return this.entitiesContainer.add(enemy) as Enemy;
   }
 

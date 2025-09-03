@@ -1,7 +1,8 @@
 import { texturesStore } from './TextureLoader';
-import { audioStore } from './AudioLoader';
+import { audioStoreSfx, audioStoreMusic } from './AudioLoader';
 
 export {
   texturesStore,
-  audioStore
+  audioStoreSfx,
+  audioStoreMusic,
 };

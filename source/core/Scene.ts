@@ -6,7 +6,8 @@ import {
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { globalSettings } from '@/GlobalSettings';
 import { AudioSlices } from './AudioSlices';
-import { AudioSliceName, gameAudioSlices } from '@/constantsAssets';
+import { BackgroundMusic } from './BackgroundMusic';
+import { AudioSliceName, gameAudioSlices, MusicTrackName, musicTracks } from '@/constantsAssets';
 
 export interface BasicSceneProps {
   renderWidth: number;
@@ -18,6 +19,7 @@ export class BasicScene {
   camera: PerspectiveCamera;
   audioListener: AudioListener;
   audioSlices: AudioSlices<AudioSliceName>;
+  backgroundMusic: BackgroundMusic;
   entitiesContainer: EntitiesContainer;
 
   constructor(props: BasicSceneProps) {
@@ -27,6 +29,7 @@ export class BasicScene {
 
     this.audioListener = new AudioListener();
     this.audioSlices = new AudioSlices(this.audioListener, gameAudioSlices);
+    this.backgroundMusic = new BackgroundMusic(this.audioListener);
     this.setAudioVolume(globalSettings.getSetting('audioVolume'));
     this.camera.add(this.audioListener);
 
@@ -51,5 +54,46 @@ export class BasicScene {
 
   update(delta: number) {
     this.entitiesContainer.update(delta);
+    this.backgroundMusic.update();
+  }
+
+  // Background music control methods
+  playMusic(trackName: MusicTrackName): void {
+    const track = musicTracks[trackName];
+    if (track) {
+      this.backgroundMusic.play(track);
+    }
+  }
+
+  stopMusic(fadeOutDuration?: number): void {
+    this.backgroundMusic.stop(fadeOutDuration);
+  }
+
+  pauseMusic(): void {
+    this.backgroundMusic.pause();
+  }
+
+  resumeMusic(): void {
+    this.backgroundMusic.resume();
+  }
+
+  crossfadeMusic(trackName: MusicTrackName, duration?: number): void {
+    const track = musicTracks[trackName];
+    if (track) {
+      this.backgroundMusic.crossfade(track, duration);
+    }
+  }
+
+  getMusicState() {
+    return {
+      currentTrack: this.backgroundMusic.getCurrentTrack(),
+      state: this.backgroundMusic.getState(),
+      isPlaying: this.backgroundMusic.isPlaying(),
+    };
+  }
+
+  destroy(): void {
+    this.backgroundMusic.destroy();
+    globalSettings.removeUpdateListener(this.onUpdateGlobalSettings);
   }
 }

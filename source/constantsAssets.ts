@@ -1,7 +1,10 @@
 import spriteSheet from './assets/spritesheet.png';
 import sfx from './assets/sfx.mp3';
+import combatMusic from './assets/beat.mp3';
+import ambientMusic from './assets/germany.mp3';
 import { ImagesInfo } from '@/SpriteSheetLoader';
 import { SliceInfo } from './core/AudioSlices';
+import { MusicTrack } from './core/BackgroundMusic';
 
 export { spriteSheet };
 
@@ -95,6 +98,13 @@ export const gameTextures: ImagesInfo = {
 
 export const gameSounds = {
   sfx,
+  combatMusic,
+  ambientMusic,
+};
+
+export const gameSoundsMusic = {
+  combatMusic,
+  ambientMusic,
 };
 
 const playerAudioVolume = 0.2;
@@ -229,5 +239,28 @@ export const ENEMY_TEXTURES: EnemyTextures = {
     death3: 'enemySoldierDeath3',
     death4: 'enemySoldierDeath4',
     attack: 'enemySoldierAttack',
+  },
+};
+
+export type MusicTrackName = 
+  'combat' | 
+  'ambient';
+
+export const musicTracks: Record<MusicTrackName, MusicTrack> = {
+  combat: {
+    name: 'combat',
+    soundName: 'combatMusic',
+    volume: 0.5,
+    loop: true,
+    fadeInDuration: 5,
+    fadeOutDuration: 5,
+  },
+  ambient: {
+    name: 'ambient',
+    soundName: 'ambientMusic',
+    volume: 0.5,
+    loop: true,
+    fadeInDuration: 5,
+    fadeOutDuration: 5,
   },
 };

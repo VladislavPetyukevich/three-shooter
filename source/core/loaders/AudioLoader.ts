@@ -44,4 +44,6 @@ class AudioLoader {
   }
 }
 
-export const audioStore = new AudioLoader();
+export const audioStoreSfx = new AudioLoader();
+
+export const audioStoreMusic = new AudioLoader();

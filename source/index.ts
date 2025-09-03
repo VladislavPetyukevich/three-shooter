@@ -16,13 +16,15 @@ import { EffectComposer } from './Postprocessing/EffectComposer';
 import { ColorCorrectionShader } from './Postprocessing/Shaders/ColorCorrectionShader';
 import { ColorPaletteShader } from './Postprocessing/Shaders/ColorPalette';
 import { SharpenShader } from './Postprocessing/Shaders/Sharpen';
-import { texturesStore, audioStore } from '@/core/loaders';
+import { texturesStore, audioStoreSfx } from '@/core/loaders';
 import { SpriteSheetLoader } from '@/SpriteSheetLoader';
-import { gameTextures, gameSounds, spriteSheet } from './constantsAssets';
+import { gameTextures, gameSounds, spriteSheet, gameSoundsMusic } from './constantsAssets';
 import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { PlayerLogsValue } from './PlayerLogs';
 import { LUTImageLoader } from '@/core/loaders/LUTImageLoader';
+import { EditorScene } from './scenes/EditorScene';
+import { audioStoreMusic } from './core/loaders/AudioLoader';
 
 const SceneClass = TestScene;
 
@@ -42,6 +44,7 @@ export default class ThreeShooter {
   imageDisplayer: ImageDisplayer;
   prevTime: number;
   enabled: boolean;
+  firstPlayClick: boolean;
   controlsEnabled: boolean;
   pixelRatio: number;
   renderer: WebGLRenderer;
@@ -57,7 +60,7 @@ export default class ThreeShooter {
     this.prevTime = performance.now();
     this.enabled = true;
     this.controlsEnabled = false;
-
+    this.firstPlayClick = true;
     this.pixelRatio = 1;
     this.renderer = new WebGLRenderer({
       powerPreference: 'high-performance',
@@ -121,8 +124,21 @@ export default class ThreeShooter {
     if (!this.enabled && newValue) {
       this.prevTime = performance.now();
     }
+    if (!newValue) {
+      this.pauseMusic();
+    } else {
+      this.resumeMusic();
+    }
     this.enabled = newValue;
     this.controlsEnabled = newValue;
+  }
+
+  onPlayClick() {
+    if (!this.firstPlayClick) {
+      return;
+    }
+    this.currScene.playMusic('ambient');
+    this.firstPlayClick = false;
   }
 
   loadResources(onLoad: () => void) {
@@ -166,7 +182,8 @@ export default class ThreeShooter {
       (<LoadingScene>this.currScene).onImagesScaleProgress(progress);
     };
     spriteSheetLoader.loadImages(gameTextures, onImagesScale, onImagesScaleProgress);
-    audioStore.loadSounds(gameSounds, onLoadSome, onSoundsProgress);
+    audioStoreSfx.loadSounds(gameSounds, onLoadSome, onSoundsProgress);
+    audioStoreMusic.loadSounds(gameSoundsMusic, () => { }, () => { });
   }
 
   onSceneFinish = () => {
@@ -183,7 +200,12 @@ export default class ThreeShooter {
 
   changeScene(scene: BasicScene) {
     hud.reset();
-    this.currScene.entitiesContainer.onDestroy();
+    // Cleanup previous scene's resources
+    if (this.currScene.destroy) {
+      this.currScene.destroy();
+    } else {
+      this.currScene.entitiesContainer.onDestroy();
+    }
     this.currScene = scene;
     this.changeRenderingScene(this.currScene);
   }
@@ -223,9 +245,51 @@ export default class ThreeShooter {
     globalSettings.setSetting('audioVolume', value);
   };
 
+  updateMusicVolume = (value: number) => {
+    globalSettings.setSetting('musicVolume', value);
+  };
+
   updateFov = (value: number) => {
     globalSettings.setSetting('fov', value);
   };
+
+  // Background Music Control Methods
+  playMusic(trackName: string) {
+    if (this.currScene && this.currScene.playMusic) {
+      this.currScene.playMusic(trackName as any);
+    }
+  }
+
+  stopMusic(fadeOutDuration?: number) {
+    if (this.currScene && this.currScene.stopMusic) {
+      this.currScene.stopMusic(fadeOutDuration);
+    }
+  }
+
+  pauseMusic() {
+    if (this.currScene && this.currScene.pauseMusic) {
+      this.currScene.pauseMusic();
+    }
+  }
+
+  resumeMusic() {
+    if (this.currScene && this.currScene.resumeMusic) {
+      this.currScene.resumeMusic();
+    }
+  }
+
+  crossfadeMusic(trackName: string, duration?: number) {
+    if (this.currScene && this.currScene.crossfadeMusic) {
+      this.currScene.crossfadeMusic(trackName as any, duration);
+    }
+  }
+
+  getMusicState() {
+    if (this.currScene && this.currScene.getMusicState) {
+      return this.currScene.getMusicState();
+    }
+    return null;
+  }
 
   update = () => {
     if (this.enabled) {
