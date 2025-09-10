@@ -4,17 +4,19 @@ import {
 } from 'three';
 import { audioStoreMusic } from '@/core/loaders';
 import { globalSettings } from '@/GlobalSettings';
+import { MusicPlaylist } from './MusicPlaylist';
+import { musicTracks } from '@/constantsAssets';
 
 export interface MusicTrack {
   name: string;
   soundName: string;
   volume: number;
-  loop: boolean;
-  fadeInDuration?: number;
-  fadeOutDuration?: number;
 }
 
-export type MusicState = 'stopped' | 'playing' | 'paused' | 'fading_in' | 'fading_out';
+const fadeInDuration = 5;
+
+export type MusicState = 'stopped' | 'playing' | 'paused' | 'fading_in';
+export type PlaylistName = 'ambient' | 'combat';
 
 export class BackgroundMusic {
   private audioListener: AudioListener;
@@ -27,12 +29,17 @@ export class BackgroundMusic {
   private fadeDuration: number = 0;
   private masterVolume: number = 1;
   private musicVolume: number = 1;
+  private currentPlaylist: MusicPlaylist | null = null;
+  private ambientPlaylist: MusicPlaylist;
+  private combatPlaylist: MusicPlaylist;
 
   constructor(audioListener: AudioListener) {
     this.audioListener = audioListener;
     this.masterVolume = globalSettings.getSetting('audioVolume') || 1;
     this.musicVolume = globalSettings.getSetting('musicVolume') || 0.5;
-    
+    this.ambientPlaylist = new MusicPlaylist([musicTracks.ambient]);
+    this.combatPlaylist = new MusicPlaylist([musicTracks.combat1, musicTracks.combat2]);
+
     // Listen for global settings changes
     globalSettings.addUpdateListener(this.onGlobalSettingsUpdate);
   }
@@ -56,13 +63,27 @@ export class BackgroundMusic {
     }
   }
 
-  play(track: MusicTrack): void {
-    // If same track is already playing, do nothing
-    if (this.currentTrack && this.currentTrack.name === track.name && this.state === 'playing') {
-      return;
+  private getPlaylist(playlistName: PlaylistName): MusicPlaylist {
+    switch (playlistName) {
+      case 'ambient':
+        return this.ambientPlaylist;
+      default:
+        return this.combatPlaylist;
     }
+  }
 
-    // Stop current track if playing
+  playPlaylist(playlistName: PlaylistName): void {
+    const nextPlaylist = this.getPlaylist(playlistName);
+    const track = nextPlaylist.getCurrentTrack();
+    if (this.currentPlaylist && this.currentPlaylist !== nextPlaylist) {
+      this.play(track);
+    } else {
+      this.play(track);
+    }
+    this.currentPlaylist = nextPlaylist;
+  }
+
+  private play(track: MusicTrack): void {
     if (this.currentAudio && this.state !== 'stopped') {
       this.stop();
     }
@@ -70,7 +91,7 @@ export class BackgroundMusic {
     // Load and setup new track
     this.currentTrack = track;
     this.currentAudio = new Audio(this.audioListener);
-    
+
     const audioBuffer = audioStoreMusic.getSound(track.soundName);
     if (!audioBuffer) {
       console.warn(`Background music: Cannot load sound ${track.soundName}`);
@@ -78,36 +99,34 @@ export class BackgroundMusic {
     }
 
     this.currentAudio.setBuffer(audioBuffer);
-    this.currentAudio.setLoop(track.loop);
-    
-    // Setup fade in if specified
-    if (track.fadeInDuration && track.fadeInDuration > 0) {
-      this.startFadeIn(track.fadeInDuration);
-    } else {
-      this.currentAudio.setVolume(track.volume * this.musicVolume * this.masterVolume);
-      this.state = 'playing';
-    }
+    this.currentAudio.onEnded = () => {
+      if (this.state !== 'playing') {
+        return;
+      }
+      const track = this.currentPlaylist?.getNextTrack();
+      if (track) {
+        this.play(track);
+      }
+    };
+
+    this.startFadeIn(fadeInDuration);
 
     this.currentAudio.play();
   }
 
-  stop(fadeOutDuration?: number): void {
+  stop(): void {
     if (!this.currentAudio || this.state === 'stopped') {
       return;
     }
 
-    if (fadeOutDuration && fadeOutDuration > 0) {
-      this.startFadeOut(fadeOutDuration);
-    } else {
-      this.currentAudio.stop();
-      this.state = 'stopped';
-      this.currentAudio = null;
-      this.currentTrack = null;
-    }
+    this.currentAudio.stop();
+    this.state = 'stopped';
+    this.currentAudio = null;
+    this.currentTrack = null;
   }
 
   pause(): void {
-    if (this.currentAudio && this.state === 'playing') {
+    if (this.currentAudio) {
       this.currentAudio.pause();
       this.state = 'paused';
     }
@@ -115,6 +134,7 @@ export class BackgroundMusic {
 
   resume(): void {
     if (this.currentAudio && this.state === 'paused') {
+      this.updateAudioVolume();
       this.currentAudio.play();
       this.state = 'playing';
     }
@@ -131,18 +151,8 @@ export class BackgroundMusic {
     this.currentAudio.setVolume(0);
   }
 
-  private startFadeOut(duration: number): void {
-    if (!this.currentAudio || !this.currentTrack) return;
-
-    this.state = 'fading_out';
-    this.fadeStartTime = performance.now();
-    this.fadeDuration = duration * 1000; // Convert to milliseconds
-    this.startVolume = this.currentAudio.getVolume();
-    this.targetVolume = 0;
-  }
-
   update(): void {
-    if (this.state === 'fading_in' || this.state === 'fading_out') {
+    if (this.state === 'fading_in') {
       this.updateFade();
     }
   }
@@ -163,11 +173,6 @@ export class BackgroundMusic {
     if (progress >= 1) {
       if (this.state === 'fading_in') {
         this.state = 'playing';
-      } else if (this.state === 'fading_out') {
-        this.currentAudio.stop();
-        this.state = 'stopped';
-        this.currentAudio = null;
-        this.currentTrack = null;
       }
     }
   }
@@ -196,22 +201,6 @@ export class BackgroundMusic {
 
   getMusicVolume(): number {
     return this.musicVolume;
-  }
-
-  // Utility method to crossfade between tracks
-  crossfade(newTrack: MusicTrack, crossfadeDuration: number = 2): void {
-    if (this.currentAudio && this.state === 'playing') {
-      // Fade out current track
-      this.stop(crossfadeDuration);
-      
-      // Start new track after a short delay to create overlap
-      setTimeout(() => {
-        const trackWithFade = { ...newTrack, fadeInDuration: crossfadeDuration };
-        this.play(trackWithFade);
-      }, crossfadeDuration * 500); // Start halfway through fade out
-    } else {
-      this.play(newTrack);
-    }
   }
 
   destroy(): void {

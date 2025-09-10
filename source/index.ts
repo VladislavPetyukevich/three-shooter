@@ -23,7 +23,6 @@ import { playerActions, PlayerActionName } from '@/PlayerActions';
 import { globalSettings } from '@/GlobalSettings';
 import { PlayerLogsValue } from './PlayerLogs';
 import { LUTImageLoader } from '@/core/loaders/LUTImageLoader';
-import { EditorScene } from './scenes/EditorScene';
 import { audioStoreMusic } from './core/loaders/AudioLoader';
 
 const SceneClass = TestScene;
@@ -137,7 +136,7 @@ export default class ThreeShooter {
     if (!this.firstPlayClick) {
       return;
     }
-    this.currScene.playMusic('ambient');
+    this.currScene.playAmbientMusic();
     this.firstPlayClick = false;
   }
 
@@ -253,42 +252,12 @@ export default class ThreeShooter {
     globalSettings.setSetting('fov', value);
   };
 
-  // Background Music Control Methods
-  playMusic(trackName: string) {
-    if (this.currScene && this.currScene.playMusic) {
-      this.currScene.playMusic(trackName as any);
-    }
-  }
-
-  stopMusic(fadeOutDuration?: number) {
-    if (this.currScene && this.currScene.stopMusic) {
-      this.currScene.stopMusic(fadeOutDuration);
-    }
-  }
-
   pauseMusic() {
-    if (this.currScene && this.currScene.pauseMusic) {
-      this.currScene.pauseMusic();
-    }
+    this.currScene.pauseMusic();
   }
 
   resumeMusic() {
-    if (this.currScene && this.currScene.resumeMusic) {
-      this.currScene.resumeMusic();
-    }
-  }
-
-  crossfadeMusic(trackName: string, duration?: number) {
-    if (this.currScene && this.currScene.crossfadeMusic) {
-      this.currScene.crossfadeMusic(trackName as any, duration);
-    }
-  }
-
-  getMusicState() {
-    if (this.currScene && this.currScene.getMusicState) {
-      return this.currScene.getMusicState();
-    }
-    return null;
+    this.currScene.resumeMusic();
   }
 
   update = () => {

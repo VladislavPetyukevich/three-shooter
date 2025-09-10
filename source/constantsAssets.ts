@@ -1,6 +1,7 @@
 import spriteSheet from './assets/spritesheet.png';
 import sfx from './assets/sfx.mp3';
-import combatMusic from './assets/beat.mp3';
+import combatMusic1 from './assets/beat.mp3';
+import combatMusic2 from './assets/sad satan 22.mp3';
 import ambientMusic from './assets/germany.mp3';
 import { ImagesInfo } from '@/SpriteSheetLoader';
 import { SliceInfo } from './core/AudioSlices';
@@ -98,12 +99,14 @@ export const gameTextures: ImagesInfo = {
 
 export const gameSounds = {
   sfx,
-  combatMusic,
+  combatMusic1,
+  combatMusic2,
   ambientMusic,
 };
 
 export const gameSoundsMusic = {
-  combatMusic,
+  combatMusic1,
+  combatMusic2,
   ambientMusic,
 };
 
@@ -243,24 +246,24 @@ export const ENEMY_TEXTURES: EnemyTextures = {
 };
 
 export type MusicTrackName = 
-  'combat' | 
+  'combat1' | 
+  'combat2' |
   'ambient';
 
 export const musicTracks: Record<MusicTrackName, MusicTrack> = {
-  combat: {
-    name: 'combat',
-    soundName: 'combatMusic',
+  combat1: {
+    name: 'combat1',
+    soundName: 'combatMusic1',
     volume: 0.5,
-    loop: true,
-    fadeInDuration: 5,
-    fadeOutDuration: 5,
+  },
+  combat2: {
+    name: 'combat2',
+    soundName: 'combatMusic2',
+    volume: 0.5,
   },
   ambient: {
     name: 'ambient',
     soundName: 'ambientMusic',
     volume: 0.5,
-    loop: true,
-    fadeInDuration: 5,
-    fadeOutDuration: 5,
   },
 };

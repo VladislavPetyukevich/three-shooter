@@ -157,6 +157,7 @@ export class TestScene extends BasicScene {
     this.skybox.position.copy(this.player.mesh.position);
     this.skybox.position.setY(this.skybox.position.y + skyboxSize / 2 - PLAYER.BODY_HEIGHT * 2);
     this.scene.add(this.skybox);
+    this.playAmbientMusic();
   }
 
   getInitialPlayerPositon() {
@@ -229,6 +230,9 @@ export class TestScene extends BasicScene {
   }
 
   handleRoomVisit = (room: Room) => {
+    if (this.enemiesKillCount === 0) {
+      this.playCombatMusic();
+    }
     this.currentRoom = room;
     this.roomSpawner.fillRoomAfterVisit(room);
     this.openCloseNeighboringRooms(room, true);
@@ -284,11 +288,6 @@ export class TestScene extends BasicScene {
     this.logs.enemyKill(enemy);
     this.incrementEnemiesKillCount();
     this.onRoomEntityDestroy();
-    
-    // Switch back to ambient music when room is cleared
-    if (this.currentRoomEnimiesCount === 0) {
-      this.crossfadeMusic('ambient', 2);
-    }
   }
 
   incrementEnemiesKillCount() {
@@ -355,11 +354,6 @@ export class TestScene extends BasicScene {
     enemy.addOnDeathCallback(this.onEnemyDeath);
     if (onDeathCallback) {
       enemy.addOnDeathCallback(onDeathCallback);
-    }
-
-    // Switch to combat music when first enemy spawns in room
-    if (this.currentRoomEnimiesCount === 1) {
-      this.crossfadeMusic('combat', 1.5);
     }
 
     return this.entitiesContainer.add(enemy) as Enemy;

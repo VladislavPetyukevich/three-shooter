@@ -7,7 +7,7 @@ import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
 import { globalSettings } from '@/GlobalSettings';
 import { AudioSlices } from './AudioSlices';
 import { BackgroundMusic } from './BackgroundMusic';
-import { AudioSliceName, gameAudioSlices, MusicTrackName, musicTracks } from '@/constantsAssets';
+import { AudioSliceName, gameAudioSlices } from '@/constantsAssets';
 
 export interface BasicSceneProps {
   renderWidth: number;
@@ -57,16 +57,12 @@ export class BasicScene {
     this.backgroundMusic.update();
   }
 
-  // Background music control methods
-  playMusic(trackName: MusicTrackName): void {
-    const track = musicTracks[trackName];
-    if (track) {
-      this.backgroundMusic.play(track);
-    }
+  playAmbientMusic(): void {
+    this.backgroundMusic.playPlaylist('ambient');
   }
 
-  stopMusic(fadeOutDuration?: number): void {
-    this.backgroundMusic.stop(fadeOutDuration);
+  playCombatMusic(): void {
+    this.backgroundMusic.playPlaylist('combat');
   }
 
   pauseMusic(): void {
@@ -75,21 +71,6 @@ export class BasicScene {
 
   resumeMusic(): void {
     this.backgroundMusic.resume();
-  }
-
-  crossfadeMusic(trackName: MusicTrackName, duration?: number): void {
-    const track = musicTracks[trackName];
-    if (track) {
-      this.backgroundMusic.crossfade(track, duration);
-    }
-  }
-
-  getMusicState() {
-    return {
-      currentTrack: this.backgroundMusic.getCurrentTrack(),
-      state: this.backgroundMusic.getState(),
-      isPlaying: this.backgroundMusic.isPlaying(),
-    };
   }
 
   destroy(): void {
