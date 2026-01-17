@@ -73,7 +73,6 @@ export class EnemyBehavior implements Behavior {
   spawnSound: PositionalAudio;
   hitSound: Audio;
   onHitDamage?: { min: number; max: number; };
-  onAttackCallback?: () => void;
   onDeathCallback?: () => void;
 
   constructor(props: BehaviorProps) {
@@ -154,9 +153,6 @@ export class EnemyBehavior implements Behavior {
 
   shoot() {
     this.onBusyStart();
-    if (this.onAttackCallback) {
-      this.onAttackCallback();
-    }
     this.gun.shoot();
   }
 

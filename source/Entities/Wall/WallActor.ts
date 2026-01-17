@@ -87,18 +87,18 @@ export class WallActor implements Actor {
     const wallSize =
       props.isHorizontalWall ? props.size.depth : props.size.width;
     const wallWidth = props.isHorizontalWall ? props.size.width : props.size.depth;
-    const decalWidth = 4;
+    const decalWidth = 1.5;
     const xShift = (wallWidth / 2 / decalWidth) - decalWidth / 2;
     const xPos = randomNumbers.getRandomInRange(-xShift, xShift);
-    const yPos = 0;
+    const yPos = (decalWidth / 4) * (randomNumbers.getRandomInRange(0, 1) ? 1 : -1);
     const coordinateHash = `${xPos}${yPos}`;
     if (this.decalCoordinatesHash.has(coordinateHash)) {
       return;
     }
     this.decalCoordinatesHash.add(coordinateHash);
     const size = new Vector3(
-      wallSize,
-      wallSize,
+      wallSize / 2,
+      wallSize / 2,
       5,
     );
     const orientation = new Euler(

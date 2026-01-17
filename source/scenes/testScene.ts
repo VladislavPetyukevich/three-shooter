@@ -170,7 +170,8 @@ export class TestScene extends BasicScene {
   }
 
   spawnGuns() {
-    const pickUpSize = new Vector3(1, 1, 0.00001);
+    const pickUpScale = 2;
+    const pickUpSize = new Vector3(1 * pickUpScale, 0.5 * pickUpScale, 0.00001);
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(

@@ -17,14 +17,8 @@ import { DeathAnimation } from '@/Animations/DeathAnimation';
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
-  walk3: string;
-  walk4: string;
   hurt: string;
   death1: string;
-  death2: string;
-  death3: string;
-  death4: string;
-  attack: string;
 }
 
 export interface EnemyGunProps {
@@ -105,9 +99,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
-    this.behavior.onAttackCallback = () => {
-      this.handleAttack();
-    };
 
     this.behaviorTree = new BehaviorTree(
       props.behaviorTreeRoot,
@@ -162,15 +153,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       spriteIndices: [5, 6, 7, 8],
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
-  }
-
-  handleAttack() {
-    this.addAnimation(new HurtAnimation({
-      actor: this.actor,
-      durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 9,
-      onEnd: () => this.onBusyEnd(),
-    }));
   }
 
   onCollide(entity: Entity) {

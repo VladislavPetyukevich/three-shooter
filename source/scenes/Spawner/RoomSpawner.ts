@@ -543,19 +543,6 @@ export class RoomSpawner {
     });
   }
 
-  getWallTextureFileName(roomType: RoomType) {
-    switch (roomType) {
-      case RoomType.Apathy:
-        return 'wallApathyTextureFile';
-      case RoomType.Cowardice:
-        return 'wallCowardiceTextureFile';
-      case RoomType.SexualPerversions:
-        return 'wallSPTextureFile';
-      default:
-        return 'wallTextureFile';
-    }
-  }
-
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean, unbreakable?: boolean) {
     const isHorizontalWall = size.x > size.y;
     const props: WallProps = {
@@ -564,7 +551,7 @@ export class RoomSpawner {
       isHorizontalWall: isHorizontalWall,
       withDecals,
       unbreakable,
-      textureFileName: this.getWallTextureFileName(roomType),
+      textureFileName: 'wallTextureFile',
     };
     const WallConstructor = this.getWallConstructor(roomType);
     const wall = this.entitiesContainer.add(
