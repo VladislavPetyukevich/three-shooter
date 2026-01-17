@@ -3,7 +3,7 @@ import { ENTITY_TYPE } from '@/constants';
 import { EnemyKind, RoomCell, RoomCellEventType, RoomCellType } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
-import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { RoomType } from '@/dungeon/DungeonRoom';
 
 interface CellColors {
   border: string;

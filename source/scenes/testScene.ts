@@ -14,8 +14,8 @@ import { PLAYER, roomSize } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, OnDeathCallback } from '@/Entities/Enemy/Enemy';
-import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
-import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { EnemyFactory } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { EnemyKind, RoomType } from '@/dungeon/DungeonRoom';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
@@ -372,7 +372,6 @@ export class TestScene extends BasicScene {
       container: this.entitiesContainer,
       audioListener: this.audioListener,
       audioSlices: this.audioSlices,
-      roomType,
       dungeonLevel,
       kind,
     });

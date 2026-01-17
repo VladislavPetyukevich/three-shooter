@@ -20,7 +20,6 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { DoorWall } from '@/Entities/DoorWall/DoorWall';
-import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import {
@@ -31,6 +30,7 @@ import {
   DungeonRoom,
   WallRoomCell,
   DungeonRoomConstructor,
+  RoomType,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
