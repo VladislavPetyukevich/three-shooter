@@ -100,50 +100,29 @@ export interface EnemyTexturesSet {
 }
 
 interface EnemyTextures {
-  Commando: EnemyTexturesSet;
-  Slayer: EnemyTexturesSet;
-  Zombie: EnemyTexturesSet;
-  Flyguy: EnemyTexturesSet;
-  Tank: EnemyTexturesSet;
-  Soldier: EnemyTexturesSet;
+  Apathy: EnemyTexturesSet;
+  Cowardice: EnemyTexturesSet;
+  SexualPerversions: EnemyTexturesSet;
 }
 
 export const ENEMY_TEXTURES: EnemyTextures = {
-  Commando: {
+  Apathy: {
     walk1: 'enemyApathyWalk1',
     walk2: 'enemyApathyWalk2',
     hurt: 'enemyApathyDeath1',
     death1: 'enemyApathyDeath1',
   },
-  Slayer: {
+  Cowardice: {
     walk1: 'enemyCowardiceWalk1',
     walk2: 'enemyCowardiceWalk2',
     hurt: 'enemyCowardiceDeath1',
     death1: 'enemyCowardiceDeath1',
   },
-  Zombie: {
+  SexualPerversions: {
     walk1: 'enemySPWalk1',
     walk2: 'enemySPWalk2',
     hurt: 'enemySPDeath1',
     death1: 'enemySPDeath1',
-  },
-  Flyguy: {
-    walk1: 'enemyApathyWalk1',
-    walk2: 'enemyApathyWalk2',
-    hurt: 'enemyApathyDeath1',
-    death1: 'enemyApathyDeath1',
-  },
-  Tank: {
-    walk1: 'enemySPWalk1',
-    walk2: 'enemySPWalk2',
-    hurt: 'enemySPDeath1',
-    death1: 'enemySPDeath1',
-  },
-  Soldier: {
-    walk1: 'enemyApathyWalk1',
-    walk2: 'enemyApathyWalk2',
-    hurt: 'enemyApathyDeath1',
-    death1: 'enemyApathyDeath1',
   },
 };
 

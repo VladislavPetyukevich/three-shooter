@@ -9,12 +9,9 @@ export const enum RoomType {
 }
 
 export const enum EnemyKind {
-  Flyguy,
-  Commando,
-  Zombie,
-  Slayer,
-  Tank,
-  Soldier,
+  Apathy,
+  Cowardice,
+  SexualPerversions,
 }
 
 export const enum RoomCellType {

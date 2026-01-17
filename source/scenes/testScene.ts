@@ -325,7 +325,7 @@ export class TestScene extends BasicScene {
       new Vector2(position.x, position.z),
       roomType,
       this.currentRoom.roomConstructor.dungeonLevel,
-      EnemyKind.Flyguy,
+      EnemyKind.Apathy,
     );
     const collisions =
       this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.mesh.position);
