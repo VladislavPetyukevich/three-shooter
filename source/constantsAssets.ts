@@ -9,8 +9,6 @@ import { MusicTrack } from './core/BackgroundMusic';
 
 export { spriteSheet };
 
-export const spriteCellSize = 64;
-
 export const gameTextures: ImagesInfo = {
   wallTextureFile: { x: 0, y: 289, width: 32, height: 32, },
   wallDecal1TextureFile: { x: 32, y: 289, width: 16, height: 16, },
