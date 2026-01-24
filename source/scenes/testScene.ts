@@ -14,8 +14,8 @@ import { PLAYER, roomSize } from '@/constants';
 import { Player } from '@/Entities/Player/Player';
 import { Door } from '@/Entities/Door/Door';
 import { Enemy, OnDeathCallback } from '@/Entities/Enemy/Enemy';
-import { EnemyFactory, RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
-import { EnemyKind } from '@/dungeon/DungeonRoom';
+import { EnemyFactory } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { EnemyKind, RoomType } from '@/dungeon/DungeonRoom';
 import { GunPickUp } from '@/Entities/GunPickUp/GunPickUp';
 import { Shotgun } from '@/Entities/Gun/Inheritor/Shotgun';
 import { Machinegun } from '@/Entities/Gun/Inheritor/Machinegun';
@@ -170,7 +170,8 @@ export class TestScene extends BasicScene {
   }
 
   spawnGuns() {
-    const pickUpSize = new Vector3(1, 1, 0.00001);
+    const pickUpScale = 2;
+    const pickUpSize = new Vector3(1 * pickUpScale, 0.5 * pickUpScale, 0.00001);
     this.entitiesContainer.add(
       new GunPickUp({
         position: new Vector3(
@@ -324,7 +325,7 @@ export class TestScene extends BasicScene {
       new Vector2(position.x, position.z),
       roomType,
       this.currentRoom.roomConstructor.dungeonLevel,
-      EnemyKind.Flyguy,
+      EnemyKind.Apathy,
     );
     const collisions =
       this.entitiesContainer.collideChecker.detectCollisions(enemy, enemy.mesh.position);
@@ -371,7 +372,6 @@ export class TestScene extends BasicScene {
       container: this.entitiesContainer,
       audioListener: this.audioListener,
       audioSlices: this.audioSlices,
-      roomType,
       dungeonLevel,
       kind,
     });

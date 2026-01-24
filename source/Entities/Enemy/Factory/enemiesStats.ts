@@ -11,7 +11,7 @@ import { EnemiesStats } from './EnemyFactory';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export const enemiesStats: EnemiesStats = {
-  [EnemyKind.Flyguy]: {
+  [EnemyKind.Apathy]: {
     hp: 20,
     hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
@@ -25,9 +25,9 @@ export const enemiesStats: EnemiesStats = {
       shoot: ENEMY.DELAYS.shoot * 0.7
     },
     behaviorTreeRoot: basicEnemySeq,
-    textures: ENEMY_TEXTURES.Flyguy,
+    textures: ENEMY_TEXTURES.Apathy,
   },
-  [EnemyKind.Commando]: {
+  [EnemyKind.Cowardice]: {
     hp: 30,
     hurtChance: 0.66,
     BulletClass: BulletFastEasy,
@@ -41,9 +41,9 @@ export const enemiesStats: EnemiesStats = {
       strafe: ENEMY.DELAYS.strafe * 0.7,
     },
     behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Commando,
+    textures: ENEMY_TEXTURES.Cowardice,
   },
-  [EnemyKind.Zombie]: {
+  [EnemyKind.SexualPerversions]: {
     hp: 5,
     onHitDamage: { min: 10, max: 40 },
     hurtChance: 0.0,
@@ -60,54 +60,6 @@ export const enemiesStats: EnemiesStats = {
       movement: ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT,
     },
     behaviorTreeRoot: kamikazeEnemySeq,
-    textures: ENEMY_TEXTURES.Zombie,
-  },
-  [EnemyKind.Slayer]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Slayer,
-  },
-  [EnemyKind.Tank]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Tank,
-  },
-  [EnemyKind.Soldier]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Soldier,
+    textures: ENEMY_TEXTURES.SexualPerversions,
   },
 };

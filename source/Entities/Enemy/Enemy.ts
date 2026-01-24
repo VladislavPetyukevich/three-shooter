@@ -3,7 +3,6 @@ import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { BehaviorTree, BehaviorTreeNode } from './BehaviorTree';
-import { RoomType } from './Factory/EnemyFactory';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -17,14 +16,8 @@ import { DeathAnimation } from '@/Animations/DeathAnimation';
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
-  walk3: string;
-  walk4: string;
   hurt: string;
   death1: string;
-  death2: string;
-  death3: string;
-  death4: string;
-  attack: string;
 }
 
 export interface EnemyGunProps {
@@ -47,7 +40,6 @@ export interface EnemyProps {
   audioListener: AudioListener;
   behaviorTreeRoot: BehaviorTreeNode;
   kind: EnemyKind;
-  roomType: RoomType;
   textures: EnemyTextures;
   hp: number;
   walkSpeed: number;
@@ -64,7 +56,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   container: EntitiesContainer;
   behaviorTree: BehaviorTree;
   kind: EnemyKind;
-  roomType: EnemyProps['roomType'];
   hp: number;
   isDead: boolean;
   onDeathCallbacks: OnDeathCallback[];
@@ -97,16 +88,12 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     );
     this.container = props.container;
     this.hp = props.hp;
-    this.roomType = props.roomType;
     this.velocity = velocity;
     this.isDead = false;
     this.behavior.gun.setBulletAuthor(this);
     this.onDeathCallbacks = [];
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
-    };
-    this.behavior.onAttackCallback = () => {
-      this.handleAttack();
     };
 
     this.behaviorTree = new BehaviorTree(
@@ -162,15 +149,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       spriteIndices: [5, 6, 7, 8],
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
-  }
-
-  handleAttack() {
-    this.addAnimation(new HurtAnimation({
-      actor: this.actor,
-      durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 9,
-      onEnd: () => this.onBusyEnd(),
-    }));
   }
 
   onCollide(entity: Entity) {

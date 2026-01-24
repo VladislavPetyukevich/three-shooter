@@ -20,7 +20,6 @@ import { WallSexualPerversions } from '@/Entities/Wall/Inheritor/WallSexualPerve
 import { WallNeutral } from '@/Entities/Wall/Inheritor/WallNeutral';
 import { Door } from '@/Entities/Door/Door';
 import { DoorWall } from '@/Entities/DoorWall/DoorWall';
-import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { Trigger } from '@/Entities/Trigger/Trigger';
 import { Torch } from '@/Entities/Torch/Torch';
 import {
@@ -31,6 +30,7 @@ import {
   DungeonRoom,
   WallRoomCell,
   DungeonRoomConstructor,
+  RoomType,
 } from '@/dungeon/DungeonRoom';
 import { CellCoordinates } from '@/scenes/CellCoordinates';
 import { EntitiesContainer } from '@/core/Entities/EntitiesContainer';
@@ -543,19 +543,6 @@ export class RoomSpawner {
     });
   }
 
-  getWallTextureFileName(roomType: RoomType) {
-    switch (roomType) {
-      case RoomType.Apathy:
-        return 'wallApathyTextureFile';
-      case RoomType.Cowardice:
-        return 'wallCowardiceTextureFile';
-      case RoomType.SexualPerversions:
-        return 'wallSPTextureFile';
-      default:
-        return 'wallTextureFile';
-    }
-  }
-
   spawnWall(coordinates: Vector2, size: Vector2, roomType: RoomType, withDecals: boolean, unbreakable?: boolean) {
     const isHorizontalWall = size.x > size.y;
     const props: WallProps = {
@@ -564,7 +551,7 @@ export class RoomSpawner {
       isHorizontalWall: isHorizontalWall,
       withDecals,
       unbreakable,
-      textureFileName: this.getWallTextureFileName(roomType),
+      textureFileName: 'wallTextureFile',
     };
     const WallConstructor = this.getWallConstructor(roomType);
     const wall = this.entitiesContainer.add(

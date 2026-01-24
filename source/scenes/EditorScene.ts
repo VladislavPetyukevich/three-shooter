@@ -3,7 +3,7 @@ import { ENTITY_TYPE } from '@/constants';
 import { EnemyKind, RoomCell, RoomCellEventType, RoomCellType } from '@/dungeon/DungeonRoom';
 import { TestSceneProps, TestScene } from './testScene';
 import { Room } from './Spawner/RoomSpawner';
-import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
+import { RoomType } from '@/dungeon/DungeonRoom';
 
 interface CellColors {
   border: string;
@@ -57,7 +57,7 @@ export class EditorScene extends TestScene {
     this.enableKey = '`';
     this.isEditorMode = false;
     this.currentEntityType = RoomCellType.Wall;
-    this.currentEnemyKind = EnemyKind.Flyguy;
+    this.currentEnemyKind = EnemyKind.Apathy;
     this.cellColors = {
       border: '#666',
       borderSelected: '#900',
@@ -364,12 +364,9 @@ export class EditorScene extends TestScene {
     const enemyKindSelect = document.createElement('select');
     enemyKindSelect.style.marginRight = '0.5rem';
     [
-      this.createOption('Flyguy', EnemyKind.Flyguy),
-      this.createOption('Commando', EnemyKind.Commando),
-      this.createOption('Zombie', EnemyKind.Zombie),
-      this.createOption('Slayer', EnemyKind.Slayer),
-      this.createOption('Tank', EnemyKind.Tank),
-      this.createOption('Soldier', EnemyKind.Soldier),
+      this.createOption('Apathy', EnemyKind.Apathy),
+      this.createOption('Cowardice', EnemyKind.Cowardice),
+      this.createOption('SexualPerversions', EnemyKind.SexualPerversions),
     ].forEach(option => enemyKindSelect.appendChild(option));
     enemyKindSelect.onchange = () => this.currentEnemyKind = +enemyKindSelect.value;
     enemyKindSelect.value = `${this.currentEnemyKind}`;

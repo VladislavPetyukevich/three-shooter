@@ -72,7 +72,7 @@ export const roomsCells: RoomConstructor['cells'][] = [
         "y": 2
       },
       "type": 0,
-      "kind": 4
+      "kind": 2
     },
     {
       "position": {
@@ -80,7 +80,7 @@ export const roomsCells: RoomConstructor['cells'][] = [
         "y": 2
       },
       "type": 0,
-      "kind": 4
+      "kind": 2
     },
     {
       "position": {

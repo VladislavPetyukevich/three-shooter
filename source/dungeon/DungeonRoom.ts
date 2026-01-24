@@ -1,14 +1,17 @@
 import { Entity } from '@/core/Entities/Entity';
-import { RoomType } from '@/Entities/Enemy/Factory/EnemyFactory';
 import { roomsCells } from './rooms';
 
+export const enum RoomType {
+  Neutral,
+  Apathy,
+  Cowardice,
+  SexualPerversions,
+}
+
 export const enum EnemyKind {
-  Flyguy,
-  Commando,
-  Zombie,
-  Slayer,
-  Tank,
-  Soldier,
+  Apathy,
+  Cowardice,
+  SexualPerversions,
 }
 
 export const enum RoomCellType {

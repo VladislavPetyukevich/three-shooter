@@ -13,13 +13,6 @@ import { enemiesStats } from './enemiesStats';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { AudioSlices } from '@/core/AudioSlices';
 
-export const enum RoomType {
-  Neutral,
-  Apathy,
-  Cowardice,
-  SexualPerversions,
-}
-
 interface Range {
   min: number;
   max: number;
@@ -47,7 +40,6 @@ export interface CreateEnemyProps {
   player: Player;
   container: EntitiesContainer;
   audioListener: AudioListener;
-  roomType: RoomType;
   dungeonLevel: number;
   kind: EnemyKind;
   audioSlices: AudioSlices<AudioSliceName>;
