@@ -45,7 +45,6 @@ export interface EnemyProps {
   walkSpeed: number;
   onHitDamage?: { min: number; max: number; };
   bulletsPerShoot: number;
-  hurtChance: number;
   delays: EnemyDelays;
   audioSlices: AudioSlices<AudioSliceName>;
 }
@@ -82,7 +81,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
         onHitDamage: props.onHitDamage,
-        hurtChance: props.hurtChance,
         audioSlices: props.audioSlices,
       })
     );
@@ -98,26 +96,35 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
     this.behaviorTree = new BehaviorTree(
       props.behaviorTreeRoot,
-      this.behavior
+      this.behavior,
+      this,
     );
     this.kind = props.kind;
   }
 
-  onHit(damage: number, entity?: Entity) {
-    if (entity?.type === ENTITY_TYPE.ENEMY) {
-      this.behavior.setFollowingEnemy(entity);
-    }
+  onHit(damage: number) {
     if (this.isDead) {
       return;
     }
     super.onHit(damage);
+    this.behavior.onHit();
     if (this.hp <= 0) {
       this.handleDeath();
       return;
-    } else if (!this.behavior.isBusy) {
-      this.behavior.onHit();
     }
     this.handleHurtAnimation();
+  }
+
+  onCollide(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.WALL || entity.type === ENTITY_TYPE.ENEMY) {
+      this.behavior.velocity.negate();
+      return false;
+    }
+    if (entity.type === ENTITY_TYPE.PLAYER) {
+      this.behavior.collidedPlayer = true;
+      return false;
+    }
+    return true;
   }
 
   handleHurtAnimation() {
@@ -125,7 +132,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.addAnimation(new HurtAnimation({
       actor: this.actor,
       durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 4,
+      hurtSpriteIndex: 3,
       onEnd: () => this.onBusyEnd(),
     }));
   }
@@ -140,26 +147,21 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
   handleDeath() {
     this.hp = 0;
+    this.behavior.onBusyStart();
     this.isDead = true;
-    this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
     this.addAnimation(new DeathAnimation({
       actor: this.actor,
       durationSeconds: ENEMY.DEATH_TIME_OUT,
-      spriteIndices: [5, 6, 7, 8],
+      spriteIndices: [3],
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
-  }
-
-  onCollide(entity: Entity) {
-    this.behavior.updateColidedEntity(entity);
-    return false;
   }
 
   onMessage(message: ENTITY_MESSAGES) {
     switch (message) {
       case ENTITY_MESSAGES.inPlayerGunpoint:
-        this.behavior.onPlayerGunpoint();
+        this.behavior.inPlayerGunpoint = true;
         break;
       default:
         break;
@@ -170,9 +172,10 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     super.update(delta);
     if (!this.isDead) {
       this.behaviorTree.update(delta);
-      this.behavior.updateColidedEntity(undefined);
     } else if (this.animations.length === 0) {
       this.container.remove(this.mesh);
     }
+    this.behavior.inPlayerGunpoint = false;
+    this.behavior.collidedPlayer = false;
   }
 }

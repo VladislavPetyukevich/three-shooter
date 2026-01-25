@@ -1,7 +1,7 @@
 import {
-  basicEnemySeq,
-  kamikazeEnemySeq,
-  longRangeEnemySeq,
+  apathyEnemyTree,
+  cowardiceEnemyTree,
+  sexualPerversionsEnemyTree,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
@@ -13,7 +13,6 @@ import { EnemyKind } from '@/dungeon/DungeonRoom';
 export const enemiesStats: EnemiesStats = {
   [EnemyKind.Apathy]: {
     hp: 20,
-    hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
     gunProps: {
       recoilTime: 0.5,
@@ -24,12 +23,11 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
       shoot: ENEMY.DELAYS.shoot * 0.7
     },
-    behaviorTreeRoot: basicEnemySeq,
+    behaviorTreeRoot: apathyEnemyTree,
     textures: ENEMY_TEXTURES.Apathy,
   },
   [EnemyKind.Cowardice]: {
     hp: 30,
-    hurtChance: 0.66,
     BulletClass: BulletFastEasy,
     gunProps: {
       recoilTime: 0.01,
@@ -40,13 +38,12 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
       strafe: ENEMY.DELAYS.strafe * 0.7,
     },
-    behaviorTreeRoot: longRangeEnemySeq,
+    behaviorTreeRoot: cowardiceEnemyTree,
     textures: ENEMY_TEXTURES.Cowardice,
   },
   [EnemyKind.SexualPerversions]: {
     hp: 5,
     onHitDamage: { min: 10, max: 40 },
-    hurtChance: 0.0,
     BulletClass: BulletSlowMeidum,
     gunProps: {
       recoilTime: 0.1,
@@ -59,7 +56,7 @@ export const enemiesStats: EnemiesStats = {
       gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
       movement: ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT,
     },
-    behaviorTreeRoot: kamikazeEnemySeq,
+    behaviorTreeRoot: sexualPerversionsEnemyTree,
     textures: ENEMY_TEXTURES.SexualPerversions,
   },
 };

@@ -1,12 +1,13 @@
+import { Enemy } from './Enemy';
 import { EnemyBehavior } from './EnemyBehavior';
 
 export type FunctionNode =
-  (behavior: EnemyBehavior, delta: number) => boolean;
+  (behavior: EnemyBehavior, delta: number, enemy: Enemy) => boolean;
 
 export interface ControlFlowNode {
   condition: FunctionNode;
   nodeTrue: BehaviorTreeNode;
-  nodeFalse: BehaviorTreeNode;
+  nodeFalse?: BehaviorTreeNode;
 }
 
 export interface SequenceNode {
@@ -22,15 +23,19 @@ export class BehaviorTree {
   constructor(
     private root: BehaviorTreeNode,
     private enemyBehavior: EnemyBehavior,
+    private enemy: Enemy,
   ) { }
 
   updateFunctionNode(node: FunctionNode, delta: number) {
-    return node(this.enemyBehavior, delta);
+    return node(this.enemyBehavior, delta, this.enemy);
   }
 
   updateControlFlowNode(node: ControlFlowNode, delta: number): boolean {
     const condition = this.updateFunctionNode(node.condition, delta);
     const nodeToUpdate = condition ? node.nodeTrue : node.nodeFalse;
+    if (!nodeToUpdate) {
+      return true;
+    }
     return this.updateNode(nodeToUpdate, delta);
   }
 

@@ -1,5 +1,5 @@
 import { Vector2, Vector3, AudioListener, PositionalAudio, Raycaster, Audio } from 'three';
-import { ENTITY_TYPE, ENEMY, PI_180 } from '@/constants';
+import { ENEMY } from '@/constants';
 import { Entity } from '@/core/Entities/Entity';
 import { Behavior } from '@/core/Entities/Behavior';
 import { Player } from '@/Entities/Player/Player';
@@ -25,7 +25,6 @@ interface BehaviorProps {
   walkSpeed: number;
   bulletsPerShoot: number;
   onHitDamage?: { min: number; max: number; };
-  hurtChance: number;
   delays: {
     shoot: number;
     gunpointStrafe: number,
@@ -36,11 +35,13 @@ interface BehaviorProps {
 }
 
 type TimeoutNames =
+  'findPathToPlayer' |
   'shoot' |
   'hurt' |
   'movement' |
   'strafe' |
-  'gunpointStrafe';
+  'gunpointStrafe' |
+  'thinkPause';
 
 export class EnemyBehavior implements Behavior {
   player: Player;
@@ -52,12 +53,7 @@ export class EnemyBehavior implements Behavior {
   raycaster: Raycaster;
   followingPath: Vector2[];
   followingPoint?: Vector2;
-  followingEnemy?: Entity;
-  collidedEntity?: Entity;
   actor: EnemyActor;
-  currentStrafeAngle: number;
-  strafeAngleLow: number;
-  strafeAngleHigh: number;
   container: EntitiesContainer;
   currentWalkSprite: number;
   currentTitleDisplayTime: number;
@@ -65,13 +61,14 @@ export class EnemyBehavior implements Behavior {
   bulletsPerShoot: number;
   currentBulletsToShoot: number;
   isBusy: boolean;
-  hurtChance: number;
   timeoutsManager: TimeoutsManager<TimeoutNames>;
   isGunpointTriggered: boolean;
   isOnGunpointCurrent: boolean;
   audioSlices: AudioSlices<AudioSliceName>;
   spawnSound: PositionalAudio;
   hitSound: Audio;
+  inPlayerGunpoint: boolean;
+  collidedPlayer: boolean;
   onHitDamage?: { min: number; max: number; };
   onDeathCallback?: () => void;
 
@@ -98,32 +95,32 @@ export class EnemyBehavior implements Behavior {
     this.currentWalkSprite = 0;
     this.currentTitleDisplayTime = 0;
     this.container = props.container;
-    this.currentStrafeAngle = 0;
-    this.strafeAngleLow = 22.5; // (90 / 2) - (90 / 4)
-    this.strafeAngleHigh = 88.8;
     this.walkSpeed = props.walkSpeed;
     this.bulletsPerShoot = props.bulletsPerShoot;
     this.currentBulletsToShoot = 0;
     this.isBusy = false;
-    this.hurtChance = props.hurtChance;
     this.isGunpointTriggered = false;
     this.isOnGunpointCurrent = false;
+    this.inPlayerGunpoint = false;
+    this.collidedPlayer = false;
     const timeoutValues = {
+      findPathToPlayer: ENEMY.FIND_PATH_TO_PLAYER_TIME_OUT,
       shoot: ENEMY.SHOOT_TIME_OUT,
       hurt: ENEMY.HURT_TIME_OUT,
       movement: props.delays.movement,
       strafe: props.delays.strafe,
       gunpointStrafe: props.delays.gunpointStrafe,
+      thinkPause: ENEMY.THINK_PAUSE_TIME_OUT,
     };
     this.timeoutsManager = new TimeoutsManager(timeoutValues);
     this.timeoutsManager.expireAllTimeOuts();
     this.audioSlices = props.audioSlices;
     this.spawnSound = new PositionalAudio(props.audioListener);
-    this.audioSlices.loadSliceToAudio('spawn' ,this.spawnSound);
+    this.audioSlices.loadSliceToAudio('spawn', this.spawnSound);
     this.actor.mesh.add(this.spawnSound);
     this.spawnSound.setRefDistance(2);
     this.hitSound = new Audio(props.audioListener);
-    this.audioSlices.loadSliceToAudio('hit' ,this.hitSound);
+    this.audioSlices.loadSliceToAudio('hit', this.hitSound);
     this.actor.mesh.add(this.hitSound);
     this.playSpawnSound();
     this.onHitDamage = props.onHitDamage;
@@ -152,7 +149,6 @@ export class EnemyBehavior implements Behavior {
   }
 
   shoot() {
-    this.onBusyStart();
     this.gun.shoot();
   }
 
@@ -164,10 +160,6 @@ export class EnemyBehavior implements Behavior {
 
   onHit() {
     this.playHitSound();
-    if (randomNumbers.getRandom() > this.hurtChance) {
-      return;
-    }
-    this.onBusyStart();
   }
 
   randomMovement() {
@@ -184,51 +176,15 @@ export class EnemyBehavior implements Behavior {
     return (randomNumbers.getRandom() > 0.5) ? randomVal : -randomVal;
   }
 
-  randomStrafe(angleDegrees: number) {
-    const strafeAngle = this.randomStrafeRotation(angleDegrees) * PI_180;
-    if (strafeAngle === this.currentStrafeAngle) {
-      return;
-    }
-    const angle = strafeAngle - this.currentStrafeAngle;
-    this.velocity.set(
-      this.velocity.x * Math.cos(angle) - this.velocity.z * Math.sin(angle),
-      0,
-      this.velocity.x * Math.sin(angle) + this.velocity.z * Math.cos(angle),
-    );
-  }
-
-  randomStrafeRotation(angleDegrees: number) {
-    const randValue = randomNumbers.getRandom();
-    if (randValue < 0.5) {
-      return -angleDegrees;
-    }
-    return angleDegrees;
-  }
-
-  updateColidedEntity(entity?: Entity) {
-    this.collidedEntity = entity;
-  }
-
-  onPlayerGunpoint() {
-    if (this.isGunpointTriggered) {
-      this.isOnGunpointCurrent = true;
-    } else {
-      this.isGunpointTriggered = true;
-      this.isOnGunpointCurrent = false;
-    }
-  }
-
-  findPathToEntity(entity: Entity) {
-    if (this.followingPath.length) {
-      return;
-    }
-    this.velocity.set(0, 0, 0);
-    const pathToEntity = this.container.pathfinder.getPathBetweenEntities(
+  findPathToPlayer() {
+    const pathToPlayer = this.container.pathfinder.getPathBetweenEntities(
       this.actor.mesh.id,
-      entity.mesh.id
+      this.player.mesh.id
     );
-    if (pathToEntity) {
-      this.followingPath = pathToEntity;
+    if (pathToPlayer) {
+      this.followingPath = pathToPlayer;
+      this.setNextFollowPathPoint();
+      this.moveFollowPath();
     } else {
       this.followingPath = [];
       this.followingPoint = undefined;
@@ -236,27 +192,27 @@ export class EnemyBehavior implements Behavior {
     }
   }
 
-  velocityToEntity(entity: Entity) {
-    if (entity.type === ENTITY_TYPE.PLAYER) {
-      this.velocity.set(
-        Math.sin(this.actor.mesh.rotation.y) * this.walkSpeed,
-        0,
-        Math.cos(this.actor.mesh.rotation.y) * this.walkSpeed
-      );
-    } else {
-      this.velocityToPoint(
-        new Vector2(
-          entity.mesh.position.x,
-          entity.mesh.position.z
-        )
-      );
-    }
+  velocityToPlayer() {
+    this.velocity.set(
+      Math.sin(this.actor.meshInner.rotation.y) * this.walkSpeed,
+      0,
+      Math.cos(this.actor.meshInner.rotation.y) * this.walkSpeed
+    );
   }
 
-  setFollowingEnemy(entity: Entity) {
-    this.followingEnemy = entity;
-    this.followingPath = [];
-    this.followingPoint = undefined;
+  getDistanceToPlayer() {
+    return this.getDistanceToEntity(this.player);
+  }
+
+  getDistanceToEntity(entity: Entity) {
+    const diffX = this.actor.mesh.position.x - entity.mesh.position.x;
+    const diffZ = this.actor.mesh.position.z - entity.mesh.position.z;
+    return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
+  }
+
+  update(delta: number) {
+    this.gun.update(delta);
+    this.updateWalkSprite(delta);
   }
 
   updateWalkSprite(delta: number) {
@@ -267,95 +223,17 @@ export class EnemyBehavior implements Behavior {
     if (this.currentTitleDisplayTime < 0.6) {
       return;
     }
-    this.currentWalkSprite = (this.currentWalkSprite + 1) % 4;
+    this.currentWalkSprite = (this.currentWalkSprite + 1) % 2;
     this.actor.spriteSheet.displaySprite(this.currentWalkSprite);
     this.currentTitleDisplayTime = 0;
   }
 
-  getDistanceToEntity(entity: Entity) {
-    const diffX = this.actor.mesh.position.x - entity.mesh.position.x;
-    const diffZ = this.actor.mesh.position.z - entity.mesh.position.z;
-    return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffZ, 2));
-  }
-
-  checkIsFollowingEnemyInAttackDistance(min: number, max: number) {
-    if (!this.followingEnemy) {
-      return false;
-    }
-    const distanceToPlayer = this.getDistanceToEntity(this.followingEnemy);
-    return (
-      (distanceToPlayer > min) &&
-      (distanceToPlayer < max)
-    );
-  }
-
-  update(delta: number) {
-    this.gun.update(delta);
-    this.updateWalkSprite(delta);
-    this.updateMovement(delta);
-  }
-
-  getDirectionToFollowingEntity() {
-    if (!this.followingEnemy) {
-      return;
-    }
-    if (this.followingEnemy.type === ENTITY_TYPE.PLAYER) {
-      const directionToPlayer = new Vector3();
-      this.actor.mesh.getWorldDirection(directionToPlayer);
-      return directionToPlayer;
-    } else {
-      const directionToEntity =
-        this.directionToPoint(
-          new Vector2(
-            this.followingEnemy.actor.mesh.position.x,
-            this.followingEnemy.actor.mesh.position.z
-          )
-        );
-      return directionToEntity;
-    }
-  }
-
-  updateMovement(delta: number) {
-    if (!this.followingEnemy) {
-      return;
-    }
-    this.timeoutsManager.updateTimeOut('movement', delta);
-    if (!this.timeoutsManager.checkIsTimeOutExpired('movement')) {
-      return;
-    }
-    this.timeoutsManager.updateExpiredTimeOut('movement');
-    if (this.followingPath.length !== 0) {
-      this.updateFollowPath();
-      return;
-    }
-
-    const directionToFollowingEntity = this.getDirectionToFollowingEntity();
-    if (!directionToFollowingEntity) {
-      return;
-    }
-    this.raycaster.set(
-      this.actor.mesh.position,
-      directionToFollowingEntity
-    );
-    const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes);
-    const entityIndex = intersectObjects.findIndex(intersect =>
-      this.followingEnemy &&
-      intersect.object.uuid === this.followingEnemy.mesh.uuid
-    );
-    if (entityIndex === 0) {
-      this.velocityToEntity(this.followingEnemy);
-    } else {
-      this.findPathToEntity(this.followingEnemy);
-    }
-  }
-
-  updateFollowPoint() {
+  setNextFollowPathPoint() {
     this.followingPoint = this.followingPath.shift();
   }
 
-  updateFollowPath() {
+  moveFollowPath() {
     if (!this.followingPoint) {
-      this.updateFollowPoint();
       return;
     }
     const diffX = Math.abs(this.actor.mesh.position.x - this.followingPoint.x);
@@ -364,7 +242,8 @@ export class EnemyBehavior implements Behavior {
       (diffX < 1) &&
       (diffY < 1)
     ) {
-      this.updateFollowPoint();
+      this.setNextFollowPathPoint();
+      this.moveFollowPath();
       return;
     }
     this.velocityToPoint(this.followingPoint);
@@ -385,21 +264,7 @@ export class EnemyBehavior implements Behavior {
   }
 
   updateGun() {
-    if (!this.followingEnemy) {
-      return;
-    }
-    const followingEnemyMesh = this.followingEnemy.actor.mesh;
-    if (this.followingEnemy.type === ENTITY_TYPE.PLAYER) {
-      this.gun.setRotationY(this.actor.mesh.rotation.y);
-    } else {
-      this.gun.setRotationY(
-        Math.atan2(
-          (followingEnemyMesh.position.x - this.actor.mesh.position.x),
-          (followingEnemyMesh.position.z - this.actor.mesh.position.z)
-        )
-      );
-    }
+    this.gun.setRotationY(this.actor.meshInner.rotation.y);
     this.gun.setPosition(this.actor.mesh.position);
   }
 }
-
