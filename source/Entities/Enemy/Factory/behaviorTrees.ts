@@ -68,12 +68,17 @@ const apathyAttackSequence: BehaviorTreeNode = {
   sequence: [attackNode, randomStrafeNode],
 };
 
-const apathyAttackCond: BehaviorTreeNode = {
-  condition: (behavior: EnemyBehavior) =>
-    behavior.getDistanceToPlayer() < ENEMY.ATTACK_DISTANCE,
-  nodeTrue: apathyAttackSequence,
-  nodeFalse: followPlayerNode,
+const createAttackCond = (distance: number) => {
+  return {
+    condition: (behavior: EnemyBehavior) =>
+      behavior.getDistanceToPlayer() < distance,
+    nodeTrue: apathyAttackSequence,
+    nodeFalse: followPlayerNode,
+  };
 };
+
+const apathyAttackCond: BehaviorTreeNode = createAttackCond(ENEMY.ATTACK_DISTANCE);
+const cowardiceAttackCond: BehaviorTreeNode = createAttackCond(ENEMY.ATTACK_DISTANCE_LONG_RANGE);
 
 const collidedPlayerNode: BehaviorTreeNode = (behavior: EnemyBehavior, _, enemy: Enemy) => {
   if (behavior.collidedPlayer) {
@@ -101,6 +106,10 @@ const followPlayerAndStrafeCond: BehaviorTreeNode = {
 
 export const apathyEnemyTree: BehaviorTreeNode = {
   sequence: [busyNode, apathyAttackCond],
+};
+
+export const cowardiceEnemyTree: BehaviorTreeNode = {
+  sequence: [busyNode, cowardiceAttackCond],
 };
 
 export const sexualPerversionsEnemyTree: BehaviorTreeNode = {
