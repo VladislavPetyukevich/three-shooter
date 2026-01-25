@@ -223,7 +223,7 @@ export class EnemyBehavior implements Behavior {
     if (this.currentTitleDisplayTime < 0.6) {
       return;
     }
-    this.currentWalkSprite = (this.currentWalkSprite + 1) % 4;
+    this.currentWalkSprite = (this.currentWalkSprite + 1) % 2;
     this.actor.spriteSheet.displaySprite(this.currentWalkSprite);
     this.currentTitleDisplayTime = 0;
   }
