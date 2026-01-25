@@ -1,5 +1,6 @@
 import {
   apathyEnemyTree,
+  cowardiceEnemyTree,
   sexualPerversionsEnemyTree,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
@@ -37,7 +38,7 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
       strafe: ENEMY.DELAYS.strafe * 0.7,
     },
-    behaviorTreeRoot: apathyEnemyTree,
+    behaviorTreeRoot: cowardiceEnemyTree,
     textures: ENEMY_TEXTURES.Cowardice,
   },
   [EnemyKind.SexualPerversions]: {
