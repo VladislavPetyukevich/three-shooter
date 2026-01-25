@@ -89,8 +89,8 @@ export class ControlledBehavior implements Behavior {
     this.checkGunPointTimeoutCurrent = this.checkGunPointTimeout;
     this.bobTimeout = 0;
     this.maxBobTimeout = 0.001;
-    this.cameraRecoil= 0.035;
-    this.isCameraRecoil= false;
+    this.cameraRecoil = 0.035;
+    this.isCameraRecoil = false;
     this.actor = props.actor;
     this.eyeY = props.eyeY;
     this.camera = props.camera;
@@ -469,7 +469,7 @@ export class ControlledBehavior implements Behavior {
     this.checkGunPointTimeoutCurrent = this.checkGunPointTimeout;
     const direction = new Vector3();
     this.camera.getWorldDirection(direction);
-    this.raycaster.set(this.camera.position, direction);
+    this.raycaster.set(this.actor.mesh.position, direction);
     const intersectObjects = this.raycaster.intersectObjects(this.container.entitiesMeshes, false);
     const firstIntersection = intersectObjects[0];
     if (!firstIntersection) {

@@ -21,7 +21,6 @@ interface Range {
 interface EnemyKindStats {
   hp: number;
   onHitDamage?: Range;
-  hurtChance: number;
   BulletClass: typeof Bullet;
   gunProps: EnemyGunProps;
   bulletsPerShoot: number;
