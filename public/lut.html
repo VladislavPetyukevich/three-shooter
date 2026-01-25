@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LUT Generator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #222;
+        color: #fff;
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      h1 {
+        margin-bottom: 20px;
+      }
+      
+      .controls {
+        background: #333;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .control-group {
+        margin-bottom: 15px;
+      }
+      
+      label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+      }
+      
+      input[type="color"] {
+        width: 60px;
+        height: 30px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      input[type="number"] {
+        width: 80px;
+        padding: 5px;
+        background: #444;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 4px;
+      }
+      
+      input[type="text"].hex-input {
+        width: 100px;
+        padding: 5px 8px;
+        background: #444;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 13px;
+      }
+      
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 14px;
+      }
+      
+      button:hover {
+        background: #0056b3;
+      }
+      
+      button.secondary {
+        background: #28a745;
+      }
+      
+      button.secondary:hover {
+        background: #218838;
+      }
+      
+      .palette-container {
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .palette-color {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .canvas-container {
+        background: #333;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+      
+      #lut-canvas {
+        border: 2px solid #555;
+        image-rendering: pixelated;
+        max-width: 100%;
+        height: auto;
+      }
+      
+      .info {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>LUT Generator (1024x32)</h1>
+      
+      <div class="controls">
+        <h2>Color Palette</h2>
+        <div id="palette-container" class="palette-container"></div>
+        <div class="control-group">
+          <button onclick="addColor()">Add Color</button>
+          <button class="secondary" onclick="generateLUT()">Generate LUT</button>
+          <button class="secondary" onclick="downloadLUT()">Download LUT</button>
+        </div>
+        
+        <div class="control-group">
+          <label>Preset Palettes:</label>
+          <button onclick="loadPreset('retro')">Retro</button>
+          <button onclick="loadPreset('grayscale')">Grayscale</button>
+          <button onclick="loadPreset('warm')">Warm</button>
+          <button onclick="loadPreset('cool')">Cool</button>
+          <button onclick="loadPreset('neon')">Neon</button>
+        </div>
+      </div>
+      
+      <div class="canvas-container">
+        <canvas id="lut-canvas" width="1024" height="32"></canvas>
+        <div class="info">LUT Image: 1024x32 pixels (scaled for display)</div>
+      </div>
+    </div>
+    
+    <script>
+      const canvas = document.getElementById('lut-canvas');
+      const ctx = canvas.getContext('2d');
+      
+      let palette = [
+        '#000000',
+        '#ff0000',
+        '#ffff00',
+        '#ffffff'
+      ];
+      
+      function renderPalette() {
+        const container = document.getElementById('palette-container');
+        container.innerHTML = '';
+        
+        palette.forEach((color, index) => {
+          const div = document.createElement('div');
+          div.className = 'palette-color';
+          
+          const input = document.createElement('input');
+          input.type = 'color';
+          input.value = color;
+          input.onchange = (e) => {
+            palette[index] = e.target.value;
+            hexInput.value = e.target.value;
+            generateLUT();
+          };
+          
+          const hexInput = document.createElement('input');
+          hexInput.type = 'text';
+          hexInput.className = 'hex-input';
+          hexInput.value = color;
+          hexInput.placeholder = '#000000';
+          hexInput.onchange = (e) => {
+            let value = e.target.value.trim();
+            
+            // Add # if missing
+            if (!value.startsWith('#')) {
+              value = '#' + value;
+            }
+            
+            // Validate hex color
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+              palette[index] = value;
+              input.value = value;
+              hexInput.value = value;
+              generateLUT();
+            } else {
+              // Invalid hex, revert to current color
+              hexInput.value = palette[index];
+              alert('Invalid hex color. Use format: #RRGGBB');
+            }
+          };
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = 'Remove';
+          removeBtn.style.background = '#dc3545';
+          removeBtn.onclick = () => {
+            if (palette.length > 2) {
+              palette.splice(index, 1);
+              renderPalette();
+              generateLUT();
+            } else {
+              alert('Must have at least 2 colors');
+            }
+          };
+          
+          div.appendChild(input);
+          div.appendChild(hexInput);
+          div.appendChild(document.createTextNode(`Color ${index + 1}`));
+          div.appendChild(removeBtn);
+          container.appendChild(div);
+        });
+      }
+      
+      function addColor() {
+        palette.push('#ffffff');
+        renderPalette();
+        generateLUT();
+      }
+      
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      }
+      
+      function rgbToHex(r, g, b) {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      }
+      
+      function interpolateColor(color1, color2, factor) {
+        const c1 = hexToRgb(color1);
+        const c2 = hexToRgb(color2);
+        
+        const r = Math.round(c1.r + (c2.r - c1.r) * factor);
+        const g = Math.round(c1.g + (c2.g - c1.g) * factor);
+        const b = Math.round(c1.b + (c2.b - c1.b) * factor);
+        
+        return { r, g, b };
+      }
+      
+      function findNearestColor(r, g, b) {
+        let minDistance = Infinity;
+        let nearestColor = palette[0];
+        
+        for (const hexColor of palette) {
+          const paletteRgb = hexToRgb(hexColor);
+          
+          // Calculate Euclidean distance in RGB space
+          const dr = r - paletteRgb.r;
+          const dg = g - paletteRgb.g;
+          const db = b - paletteRgb.b;
+          const distance = dr * dr + dg * dg + db * db;
+          
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearestColor = hexColor;
+          }
+        }
+        
+        return hexToRgb(nearestColor);
+      }
+      
+      function generateLUT() {
+        const width = 1024;
+        const height = 32;
+        const imageData = ctx.createImageData(width, height);
+        const data = imageData.data;
+        
+        // Generate LUT by mapping normal RGB colors to nearest palette colors
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const index = (y * width + x) * 4;
+            
+            // Generate "normal" RGB color for this position
+            // Map x and y to RGB space
+            // For 1024x32: we can map this as 32x32x32 cube flattened
+            // x goes from 0-1023, y goes from 0-31
+            
+            // Method: treat 1024x32 as representing RGB cube
+            // 32 blue levels (y-axis)
+            // 32x32 = 1024 red-green combinations (x-axis)
+            const blueLevel = y / (height - 1);
+            const redGreenIndex = x;
+            const redLevel = Math.floor(redGreenIndex / 32) / 31;
+            const greenLevel = (redGreenIndex % 32) / 31;
+            
+            // Convert to 0-255 range
+            const normalR = Math.round(redLevel * 255);
+            const normalG = Math.round(greenLevel * 255);
+            const normalB = Math.round(blueLevel * 255);
+            
+            // Find nearest color in palette
+            const nearest = findNearestColor(normalR, normalG, normalB);
+            
+            data[index] = nearest.r;
+            data[index + 1] = nearest.g;
+            data[index + 2] = nearest.b;
+            data[index + 3] = 255; // Alpha
+          }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+      }
+      
+      function downloadLUT() {
+        const link = document.createElement('a');
+        link.download = 'lut-1024x32.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+      
+      function loadPreset(preset) {
+        switch(preset) {
+          case 'retro':
+            palette = ['#000000', '#8b4513', '#ff6347', '#ffd700', '#f0e68c'];
+            break;
+          case 'grayscale':
+            palette = ['#000000', '#808080', '#ffffff'];
+            break;
+          case 'warm':
+            palette = ['#1a0000', '#8b0000', '#ff4500', '#ffa500', '#ffff00'];
+            break;
+          case 'cool':
+            palette = ['#000033', '#0000ff', '#00ffff', '#ffffff'];
+            break;
+          case 'neon':
+            palette = ['#000000', '#ff00ff', '#00ffff', '#ffff00', '#ff0000'];
+            break;
+        }
+        renderPalette();
+        generateLUT();
+      }
+      
+      // Initialize
+      renderPalette();
+      generateLUT();
+    </script>
+  </body>
+</html>
