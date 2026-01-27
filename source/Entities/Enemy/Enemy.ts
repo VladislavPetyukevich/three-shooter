@@ -12,6 +12,7 @@ import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { AudioSlices } from '@/core/AudioSlices';
 import { AudioSliceName } from '@/constantsAssets';
 import { DeathAnimation } from '@/Animations/DeathAnimation';
+import { HitParticles } from '@/Entities/HitParticles/HitParticles';
 
 export interface EnemyTextures {
   walk1: string;
@@ -108,6 +109,16 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     }
     super.onHit(damage);
     this.behavior.onHit();
+    
+    // Spawn hit particles at enemy position
+    const particlePosition = this.mesh.position.clone();
+    particlePosition.y += 0.5; // Slightly above center of enemy
+    const hitParticles = new HitParticles({
+      position: particlePosition,
+      container: this.container,
+    });
+    this.container.add(hitParticles);
+    
     if (this.hp <= 0) {
       this.handleDeath();
       return;
