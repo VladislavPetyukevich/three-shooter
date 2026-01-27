@@ -13,6 +13,7 @@ import { AudioSlices } from '@/core/AudioSlices';
 import { AudioSliceName } from '@/constantsAssets';
 import { DeathAnimation } from '@/Animations/DeathAnimation';
 import { HitParticles } from '@/Entities/HitParticles/HitParticles';
+import { SpawnAnimation } from '@/Animations/SpawnAnimation';
 
 export interface EnemyTextures {
   walk1: string;
@@ -101,6 +102,9 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       this,
     );
     this.kind = props.kind;
+
+    // Start with spawn animation
+    this.handleSpawnAnimation();
   }
 
   onHit(damage: number) {
@@ -136,6 +140,13 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
       return false;
     }
     return true;
+  }
+
+  handleSpawnAnimation() {
+    this.addAnimation(new SpawnAnimation({
+      actor: this.actor,
+      durationSeconds: ENEMY.SPAWN_TIME_OUT,
+    }));
   }
 
   handleHurtAnimation() {
