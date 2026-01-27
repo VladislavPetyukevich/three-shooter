@@ -1,15 +1,13 @@
 import assert from 'assert';
-import { RandomNumbers } from '../../source/RandomNumbers';
 import {
   DungeonRoom,
   EnemyRoomCell,
   RoomCellType,
 } from '../../source/dungeon/DungeonRoom';
-import { RANDOM_NUMBERS_COUNT, roomSize } from '../../source/constants';
 
 interface ScoreSubmit {
   name: string;
-  logs: number[][];
+  logs: number[];
 }
 
 const parseScoreBody = async (request: Request): Promise<ScoreSubmit> => {
@@ -27,66 +25,50 @@ const parseScoreBody = async (request: Request): Promise<ScoreSubmit> => {
   for (let i = bodyJSON.logs.length; i--;) {
     const logItem = bodyJSON.logs[i];
     assert.equal(
-      Array.isArray(logItem),
-      true,
-      'Logs must be an array of arrays'
+      typeof logItem,
+      'number',
+      'Log item must be a number'
     );
-    for (let j = logItem.length; j--;) {
-      const logItemItem = logItem[j];
-      assert.equal(
-        typeof logItemItem,
-        'number',
-        'Logs must be an array of number arrays'
-      );
-    }
   }
   return bodyJSON;
 };
 
-const compareItems = (a: number[], b: number[]) =>
-  a.every((element, index) => element === b[index]);
+const checkIsFairRoom = (logsForRoom: number[], roomEnemies: number[]) => {
+  const roomEnemiesRemaining = [...roomEnemies];
+  for (let i = logsForRoom.length; i--;) {
+    const logItem = logsForRoom[i];
+    const index = roomEnemiesRemaining.indexOf(logItem);
+    if (index === -1) {
+      return false;
+    }
+    roomEnemiesRemaining.splice(index, 1);
+  }
+  return true;
+}
 
-const calcScore = (logs: number[][]) =>
-  logs.slice(1).reduce((acc, log) => acc + log.length, 0);
+const checkIsFairLog = (log: number[]) => {
+  const dungeonRoom = new DungeonRoom();
+  let currentRoom = dungeonRoom.getNextDungeonRoomConstructor();
+  let currentLogIndex = 0;
+  while (currentLogIndex < log.length) {
+    const currentRoomConstructor = currentRoom.constructor;
+    const enemiesInCurrentRoom = currentRoomConstructor.cells.filter(cell => cell.type === RoomCellType.Enemy).map(cell => (cell as EnemyRoomCell).kind);
+    const roomInLog = log.slice(currentLogIndex, currentLogIndex + enemiesInCurrentRoom.length);
+    currentLogIndex += enemiesInCurrentRoom.length;
+    currentRoom = dungeonRoom.getNextDungeonRoomConstructor();
+    const roomFailed = !checkIsFairRoom(roomInLog, enemiesInCurrentRoom);
+    if (roomFailed) {
+      return false;
+    }
+  }
+  return true;
+};
 
 export const submitScore = async (req: Request) => {
   const scoreBody = await parseScoreBody(req);
-  const seed = scoreBody.logs[0][0];
-  const randomNumbers = new RandomNumbers(
-    RANDOM_NUMBERS_COUNT,
-    seed,
-  );
-  const dungeonRoom = new DungeonRoom();
-  dungeonRoom.randomNumbersGenerator = randomNumbers;
-  const isFairRoomChoise = scoreBody.logs.every((logItem, index, logs) => {
-    if (index === 0) {
-      return true;
-    }
-    const roomIndices = Array.from(
-      { length: 3 },
-      () => dungeonRoom.getRandomRoomConstructorIndex(),
-    );
-    const fairRoomChoise = roomIndices.indexOf(logItem[0]) !== -1;
-    if (!fairRoomChoise) {
-      return fairRoomChoise;
-    }
-    const roomConstructor = dungeonRoom.getRoomConstructor(logItem[0]);
-    const roomEnemiesKind = roomConstructor(roomSize)
-      .filter(cell => cell.type === RoomCellType.Enemy)
-      .map(cell => (cell as EnemyRoomCell).kind);
-    if (
-      (logItem.length - 1 !== roomEnemiesKind.length) &&
-      (index !== logs.length - 1)
-    ) {
-      return false;
-    }
-    const fairKills = compareItems(
-      logItem.slice(1).sort(),
-      roomEnemiesKind.sort()
-    );
-    return fairKills;
-  });
 
-  const score = isFairRoomChoise ? calcScore(scoreBody.logs) : 0;
+  const isFairLog = checkIsFairLog(scoreBody.logs);
+
+  const score = isFairLog ? scoreBody.logs.length : 0;
   return new Response(JSON.stringify({ score }));
 }
