@@ -18,6 +18,7 @@ export const enum ENTITY_TYPE {
   TRIGGER = 'TRIGGER',
   GUN_PICK_UP = 'GUN_PICK_UP',
   ENEMY_SPAWNER = 'ENEMY_SPAWNER',
+  HIT_PARTICLES = 'HIT_PARTICLES',
 };
 
 const createColor = (r: number, g: number, b: number) => {
