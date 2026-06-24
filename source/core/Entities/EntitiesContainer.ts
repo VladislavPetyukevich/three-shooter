@@ -19,7 +19,7 @@ export class EntitiesContainer {
     this.entitiesMeshes = [];
     this.meshIdToEntity = new Map();
     this.collideChecker = new CollideChecker2d({ cellSize: 5 });
-    this.collideCheckerRaycast = new CollideCheckerRaycast(this.scene);
+    this.collideCheckerRaycast = new CollideCheckerRaycast(this.entitiesMeshes);
     this.pathfinder = new Pathfinder2d({ entitiesContainer: this });
   }
 
@@ -104,7 +104,7 @@ export class EntitiesContainer {
         return;
       }
       const colidedEntity = this.meshIdToEntity.get(meshId);
-      if (!colidedEntity) {
+      if (!colidedEntity || colidedEntity.isCollideTransparent) {
         return;
       }
       collisionsResult.push(colidedEntity);

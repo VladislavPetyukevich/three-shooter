@@ -1,14 +1,14 @@
-import { Scene, Raycaster, Vector3 } from 'three';
+import { Mesh, Raycaster, Vector3 } from 'three';
 import { Entity } from './Entity';
 
 export class CollideCheckerRaycast {
-  scene: Scene;
+  entitiesMeshes: Mesh[];
   raycaster: Raycaster;
   direction: Vector3;
   far: Vector3;
 
-  constructor(scene: Scene) {
-    this.scene = scene;
+  constructor(entitiesMeshes: Mesh[]) {
+    this.entitiesMeshes = entitiesMeshes;
     this.raycaster = new Raycaster();
     this.direction = new Vector3();
     this.far = new Vector3();
@@ -21,8 +21,6 @@ export class CollideCheckerRaycast {
       this.direction.subVectors(newPosition, originPosition).normalize()
     );
     this.raycaster.far = this.far.subVectors(newPosition, originPosition).length();
-    const intersects = this.raycaster.intersectObjects(this.scene.children);
-    return intersects;
+    return this.raycaster.intersectObjects(this.entitiesMeshes, false);
   }
 }
-

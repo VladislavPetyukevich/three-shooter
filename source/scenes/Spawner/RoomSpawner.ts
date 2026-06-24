@@ -289,6 +289,8 @@ export class RoomSpawner {
       return;
     }
     this.scene.scene.remove(room.floor);
+    room.floor.geometry.dispose();
+    (room.floor.material as MeshLambertMaterial).dispose();
     room.walls.forEach(wall =>
       this.entitiesContainer.remove(wall.mesh)
     );
@@ -375,7 +377,6 @@ export class RoomSpawner {
       0,
       floorPosition.y
     );
-    floorMesh.receiveShadow = true;
     this.scene.scene.add(floorMesh);
     return floorMesh;
   }

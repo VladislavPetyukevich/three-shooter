@@ -83,7 +83,7 @@ export class ShootTraceActor implements Actor {
   }
 
   update(delta: number) {
-    this.particles.geometry.translate(0, delta * 2.5, 0);
+    this.meshForParticles.position.y += delta * 2.5;
   }
 }
 

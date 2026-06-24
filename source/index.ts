@@ -1,7 +1,6 @@
 import {
   ReinhardToneMapping,
   WebGLRenderer,
-  BasicShadowMap,
   Vector2,
   Data3DTexture,
 } from 'three';
@@ -66,8 +65,6 @@ export default class ThreeShooter {
     });
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.autoClear = false;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = BasicShadowMap;
     this.renderer.toneMapping = ReinhardToneMapping;
     this.renderer.toneMappingExposure = Math.pow(0.68, 5.0);
 
@@ -87,6 +84,7 @@ export default class ThreeShooter {
     this.currScene.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
     this.composer.setSize(width, height);
+    this.composer.setPixelRatio(this.renderer.getPixelRatio());
     this.updateSharpenSize(width, height);
     this.updateRenderer(0);
   };
@@ -231,8 +229,12 @@ export default class ThreeShooter {
   }
 
   setPixelRatio = (value: number) => {
+    this.pixelRatio = value;
     this.renderer.setPixelRatio(value);
-    this.changeRenderingScene(this.currScene);
+    this.composer.setPixelRatio(value);
+    const rendererSize = new Vector2();
+    this.renderer.getSize(rendererSize);
+    this.updateSharpenSize(rendererSize.x, rendererSize.y);
     this.updateRenderer(0);
   };
 
