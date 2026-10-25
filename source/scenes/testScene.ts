@@ -143,7 +143,7 @@ export class TestScene extends BasicScene {
     this.logs = new PlayerLogs();
 
     const skyboxSize = 300;
-    const skyboxGeometry = new SphereGeometry(skyboxSize, 32, 32)
+    const skyboxGeometry = new SphereGeometry(skyboxSize, 16, 16)
     const texture = texturesStore.getTexture('skybox');
     texture.wrapS = texture.wrapT = RepeatWrapping;
     texture.repeat.x = skyboxSize / 32;
