@@ -1,6 +1,7 @@
 type SettingName =
   'mouseSensitivity' |
   'audioVolume' |
+  'musicVolume' |
   'fov';
 
 type Settings = Record<SettingName, number>;
@@ -13,6 +14,7 @@ class GlobalSettings {
     this.settings = {
       mouseSensitivity: 0.002,
       audioVolume: 1,
+      musicVolume: 0.5,
       fov: 95,
     };
     this.onUpdateCallbacks = [];
@@ -29,6 +31,13 @@ class GlobalSettings {
 
   addUpdateListener(callback: () => void) {
     this.onUpdateCallbacks.push(callback);
+  }
+
+  removeUpdateListener(callback: () => void) {
+    const index = this.onUpdateCallbacks.indexOf(callback);
+    if (index > -1) {
+      this.onUpdateCallbacks.splice(index, 1);
+    }
   }
 
   onUpdate() {
