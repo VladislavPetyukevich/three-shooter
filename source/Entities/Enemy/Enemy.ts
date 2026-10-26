@@ -3,7 +3,6 @@ import { Entity } from '@/core/Entities/Entity';
 import { ENTITY_TYPE, ENTITY_MESSAGES, ENEMY } from '@/constants';
 import { EnemyActor } from './EnemyActor';
 import { BehaviorTree, BehaviorTreeNode } from './BehaviorTree';
-import { RoomType } from './Factory/EnemyFactory';
 import { EnemyBehavior } from './EnemyBehavior';
 import { Player } from '@/Entities/Player/Player';
 import { Bullet } from '@/Entities/Bullet/Bullet';
@@ -13,18 +12,14 @@ import { EnemyKind } from '@/dungeon/DungeonRoom';
 import { AudioSlices } from '@/core/AudioSlices';
 import { AudioSliceName } from '@/constantsAssets';
 import { DeathAnimation } from '@/Animations/DeathAnimation';
+import { HitParticles } from '@/Entities/HitParticles/HitParticles';
+import { SpawnAnimation } from '@/Animations/SpawnAnimation';
 
 export interface EnemyTextures {
   walk1: string;
   walk2: string;
-  walk3: string;
-  walk4: string;
   hurt: string;
   death1: string;
-  death2: string;
-  death3: string;
-  death4: string;
-  attack: string;
 }
 
 export interface EnemyGunProps {
@@ -47,13 +42,11 @@ export interface EnemyProps {
   audioListener: AudioListener;
   behaviorTreeRoot: BehaviorTreeNode;
   kind: EnemyKind;
-  roomType: RoomType;
   textures: EnemyTextures;
   hp: number;
   walkSpeed: number;
   onHitDamage?: { min: number; max: number; };
   bulletsPerShoot: number;
-  hurtChance: number;
   delays: EnemyDelays;
   audioSlices: AudioSlices<AudioSliceName>;
 }
@@ -64,7 +57,6 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
   container: EntitiesContainer;
   behaviorTree: BehaviorTree;
   kind: EnemyKind;
-  roomType: EnemyProps['roomType'];
   hp: number;
   isDead: boolean;
   onDeathCallbacks: OnDeathCallback[];
@@ -91,13 +83,11 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
         bulletsPerShoot: props.bulletsPerShoot,
         delays: props.delays,
         onHitDamage: props.onHitDamage,
-        hurtChance: props.hurtChance,
         audioSlices: props.audioSlices,
       })
     );
     this.container = props.container;
     this.hp = props.hp;
-    this.roomType = props.roomType;
     this.velocity = velocity;
     this.isDead = false;
     this.behavior.gun.setBulletAuthor(this);
@@ -105,32 +95,58 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.behavior.onDeathCallback = () => {
       this.handleDeath();
     };
-    this.behavior.onAttackCallback = () => {
-      this.handleAttack();
-    };
 
     this.behaviorTree = new BehaviorTree(
       props.behaviorTreeRoot,
-      this.behavior
+      this.behavior,
+      this,
     );
     this.kind = props.kind;
+
+    // Start with spawn animation
+    this.handleSpawnAnimation();
   }
 
-  onHit(damage: number, entity?: Entity) {
-    if (entity?.type === ENTITY_TYPE.ENEMY) {
-      this.behavior.setFollowingEnemy(entity);
-    }
+  onHit(damage: number) {
     if (this.isDead) {
       return;
     }
     super.onHit(damage);
+    this.behavior.onHit();
+    
+    // Spawn hit particles at enemy position
+    const particlePosition = this.mesh.position.clone();
+    particlePosition.y += 0.5; // Slightly above center of enemy
+    const hitParticles = new HitParticles({
+      position: particlePosition,
+      container: this.container,
+    });
+    this.container.add(hitParticles);
+    
     if (this.hp <= 0) {
       this.handleDeath();
       return;
-    } else if (!this.behavior.isBusy) {
-      this.behavior.onHit();
     }
     this.handleHurtAnimation();
+  }
+
+  onCollide(entity: Entity) {
+    if (entity.type === ENTITY_TYPE.WALL || entity.type === ENTITY_TYPE.ENEMY) {
+      this.behavior.velocity.negate();
+      return false;
+    }
+    if (entity.type === ENTITY_TYPE.PLAYER) {
+      this.behavior.collidedPlayer = true;
+      return false;
+    }
+    return true;
+  }
+
+  handleSpawnAnimation() {
+    this.addAnimation(new SpawnAnimation({
+      actor: this.actor,
+      durationSeconds: ENEMY.SPAWN_TIME_OUT,
+    }));
   }
 
   handleHurtAnimation() {
@@ -138,7 +154,7 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     this.addAnimation(new HurtAnimation({
       actor: this.actor,
       durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 4,
+      hurtSpriteIndex: 3,
       onEnd: () => this.onBusyEnd(),
     }));
   }
@@ -153,35 +169,21 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
 
   handleDeath() {
     this.hp = 0;
+    this.behavior.onBusyStart();
     this.isDead = true;
-    this.behavior.velocity.set(0, 0, 0);
     this.animations = [];
     this.addAnimation(new DeathAnimation({
       actor: this.actor,
       durationSeconds: ENEMY.DEATH_TIME_OUT,
-      spriteIndices: [5, 6, 7, 8],
+      spriteIndices: [3],
     }));
     this.onDeathCallbacks.forEach(callback => callback(this));
-  }
-
-  handleAttack() {
-    this.addAnimation(new HurtAnimation({
-      actor: this.actor,
-      durationSeconds: ENEMY.HURT_TIME_OUT,
-      hurtSpriteIndex: 9,
-      onEnd: () => this.onBusyEnd(),
-    }));
-  }
-
-  onCollide(entity: Entity) {
-    this.behavior.updateColidedEntity(entity);
-    return false;
   }
 
   onMessage(message: ENTITY_MESSAGES) {
     switch (message) {
       case ENTITY_MESSAGES.inPlayerGunpoint:
-        this.behavior.onPlayerGunpoint();
+        this.behavior.inPlayerGunpoint = true;
         break;
       default:
         break;
@@ -192,9 +194,10 @@ export class Enemy extends Entity<EnemyActor, EnemyBehavior> {
     super.update(delta);
     if (!this.isDead) {
       this.behaviorTree.update(delta);
-      this.behavior.updateColidedEntity(undefined);
     } else if (this.animations.length === 0) {
       this.container.remove(this.mesh);
     }
+    this.behavior.inPlayerGunpoint = false;
+    this.behavior.collidedPlayer = false;
   }
 }
