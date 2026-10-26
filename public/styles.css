@@ -159,18 +159,6 @@ table td {
   text-align: left;
 }
 
-.credits {
-  padding-top: 0.25rem;
-}
-
-.credit {
-  text-align: left;
-}
-
-.credit a {
-  color: var(--link);
-}
-
 ion-icon.additional {
   margin-right: 0.25rem;
 }

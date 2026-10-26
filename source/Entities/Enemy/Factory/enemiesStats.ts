@@ -1,7 +1,7 @@
 import {
-  basicEnemySeq,
-  kamikazeEnemySeq,
-  longRangeEnemySeq,
+  apathyEnemyTree,
+  cowardiceEnemyTree,
+  sexualPerversionsEnemyTree,
 } from '@/Entities/Enemy/Factory/behaviorTrees';
 import { BulletSlowMeidum } from '@/Entities/Bullet/Inheritor/BulletSlowMedium';
 import { BulletFastEasy } from '@/Entities/Bullet/Inheritor/BulletFastEasy';
@@ -11,9 +11,8 @@ import { EnemiesStats } from './EnemyFactory';
 import { EnemyKind } from '@/dungeon/DungeonRoom';
 
 export const enemiesStats: EnemiesStats = {
-  [EnemyKind.Flyguy]: {
+  [EnemyKind.Apathy]: {
     hp: 20,
-    hurtChance: 0.78,
     BulletClass: BulletSlowMeidum,
     gunProps: {
       recoilTime: 0.5,
@@ -24,12 +23,11 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
       shoot: ENEMY.DELAYS.shoot * 0.7
     },
-    behaviorTreeRoot: basicEnemySeq,
-    textures: ENEMY_TEXTURES.Flyguy,
+    behaviorTreeRoot: apathyEnemyTree,
+    textures: ENEMY_TEXTURES.Apathy,
   },
-  [EnemyKind.Commando]: {
+  [EnemyKind.Cowardice]: {
     hp: 30,
-    hurtChance: 0.66,
     BulletClass: BulletFastEasy,
     gunProps: {
       recoilTime: 0.01,
@@ -40,13 +38,12 @@ export const enemiesStats: EnemiesStats = {
       ...ENEMY.DELAYS,
       strafe: ENEMY.DELAYS.strafe * 0.7,
     },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Commando,
+    behaviorTreeRoot: cowardiceEnemyTree,
+    textures: ENEMY_TEXTURES.Cowardice,
   },
-  [EnemyKind.Zombie]: {
+  [EnemyKind.SexualPerversions]: {
     hp: 5,
     onHitDamage: { min: 10, max: 40 },
-    hurtChance: 0.0,
     BulletClass: BulletSlowMeidum,
     gunProps: {
       recoilTime: 0.1,
@@ -59,55 +56,7 @@ export const enemiesStats: EnemiesStats = {
       gunpointStrafe: ENEMY.DELAYS.gunpointStrafe * 0.4,
       movement: ENEMY.KAMIKAZE_MOVEMENT_TIME_OUT,
     },
-    behaviorTreeRoot: kamikazeEnemySeq,
-    textures: ENEMY_TEXTURES.Zombie,
-  },
-  [EnemyKind.Slayer]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Slayer,
-  },
-  [EnemyKind.Tank]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Tank,
-  },
-  [EnemyKind.Soldier]: {
-    hp: 30,
-    hurtChance: 0.66,
-    BulletClass: BulletFastEasy,
-    gunProps: {
-      recoilTime: 0.01,
-    },
-    bulletsPerShoot: 6,
-    walkSpeed: ENEMY.WALK_SPEED,
-    delays: {
-      ...ENEMY.DELAYS,
-      strafe: ENEMY.DELAYS.strafe * 0.7,
-    },
-    behaviorTreeRoot: longRangeEnemySeq,
-    textures: ENEMY_TEXTURES.Soldier,
+    behaviorTreeRoot: sexualPerversionsEnemyTree,
+    textures: ENEMY_TEXTURES.SexualPerversions,
   },
 };
