@@ -2,7 +2,7 @@ import {
   Audio,
   AudioListener,
 } from 'three';
-import { audioStore } from '@/core/loaders';
+import { audioStoreSfx } from '@/core/loaders';
 
 export interface SliceInfo {
   soundName: string;
@@ -24,7 +24,7 @@ export class AudioSlices<SliceName extends string> {
 
   loadSliceToAudio(audioName: SliceName, audio: Audio<GainNode | PannerNode>) {
     const sliceInfo = this.slicesInfo[audioName];
-    audio.setBuffer(audioStore.getSound(sliceInfo.soundName));
+    audio.setBuffer(audioStoreSfx.getSound(sliceInfo.soundName));
     audio.offset = sliceInfo.start;
     audio.duration = sliceInfo.end - sliceInfo.start;
     audio.setVolume(sliceInfo.volume);
